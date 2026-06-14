@@ -55,6 +55,8 @@ export function Calculator({
   const [priceText, setPriceText] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [listOpen, setListOpen] = useState(false);
+  // -1 = no option highlighted; drives the combobox's aria-activedescendant.
+  const [activeIndex, setActiveIndex] = useState(-1);
   const [copied, setCopied] = useState(false);
   const hydratedFromUrl = useRef(false);
 
@@ -95,6 +97,40 @@ export function Calculator({
     const n = Number.parseFloat(text.replace(/\s/g, "").replace(",", "."));
     return Number.isFinite(n) && n > 0 && n < 1_000_000 ? n : null;
   };
+
+  function chooseSet(id: string): void {
+    setSetId(id);
+    setListOpen(false);
+    setQuery("");
+    setActiveIndex(-1);
+  }
+
+  // WAI-ARIA combobox keyboard pattern: arrows move the active option, Enter
+  // commits it, Escape closes. Focus stays on the input (aria-activedescendant).
+  function onComboKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setListOpen(true);
+      setActiveIndex((i) => Math.min(i + 1, filtered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter" && listOpen && activeIndex >= 0 && filtered[activeIndex]) {
+      e.preventDefault();
+      chooseSet(filtered[activeIndex].id);
+    } else if (e.key === "Escape" && listOpen) {
+      e.preventDefault();
+      setListOpen(false);
+      setActiveIndex(-1);
+    }
+  }
+
+  // Keep the highlighted option scrolled into view as arrows move it.
+  useEffect(() => {
+    if (activeIndex >= 0) {
+      document.getElementById(`ev-opt-${activeIndex}`)?.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
 
   function compute(id = setId, productKind = kind, text = priceText, qty = boosterQty): void {
     const d = id ? payload.evData[id] : undefined;
@@ -208,6 +244,7 @@ export function Calculator({
             aria-expanded={listOpen}
             aria-autocomplete="list"
             aria-controls="ev-set-listbox"
+            aria-activedescendant={listOpen && activeIndex >= 0 ? `ev-opt-${activeIndex}` : undefined}
             className={`mt-1.5 ${inputCls}`}
             placeholder={t.setPlaceholder}
             value={selected && !listOpen ? name(selected) : query}
@@ -218,7 +255,9 @@ export function Calculator({
             onChange={(e) => {
               setQuery(e.target.value);
               setListOpen(true);
+              setActiveIndex(-1);
             }}
+            onKeyDown={onComboKeyDown}
             onBlur={() => setTimeout(() => setListOpen(false), 150)}
           />
           <AnimatePresence>
@@ -236,19 +275,19 @@ export function Calculator({
                 {filtered.length === 0 ? (
                   <li className="px-4 py-3 text-sm text-fg-muted">{t.setSearchNoResult}</li>
                 ) : (
-                  filtered.map((s) => (
+                  filtered.map((s, i) => (
                     <li key={s.id}>
                       <button
                         type="button"
+                        id={`ev-opt-${i}`}
                         role="option"
-                        aria-selected={s.id === setId}
-                        className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition-colors duration-100 hover:bg-surface-2 disabled:opacity-40"
+                        aria-selected={i === activeIndex}
+                        tabIndex={-1}
+                        className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition-colors duration-100 hover:bg-surface-2 disabled:opacity-40 ${
+                          i === activeIndex ? "bg-surface-2" : ""
+                        }`}
                         onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => {
-                          setSetId(s.id);
-                          setListOpen(false);
-                          setQuery("");
-                        }}
+                        onClick={() => chooseSet(s.id)}
                       >
                         <span className="truncate">{name(s)}</span>
                         <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-fg-faint">

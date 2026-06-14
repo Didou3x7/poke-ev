@@ -129,4 +129,44 @@ describe("discoverNewSets", () => {
     });
     expect(found).toEqual([]);
   });
+
+  it("dedups two new sets that slugify to the same id (first wins)", async () => {
+    const en = [
+      { id: "sv11", name: "Phantom Tide", cardCount: { official: 178 } },
+      { id: "sv12", name: "Phantom  Tide", cardCount: { official: 150 } }, // double space → same slug
+    ];
+    const det: Record<string, TcgdexDetail> = {
+      sv11: detail({ id: "sv11", name: "Phantom Tide", serie: { id: "sv", name: "" }, releaseDate: "2026-05-01" }),
+      sv12: detail({ id: "sv12", name: "Phantom  Tide", serie: { id: "sv", name: "" }, releaseDate: "2026-06-01" }),
+    };
+    const fi = async (url: string): Promise<Response> => {
+      const json = url.endsWith("/en/sets") ? en : url.endsWith("/fr/sets") ? [] : (det[url.split("/").pop()!] ?? null);
+      return { ok: json != null, json: async () => json } as Response;
+    };
+    const found = await discoverNewSets({ knownTcgdexIds: new Set(), knownCatalogIds: new Set(), today: TODAY, fetchImpl: fi });
+    expect(found).toHaveLength(1);
+    expect(found[0].id).toBe("phantom-tide");
+  });
+
+  it("returns [] (no throw) when the EN list is malformed (HTTP 200 + error body)", async () => {
+    const fi = async (): Promise<Response> => ({ ok: true, json: async () => ({ message: "rate limited" }) }) as Response;
+    await expect(
+      discoverNewSets({ knownTcgdexIds: new Set(), knownCatalogIds: new Set(), today: TODAY, fetchImpl: fi }),
+    ).resolves.toEqual([]);
+  });
+
+  it("falls back to the EN name when the FR list is malformed", async () => {
+    const en = [{ id: "sv11", name: "Phantom Tide", cardCount: { official: 178 } }];
+    const det: Record<string, TcgdexDetail> = {
+      sv11: detail({ id: "sv11", name: "Phantom Tide", serie: { id: "sv", name: "" }, releaseDate: "2026-05-01" }),
+    };
+    const fi = async (url: string): Promise<Response> => {
+      if (url.endsWith("/en/sets")) return { ok: true, json: async () => en } as Response;
+      if (url.endsWith("/fr/sets")) return { ok: true, json: async () => ({ message: "err" }) } as Response;
+      return { ok: true, json: async () => det[url.split("/").pop()!] ?? null } as Response;
+    };
+    const found = await discoverNewSets({ knownTcgdexIds: new Set(), knownCatalogIds: new Set(), today: TODAY, fetchImpl: fi });
+    expect(found).toHaveLength(1);
+    expect(found[0].nameFr).toBe("Phantom Tide");
+  });
 });

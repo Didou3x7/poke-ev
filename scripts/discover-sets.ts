@@ -39,6 +39,7 @@ function writeEraFile(era: string, sets: DiscoveredSet[]): number {
   let added = 0;
   for (const s of sets) {
     if (existing.has(s.id)) continue;
+    existing.add(s.id); // guard against a duplicated id within this same batch
     file.sets.push({
       id: s.id,
       code: s.code,

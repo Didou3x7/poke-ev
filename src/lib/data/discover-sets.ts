@@ -120,13 +120,15 @@ export async function discoverNewSets(opts: DiscoverOptions): Promise<Discovered
   const max = opts.maxAdds ?? 8;
   const prefixes = Object.values(SERIES).map((s) => s.prefix);
 
+  // Array.isArray, not just truthiness: a 200 with an error-shaped body
+  // ({message:"rate limited"}) is truthy and would crash .filter/.map.
   const enList = await getJson<TcgdexBrief[]>(`${TCGDEX}/en/sets`, fetchImpl);
-  if (!enList) {
-    log("discover: TCGdex EN list unavailable — skipping discovery this run");
+  if (!Array.isArray(enList)) {
+    log("discover: TCGdex EN list unavailable or malformed — skipping discovery this run");
     return [];
   }
-  const frList = (await getJson<TcgdexBrief[]>(`${TCGDEX}/fr/sets`, fetchImpl)) ?? [];
-  const frName = new Map(frList.map((s) => [s.id, s.name]));
+  const frRaw = await getJson<TcgdexBrief[]>(`${TCGDEX}/fr/sets`, fetchImpl);
+  const frName = new Map((Array.isArray(frRaw) ? frRaw : []).map((s) => [s.id, s.name]));
 
   // Cheap pre-filter on the list before spending a detail call per candidate.
   const candidates = enList.filter(
@@ -138,16 +140,20 @@ export async function discoverNewSets(opts: DiscoverOptions): Promise<Discovered
   );
   log(`discover: ${candidates.length} unmapped candidate id(s) in known series`);
 
+  // Dedup against the existing catalog AND ids added earlier in THIS run, so two
+  // new sets that slugify to the same id can't both be pushed (one id, two rows).
+  const seen = new Set(opts.knownCatalogIds);
   const found: DiscoveredSet[] = [];
   for (const c of candidates) {
     const d = await getJson<TcgdexDetail>(`${TCGDEX}/en/sets/${c.id}`, fetchImpl);
     if (!d || !isMainExpansion(d, opts.today)) continue;
     const serie = SERIES[d.serie!.id];
     const id = slugify(d.name);
-    if (!id || opts.knownCatalogIds.has(id)) {
+    if (!id || seen.has(id)) {
       log(`discover: skip ${d.id} — catalog id "${id}" already exists or empty`);
       continue;
     }
+    seen.add(id);
     found.push({
       era: serie.era,
       id,

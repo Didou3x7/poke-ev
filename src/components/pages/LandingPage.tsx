@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import ReactDOM from "react-dom";
 import { getDict, tpl } from "@/lib/i18n";
+import { heroCardImage, heroCardPool } from "@/lib/hero-cards";
 import { absoluteUrl, localePath, type Locale } from "@/lib/i18n/config";
 import { buildCalculatorPayload } from "@/lib/view/calculator-vm";
 import { buildFeaturedSets } from "@/lib/view/featured";
@@ -18,6 +20,14 @@ export async function LandingPage({ locale }: { locale: Locale }) {
   const t = getDict(locale);
   const payload = await buildCalculatorPayload(locale);
   const featured = await buildFeaturedSets(locale, 14);
+
+  // Fetch the first hero card (above-the-fold LCP candidate) during initial HTML
+  // parse instead of after hydration, when the JS-gated <img> finally mounts.
+  ReactDOM.preload(heroCardImage(locale, heroCardPool(locale)[0]), {
+    as: "image",
+    fetchPriority: "high",
+  });
+
   const totalSets = getAllSets().length;
   const pricedCards = await countPricedCards();
   const updatedLabel = payload.generatedAt.startsWith("1970")
