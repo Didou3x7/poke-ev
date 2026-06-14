@@ -94,16 +94,16 @@ export function SiteShell({
               <p className="mt-2 text-sm leading-relaxed text-fg-muted">{t.common.footer.disclaimer}</p>
             </div>
             <div className="grid grid-cols-2 gap-x-10 gap-y-2.5 text-sm">
-              <Link className="link-holo w-fit text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "faq")}>
+              <Link className="link-holo w-fit py-1.5 text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "faq")}>
                 {t.common.footer.method}
               </Link>
-              <Link className="link-holo w-fit text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "legal")}>
+              <Link className="link-holo w-fit py-1.5 text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "legal")}>
                 {t.common.footer.legal}
               </Link>
-              <Link className="link-holo w-fit text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "privacy")}>
+              <Link className="link-holo w-fit py-1.5 text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "privacy")}>
                 {t.common.footer.privacy}
               </Link>
-              <Link className="link-holo w-fit text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "cookies")}>
+              <Link className="link-holo w-fit py-1.5 text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "cookies")}>
                 {t.common.footer.cookies}
               </Link>
             </div>
