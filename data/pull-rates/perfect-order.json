@@ -1,0 +1,42 @@
+{
+  "setId": "perfect-order",
+  "era": "mega",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Perfect-Order-Pull-Rates/73148119-ebcb-40b7-84b6-52b3a6d0c631/",
+    "https://cardcodex.com/blog/perfect-order-pull-rates/",
+    "https://obsidia-tcg.store/blogs/news/perfect-order-pull-rates-pack-odds-and-mega-zygarde-ex-chances"
+  ],
+  "notes": "TCGplayer Authentication Center study, 3,500+ packs opened, relayed by Card Codex and others. Per-pack odds: double rare 1/5 and ultra rare 1/12 in the rare slot; illustration rare 1/9, special illustration rare 1/81 (1.23%) and Mega Hyper Rare 1/1786 (modeled as hyper-rare, single card: Mega Zygarde ex) replacing the second reverse-holo slot. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.437992,
+        "uncommon": 0.437991,
+        "illustration-rare": 0.111111,
+        "special-illustration-rare": 0.012346,
+        "hyper-rare": 0.00056
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.716667,
+        "double-rare": 0.2,
+        "ultra-rare": 0.083333
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

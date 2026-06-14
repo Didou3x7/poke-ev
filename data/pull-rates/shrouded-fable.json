@@ -1,0 +1,41 @@
+{
+  "setId": "shrouded-fable",
+  "era": "sv",
+  "confidence": "medium",
+  "sources": [
+    "https://pokepatch.com/2025/05/24/shrouded-fable-pull-rates-in-pokemon-tcg-set/",
+    "https://www.thepricedex.com/set/sv6pt5/shrouded-fable/pull-rates"
+  ],
+  "notes": "Community-aggregated data (PokePatch 1,000+ packs, corroborated by ThePriceDex community estimates). Per-pack odds: double rare 1/6 and ultra rare 1/15 in the rare slot; ACE SPEC 1/20 replacing the first reverse-holo slot; illustration rare 1/12, special illustration rare 1/67 and hyper rare 1/144 replacing the second reverse-holo slot. Confidence medium: no dedicated TCGplayer Infinite study, and sources diverge on SIR (1/64-1/87) and hyper rare (1/118-1/144) odds. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card. Special set: no booster box display (ETB and booster bundles only).",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1-ace-spec",
+      "count": 1,
+      "distribution": { "common": 0.475, "uncommon": 0.475, "ace-spec": 0.05 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.447399,
+        "uncommon": 0.447399,
+        "illustration-rare": 0.083333,
+        "special-illustration-rare": 0.014925,
+        "hyper-rare": 0.006944
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.766666,
+        "double-rare": 0.166667,
+        "ultra-rare": 0.066667
+      }
+    }
+  ],
+  "products": { "display": null, "etb": { "packs": 9 } }
+}

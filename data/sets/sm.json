@@ -1,0 +1,183 @@
+{
+  "era": "sm",
+  "eraNameEn": "Sun & Moon",
+  "eraNameFr": "Soleil et Lune",
+  "sets": [
+    {
+      "id": "sun-moon",
+      "code": "SUM",
+      "nameEn": "Sun & Moon",
+      "nameFr": "Soleil et Lune",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2017-02-03",
+      "cardCount": 149,
+      "apiMatch": "Sun & Moon"
+    },
+    {
+      "id": "guardians-rising",
+      "code": "GRI",
+      "nameEn": "Guardians Rising",
+      "nameFr": "Gardiens Ascendants",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2017-05-05",
+      "cardCount": 145,
+      "apiMatch": "Guardians Rising"
+    },
+    {
+      "id": "burning-shadows",
+      "code": "BUS",
+      "nameEn": "Burning Shadows",
+      "nameFr": "Ombres Ardentes",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2017-08-04",
+      "cardCount": 147,
+      "apiMatch": "Burning Shadows"
+    },
+    {
+      "id": "shining-legends",
+      "code": "SLG",
+      "nameEn": "Shining Legends",
+      "nameFr": "Légendes Brillantes",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2017-10-06",
+      "cardCount": 73,
+      "apiMatch": "Shining Legends"
+    },
+    {
+      "id": "crimson-invasion",
+      "code": "CIN",
+      "nameEn": "Crimson Invasion",
+      "nameFr": "Invasion Carmin",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2017-11-03",
+      "cardCount": 111,
+      "apiMatch": "Crimson Invasion"
+    },
+    {
+      "id": "ultra-prism",
+      "code": "UPR",
+      "nameEn": "Ultra Prism",
+      "nameFr": "Ultra-Prisme",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2018-02-02",
+      "cardCount": 156,
+      "apiMatch": "Ultra Prism"
+    },
+    {
+      "id": "forbidden-light",
+      "code": "FLI",
+      "nameEn": "Forbidden Light",
+      "nameFr": "Lumière Interdite",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2018-05-04",
+      "cardCount": 131,
+      "apiMatch": "Forbidden Light"
+    },
+    {
+      "id": "celestial-storm",
+      "code": "CES",
+      "nameEn": "Celestial Storm",
+      "nameFr": "Tempête Céleste",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2018-08-03",
+      "cardCount": 168,
+      "apiMatch": "Celestial Storm"
+    },
+    {
+      "id": "dragon-majesty",
+      "code": "DRM",
+      "nameEn": "Dragon Majesty",
+      "nameFr": "Majesté des Dragons",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2018-09-07",
+      "cardCount": 70,
+      "apiMatch": "Dragon Majesty"
+    },
+    {
+      "id": "lost-thunder",
+      "code": "LOT",
+      "nameEn": "Lost Thunder",
+      "nameFr": "Tonnerre Perdu",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2018-11-02",
+      "cardCount": 214,
+      "apiMatch": "Lost Thunder"
+    },
+    {
+      "id": "team-up",
+      "code": "TEU",
+      "nameEn": "Team Up",
+      "nameFr": "Duo de Choc",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2019-02-01",
+      "cardCount": 181,
+      "apiMatch": "Team Up"
+    },
+    {
+      "id": "detective-pikachu",
+      "code": "DET",
+      "nameEn": "Detective Pikachu",
+      "nameFr": "Détective Pikachu",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2019-03-29",
+      "cardCount": 18,
+      "apiMatch": "Detective Pikachu"
+    },
+    {
+      "id": "unbroken-bonds",
+      "code": "UNB",
+      "nameEn": "Unbroken Bonds",
+      "nameFr": "Alliance Infaillible",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2019-05-03",
+      "cardCount": 214,
+      "apiMatch": "Unbroken Bonds"
+    },
+    {
+      "id": "unified-minds",
+      "code": "UNM",
+      "nameEn": "Unified Minds",
+      "nameFr": "Harmonie des Esprits",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2019-08-02",
+      "cardCount": 236,
+      "apiMatch": "Unified Minds"
+    },
+    {
+      "id": "hidden-fates",
+      "code": "HIF",
+      "nameEn": "Hidden Fates",
+      "nameFr": "Destinées Occultes",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2019-08-23",
+      "cardCount": 68,
+      "apiMatch": "Hidden Fates"
+    },
+    {
+      "id": "cosmic-eclipse",
+      "code": "CEC",
+      "nameEn": "Cosmic Eclipse",
+      "nameFr": "Éclipse Cosmique",
+      "seriesEn": "Sun & Moon",
+      "seriesFr": "Soleil et Lune",
+      "releaseDate": "2019-11-01",
+      "cardCount": 236,
+      "apiMatch": "Cosmic Eclipse"
+    }
+  ]
+}

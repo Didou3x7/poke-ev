@@ -1,0 +1,42 @@
+{
+  "setId": "mega-evolution",
+  "era": "mega",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Mega-Evolution-Pull-Rates/40cbeedc-21ce-473b-aef1-74e3969d9f91/",
+    "https://www.pokebeach.com/2025/09/mega-evolution-pull-rates-revealed-gold-cards-nearly-impossible-to-pull-at-highest-pull-rates-ever-seen",
+    "https://gamerant.com/pokemon-tcg-mega-evolution-pull-rates/"
+  ],
+  "notes": "TCGplayer Authentication Center study, 5,000+ packs opened, relayed by PokeBeach. Per-pack odds: double rare 1/5 and ultra rare 1/12 in the rare slot; illustration rare 1/9, special illustration rare 1/101 and Mega Hyper Rare (gold, modeled as hyper-rare) 1/1260 replacing the second reverse-holo slot. Regular Mega ex prints are Double Rares on the market side and are covered by the double-rare share. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.439097,
+        "uncommon": 0.439097,
+        "illustration-rare": 0.111111,
+        "special-illustration-rare": 0.009901,
+        "hyper-rare": 0.000794
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.716667,
+        "double-rare": 0.2,
+        "ultra-rare": 0.083333
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

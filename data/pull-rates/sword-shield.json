@@ -1,0 +1,34 @@
+{
+  "setId": "sword-shield",
+  "era": "swsh",
+  "confidence": "high",
+  "sources": [
+    "https://www.elitefourum.com/t/pull-rates-in-sun-moon-sword-shield-sets/25220",
+    "https://www.thepricedex.com/set/swsh1/sword-shield/pull-rates"
+  ],
+  "notes": "Elite Fourum community study, n=4628 packs (95% CI): V 14.20% (1/7.04), VMAX 2.20% (1/45.37), ultra rare 3.74% (1/26.75), rainbow rare 1.23% (1/81.19), secret rare 0.91% (1/110.19). Holo rare rate (1/5.5) from ThePriceDex community aggregate; residual mass on non-holo rare. All hits modeled in the rare slot; reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card. ETB SWSH era = 8 packs.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.5954,
+        "rare-holo": 0.1818,
+        "rare-holo-v": 0.142,
+        "rare-holo-vmax": 0.022,
+        "ultra-rare": 0.0374,
+        "rainbow-rare": 0.0123,
+        "secret-rare": 0.0091
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+}

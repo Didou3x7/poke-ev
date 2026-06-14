@@ -1,0 +1,41 @@
+{
+  "setId": "scarlet-violet",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Scarlet-Violet-Pull-Rates/a7702fce-dd64-4a58-beb1-0f871c853215/",
+    "https://pokemonplug.com/blogs/news/pokemon-tcg-scarlet-and-violet-pull-rates"
+  ],
+  "notes": "TCGplayer Infinite large-sample study (thousands of packs). Per-pack odds: double rare 1/7 and ultra rare 1/15 in the rare slot; illustration rare 1/13, special illustration rare 1/32 and hyper rare 1/54 replacing the second reverse-holo slot. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.436654,
+        "uncommon": 0.436654,
+        "illustration-rare": 0.076923,
+        "special-illustration-rare": 0.03125,
+        "hyper-rare": 0.018519
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.790476,
+        "double-rare": 0.142857,
+        "ultra-rare": 0.066667
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

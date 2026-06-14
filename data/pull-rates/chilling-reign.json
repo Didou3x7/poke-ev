@@ -1,0 +1,34 @@
+{
+  "setId": "chilling-reign",
+  "era": "swsh",
+  "confidence": "medium",
+  "sources": [
+    "https://www.reddit.com/r/PokemonTCG/comments/o2nhez/chilling_reign_pull_rate_data_from_5000_packs/",
+    "https://www.thepricedex.com/set/swsh6/chilling-reign/pull-rates"
+  ],
+  "notes": "Reddit r/PokemonTCG community study, n=5000 packs, rates as relayed by ThePriceDex: holo rare 1/5.6 (17.86%), V 1/12.7 (7.87%), VMAX 1/23.7 (4.22%), ultra rare 1/25.0 (4.00%), rainbow rare 1/96.2 (1.04%), secret rare 1/100 (1.00%). All hits modeled in the rare slot with residual mass on non-holo rare; reverse filler approximated as a 50/50 common/uncommon split. Confidence medium: large sample but figures read via a secondary aggregator. packSize excludes the basic Energy and code card. ETB SWSH era = 8 packs.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6401,
+        "rare-holo": 0.1786,
+        "rare-holo-v": 0.0787,
+        "rare-holo-vmax": 0.0422,
+        "ultra-rare": 0.04,
+        "rainbow-rare": 0.0104,
+        "secret-rare": 0.01
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+}

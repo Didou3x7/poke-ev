@@ -1,0 +1,41 @@
+{
+  "setId": "paradox-rift",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Paradox-Rift-Pull-Rates/0b5fb648-38fc-4f61-a6af-57c2737b4a48/",
+    "https://pokepatch.com/2025/05/18/paradox-rift-pull-rates-in-pokemon-tcg-set/"
+  ],
+  "notes": "TCGplayer Infinite study based on 8,000+ booster packs. Per-pack odds: double rare 1/6 and ultra rare 1/15 in the rare slot; illustration rare 1/13, special illustration rare 1/47 and hyper rare 1/82 replacing the second reverse-holo slot. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.444803,
+        "uncommon": 0.444802,
+        "illustration-rare": 0.076923,
+        "special-illustration-rare": 0.021277,
+        "hyper-rare": 0.012195
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.766666,
+        "double-rare": 0.166667,
+        "ultra-rare": 0.066667
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

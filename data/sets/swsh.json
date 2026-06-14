@@ -1,0 +1,194 @@
+{
+  "era": "swsh",
+  "eraNameEn": "Sword & Shield",
+  "eraNameFr": "Épée et Bouclier",
+  "sets": [
+    {
+      "id": "sword-shield",
+      "code": "SSH",
+      "nameEn": "Sword & Shield",
+      "nameFr": "Épée et Bouclier",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2020-02-07",
+      "cardCount": 202,
+      "apiMatch": "Sword & Shield Base Set"
+    },
+    {
+      "id": "rebel-clash",
+      "code": "RCL",
+      "nameEn": "Rebel Clash",
+      "nameFr": "Clash des Rebelles",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2020-05-01",
+      "cardCount": 192,
+      "apiMatch": "Rebel Clash"
+    },
+    {
+      "id": "darkness-ablaze",
+      "code": "DAA",
+      "nameEn": "Darkness Ablaze",
+      "nameFr": "Ténèbres Embrasées",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2020-08-14",
+      "cardCount": 189,
+      "apiMatch": "Darkness Ablaze"
+    },
+    {
+      "id": "champions-path",
+      "code": "CPA",
+      "nameEn": "Champion's Path",
+      "nameFr": "La Voie du Maître",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2020-09-25",
+      "cardCount": 73,
+      "apiMatch": "Champion's Path"
+    },
+    {
+      "id": "vivid-voltage",
+      "code": "VIV",
+      "nameEn": "Vivid Voltage",
+      "nameFr": "Voltage Éclatant",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2020-11-13",
+      "cardCount": 185,
+      "apiMatch": "Vivid Voltage"
+    },
+    {
+      "id": "shining-fates",
+      "code": "SHF",
+      "nameEn": "Shining Fates",
+      "nameFr": "Destinées Radieuses",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2021-02-19",
+      "cardCount": 72,
+      "apiMatch": "Shining Fates"
+    },
+    {
+      "id": "battle-styles",
+      "code": "BST",
+      "nameEn": "Battle Styles",
+      "nameFr": "Styles de Combat",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2021-03-19",
+      "cardCount": 163,
+      "apiMatch": "Battle Styles"
+    },
+    {
+      "id": "chilling-reign",
+      "code": "CRE",
+      "nameEn": "Chilling Reign",
+      "nameFr": "Règne de Glace",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2021-06-18",
+      "cardCount": 198,
+      "apiMatch": "Chilling Reign"
+    },
+    {
+      "id": "evolving-skies",
+      "code": "EVS",
+      "nameEn": "Evolving Skies",
+      "nameFr": "Évolution Céleste",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2021-08-27",
+      "cardCount": 203,
+      "apiMatch": "Evolving Skies"
+    },
+    {
+      "id": "celebrations",
+      "code": "CEL",
+      "nameEn": "Celebrations",
+      "nameFr": "Célébrations",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2021-10-08",
+      "cardCount": 25,
+      "apiMatch": "Celebrations"
+    },
+    {
+      "id": "fusion-strike",
+      "code": "FST",
+      "nameEn": "Fusion Strike",
+      "nameFr": "Poing de Fusion",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2021-11-12",
+      "cardCount": 264,
+      "apiMatch": "Fusion Strike"
+    },
+    {
+      "id": "brilliant-stars",
+      "code": "BRS",
+      "nameEn": "Brilliant Stars",
+      "nameFr": "Stars Étincelantes",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2022-02-25",
+      "cardCount": 172,
+      "apiMatch": "Brilliant Stars"
+    },
+    {
+      "id": "astral-radiance",
+      "code": "ASR",
+      "nameEn": "Astral Radiance",
+      "nameFr": "Astres Radieux",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2022-05-27",
+      "cardCount": 189,
+      "apiMatch": "Astral Radiance"
+    },
+    {
+      "id": "pokemon-go",
+      "code": "PGO",
+      "nameEn": "Pokémon GO",
+      "nameFr": "Pokémon GO",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2022-07-01",
+      "cardCount": 78,
+      "apiMatch": "Pokémon GO"
+    },
+    {
+      "id": "lost-origin",
+      "code": "LOR",
+      "nameEn": "Lost Origin",
+      "nameFr": "Origine Perdue",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2022-09-09",
+      "cardCount": 196,
+      "apiMatch": "Lost Origin"
+    },
+    {
+      "id": "silver-tempest",
+      "code": "SIT",
+      "nameEn": "Silver Tempest",
+      "nameFr": "Tempête Argentée",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2022-11-11",
+      "cardCount": 195,
+      "apiMatch": "Silver Tempest"
+    },
+    {
+      "id": "crown-zenith",
+      "code": "CRZ",
+      "nameEn": "Crown Zenith",
+      "nameFr": "Zénith Suprême",
+      "seriesEn": "Sword & Shield",
+      "seriesFr": "Épée et Bouclier",
+      "releaseDate": "2023-01-20",
+      "cardCount": 159,
+      "apiMatch": "Crown Zenith"
+    }
+  ]
+}

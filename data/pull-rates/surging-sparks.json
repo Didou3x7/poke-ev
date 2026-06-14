@@ -1,0 +1,41 @@
+{
+  "setId": "surging-sparks",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Surging-Sparks-Pull-Rates/6ccfb6ab-f26a-4ce8-bab5-5f91c85ec70e/",
+    "https://pokepatch.com/2025/05/24/surging-sparks-pull-rates-in-pokemon-tcg-set/"
+  ],
+  "notes": "TCGplayer Authentication Center large-sample study. Per-pack odds: double rare 1/6 and ultra rare 1/15 in the rare slot; ACE SPEC 1/20 (~5%) replacing the first reverse-holo slot; illustration rare 1/13, special illustration rare 1/87 and hyper rare 1/188 replacing the second reverse-holo slot. Slightly stingier top-end than earlier SV sets (61 secret rares in the set). Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1-ace-spec",
+      "count": 1,
+      "distribution": { "common": 0.475, "uncommon": 0.475, "ace-spec": 0.05 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.453132,
+        "uncommon": 0.453132,
+        "illustration-rare": 0.076923,
+        "special-illustration-rare": 0.011494,
+        "hyper-rare": 0.005319
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.766666,
+        "double-rare": 0.166667,
+        "ultra-rare": 0.066667
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

@@ -1,0 +1,42 @@
+{
+  "setId": "destined-rivals",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Destined-Rivals-Pull-Rates/43ba832e-44c9-45a4-ae2e-594df2defdda/",
+    "https://gamerant.com/pokemon-tcg-destined-rivals-expansion-pull-rates/",
+    "https://pokepatch.com/2025/05/30/destined-rivals-pull-rates-in-pokemon-tcg-set/"
+  ],
+  "notes": "TCGplayer Authentication Center study, 8,000+ packs opened (relayed by Game Rant and PokePatch). Per-pack odds: double rare 1/5 and ultra rare 1/16 in the rare slot; illustration rare 1/12, special illustration rare 1/94 and hyper rare 1/149 replacing the second reverse-holo slot. No ACE SPEC cards in this set, so the first reverse slot is pure filler. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.449659,
+        "uncommon": 0.449659,
+        "illustration-rare": 0.083333,
+        "special-illustration-rare": 0.010638,
+        "hyper-rare": 0.006711
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.7375,
+        "double-rare": 0.2,
+        "ultra-rare": 0.0625
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

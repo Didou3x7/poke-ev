@@ -1,0 +1,45 @@
+{
+  "setId": "prismatic-evolutions",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Prismatic-Evolutions-Pull-Rates/d94889ea-f76a-4a13-b74d-5b0b071220a7/",
+    "https://www.pokebeach.com/2025/01/prismatic-evolutions-pull-rates-revealed-special-illustration-rares-twice-as-easy-to-pull",
+    "https://screenrant.com/pokemon-tcg-prismatic-evolutions-pull-rates/"
+  ],
+  "notes": "TCGplayer Authentication Center study, relayed by PokeBeach. Per-pack odds: double rare 1/6 and ultra rare 1/13 in the rare slot; ACE SPEC 1/21 replacing the first reverse-holo slot; special illustration rare 1/45 and hyper rare 1/80 replacing the second reverse-holo slot (the set has NO regular illustration rares). Poke Ball (1/3) and Master Ball (1/20) foil pattern variants have no dedicated rarity id and are folded into the common/uncommon reverse filler mass, so their premium is not modeled. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card. Special set: no booster box display (ETB, booster bundles, surprise boxes and collections only).",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1-ace-spec",
+      "count": 1,
+      "distribution": {
+        "common": 0.47619,
+        "uncommon": 0.476191,
+        "ace-spec": 0.047619
+      }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.482639,
+        "uncommon": 0.482639,
+        "special-illustration-rare": 0.022222,
+        "hyper-rare": 0.0125
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.75641,
+        "double-rare": 0.166667,
+        "ultra-rare": 0.076923
+      }
+    }
+  ],
+  "products": { "display": null, "etb": { "packs": 9 } }
+}

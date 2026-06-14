@@ -1,0 +1,183 @@
+{
+  "era": "sv",
+  "eraNameEn": "Scarlet & Violet",
+  "eraNameFr": "Écarlate et Violet",
+  "sets": [
+    {
+      "id": "scarlet-violet",
+      "code": "SVI",
+      "nameEn": "Scarlet & Violet",
+      "nameFr": "Écarlate et Violet",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2023-03-31",
+      "cardCount": 198,
+      "apiMatch": "Scarlet & Violet Base Set"
+    },
+    {
+      "id": "paldea-evolved",
+      "code": "PAL",
+      "nameEn": "Paldea Evolved",
+      "nameFr": "Évolutions à Paldea",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2023-06-09",
+      "cardCount": 193,
+      "apiMatch": "Paldea Evolved"
+    },
+    {
+      "id": "obsidian-flames",
+      "code": "OBF",
+      "nameEn": "Obsidian Flames",
+      "nameFr": "Flammes Obsidiennes",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2023-08-11",
+      "cardCount": 197,
+      "apiMatch": "Obsidian Flames"
+    },
+    {
+      "id": "151",
+      "code": "MEW",
+      "nameEn": "151",
+      "nameFr": "151",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2023-09-22",
+      "cardCount": 165,
+      "apiMatch": "151"
+    },
+    {
+      "id": "paradox-rift",
+      "code": "PAR",
+      "nameEn": "Paradox Rift",
+      "nameFr": "Faille Paradoxe",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2023-11-03",
+      "cardCount": 182,
+      "apiMatch": "Paradox Rift"
+    },
+    {
+      "id": "paldean-fates",
+      "code": "PAF",
+      "nameEn": "Paldean Fates",
+      "nameFr": "Destinées de Paldea",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2024-01-26",
+      "cardCount": 91,
+      "apiMatch": "Paldean Fates"
+    },
+    {
+      "id": "temporal-forces",
+      "code": "TEF",
+      "nameEn": "Temporal Forces",
+      "nameFr": "Forces Temporelles",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2024-03-22",
+      "cardCount": 162,
+      "apiMatch": "Temporal Forces"
+    },
+    {
+      "id": "twilight-masquerade",
+      "code": "TWM",
+      "nameEn": "Twilight Masquerade",
+      "nameFr": "Mascarade Crépusculaire",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2024-05-24",
+      "cardCount": 167,
+      "apiMatch": "Twilight Masquerade"
+    },
+    {
+      "id": "shrouded-fable",
+      "code": "SFA",
+      "nameEn": "Shrouded Fable",
+      "nameFr": "Fable Nébuleuse",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2024-08-02",
+      "cardCount": 64,
+      "apiMatch": "Shrouded Fable"
+    },
+    {
+      "id": "stellar-crown",
+      "code": "SCR",
+      "nameEn": "Stellar Crown",
+      "nameFr": "Couronne Stellaire",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2024-09-13",
+      "cardCount": 142,
+      "apiMatch": "Stellar Crown"
+    },
+    {
+      "id": "surging-sparks",
+      "code": "SSP",
+      "nameEn": "Surging Sparks",
+      "nameFr": "Étincelles Déferlantes",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2024-11-08",
+      "cardCount": 191,
+      "apiMatch": "Surging Sparks"
+    },
+    {
+      "id": "prismatic-evolutions",
+      "code": "PRE",
+      "nameEn": "Prismatic Evolutions",
+      "nameFr": "Évolutions Prismatiques",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2025-01-17",
+      "cardCount": 131,
+      "apiMatch": "Prismatic Evolutions"
+    },
+    {
+      "id": "journey-together",
+      "code": "JTG",
+      "nameEn": "Journey Together",
+      "nameFr": "Aventures Ensemble",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2025-03-28",
+      "cardCount": 159,
+      "apiMatch": "Journey Together"
+    },
+    {
+      "id": "destined-rivals",
+      "code": "DRI",
+      "nameEn": "Destined Rivals",
+      "nameFr": "Rivalités Destinées",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2025-05-30",
+      "cardCount": 182,
+      "apiMatch": "Destined Rivals"
+    },
+    {
+      "id": "black-bolt",
+      "code": "BLK",
+      "nameEn": "Black Bolt",
+      "nameFr": "Foudre Noire",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2025-07-18",
+      "cardCount": 86,
+      "apiMatch": "Black Bolt"
+    },
+    {
+      "id": "white-flare",
+      "code": "WHT",
+      "nameEn": "White Flare",
+      "nameFr": "Flamme Blanche",
+      "seriesEn": "Scarlet & Violet",
+      "seriesFr": "Écarlate et Violet",
+      "releaseDate": "2025-07-18",
+      "cardCount": 86,
+      "apiMatch": "White Flare"
+    }
+  ]
+}

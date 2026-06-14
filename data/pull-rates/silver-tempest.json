@@ -1,0 +1,40 @@
+{
+  "setId": "silver-tempest",
+  "era": "swsh",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Silver-Tempest-Pull-Rates/6490d591-e582-4930-8446-00e190876d30/",
+    "https://www.digitaltq.com/silver-tempest-pull-rates-pokemon-tcg"
+  ],
+  "notes": "TCGplayer Authentication Center study, 8,000+ packs: normal V 11.55%, VMAX/VSTAR 3.72%, full-art V 2.10%, full-art trainer 1.01%, alt-art V 0.60% (all full/alt arts merged into ultra-rare), radiant 4.55%, Trainer Gallery 12.23% incl. gold-and-black VMAX 0.90% (reverse slot), rainbow 1.26%, gold 0.94% — hit rate just under 31%. Rare-holo share (25.35%) from an independent 718-pack DigitalTQ sample, also used to split VMAX/VSTAR (VSTAR 2.33%, VMAX 1.39%). Residual mass on non-holo rare; reverse filler 50/50 common/uncommon. packSize excludes the basic Energy and code card. SWSH ETB contains 8 packs.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": {
+        "common": 0.4161,
+        "uncommon": 0.4161,
+        "trainer-gallery": 0.1223,
+        "radiant": 0.0455
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.5347,
+        "rare-holo": 0.2535,
+        "rare-holo-v": 0.1155,
+        "ultra-rare": 0.0371,
+        "rare-holo-vstar": 0.0233,
+        "rare-holo-vmax": 0.0139,
+        "rainbow-rare": 0.0126,
+        "gold-rare": 0.0094
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+}

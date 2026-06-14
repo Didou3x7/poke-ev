@@ -1,0 +1,41 @@
+{
+  "setId": "white-flare",
+  "era": "sv",
+  "confidence": "medium",
+  "sources": [
+    "https://gamerant.com/pokemon-tcg-black-bolt-white-flare-pull-rates-odds/",
+    "https://www.dripshop.live/blog/pokemon-trading-cards/black-bolt-and-white-flare-pull-rates-what-you-can-really-expect-based-on-1-800-packs"
+  ],
+  "notes": "TCGplayer study over 700+ packs (relayed by Game Rant), shared across Black Bolt and White Flare: double rare 21.11% and ultra rare 5.83% in the rare slot; illustration rare 16.39% and special illustration rare 1.25% replacing the second reverse-holo slot. Black White Rare rate was undetermined by TCGplayer; 1/496 packs taken from Dripshop's 1,800-pack analysis. Poke Ball (30.56%) and Master Ball (5.14%) foils are foil commons/uncommons, modeled with the plain common/uncommon ids per repo convention. No ACE SPEC cards. No English 36-pack booster box exists for this special set (ETB, booster bundles, mini-tins only).",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.410792,
+        "uncommon": 0.410792,
+        "illustration-rare": 0.1639,
+        "special-illustration-rare": 0.0125,
+        "black-white-rare": 0.002016
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.7306,
+        "double-rare": 0.2111,
+        "ultra-rare": 0.0583
+      }
+    }
+  ],
+  "products": { "display": null, "etb": { "packs": 9 } }
+}

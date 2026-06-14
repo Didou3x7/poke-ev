@@ -1,0 +1,172 @@
+{
+  "era": "wotc",
+  "eraNameEn": "Wizards of the Coast",
+  "eraNameFr": "Wizards of the Coast",
+  "sets": [
+    {
+      "id": "base-set",
+      "code": "BS",
+      "nameEn": "Base Set",
+      "nameFr": "Set de Base",
+      "seriesEn": "Original Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "1999-01-09",
+      "cardCount": 102,
+      "apiMatch": "Base Set"
+    },
+    {
+      "id": "jungle",
+      "code": "JU",
+      "nameEn": "Jungle",
+      "nameFr": "Jungle",
+      "seriesEn": "Original Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "1999-06-16",
+      "cardCount": 64,
+      "apiMatch": "Jungle"
+    },
+    {
+      "id": "fossil",
+      "code": "FO",
+      "nameEn": "Fossil",
+      "nameFr": "Fossile",
+      "seriesEn": "Original Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "1999-10-10",
+      "cardCount": 62,
+      "apiMatch": "Fossil"
+    },
+    {
+      "id": "base-set-2",
+      "code": "B2",
+      "nameEn": "Base Set 2",
+      "nameFr": "Base Set 2",
+      "seriesEn": "Original Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2000-02-24",
+      "cardCount": 130,
+      "apiMatch": "Base Set 2"
+    },
+    {
+      "id": "team-rocket",
+      "code": "TR",
+      "nameEn": "Team Rocket",
+      "nameFr": "Team Rocket",
+      "seriesEn": "Original Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2000-04-24",
+      "cardCount": 82,
+      "apiMatch": "Team Rocket"
+    },
+    {
+      "id": "gym-heroes",
+      "code": "G1",
+      "nameEn": "Gym Heroes",
+      "nameFr": "Gym Heroes",
+      "seriesEn": "Original Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2000-08-14",
+      "cardCount": 132,
+      "apiMatch": "Gym Heroes"
+    },
+    {
+      "id": "gym-challenge",
+      "code": "G2",
+      "nameEn": "Gym Challenge",
+      "nameFr": "Gym Challenge",
+      "seriesEn": "Original Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2000-10-16",
+      "cardCount": 132,
+      "apiMatch": "Gym Challenge"
+    },
+    {
+      "id": "neo-genesis",
+      "code": "N1",
+      "nameEn": "Neo Genesis",
+      "nameFr": "Neo Genesis",
+      "seriesEn": "Neo Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2000-12-16",
+      "cardCount": 111,
+      "apiMatch": "Neo Genesis"
+    },
+    {
+      "id": "neo-discovery",
+      "code": "N2",
+      "nameEn": "Neo Discovery",
+      "nameFr": "Neo Discovery",
+      "seriesEn": "Neo Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2001-06-01",
+      "cardCount": 75,
+      "apiMatch": "Neo Discovery"
+    },
+    {
+      "id": "neo-revelation",
+      "code": "N3",
+      "nameEn": "Neo Revelation",
+      "nameFr": "Neo Revelation",
+      "seriesEn": "Neo Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2001-09-21",
+      "cardCount": 64,
+      "apiMatch": "Neo Revelation"
+    },
+    {
+      "id": "neo-destiny",
+      "code": "N4",
+      "nameEn": "Neo Destiny",
+      "nameFr": "Neo Destiny",
+      "seriesEn": "Neo Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2002-02-28",
+      "cardCount": 105,
+      "apiMatch": "Neo Destiny"
+    },
+    {
+      "id": "legendary-collection",
+      "code": "LC",
+      "nameEn": "Legendary Collection",
+      "nameFr": "Legendary Collection",
+      "seriesEn": "Legendary Collection Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2002-05-24",
+      "cardCount": 110,
+      "apiMatch": "Legendary Collection"
+    },
+    {
+      "id": "expedition-base-set",
+      "code": "EX",
+      "nameEn": "Expedition Base Set",
+      "nameFr": "Expedition",
+      "seriesEn": "e-Card Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2002-09-15",
+      "cardCount": 165,
+      "apiMatch": "Expedition Base Set"
+    },
+    {
+      "id": "aquapolis",
+      "code": "AQ",
+      "nameEn": "Aquapolis",
+      "nameFr": "Aquapolis",
+      "seriesEn": "e-Card Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2003-01-15",
+      "cardCount": 147,
+      "apiMatch": "Aquapolis"
+    },
+    {
+      "id": "skyridge",
+      "code": "SK",
+      "nameEn": "Skyridge",
+      "nameFr": "Skyridge",
+      "seriesEn": "e-Card Series",
+      "seriesFr": "Série Wizards",
+      "releaseDate": "2003-05-12",
+      "cardCount": 144,
+      "apiMatch": "Skyridge"
+    }
+  ]
+}

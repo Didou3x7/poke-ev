@@ -1,0 +1,62 @@
+{
+  "era": "mega",
+  "eraNameEn": "Mega Evolution",
+  "eraNameFr": "Méga-Évolution",
+  "sets": [
+    {
+      "id": "mega-evolution",
+      "code": "MEG",
+      "nameEn": "Mega Evolution",
+      "nameFr": "Méga-Évolution",
+      "seriesEn": "Mega Evolution",
+      "seriesFr": "Méga-Évolution",
+      "releaseDate": "2025-09-26",
+      "cardCount": 132,
+      "apiMatch": "Mega Evolution"
+    },
+    {
+      "id": "phantasmal-flames",
+      "code": "PFL",
+      "nameEn": "Phantasmal Flames",
+      "nameFr": "Flammes Fantasmagoriques",
+      "seriesEn": "Mega Evolution",
+      "seriesFr": "Méga-Évolution",
+      "releaseDate": "2025-11-14",
+      "cardCount": 94,
+      "apiMatch": "Phantasmal Flames"
+    },
+    {
+      "id": "ascended-heroes",
+      "code": "ASC",
+      "nameEn": "Ascended Heroes",
+      "nameFr": "Héros Transcendants",
+      "seriesEn": "Mega Evolution",
+      "seriesFr": "Méga-Évolution",
+      "releaseDate": "2026-01-30",
+      "cardCount": 217,
+      "apiMatch": "Ascended Heroes"
+    },
+    {
+      "id": "perfect-order",
+      "code": "POR",
+      "nameEn": "Perfect Order",
+      "nameFr": "Équilibre Parfait",
+      "seriesEn": "Mega Evolution",
+      "seriesFr": "Méga-Évolution",
+      "releaseDate": "2026-03-27",
+      "cardCount": 88,
+      "apiMatch": "Perfect Order"
+    },
+    {
+      "id": "chaos-rising",
+      "code": "CRI",
+      "nameEn": "Chaos Rising",
+      "nameFr": "Chaos Ascendant",
+      "seriesEn": "Mega Evolution",
+      "seriesFr": "Méga-Évolution",
+      "releaseDate": "2026-05-22",
+      "cardCount": 86,
+      "apiMatch": "Chaos Rising"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "era": "hgss",
+  "eraNameEn": "HeartGold & SoulSilver",
+  "eraNameFr": "HeartGold & SoulSilver",
+  "sets": [
+    {
+      "id": "heartgold-soulsilver",
+      "code": "HS",
+      "nameEn": "HeartGold & SoulSilver",
+      "nameFr": "HeartGold & SoulSilver",
+      "seriesEn": "HeartGold & SoulSilver",
+      "seriesFr": "HeartGold & SoulSilver",
+      "releaseDate": "2010-02-10",
+      "cardCount": 123,
+      "apiMatch": "HeartGold & SoulSilver"
+    },
+    {
+      "id": "hs-unleashed",
+      "code": "UL",
+      "nameEn": "HS—Unleashed",
+      "nameFr": "HS Déchaînement",
+      "seriesEn": "HeartGold & SoulSilver",
+      "seriesFr": "HeartGold & SoulSilver",
+      "releaseDate": "2010-05-12",
+      "cardCount": 95,
+      "apiMatch": "Unleashed"
+    },
+    {
+      "id": "hs-undaunted",
+      "code": "UD",
+      "nameEn": "HS—Undaunted",
+      "nameFr": "HS Indomptable",
+      "seriesEn": "HeartGold & SoulSilver",
+      "seriesFr": "HeartGold & SoulSilver",
+      "releaseDate": "2010-08-18",
+      "cardCount": 90,
+      "apiMatch": "Undaunted"
+    },
+    {
+      "id": "hs-triumphant",
+      "code": "TM",
+      "nameEn": "HS—Triumphant",
+      "nameFr": "HS Triomphe",
+      "seriesEn": "HeartGold & SoulSilver",
+      "seriesFr": "HeartGold & SoulSilver",
+      "releaseDate": "2010-11-03",
+      "cardCount": 102,
+      "apiMatch": "Triumphant"
+    },
+    {
+      "id": "call-of-legends",
+      "code": "CL",
+      "nameEn": "Call of Legends",
+      "nameFr": "L'Appel des Légendes",
+      "seriesEn": "HeartGold & SoulSilver",
+      "seriesFr": "HeartGold & SoulSilver",
+      "releaseDate": "2011-02-09",
+      "cardCount": 95,
+      "apiMatch": "Call of Legends"
+    }
+  ]
+}

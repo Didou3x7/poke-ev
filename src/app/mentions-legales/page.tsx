@@ -1,0 +1,8 @@
+import { LegalPage } from "@/components/pages/LegalPage";
+import { pageMetadata } from "@/lib/view/seo";
+
+export const metadata = pageMetadata("fr", "legal");
+
+export default function Page() {
+  return <LegalPage locale="fr" page="legal" />;
+}

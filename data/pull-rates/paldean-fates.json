@@ -1,0 +1,43 @@
+{
+  "setId": "paldean-fates",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Paldean-Fates-Pull-Rates/23de3e93-0d0f-4ae0-abc4-13664f3001a3/",
+    "https://www.pokebeach.com/2024/01/paldean-fates-pull-rates-revealed",
+    "https://www.digitaltq.com/paldean-fates-pull-rates-pokemon-tcg"
+  ],
+  "notes": "TCGplayer Authentication Center study (1,500 packs opened), relayed by PokeBeach. Per-pack odds: shiny rare (baby shiny) 1/4 replacing the first reverse-holo slot; illustration rare 1/14, special illustration rare 1/58 and hyper rare 1/62 replacing the second reverse-holo slot; ultra rare 1/15 and shiny ultra rare 1/13 modeled in the rare slot. Double rare 1/8 taken from the independent 536-pack DigitalTQ sample (13.25%), consistent with other SV sets. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card. Special set: no booster box display (ETB, booster bundles and collection products only).",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1-shiny",
+      "count": 1,
+      "distribution": { "common": 0.375, "uncommon": 0.375, "shiny-rare": 0.25 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.4476,
+        "uncommon": 0.447601,
+        "illustration-rare": 0.071429,
+        "special-illustration-rare": 0.017241,
+        "hyper-rare": 0.016129
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.73141,
+        "double-rare": 0.125,
+        "ultra-rare": 0.066667,
+        "shiny-ultra-rare": 0.076923
+      }
+    }
+  ],
+  "products": { "display": null, "etb": { "packs": 9 } }
+}

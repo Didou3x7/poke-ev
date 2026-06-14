@@ -1,0 +1,54 @@
+{
+  "setId": "pokemon-go",
+  "era": "swsh",
+  "confidence": "medium",
+  "sources": [
+    "https://www.digitaltq.com/pokemon-go-pull-rates-pokemon-tcg"
+  ],
+  "notes": "DigitalTQ community sample: 371 packs. Measured per-pack rates: V 15.9%, VSTAR 3.77%, VMAX 2.16%, ultra rare 5.39%, rainbow 3.23%, secret gold 0.54%, radiant 5.39%, rare holo 70.35% (sum with hits ~101%, consistent with a guaranteed holo-or-better rare slot). Rare slot residual on rare-holo (set has no plain non-holo rares per pokemontcg.io). Radiant placed in the reverse slot, residual filler 50/50 common/uncommon. packSize excludes energy/VSTAR marker and code card. No booster display ever existed (special set); ETB holds 10 packs.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": {
+        "radiant": 0.0539,
+        "common": 0.47305,
+        "uncommon": 0.47305
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare-holo-v": 0.159,
+        "rare-holo-vstar": 0.0377,
+        "rare-holo-vmax": 0.0216,
+        "ultra-rare": 0.0539,
+        "rainbow-rare": 0.0323,
+        "secret-rare": 0.0054,
+        "rare-holo": 0.6901
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

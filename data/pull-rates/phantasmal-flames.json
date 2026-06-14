@@ -1,0 +1,42 @@
+{
+  "setId": "phantasmal-flames",
+  "era": "mega",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Phantasmal-Flames-Pull-Rates/9abae60d-b7fb-448f-874e-176f78d6a6ca/",
+    "https://www.pokebeach.com/2025/11/phantasmal-flames-pull-rates-revealed-chances-of-pulling-mega-charizard-ex",
+    "https://screenrant.com/pokemon-tcg-phantasmal-flames-mega-charizard-ex-sir-pull-rate/"
+  ],
+  "notes": "TCGplayer Authentication Center study, 5,000+ packs opened, relayed by PokeBeach/ScreenRant. Per-pack odds: double rare 1/5 and ultra rare 1/12 in the rare slot; illustration rare 1/9, special illustration rare 1/80 and Mega Hyper Rare (gold, modeled as hyper-rare, single card: Mega Charizard X ex) 1/1260 replacing the second reverse-holo slot. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.437798,
+        "uncommon": 0.437797,
+        "illustration-rare": 0.111111,
+        "special-illustration-rare": 0.0125,
+        "hyper-rare": 0.000794
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.716667,
+        "double-rare": 0.2,
+        "ultra-rare": 0.083333
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

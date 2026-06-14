@@ -1,0 +1,40 @@
+{
+  "setId": "brilliant-stars",
+  "era": "swsh",
+  "confidence": "medium",
+  "sources": [
+    "https://www.digitaltq.com/brilliant-stars-pull-rates-pokemon-tcg",
+    "https://pokepatch.com/2022/02/16/brilliant-stars-pull-rates-for-new-pokemon-tcg-set/",
+    "https://x.com/PokemonTCGDrops/status/1497328883695185921"
+  ],
+  "notes": "DigitalTQ 1,004-pack sample: rare holo 26.39%, V 14.94%, ultra rare (full/alt arts) 4.98%, VSTAR 1.89%, VMAX 1.89%, gold 1.49%, rainbow 1.29%. Trainer Gallery rate (12%/pack, reverse slot) from an independent 720-pack Reddit sample (u/ABkCkay via PokePatch), consistent with TCGplayer TG rates for the sibling SWSH9-12 sets (~12.3-12.6%). TCGplayer opened 10,000+ packs (table published only as an image, cited as corroboration; their hit rate for this set was 44%). No radiant in this set. Residual mass on non-holo rare; reverse filler 50/50 common/uncommon. packSize excludes the basic Energy and code card. SWSH ETB contains 8 packs.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": {
+        "common": 0.44,
+        "uncommon": 0.44,
+        "trainer-gallery": 0.12
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.4713,
+        "rare-holo": 0.2639,
+        "rare-holo-v": 0.1494,
+        "ultra-rare": 0.0498,
+        "rare-holo-vstar": 0.0189,
+        "rare-holo-vmax": 0.0189,
+        "gold-rare": 0.0149,
+        "rainbow-rare": 0.0129
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+}

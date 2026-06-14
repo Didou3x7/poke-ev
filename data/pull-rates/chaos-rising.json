@@ -1,0 +1,42 @@
+{
+  "setId": "chaos-rising",
+  "era": "mega",
+  "confidence": "medium",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Chaos-Rising-Pull-Rates/304e8bfc-175a-4d31-93fe-5bb1be11e5d2/",
+    "https://www.josephwriteranderson.com/blog/chaos-rising-set-guide-full-card-list-pull-rates-secret-rares",
+    "https://pokecottage.com/campfire/most-expensive-chaos-rising-cards"
+  ],
+  "notes": "Early data ~3 weeks after the 2026-05-22 release: community compilation of 5,000+ packs (@switchstock relayed by PokeCottage / Joseph Writer Anderson) plus the TCGplayer pull-rates article. Per-pack odds: double rare 1/5 and ultra rare 1/12 in the rare slot; illustration rare 1/9 (11 cards), special illustration rare 1/90 (6 cards) and Mega Hyper Rare 1/1100 (modeled as hyper-rare, single card: Mega Greninja ex; reported estimates range 1/1000-1/1786) replacing the second reverse-holo slot. Confidence medium because top-end rates are still preliminary. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.438435,
+        "uncommon": 0.438434,
+        "illustration-rare": 0.111111,
+        "special-illustration-rare": 0.011111,
+        "hyper-rare": 0.000909
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.716667,
+        "double-rare": 0.2,
+        "ultra-rare": 0.083333
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

@@ -1,0 +1,53 @@
+{
+  "setId": "champions-path",
+  "era": "swsh",
+  "confidence": "low",
+  "sources": [
+    "https://www.thepricedex.com/set/swsh35/champions-path/pull-rates",
+    "https://www.dripshop.live/blog/pokemon-trading-cards/champions-path-pull-rates---full-breakdown--rarest-cards"
+  ],
+  "notes": "Community-aggregated estimates (ThePriceDex, no published sample size; DripShop community analysis broadly concordant: VMAX ~1/25, top secrets <0.5%/pack). Rare slot: V 1/6.4, VMAX 1/28.2, ultra rare 1/18.6, rainbow 1/63.7, secret 1/75.8, residual on rare-holo (the set has no plain non-holo rares; every pack yields a holo or better). Reverse filler approximated 50/50 common/uncommon — no hit replacement in this set. packSize excludes energy and code card. No booster display ever existed (special set); ETB holds 10 packs.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare-holo-v": 0.15625,
+        "rare-holo-vmax": 0.035461,
+        "ultra-rare": 0.053763,
+        "rainbow-rare": 0.015699,
+        "secret-rare": 0.013193,
+        "rare-holo": 0.725634
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

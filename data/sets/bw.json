@@ -1,0 +1,139 @@
+{
+  "era": "bw",
+  "eraNameEn": "Black & White",
+  "eraNameFr": "Noir & Blanc",
+  "sets": [
+    {
+      "id": "black-white",
+      "code": "BLW",
+      "nameEn": "Black & White",
+      "nameFr": "Noir & Blanc",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2011-04-25",
+      "cardCount": 114,
+      "apiMatch": "Black & White"
+    },
+    {
+      "id": "emerging-powers",
+      "code": "EPO",
+      "nameEn": "Emerging Powers",
+      "nameFr": "Pouvoirs Émergents",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2011-08-31",
+      "cardCount": 98,
+      "apiMatch": "Emerging Powers"
+    },
+    {
+      "id": "noble-victories",
+      "code": "NVI",
+      "nameEn": "Noble Victories",
+      "nameFr": "Nobles Victoires",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2011-11-16",
+      "cardCount": 101,
+      "apiMatch": "Noble Victories"
+    },
+    {
+      "id": "next-destinies",
+      "code": "NXD",
+      "nameEn": "Next Destinies",
+      "nameFr": "Destinées Futures",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2012-02-08",
+      "cardCount": 99,
+      "apiMatch": "Next Destinies"
+    },
+    {
+      "id": "dark-explorers",
+      "code": "DEX",
+      "nameEn": "Dark Explorers",
+      "nameFr": "Explorateurs Obscurs",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2012-05-09",
+      "cardCount": 108,
+      "apiMatch": "Dark Explorers"
+    },
+    {
+      "id": "dragons-exalted",
+      "code": "DRX",
+      "nameEn": "Dragons Exalted",
+      "nameFr": "Dragons Exaltés",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2012-08-15",
+      "cardCount": 124,
+      "apiMatch": "Dragons Exalted"
+    },
+    {
+      "id": "dragon-vault",
+      "code": "DRV",
+      "nameEn": "Dragon Vault",
+      "nameFr": "Coffre des Dragons",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2012-10-05",
+      "cardCount": 20,
+      "apiMatch": "Dragon Vault"
+    },
+    {
+      "id": "boundaries-crossed",
+      "code": "BCR",
+      "nameEn": "Boundaries Crossed",
+      "nameFr": "Frontières Franchies",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2012-11-07",
+      "cardCount": 149,
+      "apiMatch": "Boundaries Crossed"
+    },
+    {
+      "id": "plasma-storm",
+      "code": "PLS",
+      "nameEn": "Plasma Storm",
+      "nameFr": "Tempête Plasma",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2013-02-06",
+      "cardCount": 135,
+      "apiMatch": "Plasma Storm"
+    },
+    {
+      "id": "plasma-freeze",
+      "code": "PLF",
+      "nameEn": "Plasma Freeze",
+      "nameFr": "Glaciation Plasma",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2013-05-08",
+      "cardCount": 116,
+      "apiMatch": "Plasma Freeze"
+    },
+    {
+      "id": "plasma-blast",
+      "code": "PLB",
+      "nameEn": "Plasma Blast",
+      "nameFr": "Explosion Plasma",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2013-08-14",
+      "cardCount": 101,
+      "apiMatch": "Plasma Blast"
+    },
+    {
+      "id": "legendary-treasures",
+      "code": "LTR",
+      "nameEn": "Legendary Treasures",
+      "nameFr": "Trésors Légendaires",
+      "seriesEn": "Black & White",
+      "seriesFr": "Noir & Blanc",
+      "releaseDate": "2013-11-06",
+      "cardCount": 113,
+      "apiMatch": "Legendary Treasures"
+    }
+  ]
+}

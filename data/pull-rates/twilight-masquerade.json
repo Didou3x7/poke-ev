@@ -1,0 +1,42 @@
+{
+  "setId": "twilight-masquerade",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Twilight-Masquerade-Pull-Rates/f3eea967-e5fb-4108-8655-bb1c89587628/",
+    "https://www.pokebeach.com/2024/05/twilight-masquerade-pull-rates-revealed-gold-cards-just-slightly-rarer",
+    "https://pokepatch.com/2025/05/18/twilight-masquerade-pull-rates-in-pokemon-tcg-set/"
+  ],
+  "notes": "TCGplayer Infinite large-sample study, relayed by PokeBeach. Per-pack odds: double rare 1/6 and ultra rare 1/15 in the rare slot; ACE SPEC 1/20 (~5%) replacing the first reverse-holo slot; illustration rare 1/13 (~7-8%), special illustration rare 1/86 (~1%) and hyper rare 1/146 replacing the second reverse-holo slot. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1-ace-spec",
+      "count": 1,
+      "distribution": { "common": 0.475, "uncommon": 0.475, "ace-spec": 0.05 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.4523,
+        "uncommon": 0.4523,
+        "illustration-rare": 0.076923,
+        "special-illustration-rare": 0.011628,
+        "hyper-rare": 0.006849
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.766666,
+        "double-rare": 0.166667,
+        "ultra-rare": 0.066667
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

@@ -1,0 +1,43 @@
+{
+  "setId": "ascended-heroes",
+  "era": "mega",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Ascended-Heroes-Pull-Rates/60143d94-88a7-42ce-8e73-babd7b3fabd6/",
+    "https://www.pokebeach.com/2026/02/ascended-heroes-pull-rates-finally-determined-better-than-usual",
+    "https://riporfliptcg.com/pokemon/ascended-heroes/pull-rates"
+  ],
+  "notes": "TCGplayer Authentication Center study, 2,000+ packs opened (god packs excluded from the data), relayed by PokeBeach. Per-pack odds: double rare 1/5, ultra rare 1/21 and Mega Attack Rare 1/29 (modeled as mega-ex — 7 secret full-art Mega ex cards) in the rare slot; illustration rare 1/9, special illustration rare 1/70 (1.44%) and Mega Hyper Rare 1/540 (0.19%, modeled as hyper-rare) replacing the second reverse-holo slot. Special expansion: no 36-pack booster display, sold via ETB (9 packs), booster bundles (6 packs) and collections. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.436376,
+        "uncommon": 0.436375,
+        "illustration-rare": 0.111111,
+        "special-illustration-rare": 0.014286,
+        "hyper-rare": 0.001852
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.717898,
+        "double-rare": 0.2,
+        "ultra-rare": 0.047619,
+        "mega-ex": 0.034483
+      }
+    }
+  ],
+  "products": { "display": null, "etb": { "packs": 9 } }
+}

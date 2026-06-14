@@ -1,0 +1,42 @@
+{
+  "setId": "151",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Scarlet-Violet%E2%80%94151-Pull-Rates/b237df74-fbb0-40d0-9e13-d69ee6e804d9/",
+    "https://pokepatch.com/2025/05/15/scarlet-violet-151-pull-rates-in-pokemon-tcg-set/",
+    "https://www.digitaltq.com/pokemon-151-pull-rates-pokemon-tcg"
+  ],
+  "notes": "TCGplayer Authentication Center study (1,500+ packs opened). Per-pack odds: double rare 1/8 and ultra rare 1/16 in the rare slot; illustration rare 1/12, special illustration rare 1/32 and hyper rare 1/51 replacing the second reverse-holo slot. Corroborated by an independent 700-pack DigitalTQ sample (DR 13.3%, IR 7.7%, UR 6.0%, SIR 3.6%). Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card. Special set: no booster box display in the West (booster bundles, ETB and collection boxes only).",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.432904,
+        "uncommon": 0.432905,
+        "illustration-rare": 0.083333,
+        "special-illustration-rare": 0.03125,
+        "hyper-rare": 0.019608
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.8125,
+        "double-rare": 0.125,
+        "ultra-rare": 0.0625
+      }
+    }
+  ],
+  "products": { "display": null, "etb": { "packs": 9 } }
+}

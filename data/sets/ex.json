@@ -1,0 +1,183 @@
+{
+  "era": "ex",
+  "eraNameEn": "EX series",
+  "eraNameFr": "Série EX",
+  "sets": [
+    {
+      "id": "ex-ruby-sapphire",
+      "code": "RS",
+      "nameEn": "EX Ruby & Sapphire",
+      "nameFr": "EX Rubis & Saphir",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2003-07-18",
+      "cardCount": 109,
+      "apiMatch": "EX Ruby & Sapphire"
+    },
+    {
+      "id": "ex-sandstorm",
+      "code": "SS",
+      "nameEn": "EX Sandstorm",
+      "nameFr": "EX Tempête de sable",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2003-09-18",
+      "cardCount": 100,
+      "apiMatch": "EX Sandstorm"
+    },
+    {
+      "id": "ex-dragon",
+      "code": "DR",
+      "nameEn": "EX Dragon",
+      "nameFr": "EX Dragon",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2003-11-24",
+      "cardCount": 97,
+      "apiMatch": "EX Dragon"
+    },
+    {
+      "id": "ex-team-magma-vs-team-aqua",
+      "code": "MA",
+      "nameEn": "EX Team Magma vs Team Aqua",
+      "nameFr": "EX Team Magma VS Team Aqua",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2004-03-15",
+      "cardCount": 95,
+      "apiMatch": "EX Team Magma vs Team Aqua"
+    },
+    {
+      "id": "ex-hidden-legends",
+      "code": "HL",
+      "nameEn": "EX Hidden Legends",
+      "nameFr": "EX Légendes Oubliées",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2004-06-14",
+      "cardCount": 101,
+      "apiMatch": "EX Hidden Legends"
+    },
+    {
+      "id": "ex-firered-leafgreen",
+      "code": "RG",
+      "nameEn": "EX FireRed & LeafGreen",
+      "nameFr": "EX Rouge Feu & Vert Feuille",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2004-08-30",
+      "cardCount": 112,
+      "apiMatch": "EX FireRed & LeafGreen"
+    },
+    {
+      "id": "ex-team-rocket-returns",
+      "code": "TRR",
+      "nameEn": "EX Team Rocket Returns",
+      "nameFr": "EX Team Rocket Returns",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2004-11-08",
+      "cardCount": 109,
+      "apiMatch": "EX Team Rocket Returns"
+    },
+    {
+      "id": "ex-deoxys",
+      "code": "DX",
+      "nameEn": "EX Deoxys",
+      "nameFr": "EX Deoxys",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2005-02-14",
+      "cardCount": 107,
+      "apiMatch": "EX Deoxys"
+    },
+    {
+      "id": "ex-emerald",
+      "code": "EM",
+      "nameEn": "EX Emerald",
+      "nameFr": "EX Émeraude",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2005-05-09",
+      "cardCount": 106,
+      "apiMatch": "EX Emerald"
+    },
+    {
+      "id": "ex-unseen-forces",
+      "code": "UF",
+      "nameEn": "EX Unseen Forces",
+      "nameFr": "EX Forces Cachées",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2005-08-22",
+      "cardCount": 115,
+      "apiMatch": "EX Unseen Forces"
+    },
+    {
+      "id": "ex-delta-species",
+      "code": "DS",
+      "nameEn": "EX Delta Species",
+      "nameFr": "EX Espèces Delta",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2005-10-31",
+      "cardCount": 113,
+      "apiMatch": "EX Delta Species"
+    },
+    {
+      "id": "ex-legend-maker",
+      "code": "LM",
+      "nameEn": "EX Legend Maker",
+      "nameFr": "EX Créateurs de légendes",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2006-02-13",
+      "cardCount": 92,
+      "apiMatch": "EX Legend Maker"
+    },
+    {
+      "id": "ex-holon-phantoms",
+      "code": "HP",
+      "nameEn": "EX Holon Phantoms",
+      "nameFr": "EX Fantômes Holon",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2006-05-03",
+      "cardCount": 110,
+      "apiMatch": "EX Holon Phantoms"
+    },
+    {
+      "id": "ex-crystal-guardians",
+      "code": "CG",
+      "nameEn": "EX Crystal Guardians",
+      "nameFr": "EX Gardiens de Cristal",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2006-08-30",
+      "cardCount": 100,
+      "apiMatch": "EX Crystal Guardians"
+    },
+    {
+      "id": "ex-dragon-frontiers",
+      "code": "DF",
+      "nameEn": "EX Dragon Frontiers",
+      "nameFr": "EX Île des Dragons",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2006-11-08",
+      "cardCount": 101,
+      "apiMatch": "EX Dragon Frontiers"
+    },
+    {
+      "id": "ex-power-keepers",
+      "code": "PK",
+      "nameEn": "EX Power Keepers",
+      "nameFr": "EX Gardiens du Pouvoir",
+      "seriesEn": "EX",
+      "seriesFr": "EX",
+      "releaseDate": "2007-02-14",
+      "cardCount": 108,
+      "apiMatch": "EX Power Keepers"
+    }
+  ]
+}

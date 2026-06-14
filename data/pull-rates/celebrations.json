@@ -1,0 +1,30 @@
+{
+  "setId": "celebrations",
+  "era": "swsh",
+  "confidence": "medium",
+  "sources": [
+    "https://www.digitaltq.com/celebrations-booster-pull-rates-pokemon-tcg",
+    "https://www.dexerto.com/pokemon/pokemon-celebrations-card-pull-rates-exposed-shiny-mew-charizard-odds-1671965/"
+  ],
+  "notes": "DigitalTQ community sample: 541 packs (2164 cards, table internally exact), corroborated by the CardSupply 778-pack opening reported by Dexerto (CC Charizard 1/97 vs 1/77 here). 4-card packs, no commons/uncommons: modeled as one 4-card slot aggregated from per-card counts. Rare vs rare-holo split follows pokemontcg.io cel25 and matches the empirical per-card rates. Classic Collection subset (40.1% of packs, 217/2164 of cards) has no rarity id in this engine, so its mass sits on the base 'rare' bucket — pack EV therefore EXCLUDES Classic Collection value. Gold Mew (2 pulls) folded into rare-holo per pokemontcg.io. No booster display (packs only sold in bundles/collections); ETB holds 10 Celebrations packs (the 5 extra non-Celebrations packs it also contains are not modeled).",
+  "packSize": 4,
+  "slots": [
+    {
+      "name": "celebrations-card",
+      "count": 4,
+      "distribution": {
+        "rare": 0.750463,
+        "rare-holo": 0.15573,
+        "rare-holo-v": 0.060998,
+        "rare-holo-vmax": 0.023105,
+        "ultra-rare": 0.009704
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

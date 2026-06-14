@@ -1,0 +1,34 @@
+{
+  "setId": "battle-styles",
+  "era": "swsh",
+  "confidence": "medium",
+  "sources": [
+    "https://www.reddit.com/r/PokemonTCG/comments/m6zx5c/battle_styles_pull_rate_data_from_1405_packs/",
+    "https://www.thepricedex.com/set/swsh5/battle-styles/pull-rates"
+  ],
+  "notes": "Reddit r/PokemonTCG community study, n=1405 packs, rates as relayed by ThePriceDex: holo rare 1/5.6 (17.86%), V 1/12.4 (8.06%), VMAX 1/24.8 (4.03%), ultra rare 1/27.4 (3.65%), rainbow rare 1/93.6 (1.07%), secret rare 1/117 (0.85%). All hits modeled in the rare slot with residual mass on non-holo rare; reverse filler approximated as a 50/50 common/uncommon split. Confidence medium: sample >1000 packs but figures read via a secondary aggregator. packSize excludes the basic Energy and code card. ETB SWSH era = 8 packs.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6448,
+        "rare-holo": 0.1786,
+        "rare-holo-v": 0.0806,
+        "rare-holo-vmax": 0.0403,
+        "ultra-rare": 0.0365,
+        "rainbow-rare": 0.0107,
+        "secret-rare": 0.0085
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+}

@@ -1,0 +1,56 @@
+{
+  "setId": "shining-fates",
+  "era": "swsh",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/swsh45/shining-fates/pull-rates",
+    "https://www.dripshop.live/blog/pokemon-trading-cards/shining-fates-pull-rates---full-breakdown--rarest-cards"
+  ],
+  "notes": "Two independent community aggregations that concord (baby shiny ~1/4.4 vs ~1/3; shiny V+VMAX combined 1/11.1 vs 1/12; amazing 1/17.4 vs 1/16). Shiny Vault slot replaces the reverse: baby shiny 1/4.4 + shiny V 1/19.8 + shiny VMAX 1/25.5 merged into the single shiny-vault id (engine spreads uniformly over the 122 SV cards — understates shiny VMAX scarcity slightly), residual filler 50/50 common/uncommon. Rare slot: holo 1/5.6, amazing 1/17.4, V 1/9.2, VMAX 1/18.4, ultra 1/30.8, rainbow 1/84, secret 1/109.9, residual on plain rare (the main set has 8 non-holo rares). No booster display (special set); ETB holds 10 packs.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "shiny-vault-slot",
+      "count": 1,
+      "distribution": {
+        "shiny-vault": 0.316993,
+        "common": 0.341504,
+        "uncommon": 0.341503
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.178571,
+        "amazing": 0.057471,
+        "rare-holo-v": 0.108696,
+        "rare-holo-vmax": 0.054348,
+        "ultra-rare": 0.032468,
+        "rainbow-rare": 0.011905,
+        "secret-rare": 0.009099,
+        "rare": 0.547442
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "era": "xy",
+  "eraNameEn": "XY",
+  "eraNameFr": "XY",
+  "sets": [
+    {
+      "id": "kalos-starter-set",
+      "code": "KSS",
+      "nameEn": "Kalos Starter Set",
+      "nameFr": "Bienvenue à Kalos",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2013-11-08",
+      "cardCount": 39,
+      "apiMatch": "Kalos Starter Set"
+    },
+    {
+      "id": "xy",
+      "code": "XY",
+      "nameEn": "XY",
+      "nameFr": "XY",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2014-02-05",
+      "cardCount": 146,
+      "apiMatch": "XY"
+    },
+    {
+      "id": "flashfire",
+      "code": "FLF",
+      "nameEn": "Flashfire",
+      "nameFr": "Étincelles",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2014-05-07",
+      "cardCount": 106,
+      "apiMatch": "Flashfire"
+    },
+    {
+      "id": "furious-fists",
+      "code": "FFI",
+      "nameEn": "Furious Fists",
+      "nameFr": "Poings Furieux",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2014-08-13",
+      "cardCount": 111,
+      "apiMatch": "Furious Fists"
+    },
+    {
+      "id": "phantom-forces",
+      "code": "PHF",
+      "nameEn": "Phantom Forces",
+      "nameFr": "Vigueur Spectrale",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2014-11-05",
+      "cardCount": 119,
+      "apiMatch": "Phantom Forces"
+    },
+    {
+      "id": "primal-clash",
+      "code": "PRC",
+      "nameEn": "Primal Clash",
+      "nameFr": "Primo-Choc",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2015-02-04",
+      "cardCount": 160,
+      "apiMatch": "Primal Clash"
+    },
+    {
+      "id": "double-crisis",
+      "code": "DCR",
+      "nameEn": "Double Crisis",
+      "nameFr": "Double Danger",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2015-03-25",
+      "cardCount": 34,
+      "apiMatch": "Double Crisis"
+    },
+    {
+      "id": "roaring-skies",
+      "code": "ROS",
+      "nameEn": "Roaring Skies",
+      "nameFr": "Ciel Rugissant",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2015-05-06",
+      "cardCount": 108,
+      "apiMatch": "Roaring Skies"
+    },
+    {
+      "id": "ancient-origins",
+      "code": "AOR",
+      "nameEn": "Ancient Origins",
+      "nameFr": "Origines Antiques",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2015-08-12",
+      "cardCount": 98,
+      "apiMatch": "Ancient Origins"
+    },
+    {
+      "id": "breakthrough",
+      "code": "BKT",
+      "nameEn": "BREAKthrough",
+      "nameFr": "Impulsion TURBO",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2015-11-04",
+      "cardCount": 162,
+      "apiMatch": "BREAKthrough"
+    },
+    {
+      "id": "breakpoint",
+      "code": "BKP",
+      "nameEn": "BREAKpoint",
+      "nameFr": "Rupture TURBO",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2016-02-03",
+      "cardCount": 122,
+      "apiMatch": "BREAKpoint"
+    },
+    {
+      "id": "generations",
+      "code": "GEN",
+      "nameEn": "Generations",
+      "nameFr": "Générations",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2016-02-22",
+      "cardCount": 83,
+      "apiMatch": "Generations"
+    },
+    {
+      "id": "fates-collide",
+      "code": "FCO",
+      "nameEn": "Fates Collide",
+      "nameFr": "Impact des Destins",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2016-05-02",
+      "cardCount": 124,
+      "apiMatch": "Fates Collide"
+    },
+    {
+      "id": "steam-siege",
+      "code": "STS",
+      "nameEn": "Steam Siege",
+      "nameFr": "Offensive Vapeur",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2016-08-03",
+      "cardCount": 114,
+      "apiMatch": "Steam Siege"
+    },
+    {
+      "id": "evolutions",
+      "code": "EVO",
+      "nameEn": "Evolutions",
+      "nameFr": "Évolutions",
+      "seriesEn": "XY",
+      "seriesFr": "XY",
+      "releaseDate": "2016-11-02",
+      "cardCount": 108,
+      "apiMatch": "Evolutions"
+    }
+  ]
+}

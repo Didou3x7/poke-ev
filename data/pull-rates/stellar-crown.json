@@ -1,0 +1,42 @@
+{
+  "setId": "stellar-crown",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Stellar-Crown-Pull-Rates/2c0743dd-dbd0-4504-9ff8-be5a72dd04d1/",
+    "https://pokepatch.com/2025/05/24/stellar-crown-pull-rates-in-pokemon-tcg-set/",
+    "https://www.josephwriteranderson.com/blog/pokemon-tcg-stellar-crown-pull-rates-are-they-good"
+  ],
+  "notes": "TCGplayer Authentication Center study (8,000 packs opened). Per-pack odds: double rare 1/6 and ultra rare 1/15 in the rare slot; ACE SPEC 1/20 replacing the first reverse-holo slot; illustration rare 1/13, special illustration rare 1/90 (~1%) and hyper rare 1/137 replacing the second reverse-holo slot. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1-ace-spec",
+      "count": 1,
+      "distribution": { "common": 0.475, "uncommon": 0.475, "ace-spec": 0.05 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.452333,
+        "uncommon": 0.452334,
+        "illustration-rare": 0.076923,
+        "special-illustration-rare": 0.011111,
+        "hyper-rare": 0.007299
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.766666,
+        "double-rare": 0.166667,
+        "ultra-rare": 0.066667
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

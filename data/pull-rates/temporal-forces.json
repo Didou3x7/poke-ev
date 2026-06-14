@@ -1,0 +1,41 @@
+{
+  "setId": "temporal-forces",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Temporal-Forces-Pull-Rates/28c0ad22-00a4-428f-b22d-e7fee9ec50bc/",
+    "https://www.pokebeach.com/2024/03/temporal-forces-has-hardest-pull-rates-of-scarlet-violet-sets-for-highest-rarities"
+  ],
+  "notes": "TCGplayer Infinite large-sample study, relayed by PokeBeach. Per-pack odds: double rare 1/6 and ultra rare 1/15 in the rare slot; ACE SPEC 1/20 (~5%) replacing the first reverse-holo slot; illustration rare 1/13, special illustration rare 1/86 and hyper rare 1/139 replacing the second reverse-holo slot. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1-ace-spec",
+      "count": 1,
+      "distribution": { "common": 0.475, "uncommon": 0.475, "ace-spec": 0.05 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.452128,
+        "uncommon": 0.452127,
+        "illustration-rare": 0.076923,
+        "special-illustration-rare": 0.011628,
+        "hyper-rare": 0.007194
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.766666,
+        "double-rare": 0.166667,
+        "ultra-rare": 0.066667
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

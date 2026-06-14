@@ -1,0 +1,397 @@
+@import "tailwindcss";
+
+/* ————— Poké EV · direction "Holo terminal" —————
+   Anthracite profond strié d'une grille de terminal, halos froids,
+   dégradé holo (cyan→violet→magenta) réservé aux moments forts. */
+
+@theme {
+  --color-ink-950: #07090e;
+  --color-ink-900: #0b0e14;
+  --color-ink-850: #0f131c;
+  --color-ink-800: #131a26;
+  --color-surface: #11151e;
+  --color-surface-2: #161b27;
+  --color-line: rgba(140, 160, 200, 0.13);
+  --color-line-strong: rgba(140, 160, 200, 0.26);
+  --color-fg: #e8ecf4;
+  --color-fg-muted: #8a93a6;
+  --color-fg-faint: #5c6477;
+  --color-holo-cyan: #22d3ee;
+  --color-holo-violet: #8b5cf6;
+  --color-holo-magenta: #e94bd0;
+  --color-open: #34d399;
+  --color-open-deep: #0e2b1f;
+  --color-keep: #f5b547;
+  --color-keep-deep: #2b210e;
+  --color-danger: #f47171;
+
+  --font-display: var(--font-clash), "Avenir Next", sans-serif;
+  --font-sans: var(--font-satoshi), "Avenir Next", sans-serif;
+  --font-mono: var(--font-jbmono), ui-monospace, "SF Mono", monospace;
+
+  --radius-card: 14px;
+
+  --animate-rise: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-shimmer: shimmer 2.6s linear infinite;
+
+  --breakpoint-xs: 420px;
+}
+
+:root {
+  --holo-gradient: linear-gradient(108deg, #22d3ee 0%, #8b5cf6 48%, #e94bd0 100%);
+  --holo-gradient-soft: linear-gradient(108deg, rgba(34, 211, 238, 0.16), rgba(139, 92, 246, 0.16), rgba(233, 75, 208, 0.16));
+  --grid-line: rgba(140, 160, 200, 0.05);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* High-contrast keyboard focus ring on the dark theme (WCAG 2.4.7).
+   Mouse clicks don't trigger :focus-visible, so this stays out of the way. */
+:focus-visible {
+  outline: 2px solid var(--color-holo-cyan);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+body {
+  background-color: var(--color-ink-900);
+  background-image:
+    radial-gradient(90rem 50rem at 85% -20%, rgba(139, 92, 246, 0.09), transparent 60%),
+    radial-gradient(70rem 40rem at -10% 10%, rgba(34, 211, 238, 0.07), transparent 55%),
+    linear-gradient(180deg, var(--color-ink-900) 0%, var(--color-ink-800) 100%);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Terminal grid backdrop. The grid + its fade mask live on a ::before layer
+   BEHIND the content (z-index:-1), so the mask only fades the decorative grid —
+   never the page content. (Putting mask-image on the element itself would fade
+   out everything in the lower part of the section, hiding CTAs/stats.) */
+.bg-grid {
+  position: relative;
+  isolation: isolate;
+}
+.bg-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, var(--grid-line) 0 1px, transparent 1px 64px);
+  -webkit-mask-image: radial-gradient(130% 100% at 50% 0%, black 40%, transparent 85%);
+  mask-image: radial-gradient(130% 100% at 50% 0%, black 40%, transparent 85%);
+}
+
+/* Signature holo text — reserved for key numbers and brand moments */
+.holo-text {
+  background: var(--holo-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Animated shimmering variant — a slow iridescent sweep across the letters */
+.holo-text-animated {
+  background: linear-gradient(
+    100deg,
+    #22d3ee 0%,
+    #8b5cf6 25%,
+    #e94bd0 50%,
+    #8b5cf6 75%,
+    #22d3ee 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: holo-text-shimmer 6s linear infinite;
+}
+
+@keyframes holo-text-shimmer {
+  from { background-position: 0% 50%; }
+  to { background-position: 220% 50%; }
+}
+
+/* Iridescent foil for the hero cards. A single slow sheen (cheap `screen`
+   blend, not color-dodge); JS shifts background-position with tilt. */
+.holo-foil {
+  background-image: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(34, 211, 238, 0.4) 36%,
+    rgba(139, 92, 246, 0.36) 45%,
+    rgba(233, 75, 208, 0.4) 54%,
+    transparent 70%
+  );
+  background-size: 230% 230%;
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  animation: holo-foil-sweep 9s ease-in-out infinite alternate;
+}
+
+@keyframes holo-foil-sweep {
+  from { background-position: 14% 20%; }
+  to { background-position: 86% 80%; }
+}
+
+/* Drifting aurora — pre-blurred blobs animated with transforms only, so the GPU
+   composites them (no per-frame re-blur / repaint, unlike animating bg-position
+   on a blurred layer). */
+.aurora-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.4;
+  will-change: transform;
+}
+.aurora-blob.a {
+  width: 34rem;
+  height: 24rem;
+  left: 2%;
+  top: -8%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.55), transparent 68%);
+  animation: aurora-a 26s ease-in-out infinite alternate;
+}
+.aurora-blob.b {
+  width: 36rem;
+  height: 26rem;
+  right: 0%;
+  top: -10%;
+  background: radial-gradient(circle, rgba(233, 75, 208, 0.45), transparent 68%);
+  animation: aurora-b 30s ease-in-out infinite alternate;
+}
+.aurora-blob.c {
+  width: 30rem;
+  height: 22rem;
+  left: 40%;
+  top: 30%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.5), transparent 68%);
+  animation: aurora-c 34s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-a { to { transform: translate3d(9%, 16%, 0) scale(1.12); } }
+@keyframes aurora-b { to { transform: translate3d(-8%, 12%, 0) scale(1.1); } }
+@keyframes aurora-c { to { transform: translate3d(6%, -12%, 0) scale(1.15); } }
+
+/* 1px holo border via padding trick */
+.holo-ring {
+  position: relative;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    var(--holo-gradient) border-box;
+  border: 1px solid transparent;
+}
+
+/* Iridescent sweep on hover — cards, verdict panel */
+.holo-hover {
+  position: relative;
+  overflow: hidden;
+}
+.holo-hover::after {
+  content: "";
+  position: absolute;
+  inset: -60% -30%;
+  background: linear-gradient(
+    115deg,
+    transparent 38%,
+    rgba(34, 211, 238, 0.1) 46%,
+    rgba(139, 92, 246, 0.14) 50%,
+    rgba(233, 75, 208, 0.1) 54%,
+    transparent 62%
+  );
+  transform: translateX(-70%) rotate(0.001deg);
+  transition: transform 0.7s var(--ease-out-soft);
+  pointer-events: none;
+}
+.holo-hover:hover::after {
+  transform: translateX(40%) rotate(0.001deg);
+}
+
+/* Primary CTA: a soft sheen sweeps across the holo fill on a slow loop */
+.cta-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.cta-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.45) 48%,
+    transparent 66%
+  );
+  transform: translateX(-120%);
+  animation: cta-sweep 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes cta-sweep {
+  0%, 18% { transform: translateX(-120%); }
+  60%, 100% { transform: translateX(120%); }
+}
+
+/* Live verdict ticker — seamless transform marquee (GPU-cheap), pauses on hover */
+.ticker-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+}
+.ticker-track {
+  animation: ticker-scroll 48s linear infinite;
+  will-change: transform;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Tabular figures everywhere numbers matter */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Header nav — a holo underline wipes in on hover/focus and locks on for the
+   active page. Inset to the link's px-3 padding, sits in the py-2 gutter. */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 6px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--holo-gradient);
+  transform: scaleX(0);
+  transform-origin: center;
+  opacity: 0;
+  transition:
+    transform 0.3s var(--ease-out-soft),
+    opacity 0.3s var(--ease-out-soft);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(0.66);
+  opacity: 0.85;
+}
+.nav-link[data-active="true"]::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+/* Inline holo underline — footer links, in-copy links. Grows from the left. */
+.link-holo {
+  position: relative;
+}
+.link-holo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--holo-gradient);
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  transition:
+    transform 0.32s var(--ease-out-soft),
+    opacity 0.32s var(--ease-out-soft);
+}
+.link-holo:hover::after,
+.link-holo:focus-visible::after {
+  transform: scaleX(1);
+  opacity: 0.9;
+}
+
+/* Orchestrated page-load reveal — stagger with --rise-delay.
+   Content is VISIBLE by default; the entrance only applies when motion is
+   allowed, so nothing can ever get stuck invisible if the animation doesn't
+   run (reduced-motion, backgrounded tab, ancient engine…). */
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.6s var(--ease-out-soft) both;
+    animation-delay: var(--rise-delay, 0ms);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 24px 2px rgba(52, 211, 153, 0.12);
+  }
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.45);
+  color: var(--color-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* .rise carries no animation here (gated to no-preference above) — content
+     is simply shown. Still neutralize the decorative loops and smooth scroll. */
+  .holo-hover::after,
+  .holo-text-animated,
+  .holo-foil,
+  .aurora-blob,
+  .ticker-track,
+  .cta-shimmer::after,
+  .nav-link::after,
+  .link-holo::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .cta-shimmer::after {
+    display: none;
+  }
+  .holo-text-animated {
+    background-position: 0% 50%;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

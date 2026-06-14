@@ -1,0 +1,35 @@
+{
+  "setId": "fusion-strike",
+  "era": "swsh",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/swsh8/fusion-strike/pull-rates",
+    "https://riporfliptcg.com/pokemon/fusion-strike/pull-rates",
+    "https://x.com/TCGplayer/status/1459273572665462786"
+  ],
+  "notes": "Community aggregated data (ThePriceDex): rare holo 1/5.6, V 1/11.1, VMAX 1/26.5, ultra rare (full/alt arts) 1/26, rainbow rare 1/91.9, gold (secret) 1/120 — overall hit rate ~18.6%/pack, corroborated by a 630-pack sample (RipOrFlip: hits 18.5% + secrets 2.4%). TCGplayer cracked 4,000+ packs pre-release (table published only as an image, cited as corroboration). No Trainer Gallery, radiant or amazing rares in this set; reverse filler approximated 50/50 common/uncommon. Residual mass on non-holo rare. packSize excludes the basic Energy and code card. SWSH ETB contains 8 packs.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6359,
+        "rare-holo": 0.1786,
+        "rare-holo-v": 0.0901,
+        "rare-holo-vmax": 0.0377,
+        "ultra-rare": 0.0385,
+        "rainbow-rare": 0.0109,
+        "gold-rare": 0.0083
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+}

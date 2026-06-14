@@ -1,0 +1,41 @@
+{
+  "setId": "obsidian-flames",
+  "era": "sv",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Obsidian-Flames-Pull-Rates/e2a66999-a7b5-4621-9765-c9a132e04bd2/",
+    "https://www.digitaltq.com/obsidian-flames-pull-rates-pokemon-tcg"
+  ],
+  "notes": "TCGplayer Infinite large-sample study. Per-pack odds: double rare 1/7 and ultra rare 1/15 in the rare slot; illustration rare 1/13, special illustration rare 1/32 (~3%) and hyper rare 1/52 (~2%) replacing the second reverse-holo slot; corroborated by an independent ~500-pack DigitalTQ sample. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot-1",
+      "count": 1,
+      "distribution": { "common": 0.5, "uncommon": 0.5 }
+    },
+    {
+      "name": "reverse-slot-2",
+      "count": 1,
+      "distribution": {
+        "common": 0.436298,
+        "uncommon": 0.436298,
+        "illustration-rare": 0.076923,
+        "special-illustration-rare": 0.03125,
+        "hyper-rare": 0.019231
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.790476,
+        "double-rare": 0.142857,
+        "ultra-rare": 0.066667
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 9 } }
+}

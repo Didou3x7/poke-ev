@@ -1,0 +1,40 @@
+{
+  "setId": "lost-origin",
+  "era": "swsh",
+  "confidence": "high",
+  "sources": [
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Lost-Origin-Pull-Rates/ba20ac4d-9448-45ce-b919-d856d107c744/",
+    "https://www.digitaltq.com/lost-origin-pull-rates-pokemon-tcg"
+  ],
+  "notes": "TCGplayer Authentication Center study, 8,000+ packs: normal V 11.63%, VMAX/VSTAR 4.42%, full-art V 1.98%, full-art trainer 1.42%, alt-art V 0.50% (all full/alt arts merged into ultra-rare), radiant 5.01%, Trainer Gallery 12.31% incl. gold-and-black VMAX 0.86% (reverse slot), rainbow 1.28%, gold 0.76% — hit rate ~32%. Rare-holo share (26.46%) from an independent 718-pack DigitalTQ sample, also used to split VMAX/VSTAR (VSTAR 3.16%, VMAX 1.26%). Residual mass on non-holo rare; reverse filler 50/50 common/uncommon. packSize excludes the basic Energy and code card. SWSH ETB contains 8 packs.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": {
+        "common": 0.4134,
+        "uncommon": 0.4134,
+        "trainer-gallery": 0.1231,
+        "radiant": 0.0501
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.5155,
+        "rare-holo": 0.2646,
+        "rare-holo-v": 0.1163,
+        "ultra-rare": 0.039,
+        "rare-holo-vstar": 0.0316,
+        "rare-holo-vmax": 0.0126,
+        "rainbow-rare": 0.0128,
+        "gold-rare": 0.0076
+      }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+}

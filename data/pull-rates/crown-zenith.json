@@ -1,0 +1,57 @@
+{
+  "setId": "crown-zenith",
+  "era": "swsh",
+  "confidence": "medium",
+  "sources": [
+    "https://cardshoplive.com/pages/hit-rates-for-pokemon-crown-zenith",
+    "https://www.digitaltq.com/crown-zenith-pull-rates-pokemon-tcg",
+    "https://www.tcgplayer.com/content/article/Pok%C3%A9mon-TCG-Crown-Zenith-Pull-Rates/56af3032-cb34-4da1-92fb-9cf206d10c0f/"
+  ],
+  "notes": "Primary: CardShopLive slot-resolved 1000-pack sample (rare slot: holo V 10.5%, VSTAR/VMAX 5.56%, ultra trainer 3.5%, textured energy 2.4%, secret Pikachu 1.5%; reverse slot: Galarian Gallery 19%+10.5%+0.6%=30.1%, radiant 3%). VSTAR/VMAX split via DigitalTQ 615-pack ratio (5.2:3.74); rare-holo share 40.16% also from DigitalTQ, residual on plain rare (main set has 22 non-holo rares). TCGplayer Infinite 1900-pack study corroborates GG ~1/3 and gold ~1/125 but reports secret Pikachu 1/133 vs 1.5% here — hence medium confidence. All GG tiers share the galarian-gallery id (engine spreads uniformly over the 70 GG cards, understating gold-VSTAR scarcity). No booster display ever existed (special set); ETB holds 10 packs.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-gg-slot",
+      "count": 1,
+      "distribution": {
+        "galarian-gallery": 0.301,
+        "radiant": 0.03,
+        "common": 0.3345,
+        "uncommon": 0.3345
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare-holo-v": 0.105,
+        "rare-holo-vstar": 0.03234,
+        "rare-holo-vmax": 0.02326,
+        "ultra-rare": 0.059,
+        "secret-rare": 0.015,
+        "rare-holo": 0.4016,
+        "rare": 0.3638
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

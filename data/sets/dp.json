@@ -1,0 +1,128 @@
+{
+  "era": "dp",
+  "eraNameEn": "Diamond & Pearl / Platinum",
+  "eraNameFr": "Diamant & Perle / Platine",
+  "sets": [
+    {
+      "id": "diamond-pearl",
+      "code": "DP",
+      "nameEn": "Diamond & Pearl",
+      "nameFr": "Diamant & Perle",
+      "seriesEn": "Diamond & Pearl",
+      "seriesFr": "Diamant & Perle",
+      "releaseDate": "2007-05-23",
+      "cardCount": 130,
+      "apiMatch": "Diamond & Pearl"
+    },
+    {
+      "id": "mysterious-treasures",
+      "code": "MT",
+      "nameEn": "Mysterious Treasures",
+      "nameFr": "Trésors Mystérieux",
+      "seriesEn": "Diamond & Pearl",
+      "seriesFr": "Diamant & Perle",
+      "releaseDate": "2007-08-22",
+      "cardCount": 123,
+      "apiMatch": "Mysterious Treasures"
+    },
+    {
+      "id": "secret-wonders",
+      "code": "SW",
+      "nameEn": "Secret Wonders",
+      "nameFr": "Merveilles Secrètes",
+      "seriesEn": "Diamond & Pearl",
+      "seriesFr": "Diamant & Perle",
+      "releaseDate": "2007-11-07",
+      "cardCount": 132,
+      "apiMatch": "Secret Wonders"
+    },
+    {
+      "id": "great-encounters",
+      "code": "GE",
+      "nameEn": "Great Encounters",
+      "nameFr": "Duels au sommet",
+      "seriesEn": "Diamond & Pearl",
+      "seriesFr": "Diamant & Perle",
+      "releaseDate": "2008-02-13",
+      "cardCount": 106,
+      "apiMatch": "Great Encounters"
+    },
+    {
+      "id": "majestic-dawn",
+      "code": "MD",
+      "nameEn": "Majestic Dawn",
+      "nameFr": "Aube Majestueuse",
+      "seriesEn": "Diamond & Pearl",
+      "seriesFr": "Diamant & Perle",
+      "releaseDate": "2008-05-21",
+      "cardCount": 100,
+      "apiMatch": "Majestic Dawn"
+    },
+    {
+      "id": "legends-awakened",
+      "code": "LA",
+      "nameEn": "Legends Awakened",
+      "nameFr": "Éveil des Légendes",
+      "seriesEn": "Diamond & Pearl",
+      "seriesFr": "Diamant & Perle",
+      "releaseDate": "2008-08-20",
+      "cardCount": 146,
+      "apiMatch": "Legends Awakened"
+    },
+    {
+      "id": "stormfront",
+      "code": "SF",
+      "nameEn": "Stormfront",
+      "nameFr": "Tempête",
+      "seriesEn": "Diamond & Pearl",
+      "seriesFr": "Diamant & Perle",
+      "releaseDate": "2008-11-05",
+      "cardCount": 100,
+      "apiMatch": "Stormfront"
+    },
+    {
+      "id": "platinum",
+      "code": "PL",
+      "nameEn": "Platinum",
+      "nameFr": "Platine",
+      "seriesEn": "Platinum",
+      "seriesFr": "Platine",
+      "releaseDate": "2009-02-11",
+      "cardCount": 127,
+      "apiMatch": "Platinum"
+    },
+    {
+      "id": "rising-rivals",
+      "code": "RR",
+      "nameEn": "Rising Rivals",
+      "nameFr": "Rivaux Émergeants",
+      "seriesEn": "Platinum",
+      "seriesFr": "Platine",
+      "releaseDate": "2009-05-16",
+      "cardCount": 111,
+      "apiMatch": "Rising Rivals"
+    },
+    {
+      "id": "supreme-victors",
+      "code": "SV",
+      "nameEn": "Supreme Victors",
+      "nameFr": "Vainqueurs Suprêmes",
+      "seriesEn": "Platinum",
+      "seriesFr": "Platine",
+      "releaseDate": "2009-08-19",
+      "cardCount": 147,
+      "apiMatch": "Supreme Victors"
+    },
+    {
+      "id": "arceus",
+      "code": "AR",
+      "nameEn": "Arceus",
+      "nameFr": "Arceus",
+      "seriesEn": "Platinum",
+      "seriesFr": "Platine",
+      "releaseDate": "2009-11-04",
+      "cardCount": 99,
+      "apiMatch": "Arceus"
+    }
+  ]
+}
