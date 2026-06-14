@@ -1,0 +1,124 @@
+{
+  "151": [
+    "sv3pt5"
+  ],
+  "_comment": "Maps Poké EV catalog set ids -> pokemontcg.io set id(s). Source of real per-printing Cardmarket EUR + TCGplayer USD prices and complete card images (overlaid on TCGdex, which provides FR prints + names). Most sets = 1 id; sets with a separate subset list several.",
+  "mega-evolution": [
+    "me1"
+  ],
+  "phantasmal-flames": [
+    "me2"
+  ],
+  "ascended-heroes": [
+    "me2pt5"
+  ],
+  "perfect-order": [
+    "me3"
+  ],
+  "chaos-rising": [
+    "me4"
+  ],
+  "scarlet-violet": [
+    "sv1"
+  ],
+  "paldea-evolved": [
+    "sv2"
+  ],
+  "obsidian-flames": [
+    "sv3"
+  ],
+  "paradox-rift": [
+    "sv4"
+  ],
+  "paldean-fates": [
+    "sv4pt5"
+  ],
+  "temporal-forces": [
+    "sv5"
+  ],
+  "twilight-masquerade": [
+    "sv6"
+  ],
+  "shrouded-fable": [
+    "sv6pt5"
+  ],
+  "stellar-crown": [
+    "sv7"
+  ],
+  "surging-sparks": [
+    "sv8"
+  ],
+  "prismatic-evolutions": [
+    "sv8pt5"
+  ],
+  "journey-together": [
+    "sv9"
+  ],
+  "destined-rivals": [
+    "sv10"
+  ],
+  "black-bolt": [
+    "zsv10pt5"
+  ],
+  "white-flare": [
+    "rsv10pt5"
+  ],
+  "sword-shield": [
+    "swsh1"
+  ],
+  "rebel-clash": [
+    "swsh2"
+  ],
+  "darkness-ablaze": [
+    "swsh3"
+  ],
+  "champions-path": [
+    "swsh35"
+  ],
+  "vivid-voltage": [
+    "swsh4"
+  ],
+  "shining-fates": [
+    "swsh45",
+    "swsh45sv"
+  ],
+  "battle-styles": [
+    "swsh5"
+  ],
+  "chilling-reign": [
+    "swsh6"
+  ],
+  "evolving-skies": [
+    "swsh7"
+  ],
+  "celebrations": [
+    "cel25",
+    "cel25c"
+  ],
+  "fusion-strike": [
+    "swsh8"
+  ],
+  "brilliant-stars": [
+    "swsh9",
+    "swsh9tg"
+  ],
+  "astral-radiance": [
+    "swsh10",
+    "swsh10tg"
+  ],
+  "pokemon-go": [
+    "pgo"
+  ],
+  "lost-origin": [
+    "swsh11",
+    "swsh11tg"
+  ],
+  "silver-tempest": [
+    "swsh12",
+    "swsh12tg"
+  ],
+  "crown-zenith": [
+    "swsh12pt5",
+    "swsh12pt5gg"
+  ]
+}
