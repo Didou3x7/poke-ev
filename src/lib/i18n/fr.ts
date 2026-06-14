@@ -29,7 +29,6 @@ export const fr: Dict = {
     keep: "GARDE",
     unavailable: "EV INDISPONIBLE",
     openSub: "L'EV à l'ouverture dépasse ton prix d'achat",
-    keepSubSealed: "Le produit vaut plus scellé qu'ouvert",
     keepSubMargin: "L'EV à l'ouverture ne couvre pas ton prix d'achat",
     unavailableSub: "Pas de taux de pull documentés pour ce set. On ne devine jamais",
   },
@@ -65,7 +64,7 @@ export const fr: Dict = {
       },
       {
         title: "Verdict net",
-        text: "OUVRE si l'espérance dépasse ton prix. GARDE si le scellé vaut plus fermé.",
+        text: "OUVRE si l'espérance dépasse ton prix d'achat. Sinon GARDE.",
       },
     ],
     featuresTitle: "Pourquoi Poké EV",
@@ -194,7 +193,7 @@ export const fr: Dict = {
       },
       {
         q: "Comment le verdict OUVRE / GARDE est-il rendu ?",
-        a: "Deux comparaisons. D'abord, si le prix du produit scellé sur le marché est supérieur ou égal à l'EV d'ouverture, le verdict est GARDE : ouvrir détruirait de la valeur, peu importe ton prix d'achat. Sinon, si l'EV d'ouverture dépasse le prix que tu as payé, c'est OUVRE. Sinon, GARDE, avec la marge négative affichée pour que tu saches exactement où tu en es.",
+        a: "Une seule comparaison : ton prix d'achat face à l'EV d'ouverture. Si le booster, l'ETB ou le display a une espérance supérieure au prix que tu as payé, c'est OUVRE. Sinon GARDE, avec la marge négative affichée pour que tu saches exactement où tu en es. Le prix du scellé sur le marché est indiqué à titre indicatif (valeur de revente), mais il ne change jamais le verdict.",
       },
       {
         q: "Que signifie la probabilité de profit ?",

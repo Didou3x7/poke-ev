@@ -29,7 +29,6 @@ export const en: Dict = {
     keep: "KEEP",
     unavailable: "EV UNAVAILABLE",
     openSub: "Opening EV beats what you paid",
-    keepSubSealed: "Worth more sealed than opened",
     keepSubMargin: "Opening EV doesn't cover what you paid",
     unavailableSub: "No documented pull rates for this set. We never guess",
   },
@@ -65,7 +64,7 @@ export const en: Dict = {
       },
       {
         title: "Clear-cut verdict",
-        text: "OPEN when expected value beats your price. KEEP when it's worth more sealed.",
+        text: "OPEN when expected value beats your price paid. Otherwise KEEP.",
       },
     ],
     featuresTitle: "Why Poké EV",
@@ -194,7 +193,7 @@ export const en: Dict = {
       },
       {
         q: "How is the OPEN / KEEP verdict decided?",
-        a: "Two comparisons. First, if the product's sealed market price is greater than or equal to its opening EV, the verdict is KEEP: opening would destroy value no matter what you paid. Otherwise, if the opening EV beats the price you paid, it's OPEN. Otherwise KEEP, with the negative margin displayed so you know exactly where you stand.",
+        a: "A single comparison: your price paid against the opening EV. If the booster, ETB or booster box has an expected value above what you paid, it's OPEN. Otherwise KEEP, with the negative margin displayed so you know exactly where you stand. The sealed market price is shown for reference (resale value) but never changes the verdict.",
       },
       {
         q: "What does the probability of profit mean?",

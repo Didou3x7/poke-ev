@@ -415,11 +415,7 @@ export function Calculator({
                 kind={result.verdict.kind}
                 label={dict.verdict[result.verdict.kind]}
                 sub={
-                  result.verdict.kind === "open"
-                    ? dict.verdict.openSub
-                    : result.verdict.sealedPremium != null && result.verdict.sealedPremium >= 0
-                      ? dict.verdict.keepSubSealed
-                      : dict.verdict.keepSubMargin
+                  result.verdict.kind === "open" ? dict.verdict.openSub : dict.verdict.keepSubMargin
                 }
               />
               <div>

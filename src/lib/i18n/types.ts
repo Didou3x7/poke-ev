@@ -37,8 +37,7 @@ export interface Dict {
     keep: string;
     unavailable: string;
     openSub: string; // shown under OPEN
-    keepSubSealed: string; // KEEP because sealed ≥ EV
-    keepSubMargin: string; // KEEP because EV ≤ price
+    keepSubMargin: string; // KEEP because EV ≤ price paid
     unavailableSub: string;
   };
   confidence: {

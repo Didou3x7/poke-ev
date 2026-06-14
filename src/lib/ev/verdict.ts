@@ -1,19 +1,18 @@
 import type { Verdict, VerdictInput } from "./types";
 
 /**
- * Verdict logic, as documented in the FAQ:
+ * Verdict logic, as documented in the FAQ — one comparison:
  *
- * 1. When the real sealed market price is known and ≥ EV(open), the product is
- *    worth more closed: KEEP wins regardless of what was paid (opening would
- *    destroy value — sunk cost doesn't change that).
- * 2. Otherwise OPEN when EV(open) beats the price paid.
- * 3. Otherwise KEEP (negative expected margin; the displayed numbers tell the
- *    full story).
+ * 1. OPEN when EV(open) beats the price paid.
+ * 2. Otherwise KEEP (the opening EV doesn't cover what you paid; the displayed
+ *    numbers tell the full story).
  *
- * Margins are always expressed against the price paid. The profit probability
- * is P(opened value > price paid) under a normal approximation of the sum of
- * `packs` i.i.d. pack values (CLT) — exact enough for 9+ packs, labelled as an
- * estimate in the UI for single boosters.
+ * The sealed market price is shown for information (resale value) but never
+ * overrides the verdict: if the booster/ETB/display opens for more than you
+ * paid, it says OPEN. Margins are always expressed against the price paid. The
+ * profit probability is P(opened value > price paid) under a normal
+ * approximation of the sum of `packs` i.i.d. pack values (CLT) — exact enough
+ * for 9+ packs, labelled as an estimate in the UI for single boosters.
  */
 
 /** Abramowitz & Stegun 7.1.26 — max abs error 1.5e-7, plenty for display. */
@@ -54,8 +53,6 @@ export function computeVerdict(input: VerdictInput): Verdict {
   let kind: Verdict["kind"];
   if (packEv <= 0) {
     kind = "unavailable";
-  } else if (sealedMarketPrice != null && sealedMarketPrice >= openEv) {
-    kind = "keep";
   } else if (openEv > pricePaid) {
     kind = "open";
   } else {

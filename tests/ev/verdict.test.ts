@@ -46,9 +46,10 @@ describe("computeVerdict", () => {
     expect(v.marginPct).toBeCloseTo(0.2);
   });
 
-  it("says KEEP when the sealed market price beats the open EV — even at a bargain price", () => {
+  it("says OPEN when open EV beats price paid, even if the product is worth more sealed (sealed never overrides)", () => {
     const v = computeVerdict({ ...base, pricePaid: 100, sealedMarketPrice: 200 });
-    expect(v.kind).toBe("keep");
+    expect(v.kind).toBe("open");
+    // sealed premium is still reported for information (resale value)
     expect(v.sealedPremium).toBeCloseTo(20);
   });
 
