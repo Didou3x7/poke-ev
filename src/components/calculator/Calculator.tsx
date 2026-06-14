@@ -443,6 +443,7 @@ export function Calculator({
         {result && selected ? (
           <motion.div
             key={`${result.setId}-${result.kind}-${result.price}`}
+            aria-live="polite"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -489,7 +490,7 @@ export function Calculator({
               />
               <Stat
                 label={t.profitProbability}
-                value={`${(result.verdict.profitProbability * 100).toFixed(1)} %`}
+                value={formatPct(result.verdict.profitProbability, locale, false)}
                 tone={result.verdict.profitProbability >= 0.5 ? "open" : "keep"}
                 title={t.profitProbabilityNote}
               />

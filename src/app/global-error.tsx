@@ -35,7 +35,7 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
           Oups
         </p>
         <p style={{ color: "#8a93a6", maxWidth: 420, margin: 0 }}>
-          Une erreur est survenue · Something went wrong.
+          Une erreur est survenue · <span lang="en">Something went wrong.</span>
         </p>
         <button
           type="button"
@@ -50,7 +50,7 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
             background: "linear-gradient(108deg,#22d3ee,#8b5cf6,#e94bd0)",
           }}
         >
-          Réessayer / Retry
+          Réessayer / <span lang="en">Retry</span>
         </button>
       </body>
     </html>

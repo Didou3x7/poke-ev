@@ -36,8 +36,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" suppressHydrationWarning className={fontVariables}>
       <head>
-        {/* Iconic hero card artwork is served from TCGdex's localized CDN */}
-        <link rel="preconnect" href="https://assets.tcgdex.net" crossOrigin="anonymous" />
+        {/* Iconic hero card artwork is served from TCGdex's localized CDN.
+            No crossOrigin: the card <img>/preloads load non-CORS, so the warmed
+            connection must be non-CORS too or it can't be reused. */}
+        <link rel="preconnect" href="https://assets.tcgdex.net" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -54,12 +56,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {UMAMI_WEBSITE_ID ? (
           // Cookieless, GDPR-exempt analytics, no consent banner needed.
           // data-domains keeps localhost/preview traffic out of the stats.
-          <script
-            defer
-            data-website-id={UMAMI_WEBSITE_ID}
-            data-domains="pokeev.com,www.pokeev.com"
-            src={UMAMI_SRC}
-          />
+          // Preconnect warms the cross-origin handshake for the deferred script.
+          <>
+            <link rel="preconnect" href={new URL(UMAMI_SRC).origin} />
+            <script
+              defer
+              data-website-id={UMAMI_WEBSITE_ID}
+              data-domains="pokeev.com,www.pokeev.com"
+              src={UMAMI_SRC}
+            />
+          </>
         ) : null}
       </head>
       <body className="min-h-screen antialiased">

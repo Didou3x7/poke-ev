@@ -23,11 +23,11 @@ function loadMap(): MapFile {
 }
 
 /** Append discovered sets to their era file (in catalog field order, release-sorted). */
-function writeEraFile(era: string, sets: DiscoveredSet[]): number {
+function writeEraFile(era: string, sets: DiscoveredSet[]): DiscoveredSet[] {
   const path = join(DATA_DIR, "sets", `${era}.json`);
   if (!existsSync(path)) {
     console.warn(`[discover] era file ${era}.json missing — skipping ${sets.length} set(s)`);
-    return 0;
+    return [];
   }
   const file = JSON.parse(readFileSync(path, "utf8")) as {
     era: string;
@@ -36,7 +36,7 @@ function writeEraFile(era: string, sets: DiscoveredSet[]): number {
     sets: Record<string, unknown>[];
   };
   const existing = new Set(file.sets.map((s) => s.id as string));
-  let added = 0;
+  const wrote: DiscoveredSet[] = [];
   for (const s of sets) {
     if (existing.has(s.id)) continue;
     existing.add(s.id); // guard against a duplicated id within this same batch
@@ -51,13 +51,14 @@ function writeEraFile(era: string, sets: DiscoveredSet[]): number {
       cardCount: s.cardCount,
       apiMatch: s.apiMatch,
     });
-    added++;
+    wrote.push(s);
   }
+  if (wrote.length === 0) return [];
   file.sets.sort((a, b) =>
     String(a.releaseDate ?? "").localeCompare(String(b.releaseDate ?? "")),
   );
   writeFileSync(path, JSON.stringify(file, null, 2) + "\n");
-  return added;
+  return wrote;
 }
 
 /** Add mappings, keep `_comment` first and the rest alphabetically sorted. */
@@ -109,10 +110,12 @@ async function main() {
     arr.push(s);
     byEra.set(s.era, arr);
   }
-  let added = 0;
-  for (const [era, sets] of byEra) added += writeEraFile(era, sets);
-  writeMap(map, found);
-  console.log(`discover: added ${added} new set(s) to the catalog + map.`);
+  // Map only the sets actually written to a catalog file — never orphan a map
+  // entry that points at a set absent from the catalog.
+  const addedSets: DiscoveredSet[] = [];
+  for (const [era, sets] of byEra) addedSets.push(...writeEraFile(era, sets));
+  if (addedSets.length > 0) writeMap(map, addedSets);
+  console.log(`discover: added ${addedSets.length} new set(s) to the catalog + map.`);
 }
 
 main().catch((e) => {
