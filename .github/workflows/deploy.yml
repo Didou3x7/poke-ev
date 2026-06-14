@@ -1,11 +1,14 @@
-name: Daily price refresh
+name: Deploy & daily price refresh
 
-# Once a day, regenerate the price snapshot (free TCGdex + TCGCSV) and commit it.
-# Vercel's Git integration auto-deploys the resulting commit — and every code
-# push — so deployment has a single source of truth (no token, no redundancy).
-# Commits are authored as the repo owner so Vercel can attribute & deploy them.
+# Single deploy path: this Action runs `vercel deploy` (token auth). On every
+# push it deploys; once a day it also refreshes the price snapshot (free TCGdex
+# + TCGCSV), commits it, and redeploys. Commits are authored as the repo owner
+# (valid email) so Vercel can attribute the deployment. No manual step, ever.
+# Repo secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: "0 5 * * *" # every day 05:00 UTC (TCGCSV publishes ~20:00 UTC)
   workflow_dispatch: {}
@@ -14,20 +17,28 @@ permissions:
   contents: write
 
 concurrency:
-  group: refresh
+  group: deploy-main
   cancel-in-progress: false
 
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
 jobs:
-  refresh:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+
       - run: npm ci
-      - name: Refresh prices and commit
+
+      - name: Refresh prices (scheduled runs only)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           npm run snapshot
           git config user.name "Didou3x7"
@@ -39,3 +50,12 @@ jobs:
             git commit -m "chore: daily price refresh (TCGdex + TCGCSV)"
             git push
           fi
+
+      - name: Deploy to Vercel (production)
+        run: |
+          npm i -g vercel@latest
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
