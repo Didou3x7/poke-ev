@@ -1,13 +1,11 @@
-name: Deploy & daily price refresh
+name: Daily price refresh
 
-# Deploys to Vercel on every push to main, AND once a day refreshes the price
-# snapshot (free TCGdex + TCGCSV) → commits it → redeploys. Fully automatic:
-# no manual step ever. Needs repo secrets: VERCEL_TOKEN, VERCEL_ORG_ID,
-# VERCEL_PROJECT_ID.
+# Once a day, regenerate the price snapshot (free TCGdex + TCGCSV) and commit it.
+# Vercel's Git integration auto-deploys the resulting commit — and every code
+# push — so deployment has a single source of truth (no token, no redundancy).
+# Commits are authored as the repo owner so Vercel can attribute & deploy them.
 
 on:
-  push:
-    branches: [main]
   schedule:
     - cron: "0 5 * * *" # every day 05:00 UTC (TCGCSV publishes ~20:00 UTC)
   workflow_dispatch: {}
@@ -16,33 +14,24 @@ permissions:
   contents: write
 
 concurrency:
-  group: deploy-${{ github.ref }}
+  group: refresh
   cancel-in-progress: false
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
 jobs:
-  deploy:
+  refresh:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - run: npm ci
-
-      # On the daily/manual run, regenerate the price snapshot and commit it.
-      - name: Refresh prices (scheduled runs only)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      - name: Refresh prices and commit
         run: |
           npm run snapshot
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "Didou3x7"
+          git config user.email "292510557+Didou3x7@users.noreply.github.com"
           git add data/snapshot/snapshot.json
           if git diff --staged --quiet; then
             echo "No price changes today."
@@ -50,12 +39,3 @@ jobs:
             git commit -m "chore: daily price refresh (TCGdex + TCGCSV)"
             git push
           fi
-
-      - name: Deploy to Vercel (production)
-        run: |
-          npm i -g vercel@latest
-          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-          vercel build --prod --token="$VERCEL_TOKEN"
-          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
