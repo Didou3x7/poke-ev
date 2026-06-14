@@ -46,8 +46,14 @@ export const catalogSetSchema = z.object({
   nameFr: z.string().min(1),
   seriesEn: z.string().min(1),
   seriesFr: z.string().min(1),
-  /** ISO date of the western release. */
-  releaseDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  /** ISO date of the western release (a real calendar date, not just YYYY-MM-DD). */
+  releaseDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .refine((s) => {
+      const d = new Date(`${s}T00:00:00Z`);
+      return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+    }, "must be a real calendar date"),
   /** Number of cards (official count, secrets excluded) when known. */
   cardCount: z.number().int().positive().nullable(),
   /** Hint used by the snapshot job to match the TCGGO episode. */

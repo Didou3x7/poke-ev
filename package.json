@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "snapshot": "tsx scripts/build-snapshot.ts",
+    "discover": "tsx scripts/discover-sets.ts",
     "validate:data": "tsx scripts/validate-data.ts"
   },
   "dependencies": {

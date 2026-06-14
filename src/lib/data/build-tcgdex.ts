@@ -57,15 +57,18 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
 
   const fx = (await fetchFxRate()) ?? options.prior?.fx ?? { eurUsd: 1.08, asOf: nowIso.slice(0, 10) };
 
+  // Every catalog set with a TCGdex mapping is refreshed — even without a
+  // pull-rate file. Such a set gets real card + sealed prices and a chase card,
+  // but ev:null (EV indisponible) until a sourced pull-rate file is added.
   const targets = getAllSets().filter(
-    (s) => pullRates.has(s.id) && map[s.id] && (!options.only || options.only.includes(s.id)),
+    (s) => map[s.id] && (!options.only || options.only.includes(s.id)),
   );
-  log(`TCGdex: ${targets.length} EV sets to refresh (fx EUR→USD ${fx.eurUsd})`);
+  log(`TCGdex: ${targets.length} mapped sets to refresh (fx EUR→USD ${fx.eurUsd})`);
 
   let done = 0;
   for (const set of targets) {
     const tcgdexId = map[set.id];
-    const config = pullRates.get(set.id)!;
+    const config = pullRates.get(set.id);
     try {
       const [rawCards, frNames] = await Promise.all([
         provider.cards(tcgdexId),
@@ -78,15 +81,15 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
           usd: c.prices.usd ?? (c.prices.eur != null ? round2(c.prices.eur * fx.eurUsd) : null),
         },
       }));
-      const fr = computeSetEv(cards, config, "fr", { topCardsCount: 12 });
-      const en = computeSetEv(cards, config, "en", { topCardsCount: 12 });
+      const fr = config ? computeSetEv(cards, config, "fr", { topCardsCount: 12 }) : null;
+      const en = config ? computeSetEv(cards, config, "en", { topCardsCount: 12 }) : null;
       sets[set.id] = {
         setId: set.id,
         episodeId: tcgdexId,
         logo: `https://assets.tcgdex.net/en/${tcgdexId.match(/^[a-z]+/)![0]}/${tcgdexId}/logo.webp`,
         symbol: null,
-        ev: { fr: snapshotEv(fr), en: snapshotEv(en) },
-        pullRateConfidence: config.confidence,
+        ev: fr && en ? { fr: snapshotEv(fr), en: snapshotEv(en) } : null,
+        pullRateConfidence: config?.confidence ?? null,
         sealed: [],
         cards: cards.map((c) => ({
           id: c.id,
@@ -102,7 +105,8 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
         updatedAt: nowIso,
       };
       done++;
-      log(`✓ ${set.id} (${getEraOfSet(set.id)?.era}) — ${cards.length} cards · fr ${fr.packEv.toFixed(2)}€ / en $${en.packEv.toFixed(2)}`);
+      const evNote = fr && en ? `fr ${fr.packEv.toFixed(2)}€ / en $${en.packEv.toFixed(2)}` : "no pull rates (EV off)";
+      log(`✓ ${set.id} (${getEraOfSet(set.id)?.era}) — ${cards.length} cards · ${evNote}`);
     } catch (e) {
       log(`✗ ${set.id} failed: ${(e as Error).message}`);
     }
