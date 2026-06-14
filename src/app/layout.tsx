@@ -38,6 +38,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Iconic hero card artwork is served from TCGdex's localized CDN */}
         <link rel="preconnect" href="https://assets.tcgdex.net" crossOrigin="anonymous" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Poké EV",
+              url: SITE_URL,
+              logo: `${SITE_URL}/pwa-512.png`,
+              description: "Le terminal d'Expected Value des produits scellés Pokémon TCG.",
+            }),
+          }}
+        />
         {UMAMI_WEBSITE_ID ? (
           // Cookieless, GDPR-exempt analytics, no consent banner needed.
           // data-domains keeps localhost/preview traffic out of the stats.

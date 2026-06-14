@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDict, tpl } from "@/lib/i18n";
-import { formatMoney, formatPct, localePath, type Locale } from "@/lib/i18n/config";
+import { absoluteUrl, formatMoney, formatPct, localePath, type Locale } from "@/lib/i18n/config";
 import { rarityLabel } from "@/lib/i18n/rarities";
 import { getEraOfSet, getPullRatesForSet, getSetById } from "@/lib/data/catalog";
 import { getSnapshot } from "@/lib/data/snapshot";
@@ -76,8 +76,19 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
         }
       : null;
 
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: t.common.brand, item: absoluteUrl(localePath(locale, "home")) },
+      { "@type": "ListItem", position: 2, name: t.common.nav.sets, item: absoluteUrl(localePath(locale, "sets")) },
+      { "@type": "ListItem", position: 3, name, item: absoluteUrl(localePath(locale, "set", set.id)) },
+    ],
+  };
+
   return (
     <SiteShell locale={locale} page="set" slug={set.id} pricesUpdatedAt={snapshot.generatedAt} demo={snapshot.demo}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       {jsonLd ? (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       ) : null}
