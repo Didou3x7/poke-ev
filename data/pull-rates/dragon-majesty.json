@@ -1,0 +1,53 @@
+{
+  "setId": "dragon-majesty",
+  "era": "sm",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Dragon_Majesty_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://toywiz.com/pokemon-dragon-majesty-elite-trainer-box/",
+    "https://www.elitefourum.com/t/pull-rates-in-sun-moon-sword-shield-sets/25220"
+  ],
+  "notes": "VERIFIED + CORRECTED. STRUCTURE (Bulbapedia, re-fetched): Dragon Majesty is a SPECIAL set — \"Dragon Majesty booster packs could not be purchased individually from booster boxes. Instead, they were only made available in various set-related merchandise.\" There was NO standard 36-pack booster box => displayPacks=null (confirmed). Packs were sold in the Naganadel-GX Elite Trainer Box and other collections/tins. ETB contents (ToyWiz, re-fetched, and Pokemon.com/PokeBeach via search): \"10 Pokemon TCG: Dragon Majesty booster packs (each pack contains 10 cards and 1 basic Energy)\" => etbPacks=10 (this ETB is non-standard: 10 packs vs the usual 8). shipEv=true: a real sealed product (ETB) containing standard 10-card DM packs exists and is sourceable.\n\nPACK MODEL: standard SM 10-card pack = 4 commons + 3 uncommons + 1 reverse-holo + 1 rare-or-better + 1 basic Energy (energy not modeled). 9 modeled cards.\n\nRARE-OR-BETTER SLOT — MAJOR CORRECTION vs draft. The draft set ultra-rare=0.0417 by deliberately EXCLUDING the documented '~1:9 packs' GX line, claiming those GX belong to the 'rare' line. That is WRONG for THIS engine: the coarse 'ultra-rare' bucket lumps ALL GX (incl. regular-art holo GX like Charizard-GX, Salamence-GX, Reshiram-GX, Naganadel-GX) + full-art Pokemon + full-art Trainers. Regular-art GX are NOT TCGdex 'rare' holos. So the 1:9 GX line MUST be summed into ultra-rare. Re-fetched figures: Flipside Part Two — GX ~1:9 packs; UR (full-art GX + FA trainers) 1:18-36; secret ~1:2 boxes (1:72). Elite Fourum per-box breakdown — regular Holo GX ~1:9-12 (3-4/box); full-art UR ~1:30-35 (1-1.2/box); rainbow ~1:63-90 (0.4-0.6/box); gold/secret ~1:90-140 (0.3-0.4/box). MAPPING onto coarse buckets by SUMMING: ultra-rare = P(regular GX ~0.10) + P(full-art UR ~0.03) = 0.130; secret-rare = P(rainbow ~0.013) + P(gold ~0.009) = 0.022; rare = remainder = 1 - 0.130 - 0.022 = 0.848. Slot sums to exactly 1.000.\n\nHIT ECONOMY SANITY: GX-or-better = 0.152/pack ≈ 1 hit per 6.6 packs, consistent with documented 16-30% total-hit range and ~4-5 ultra rares per 36-pack box (4.5/36≈0.125). Not claiming a GX every pack — sane.\n\nFILLER SLOTS: commons {common:1}; uncommons {uncommon:1}; reverse-holo modeled as 50/50 {common:0.5, uncommon:0.5} (no chase value in coarse model). All sum to 1.0.\n\nBUCKET KEYS: all keys (common, uncommon, rare, ultra-rare, secret-rare) are within this set's available buckets {common:23, uncommon:23, rare:12, ultra-rare:12, secret-rare:8}. No 'shiny-rare' (that is Hidden Fates only) — correctly absent.\n\nSOURCES PRUNED: removed Pokemon Center URL (HTTP 403 / bot-detection, not fetchable) and the generic pokemon.com set page (not independently fetchable for the figure). Added Elite Fourum (stronger per-box breakdown that drove the ultra-rare correction). Kept only genuinely fetched/corroborated URLs. Confidence remains 'low': these are SM-era community averages applied without a Dragon-Majesty-specific large published study.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.848,
+        "ultra-rare": 0.13,
+        "secret-rare": 0.022
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

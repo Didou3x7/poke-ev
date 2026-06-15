@@ -1,0 +1,54 @@
+{
+  "setId": "burning-shadows",
+  "era": "sm",
+  "confidence": "high",
+  "sources": [
+    "https://www.elitefourum.com/t/pull-rates-in-sun-moon-sword-shield-sets/25220",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.pokemoncenter.com/product/162-81230/pokemon-tcg-sun-and-moon-burning-shadows-booster-display-box-36-packs",
+    "https://www.pokemon.com/us/pokemon-tcg/product-gallery/sun-moon-burning-shadows-elite-trainer-box"
+  ],
+  "notes": "Source: Elite Fourum SM-SwSh pull-rate study, Burning Shadows row, n=2010 packs, 95% CI (same large community study that backs darkness-ablaze at high confidence). RE-FETCHED and confirmed the page contains an actual Burning Shadows data table with these per-pack figures: GX Holo (☆) 10.95% (±1.37%, 1/9.14); full-art Ultra (★U) 3.93% (±0.85%, 1/25.44) = FA Pokemon 2.69% (±0.71%) + FA Trainer 1.24% (±0.48%) [verified the two sub-rows sum exactly to 3.93%]; Rainbow (★R) 1.59% (±0.55%, 1/62.81); Secret gold (★S) 0.95% (±0.42%, 1/105.79). Legend confirmed on page: ☆=rare Holo GX, ★U=rare Ultra (full-art), ★R=rare Rainbow, ★S=rare Secret. Study total \"hits\" = 17.41% (1/5.74), arithmetic verified.\n\nCoarse-bucket mapping (engine lumps GX + full-art Pokemon + full-art Trainers => ultra-rare; rainbow + gold + secret => secret-rare; holo & non-holo rares => rare):\n- ultra-rare = GX (10.95%) + full-art Ultra (3.93%) = 14.88% => 0.1488\n- secret-rare = rainbow (1.59%) + gold (0.95%) = 2.54% => 0.0254\n- rare = residual rare-or-better slot mass = 1 - 0.1488 - 0.0254 = 0.8258 (holo + non-holo rares lumped; study excludes these from 'hits' so they are the complement).\nRare slot sums to exactly 1.0 (verified 0.8258 + 0.1488 + 0.0254 = 1.0).\n\nBucket-validity verified against the repo snapshot (data/snapshot/snapshot.json): Burning Shadows available buckets are EXACTLY {common:39, uncommon:38, rare:40, ultra-rare:30, secret-rare:22}. Distribution uses only rare/ultra-rare/secret-rare — all valid. 30 ultra-rare + 22 secret-rare cards exist, so those tiers genuinely exist in this set.\n\nSlots: SM standard 10-card pack = 4 commons + 3 uncommons + 1 reverse-holo (modeled 50/50 common/uncommon filler) + 1 rare-or-better (EV driver). The 11th item per pack is a basic Energy (not modeled, no value). packSize=10. (NB: crimson-invasion, another SM-era config in this repo, uses the identical 4/3/1/1 split, confirming the convention; darkness-ablaze uses 5 commons because it is SwSh-era.)\n\nProducts RE-VERIFIED: Burning Shadows (SM3, code BUS, 147 cards, released 2017-08-04) is a STANDARD main-series Sun & Moon expansion, NOT a special set — it had a real standard Booster Display Box = 36 packs and a Burning Shadows Elite Trainer Box = 8 packs (each pack \"10 cards plus 1 basic Energy\"). Both Pokemon Center listings are live; corroborated by ToyWiz, Pokemon.com, and multiple retailers. displayPacks=36, etbPacks=8.\n\nHit-economy sanity (per 36-pack box): ~5.4 GX-class (ultra-rare)/box, ~0.9 secret/box (~1 per 1.1 boxes), ~6.3 any-hit/box — all sane, no absurd per-pack claims. Confidence=high: real per-set study (n=2010, 95% CI), same methodology/source tier as darkness-ablaze.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.8258,
+        "ultra-rare": 0.1488,
+        "secret-rare": 0.0254
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

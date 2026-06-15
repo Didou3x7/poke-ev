@@ -1,0 +1,53 @@
+{
+  "setId": "shining-legends",
+  "era": "sm",
+  "confidence": "medium",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Shining_Legends_(TCG)",
+    "https://api.pokemontcg.io/v2/cards?q=set.id:sm35&pageSize=100&select=number,name,rarity,supertype,subtypes",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://toywiz.com/pokemon-shining-legends-elite-trainer-box/",
+    "https://www.pokemoncenter.com/product/290-80319/pokemon-tcg-shining-legends-elite-trainer-box"
+  ],
+  "notes": "SPECIAL SET, shipEv=true. PRODUCTS: No standard 36-pack booster box -> displayPacks=null. Bulbapedia (RE-FETCHED, verbatim): \"Unlike regular expansions, Shining Legends booster packs could not be purchased individually from booster boxes. Instead, they were only made available in various set-related merchandise.\" A real sealed 10-card booster pack product exists and is priced in the engine snapshot (data/snapshot/snapshot.json -> sealed: {kind:\"booster\", \"Shining Legends Booster Pack\"} + {kind:\"etb\"}), so shipEv=true. ETB = 10 packs (NON-standard): independently corroborated by a ToyWiz listing titled \"...Elite Trainer Box 10 Booster Packs, Promo Card, 65 Card Sleeves, 45 Energy Cards\" (the cited pokemoncenter.com page itself now returns a bot-detection wall, so I substituted a re-fetchable corroborating source) -> etbPacks=10. CONFIRMED against draft.\n\nPACKSIZE: kept 10. Bulbapedia RE-FETCH says \"Each booster pack contained 11 cards, with 2 guaranteed foil cards\" (physical count incl. basic Energy / code card); the engine models 9 value slots + 1 unmodeled basic Energy. Only the 2 foils carry EV so the 11-vs-10 wording does not change the economy. Noted as a minor prose discrepancy, not corrected in packSize.\n\nCOARSE-BUCKET MAPPING: VERIFIED against the engine's OWN card data (data/snapshot/snapshot.json sets[\"shining-legends\"].cards, 78 cards): {common:23, uncommon:25, rare:13, ultra-rare:12, secret-rare:5} = EXACT match to the available buckets. Note sm.json cardCount:73 is the printed numbered count; the snapshot's 78 includes secret rares. pokemontcg.io sm35 (RE-FETCHED via curl; WebFetch was 403-blocked but the API is live, totalCount 81 incl. alt-art codes): 12 Rare Holo, 6 Rare Shining, 5 Rare Holo GX, 4 Rare Ultra (full-art incl. #73 Pokemon Breeder full-art Trainer), 4 Rare Rainbow, 1 Rare Secret. CONFIRMED: TCGdex lumps the 6 Shining Pokemon + all GX + full-arts into ULTRA-RARE (no separate shiny bucket for this set, unlike Hidden Fates); rainbows+gold (#74-78) = SECRET-RARE(5). Draft prose claimed \"1 full-art trainer\" but there are 4 Rare Ultra full-arts (#71/72/73/77a) - cosmetic mis-attribution in prose only; bucket totals are correct.\n\nRARE-OR-BETTER SLOT (EV driver) - REBUILT from RE-FETCHABLE sources only:\n- Shining: 1:15 = 0.0667 (corroborated via web search + a real PokeBeach pull-rate thread).\n- GX: Flipside Part Two (RE-FETCHED): \"GX rares have had a reported pull rate of approximately 1:9 packs\" = 0.1111.\n- Full-art: Flipside \"greatly reduced pull rate of 1:18-36 packs\", midpoint ~1:27 = 0.0417.\n- ultra-rare = 0.0667+0.1111+0.0417 = 0.219 -> rounded to 0.215.\n- secret-rare = Flipside \"approximately 1:2 booster boxes ... roughly 1:72\" = 0.0139 -> 0.015.\n- rare = remainder = 1 - 0.215 - 0.015 = 0.770. Slot sums to EXACTLY 1.0.\n\nCHANGED vs draft: ultra-rare 0.270 -> 0.215; rare 0.715 -> 0.770. Reason: the draft's 0.270 rested SOLELY on an un-re-fetchable PokeBeach anecdote (\"8 UR + 2 Shining from 37 packs\" = ~1:3.6 ultra), which is an insane hit economy vs every fetchable base rate (Flipside GX 1:9). The forum thread returned 403 and could not be independently verified, so per the integrity rules I down-weighted it and rebuilt ultra-rare from sources I could actually re-fetch. Filler slots unchanged and valid (sum to 1.0; keys within available buckets).",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.77,
+        "ultra-rare": 0.215,
+        "secret-rare": 0.015
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "setId": "hidden-fates",
+  "era": "sm",
+  "confidence": "medium",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Hidden_Fates_(TCG)",
+    "https://www.thepricedex.com/set/sm115/hidden-fates/pull-rates",
+    "https://www.pokemon.com/us/pokemon-tcg/product-gallery/hidden-fates-elite-trainer-box",
+    "https://www.cardrake.com/guides/popular-sets/hidden-fates",
+    "https://www.elitefourum.com/t/hidden-fates-shiny-vault-rarity-pull-rates/24104"
+  ],
+  "notes": "PRODUCTS (verified): Bulbapedia confirms Hidden Fates had NO traditional 36-pack booster box (\"Hidden Fates booster packs could not be purchased individually from booster boxes\"; sold only via ETBs/tins/collections) -> displayPacks=null. ETB = 10 packs, confirmed by the official Pokemon.com ETB product listing (10 Hidden Fates booster packs) -> etbPacks=10. Pack = 10 modeled cards + 1 basic Energy (energy not modeled, no value).\n\nAVAILABLE BUCKETS (verified against snapshot.sets[\"hidden-fates\"]): {common:18, uncommon:17, rare:21, ultra-rare:12, secret-rare:9, shiny-rare:86}. There is NO \"shiny-vault\" bucket for this SM-era set; all 86 priced Shiny Vault cards are bucketed under \"shiny-rare\", so ALL Shiny Vault pulls are summed onto \"shiny-rare\" (correct per this set). Full-art trainers Giovanni's Exile / Jessie & James sit in ultra-rare; rainbow Tapu-GX + TAG TEAM secret sit in secret-rare -- consistent with the coarse TCGdex mapping.\n\nRARE-OR-BETTER (main set) -- CORRECTED. A real per-set aggregation now anchors this: ThePriceDex Hidden Fates gives Rare Holo 1/5, Rare Holo GX 1/6.7, Ultra Rare (full art) 1/25.6, Rainbow Rare 1/90.9. Coarse mapping: ultra-rare = P(GX 1/6.7)+P(FA 1/25.6) = 0.1493+0.0391 = 0.1883; secret-rare = P(rainbow 1/90.9 ~0.011) + a small gold/secret allowance = 0.017; rare = remainder 0.7947. This REPLACES the draft's grossly hot rare slot (draft had ultra-rare 0.26 = 1-in-4 packs and secret-rare 0.08 = 1-in-12.5 packs, implying ~9 GX and ~3 secrets per 36 packs -- contradicted by every source; SM boxes average ~4-5 ultra rares and ~1 secret per 2 boxes). Corrected values match \"1 guaranteed FA, avg 4-5 URs/box\" and rainbow ~1 in 2 boxes.\n\nSHINY VAULT slot (value driver) -- CORRECTED to 0.33 (was 0.30). ThePriceDex: Shiny Rare (SV holo) 1/4.7 = 0.2128, Shiny Rare GX 1/10.6 = 0.0943, SV Ultra Rare 1/84, SV Secret 1/63; summed SV-card-per-pack presence ~0.335. Corroborated by Cardrake \"SV-GX ~1 in 4 packs (25%)\" and the Elite Fourum 1000-pack break (most individual SV cards pulled 0-1x across 1000 packs, confirming SV cards are per-pack scarce, NOT the absurd Cardrake \"3-4 SV cards per pack\" claim which is internally inconsistent and was discarded as unreliable AI-generated text). All SV hits map to shiny-rare = 0.33; filler common = 0.67.\n\nCONFIDENCE raised low->medium: now backed by ThePriceDex per-set aggregation (same source family already trusted for shining-fates in this repo) plus two corroborating community sources, rather than a bare era-average.\n\nINTEGRITY: every slot sums to exactly 1.0; all distribution keys are a strict subset of this set's available buckets {common, uncommon, rare, ultra-rare, secret-rare, shiny-rare}. The draft's top-level \"displayPacks\":\"null\" / \"etbPacks\":\"10\" string fields were malformed types -- dropped in favor of the typed products object (displayPacks:null, etbPacks:10).",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.7947,
+        "ultra-rare": 0.1883,
+        "secret-rare": 0.017
+      }
+    },
+    {
+      "name": "shiny-vault",
+      "count": 1,
+      "distribution": {
+        "shiny-rare": 0.33,
+        "common": 0.67
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "setId": "ultra-prism",
+  "era": "sm",
+  "confidence": "medium",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-review-of-rarity-in-ultra-prism",
+    "https://www.thepricedex.com/set/sm5/ultra-prism/pull-rates",
+    "https://api.pokemontcg.io/v2/cards?q=set.id:sm5&pageSize=250&select=rarity",
+    "https://toywiz.com/pokemon-sun-moon-ultra-prism-elite-trainer-box/",
+    "https://www.amazon.com/Pokemon-Moon-Ultra-Prism-Booster/dp/B075TV63TY"
+  ],
+  "notes": "PRIMARY SOURCE (re-fetched, confirmed): Flipside Gaming empirical opening of 720 packs / 20 booster boxes of Ultra Prism. Reported per-box: standard GX 2.95, Prism Star 3.15, full-art Ultra Rare 1.55, Secret Rare 0.65. CROSS-CHECK (re-fetched, confirmed): ThePriceDex per-box GX 3, Ultra Rare 1.6, Rainbow 0.4, Secret 0.4 — corroborates within sampling noise.\n\nCOARSE-BUCKET MAPPING (verified against pokemontcg.io sm5 API rarity counts, which I fetched directly): Common 45 -> common(45); Uncommon 48 -> uncommon(44, engine bucket); Rare 23 + Rare Holo 13 + Rare Prism Star 6 = 42 -> rare(42, EXACT match to engine bucket — there is no 'prism' bucket so Prism Star folds into rare); Rare Holo GX 7 + Rare Ultra 19 = 26 -> ultra-rare(25, within 1 of engine bucket); Rare Rainbow 9 + Rare Secret 8 = 17 -> secret-rare(17, EXACT). This proves the engine ultra-rare bucket INCLUDES standard GX, per the TCGdex lumping rule (all GX + full-art -> ultra-rare).\n\nCORRECTED rare-or-better distribution: ultra-rare = (standard GX 2.95 + full-art Ultra Rare 1.55)/36 = 4.50/36 = 0.125; secret-rare = (rainbow + gold/secret) 0.65/36 = 0.018056; rare (incl. Prism Star 3.15/box + holo + non-holo rares) = remainder = 0.856944. Sums to exactly 1.000000.\n\nHit economy sanity: 4.5 ultra-rare-class hits/box (~1 per 8 packs) and 0.65 secret/box — both pulled straight from Flipside, not invented; no GX-every-pack absurdity.\n\nPack: 10 cards (4 commons, 3 uncommons, 1 reverse-holo modeled as 50/50 common/uncommon filler, 1 rare-or-better) + 1 basic energy (not modeled). Standard SM set, so shipEv=true. Confidence MEDIUM: one sizeable community sample (720 packs) cross-checked against a second source, but no published large-scale study.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.856944,
+        "ultra-rare": 0.125,
+        "secret-rare": 0.018056
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

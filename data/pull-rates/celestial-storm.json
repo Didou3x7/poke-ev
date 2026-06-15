@@ -1,0 +1,56 @@
+{
+  "setId": "celestial-storm",
+  "era": "sm",
+  "confidence": "medium",
+  "sources": [
+    "https://www.pokebeach.com/forums/threads/celestial-storm-pull-rates.147911/",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.pokemoncenter.com/product/166-80450/pokemon-tcg-sun-and-moon-celestial-storm-elite-trainer-box",
+    "https://www.pokemoncenter.com/product/166-81438/pokemon-tcg-sun-and-moon-celestial-storm-booster-display-box-36-booster-packs",
+    "https://bulbapedia.bulbagarden.net/wiki/Celestial_Storm_(TCG)",
+    "https://twitter.com/chuggaaconroy/status/1031612106041450496"
+  ],
+  "notes": "VERIFIED + CORRECTED. Set-specific source = PokeBeach 12-box (2-case = 432-pack) shop-owner study. Raw counts (independently corroborated via two WebSearch snippet retrievals + Chuggaaconroy tweet): 51 regular GX, 14 Full Art (GX + FA Trainer), 11 Secret Rare (5 Item/gold + 6 Rainbow), 24 Prism Star. Mapped onto this set's COARSE buckets {common,uncommon,rare,ultra-rare,secret-rare}, one rare-or-better slot/pack:\n- ultra-rare = (51 GX + 14 FA)/432 = 65/432 = 0.150463 (1 in 6.65 packs).\n- secret-rare = 11/432 = 0.025463 (1 in 39.3 packs, ~0.92/box).\n- rare = residual 1 - 0.150463 - 0.025463 = 0.824074. This absorbs holo + non-holo rares AND Prism Stars (TCGdex/engine has no prism bucket; a Rare Prism Star is neither ultra nor secret, so it correctly lands in 'rare'). Embedded Prism share = 24/432 = 0.0556 (1 in 18) is part of that rare mass.\nCORRECTION vs draft: draft computed UR/SR by round-tripping through ROUNDED per-box averages (e.g. 0.91*12=10.92 instead of the raw 11 SR), giving slightly drifted 0.15028/0.02528. Replaced with raw-count values 0.150463/0.025463; rare residual now 0.824074. Still sums to exactly 1.0.\nTotal hit economy: 100 hits/432 packs = 0.23 hits/pack -> sane (NOT a GX every pack). Flipside Gaming SM baseline corroborates order of magnitude (GX ~1:9, FA ~1:18-36; combined ~1:6-7 matches 0.150; SR ~1:2 boxes, CS ran slightly hotter at ~0.92/box, consistent with documented 'hot' set).\nStandard SM structure confirmed: 10 modeled cards/pack + 1 basic Energy excluded. Slots: 4 commons, 3 uncommons, 1 reverse-holo filler (modeled 50/50 common/uncommon), 1 rare-or-better slot driving EV. Products VERIFIED: official Pokemon Center 'Celestial Storm Booster Display Box (36 Booster Packs)' -> displayPacks=36; official Pokemon Center ETB listing '8 Celestial Storm booster packs' -> etbPacks=8. Bulbapedia confirms 183-card English set, 11 GX, 3 Prism Star.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-slot",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.824074,
+        "ultra-rare": 0.150463,
+        "secret-rare": 0.025463
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

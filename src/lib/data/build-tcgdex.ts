@@ -53,6 +53,41 @@ export function loadPtcgMap(): Record<string, string[]> {
   }
 }
 
+/**
+ * Lowercased EN card name → FR name, learned from TCGdex FR data across all
+ * sets. Used as a fallback for sets TCGdex never localized to French (Gym, EX
+ * Team Rocket Returns, Arceus, BW Legendary Treasures…), so those Pokémon still
+ * show their French name (e.g. Charizard → Dracaufeu) instead of English.
+ */
+export function loadFrNameDict(): Record<string, string> {
+  try {
+    const path = join(process.cwd(), "data", "sources", "fr-names.json");
+    const map = JSON.parse(readFileSync(path, "utf8")) as Record<string, string>;
+    delete (map as Record<string, unknown>)._comment;
+    return map;
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * catalogId → { collectorNumber → official FR card name }. Authoritative FR
+ * names sourced (jcc.pokemon.tf) for French-released sets TCGdex never localized
+ * (Gym Heroes/Challenge, EX Team Rocket Returns, Arceus, Legendary Treasures) —
+ * e.g. "Sabrina's Gengar" #14 → "Ectoplasma de Morgane". Fills by number where
+ * TCGdex has no FR name; takes priority over the EN→FR Pokémon-name fallback.
+ */
+export function loadFrBySet(): Record<string, Record<string, string>> {
+  try {
+    const path = join(process.cwd(), "data", "sources", "fr-names-by-set.json");
+    const map = JSON.parse(readFileSync(path, "utf8")) as Record<string, Record<string, string>>;
+    delete (map as Record<string, unknown>)._comment;
+    return map;
+  } catch {
+    return {};
+  }
+}
+
 export interface TcgdexBuildOptions {
   prior?: Snapshot;
   only?: string[];
@@ -64,6 +99,8 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
   const log = options.log ?? (() => {});
   const map = loadTcgdexMap();
   const ptcgMap = loadPtcgMap();
+  const frDict = loadFrNameDict();
+  const frBySet = loadFrBySet();
   const provider = new TcgdexProvider(map, { concurrency: options.concurrency ?? 16 });
   const pullRates = getPullRates();
   const nowIso = new Date().toISOString();
@@ -81,14 +118,20 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
 
   let done = 0;
   for (const set of targets) {
-    const tcgdexId = map[set.id];
+    // A set may draw from several TCGdex sets joined with "+" (e.g. Hidden Fates
+    // main + Shiny Vault: "sm115+sma"). The first id is primary — it drives the
+    // logo, episodeId and FR names; cards from every id are merged.
+    const tcgdexIds = map[set.id].split("+");
+    const primaryId = tcgdexIds[0];
     const config = pullRates.get(set.id);
     try {
-      const [rawCards, frNames, ptcgCards] = await Promise.all([
-        provider.cards(tcgdexId),
-        fetchSetCardNames(tcgdexId, "fr"),
+      const [rawCardsArr, frNameMaps, ptcgCards] = await Promise.all([
+        Promise.all(tcgdexIds.map((id) => provider.cards(id))),
+        Promise.all(tcgdexIds.map((id) => fetchSetCardNames(id, "fr"))),
         ptcgMap[set.id] ? fetchPtcgCards(ptcgMap[set.id]) : Promise.resolve([]),
       ]);
+      const rawCards = rawCardsArr.flat();
+      const frNames = new Map<string, string>(frNameMaps.flatMap((m) => [...m]));
       // If pokemontcg.io is unavailable for a mapped set (rate-limited/down),
       // keep the prior overlaid snapshot rather than degrade to TCGdex-only
       // (which would revert correct prices + re-break image-gap chases).
@@ -119,8 +162,8 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
       const en = config ? computeSetEv(cards, config, "en", { topCardsCount: 12 }) : null;
       sets[set.id] = {
         setId: set.id,
-        episodeId: tcgdexId,
-        logo: `https://assets.tcgdex.net/en/${tcgdexId.match(/^[a-z]+/)![0]}/${tcgdexId}/logo.webp`,
+        episodeId: primaryId,
+        logo: `https://assets.tcgdex.net/en/${primaryId.match(/^[a-z]+/)![0]}/${primaryId}/logo.webp`,
         symbol: null,
         ev: fr && en ? { fr: snapshotEv(fr), en: snapshotEv(en) } : null,
         pullRateConfidence: config?.confidence ?? null,
@@ -128,7 +171,12 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
         cards: cards.map((c) => ({
           id: c.id,
           name: c.name,
-          nameFr: frNames.get(c.id) ?? (c.number != null ? frNames.get(c.number) ?? null : null),
+          nameFr:
+            frNames.get(c.id) ??
+            (c.number != null ? frNames.get(c.number) ?? null : null) ??
+            (c.number != null ? frBySet[set.id]?.[c.number] ?? null : null) ??
+            frDict[c.name.toLowerCase()] ??
+            null,
           number: c.number,
           rarity: c.rarity,
           rawRarity: c.rawRarity,

@@ -1,0 +1,58 @@
+{
+  "setId": "forbidden-light",
+  "era": "sm",
+  "confidence": "medium",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-review-of-rarity-in-ultra-prism",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bleedingcool.com/games/the-cards-of-pokemon-tcg-forbidden-light-part-11-prism-stars/",
+    "https://www.amazon.com/Pokemon-TCG-Forbidden-Collectible-Pokemon-GX/dp/B07B6KMSSZ",
+    "https://toywiz.com/pokemon-sun-moon-forbidden-light-booster-box-36-packs/",
+    "https://business.walmart.com/ip/Pokemon-TCG-Sun-and-Moon-Forbidden-Light-Booster-Box-Contains-36-packs/280586571",
+    "https://www.pokemon.com/us/pokemon-tcg/product-gallery/sun-moon-forbidden-light-elite-trainer-box",
+    "https://toywiz.com/pokemon-sun-moon-forbidden-light-elite-trainer-box/"
+  ],
+  "notes": "VERIFIED INDEPENDENTLY (adversarial re-fetch).\\n\\nSTRUCTURE: 10 cards/pack; 36-pack booster box; ETB = 8 packs. All independently re-confirmed: Amazon ASIN B07B6KMSSZ ('36 Booster Packs'), ToyWiz ('Booster Box 36 Packs'), and Walmart Business ('Contains 36 packs') corroborate displayPacks=36. pokemon.com ETB gallery + ToyWiz ETB ('8 booster packs, each containing 10 cards and 1 basic Energy') corroborate etbPacks=8 and the 4C/3U/1RH/1rare-or-better/1energy SM slot layout. Project snapshot (data/snapshot/snapshot.json -> sets['forbidden-light']) carries BOTH a 'display' (booster box) and 'etb' sealed product, so a standard sealed box genuinely exists -> shipEv=true is justified.\\n\\nAVAILABLE-BUCKET CHECK (re-derived from engine data, NOT taken on faith): the snapshot's 146 FLI cards bucket EXACTLY to common 33, uncommon 36, rare 41, ultra-rare 21, secret-rare 15 -- identical to the task's stated available buckets. All distribution keys used (common, uncommon, rare, ultra-rare, secret-rare) are a strict subset. No 'shiny-rare' present (correct: FLI is NOT a special Shiny-Vault set like Hidden Fates) -- confirmed it must NOT be added. 146 total / 15 secret rares also matches Amazon + pokemon.com listings.\\n\\nRARE-OR-BETTER DISTRIBUTION -- source re-fetched & math re-checked: Flipside Gaming 'A Review of Rarity in Ultra Prism' confirmed verbatim: '20 booster boxes X 36 packs equals a sample size of 720 packs'; per-box averages Standard GX 2.95, Ultra rares 1.55, Secret rares 0.65, Prism rares 3.15. Ultra Prism is the SM set immediately preceding FLI with identical pack structure.\\n\\nCoarse-bucket mapping by SUMMING over 36 rare-or-better slots/box:\\n- ultra-rare = P(GX)+P(full-art) = (2.95+1.55)/36 = 4.50/36 = 0.1250 (exact)\\n- secret-rare = 0.65/36 = 0.0180556 -> 0.0181\\n- rare = (36-2.95-1.55-0.65)/36 = 30.85/36 = 0.8569444 -> 0.8569\\nSum = 0.8569+0.1250+0.0181 = 1.0000 exactly. No-double-count check PASSED: the 5.15 value hits + 30.85 plain rares = 36 = exactly one rare-or-better per pack, the correct SM assumption.\\n\\nPRISM STAR EXCLUSION re-verified at Bleeding Cool FLI Prism Star article ('it can be pulled in the reverse holo slot'). Prism Stars (3.15/box) ride the reverse-holo slot, which the engine treats as non-value filler, so they are correctly excluded from the rare slot AND from EV. Not double-allocated.\\n\\nHIT-ECONOMY SANITY: 4.5 ultra-rares/box (~1 per 8 packs) and 0.65 secret/box (~1 per 1.5 boxes) sit inside era-average ranges from Flipside Part Two (GX ~1:9 packs, ultra 1:18-36, secret ~1:2 boxes), re-fetched and confirmed. No absurd 'GX every pack' claim.\\n\\nCONFIDENCE = medium (honest): real, large (720-pack) PUBLISHED count keeps it above 'low', but it is the ADJACENT set (Ultra Prism) applied to FLI without a per-set FLI study, keeping it below 'high'.\\n\\nSOURCE LIST CHANGES vs draft: removed the two citations whose load-bearing facts could not be confirmed via fetch -- the TCGplayer #164296 box page (anti-bot, returned no body) and replaced its role; kept the Amazon listing but added ToyWiz + Walmart as the actually-fetchable corroboration for the 36-pack fact. Common/uncommon/reverse-holo slots carry no value-bearing rarity and do not drive EV; the rare-or-better slot drives EV.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.8569,
+        "ultra-rare": 0.125,
+        "secret-rare": 0.0181
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}
