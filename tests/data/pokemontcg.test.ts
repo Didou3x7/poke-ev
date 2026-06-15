@@ -42,6 +42,13 @@ describe("overlayPtcgPrices", () => {
     expect(cards[0].image).toBe("ptcg-img"); // image filled where TCGdex had none
   });
 
+  it("matches a Gold Star card across 'Star' word vs ★ symbol (Celebrations 17A ↔ 17)", () => {
+    const cards = [card({ number: "17A", name: "Umbreon Star", eur: null, usd: null, image: null })];
+    overlayPtcgPrices(cards, [p({ number: "17", name: "Umbreon ★", eur: null, usd: 124.71, image: "ptcg-img" })]);
+    expect(cards[0].prices.usd).toBe(124.71);
+    expect(cards[0].image).toBe("ptcg-img");
+  });
+
   it("disambiguates same-number candidates by name", () => {
     const cards = [card({ number: "15", name: "Lunala", eur: 1, usd: 1 })];
     overlayPtcgPrices(cards, [

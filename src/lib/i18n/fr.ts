@@ -115,7 +115,7 @@ export const fr: Dict = {
     sealedMarket: "Prix du scellé sur le marché",
     sealedPremium: "Premium scellé vs ouverture",
     sealedUnknown: "Prix scellé non coté dans le snapshot",
-    topCards: "Cartes qui portent l'EV",
+    topCards: "Les cartes les plus chères",
     topCardsProb: "proba / booster",
     rarityBreakdown: "Contribution par rareté",
     rarityCol: { rarity: "Rareté", perPack: "Attendu / booster", meanValue: "Valeur moy.", contribution: "Contribution EV" },

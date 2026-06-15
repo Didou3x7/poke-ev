@@ -130,7 +130,10 @@ export function computeSetEv(
   }
 
   rarityBreakdown.sort((a, b) => b.evContribution - a.evContribution);
-  contributions.sort((a, b) => b.evContribution - a.evContribution);
+  // topCards is a "most valuable cards" showcase → rank by market value, not by
+  // EV contribution (a frequent mid-price card carries more EV than a rare chase,
+  // but users expect the priciest card on top). evContribution is kept per card.
+  contributions.sort((a, b) => b.value - a.value);
 
   const knownRarityCards = cards.filter((c) => c.rarity != null);
   const pricedCount = knownRarityCards.filter((c) => cardValue(c, market) != null).length;

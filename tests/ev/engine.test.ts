@@ -43,10 +43,18 @@ describe("computeSetEv", () => {
     expect(d1?.probabilityPerPack).toBeCloseTo(0.2 / 1, 10);
   });
 
-  it("ranks top cards by EV contribution", () => {
+  it("ranks top cards by market value (most valuable first)", () => {
     const ev = computeSetEv(cards, config, "fr");
-    expect(ev.topCards[0].card.id).toBe("d1"); // 0.2 × 10 = 2
-    expect(ev.topCards[0].evContribution).toBeCloseTo(2, 10);
+    expect(ev.topCards.map((c) => c.card.id)).toEqual(["d1", "r2", "r1", "c2", "c1"]);
+    expect(ev.topCards[0].evContribution).toBeCloseTo(2, 10); // still carries its contribution
+
+    // Value sort ≠ contribution sort: a frequent cheap card carries more EV than
+    // a rare pricey one, yet the pricey card ranks first (priciest on top).
+    const local = [card("cheap", "common", 2), card("pricey", "double-rare", 5)];
+    const ev2 = computeSetEv(local, config, "fr");
+    expect(ev2.topCards[0].card.id).toBe("pricey"); // 5 € > 2 €
+    const cheap = ev2.topCards.find((c) => c.card.id === "cheap")!;
+    expect(cheap.evContribution).toBeGreaterThan(ev2.topCards[0].evContribution);
   });
 
   it("treats unpriced cards as 0 value (lower bound) and reports completeness", () => {

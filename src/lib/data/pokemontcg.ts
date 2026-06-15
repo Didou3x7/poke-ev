@@ -100,7 +100,10 @@ export async function fetchPtcgCards(setIds: string[], fetchImpl: typeof fetch =
   return out;
 }
 
-const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+// ★/☆ ("Gold Star" cards) are spelled as the word "Star" by TCGdex but as the
+// symbol by pokemontcg.io — fold both to "star" so e.g. "Umbreon Star" matches
+// "Umbreon ★" (Celebrations Classic Collection).
+const norm = (s: string) => s.toLowerCase().replace(/[★☆]/g, "star").replace(/[^a-z0-9]/g, "");
 // TCGdex zero-pads collector numbers ("072"), pokemontcg.io doesn't ("72").
 const numKey = (n: string) => n.replace(/^0+(?=\d)/, "");
 

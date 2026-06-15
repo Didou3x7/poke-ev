@@ -115,7 +115,7 @@ export const en: Dict = {
     sealedMarket: "Sealed market price",
     sealedPremium: "Sealed premium vs opening",
     sealedUnknown: "Sealed price not quoted in the snapshot",
-    topCards: "Cards carrying the EV",
+    topCards: "Most valuable cards",
     topCardsProb: "odds / pack",
     rarityBreakdown: "Contribution by rarity",
     rarityCol: { rarity: "Rarity", perPack: "Expected / pack", meanValue: "Avg value", contribution: "EV contribution" },
