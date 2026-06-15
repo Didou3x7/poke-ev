@@ -44,13 +44,28 @@ function localizeCardImage(url: string, locale: "fr" | "en"): string {
   return locale === "en" ? url : url.replace("/assets.tcgdex.net/en/", `/assets.tcgdex.net/${locale}/`);
 }
 
-/** The most expensive single card of a set (by the locale's market price). */
+/**
+ * The set's chase card — its most valuable single card (shown with the locale's
+ * market price). Ranked by the LOWER of the Cardmarket EUR and TCGplayer USD
+ * prices (USD converted at an approximate rate), not the raw locale price: a
+ * genuine chase is expensive in BOTH markets, so a single-market data artifact
+ * in either currency (a €104 uncommon that is only $23; a $1399 listing on a
+ * €333 card) can't win over the real chase. Requires a locale price + image so
+ * there is always something to display.
+ */
+const CHASE_FX = 1.15; // approximate EUR→USD, only for cross-market chase ranking
+function chaseScore(c: SnapshotCard): number {
+  const e = c.eur ?? 0;
+  const u = (c.usd ?? 0) / CHASE_FX;
+  return e > 0 && u > 0 ? Math.min(e, u) : Math.max(e, u);
+}
+
 export function pickChaseCard(set: { cards: SnapshotCard[] }, locale: "fr" | "en"): ChaseCard | null {
   const key = locale === "fr" ? "eur" : "usd";
   let best: SnapshotCard | null = null;
   for (const c of set.cards) {
     if (c[key] == null || !c.image) continue;
-    if (!best || c[key]! > best[key as "eur" | "usd"]!) best = c;
+    if (!best || chaseScore(c) > chaseScore(best)) best = c;
   }
   if (!best || best.image == null) return null;
   return {
