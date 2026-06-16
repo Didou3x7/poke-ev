@@ -156,7 +156,15 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
           if (ratio > 6) eur = round2(usd / fx.eurUsd);
           else if (ratio < 1 / 6) usd = round2(eur * fx.eurUsd);
         }
-        return { ...c, prices: { eur, usd } };
+        // Gallery subsets pull from a dedicated slot but TCGdex tags them with
+        // ordinary rarities (rare/ultra/secret). Their collector numbers are the
+        // reliable marker (TG01.., GG01..), so reclassify by prefix to the rarity
+        // the pull-rate slot references — else that guaranteed card scores 0 EV.
+        const num = c.number != null ? String(c.number) : "";
+        let rarity = c.rarity;
+        if (/^TG/i.test(num)) rarity = "trainer-gallery";
+        else if (/^GG/i.test(num)) rarity = "galarian-gallery";
+        return { ...c, rarity, prices: { eur, usd } };
       });
       const fr = config ? computeSetEv(cards, config, "fr", { topCardsCount: 12 }) : null;
       const en = config ? computeSetEv(cards, config, "en", { topCardsCount: 12 }) : null;

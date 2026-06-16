@@ -9,12 +9,28 @@
   "notes": "DigitalTQ tracked sample, n=630 packs: holo rare 137/630 (21.75%), V 80/630 (12.70%), VMAX 27/630 (4.29%), ultra rare 25/630 (3.97%), amazing rare 36/630 (5.71%), rainbow rare 8/630 (1.27%), secret rare 7/630 (1.11%). ThePriceDex aggregate matches the same rates. Amazing rares replace the reverse-holo slot (rare-slot rarities already sum to ~100% without them); other hits modeled in the rare slot with residual mass on non-holo rare. Reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card. ETB SWSH era = 8 packs.",
   "packSize": 10,
   "slots": [
-    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
-    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
     {
       "name": "reverse-slot",
       "count": 1,
-      "distribution": { "common": 0.471429, "uncommon": 0.471428, "amazing": 0.057143 }
+      "distribution": {
+        "common": 0.471429,
+        "uncommon": 0.471428,
+        "amazing": 0.057143
+      }
     },
     {
       "name": "rare-slot",
@@ -25,10 +41,16 @@
         "rare-holo-v": 0.126984,
         "rare-holo-vmax": 0.042857,
         "ultra-rare": 0.039683,
-        "rainbow-rare": 0.012698,
-        "secret-rare": 0.011111
+        "secret-rare": 0.023808999999999997
       }
     }
   ],
-  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
 }

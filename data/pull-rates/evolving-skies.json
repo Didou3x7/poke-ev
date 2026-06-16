@@ -9,12 +9,27 @@
   "notes": "TCGplayer Authentication Center study, 8,000+ packs (Aug 2021): normal V 10.56%, normal VMAX 5.60%, full art 2.78%, alt-art V 1.10%, alt-art VMAX 0.30%, rainbow rare 0.84%, gold rare 0.91% per pack (hit rate 22.10%). Full arts and in-set alt-art V merged into ultra-rare; secret-numbered alt-art VMAX merged with rainbow rares (same per-card odds ~0.05%, labeled Rare Rainbow by card databases). Holo-rare share (22%) from a smaller 630-pack community sample (DigitalTQ via RipOrFlip); residual mass on non-holo rare. Reverse filler approximated 50/50 common/uncommon. packSize excludes the basic Energy and code card. SWSH ETB contains 8 packs.",
   "packSize": 10,
   "slots": [
-    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
-    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
     {
       "name": "reverse-slot",
       "count": 1,
-      "distribution": { "common": 0.5, "uncommon": 0.5 }
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
     },
     {
       "name": "rare-slot",
@@ -25,10 +40,16 @@
         "rare-holo-v": 0.1056,
         "rare-holo-vmax": 0.056,
         "ultra-rare": 0.0388,
-        "rainbow-rare": 0.0114,
-        "gold-rare": 0.0091
+        "secret-rare": 0.0205
       }
     }
   ],
-  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
 }

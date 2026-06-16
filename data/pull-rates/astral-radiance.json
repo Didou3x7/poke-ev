@@ -9,8 +9,20 @@
   "notes": "TCGplayer Authentication Center study, 8,000+ packs: normal V 12.77%, VMAX/VSTAR 3.47%, full-art V 2.13%, full-art trainer 1.08%, alt-art V 0.74% (all full/alt arts merged into ultra-rare), Trainer Gallery 12.58% (reverse slot), rainbow 1.28%, gold 0.76% — hit rate just under 32%. Radiant rate (4.88%) and rare-holo share (25.53%) from an independent 615-pack DigitalTQ sample, also used to split VMAX/VSTAR (VSTAR 2.65%, VMAX 0.82%). Residual mass on non-holo rare; reverse filler 50/50 common/uncommon. packSize excludes the basic Energy and code card. SWSH ETB contains 8 packs.",
   "packSize": 10,
   "slots": [
-    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
-    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
     {
       "name": "reverse-slot",
       "count": 1,
@@ -31,10 +43,16 @@
         "ultra-rare": 0.0395,
         "rare-holo-vstar": 0.0265,
         "rare-holo-vmax": 0.0082,
-        "rainbow-rare": 0.0128,
-        "gold-rare": 0.0076
+        "secret-rare": 0.0204
       }
     }
   ],
-  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
 }

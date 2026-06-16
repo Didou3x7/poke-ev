@@ -9,12 +9,27 @@
   "notes": "Elite Fourum community study, n=2736 packs (95% CI): V 12.65% (1/7.91), VMAX 3.40% (1/29.42), ultra rare 3.76% (1/26.56), rainbow rare 1.50% (1/66.73), secret rare 0.95% (1/105.23). Holo rare rate (1/5.7) from ThePriceDex community aggregate; residual mass on non-holo rare. All hits modeled in the rare slot; reverse filler approximated as a 50/50 common/uncommon split. packSize excludes the basic Energy and code card. ETB SWSH era = 8 packs.",
   "packSize": 10,
   "slots": [
-    { "name": "commons", "count": 5, "distribution": { "common": 1 } },
-    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
     {
       "name": "reverse-slot",
       "count": 1,
-      "distribution": { "common": 0.5, "uncommon": 0.5 }
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
     },
     {
       "name": "rare-slot",
@@ -25,10 +40,16 @@
         "rare-holo-v": 0.1265,
         "rare-holo-vmax": 0.034,
         "ultra-rare": 0.0376,
-        "rainbow-rare": 0.015,
-        "secret-rare": 0.0095
+        "secret-rare": 0.0245
       }
     }
   ],
-  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
 }
