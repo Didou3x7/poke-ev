@@ -16,6 +16,7 @@ const p = (o: Partial<PtcgCard> & { number: string; name: string }): PtcgCard =>
   image: null,
   eur: null,
   usd: null,
+  rarity: null,
   ...o,
 });
 
@@ -56,6 +57,26 @@ describe("overlayPtcgPrices", () => {
       p({ number: "15", name: "Lunala", eur: 19, usd: 20 }),
     ]);
     expect(cards[0].prices).toEqual({ eur: 19, usd: 20 });
+  });
+
+  it("fills a null rarity from pokemontcg only when it is a genuine hit", () => {
+    const lvx = [card({ number: "120", name: "Dialga LV.X" })]; // card() sets rarity null
+    overlayPtcgPrices(lvx, [p({ number: "120", name: "Dialga LV.X", rarity: "Rare Holo LV.X" })]);
+    expect(lvx[0].rarity).toBe("lv-x");
+
+    const junk = [card({ number: "1", name: "Bidoof" })]; // null rarity, ptcg says plain Rare
+    overlayPtcgPrices(junk, [p({ number: "1", name: "Bidoof", rarity: "Rare" })]);
+    expect(junk[0].rarity).toBeNull(); // not a hit → left null (no false upgrade)
+  });
+
+  it("sharpens TCGdex 'rare' to a vintage hit but never downgrades", () => {
+    const ex = [{ ...card({ number: "97", name: "Rayquaza ex" }), rarity: "rare" as const }];
+    overlayPtcgPrices(ex, [p({ number: "97", name: "Rayquaza ex", rarity: "Rare Holo EX" })]);
+    expect(ex[0].rarity).toBe("ex");
+
+    const plain = [{ ...card({ number: "5", name: "Pikachu" }), rarity: "rare" as const }];
+    overlayPtcgPrices(plain, [p({ number: "5", name: "Pikachu", rarity: "Rare" })]);
+    expect(plain[0].rarity).toBe("rare"); // same tier → unchanged
   });
 
   it("keeps TCGdex prices when there is no match", () => {

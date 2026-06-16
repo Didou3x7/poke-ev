@@ -1,0 +1,64 @@
+{
+  "setId": "generations",
+  "era": "xy",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Generations_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.pokellector.com/Generations-Expansion/",
+    "https://www.pokemonwizard.com/sets/1729/generations-radiant-collection",
+    "https://www.tcgplayer.com/product/187238/pokemon-generations-generations-booster-pack",
+    "https://www.pokebeach.com/forums/threads/generations-pack-structure.134279/",
+    "https://deltiasgaming.com/everything-you-need-to-know-about-pokemon-tcg-pull-rates/"
+  ],
+  "notes": "XY-era special set (g1, released 2016-02-22 for the 20th Anniversary). DISTRIBUTION: Generations was NEVER sold in a standard 36-pack booster box — packs only came inside 20th-Anniversary merchandise: Mythical Collections (2 packs), Red & Blue Collection (4 packs), Super Premium Collection, and the Generations ELITE TRAINER BOX (10 packs). Hence display=null, etb=10 packs. The set carries a heavy sealed collector premium, so EV/booster will sit far below sealed-product prices — expected, rates NOT inflated to compensate.\n\nPACK STRUCTURE (Bulbapedia + retailer listings, confirmed multiple ways): 10 cards = 8 cards from the CORE set + 2 from the RADIANT COLLECTION (RC) subset (+ 1 basic Energy, not modeled). This 8+2 split is the set's distinctive feature. Modeled the value-bearing 10 as: 4 common + 2 uncommon + 1 reverse-holo + 1 core rare-or-better (= the 8 core) and 2 RC cards (the RC slots fold their own commons/uncommons in, so slot counts total the 10 modeled cards). Energy not modeled, consistent with dataset convention.\n\nSET COMPOSITION (Bulbapedia + Pokellector + PokemonWizard): core set 83 cards (~15 common, 16 uncommon, 15 rare, 14 rare-holo, 12 Rare Holo EX); Radiant Collection 32 cards (RC1-RC32: ~10 common, 12 uncommon, 10 ultra-rare of which 5 are full-art — Flareon EX FA RC28, Pikachu FA RC29, Gardevoir EX FA RC30, M Gardevoir EX FA RC31, Sylveon EX FA RC32). Total 115. This app's normalized buckets {ultra-rare:22, common:41, uncommon:38, rare-holo:5, rare:11} merge core EX + RC ultras into ultra-rare:22; there is correctly NO secret-rare bucket (Generations has zero secret rares — secret rares of this era pulled ~1:72 but none exist in this set), and no full-art-only bucket (full arts fold into ultra-rare).\n\nRATES (mapped onto the set's buckets by summing where needed):\n- CORE RARE-OR-BETTER slot (1 card): XY-era band from Flipside Gaming Part Two ('by Ancient Origins, ~1:6 packs for EXs and ~1:12 packs for URs'; Generations is an earlier-XY special set in that same EX-heavy band). EX/Mega-EX -> ultra-rare = 0.155 (~1:6.5 for the core-slot EX share); rare-holo = 0.40 (~era-convention holo share of the rare slot); plain rare = remainder 0.445. Sums to 1.0.\n- RADIANT COLLECTION slots (2 cards, identical distribution each): RC ultras (5 full-art EX + 5 standard EX) are short-printed, so per-card ultra incidence is governed by the XY-era UR/full-art ~1:12 band, NOT the raw 10/32 menu ratio. Per RC card: common 0.45, uncommon 0.45, ultra-rare 0.10. Two RC cards give per-pack RC-ultra ~1-(0.9^2)=0.19. Each RC slot sums to 1.0.\n- REVERSE-HOLO slot (1 card): dataset convention models reverse filler with the plain common/uncommon ids (market value is what matters). Neutral 50/50 common/uncommon (pools 41 vs 38 are near-equal). Sums to 1.0.\n\nCOMBINED per-pack ultra-rare (EX-or-full-art) incidence = 1-((1-0.155)*(0.9^2)) ~= 0.316 = ~1 in 3.2 packs. This is consistent with the community 'Radiant ultra roughly 1:3-4 packs' figure surfaced in search, while keeping the scarce full-arts (a fraction of the ultra bucket) within the sourced ~1:12 band.\n\nCONFIDENCE: 'low' — no per-set published pull-rate STUDY exists for this special set; the EX/UR bands are XY-era community/retailer averages (Flipside Gaming aggregating Pokebeach/Pokegym) plus retailer pack-structure listings, mapped onto Generations, not a Generations-specific large sample.\n\nINTEGRITY: every slot sums to exactly 1.0; all distribution keys {common, uncommon, rare, rare-holo, ultra-rare} are a strict subset of this set's available buckets. No secret-rare key used (the set lacks one). No invented per-set percentages — the EX ~1:6 / UR ~1:12 bands and holo ~era share are the sourced era figures.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "core-rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.445,
+        "rare-holo": 0.4,
+        "ultra-rare": 0.155
+      }
+    },
+    {
+      "name": "radiant-collection",
+      "count": 2,
+      "distribution": {
+        "common": 0.45,
+        "uncommon": 0.45,
+        "ultra-rare": 0.1
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": {
+      "packs": 10
+    }
+  }
+}

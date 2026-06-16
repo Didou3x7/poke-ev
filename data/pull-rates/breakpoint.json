@@ -1,0 +1,58 @@
+{
+  "setId": "breakpoint",
+  "era": "xy",
+  "confidence": "medium",
+  "sources": [
+    "https://cardcodex.com/pokemon/xy/breakpoint/breakpoint-booster-pack-xy9/",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-review-of-rarity-in-ultra-prism",
+    "https://pkmncollectors.livejournal.com/20732811.html",
+    "https://api.pokemontcg.io/v2/cards?q=set.id:xy9"
+  ],
+  "notes": "BREAKpoint (xy9), XY-era, 10 cards/pack. Per-pack rare-slot composition taken from cardcodex's BREAKpoint-specific pull-rate table: Rare Holo 16.7%, Rare Holo EX 10.0%, Ultra Rare (Full Art/M-EX) 5.9%, Rare BREAK 6.7%, Secret Rare 0.8%; remainder = plain Rare (~59.9%). Mapped onto this set's available buckets via pokemontcg.io rarity tally (Common 33, Uncommon 43, Rare 16, Rare Holo 7, Rare Holo EX 11, Rare Ultra 10, Rare BREAK 5, Rare Secret 1 = 126 cards). The set has NO separate 'ex' bucket, so EX + M-EX + Full Art Ultra + BREAK all collapse into 'ultra-rare' (25-card bucket); ultra-rare slot share = 10.0+5.9+6.7 = 22.6%. Rare slot: rare 0.599 + rare-holo 0.167 + ultra-rare 0.226 + secret-rare 0.008 = 1.000. Corroborated by two community BREAKpoint box openings (pkmncollectors/pokebeach): ~5-6 holos, ~3 EX, ~2-3 full arts, ~2 BREAK, 0-1 secret per 36-pack box — consistent with these per-pack rates. Flipside Gaming Part Two confirms XY-era era averages (EX ~1:6, UR ~1:12, BREAK ~1:12, Secret ~1:72 ≈ 0.5/box). Reverse-holo slot mapped from cardcodex reverse frequencies (Reverse Common ~40%, Reverse Rare Holo ~6.8%) normalized across the reverse-eligible pool. Uncommon bucket count 44 vs pokemontcg.io 43 differs by the unmodeled basic Energy. Confidence medium: per-set cardcodex table + multiple community samples, but no single large published study.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.599,
+        "rare-holo": 0.167,
+        "ultra-rare": 0.226,
+        "secret-rare": 0.008
+      }
+    },
+    {
+      "name": "reverse",
+      "count": 1,
+      "distribution": {
+        "common": 0.46,
+        "uncommon": 0.42,
+        "rare": 0.06,
+        "rare-holo": 0.06
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

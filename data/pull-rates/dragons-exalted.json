@@ -1,0 +1,57 @@
+{
+  "setId": "dragons-exalted",
+  "era": "bw",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/bw6/dragons-exalted/pull-rates",
+    "https://pokeden.io/tools/pack-sim/bw6",
+    "https://poke.rip/sets/dragons-exalted/",
+    "https://www.packrip.co/ev/bw6",
+    "https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-15",
+    "https://pokegym.net/community/index.php?threads%2Fpull-rates-for-dragons-exalted.167289%2F="
+  ],
+  "notes": "BW6 Dragons Exalted, 2012 Black & White era. Pack = 10 cards: 5 common, 3 uncommon, 1 reverse-holo, 1 rare slot. Box = 36 packs (no ETB existed for this set; standalone ETB products were not produced for BW6, so etbPacks=null). \n\nRare-slot distribution mapped onto this set's buckets {rare, rare-holo, ex, ultra-rare, secret-rare}. Spine taken from thepricedex per-box counts (rare-holo 8.7/box, ex 2/box, secret 0.3/box, i.e. ~1 secret per 3-4 boxes) cross-checked against pokeden (Full Art 1-in-18, i.e. ~2/box) and community box reports on PokeBeach/pokegym (typical box = 2-4 EX total, 0-3 of them Full Art, occasional secret). Per-pack rare slot: rare 0.6521, rare-holo 0.242, ex (non-FA Pokemon-EX) 0.0556 (~2/box), ultra-rare (Full Art EX) 0.042 (~1.5/box), secret-rare 0.0083 (~0.3/box). Sums to 1.0.\n\nREJECTED pokeden's secret-rare figure (5% / 1-in-20) — it contradicts thepricedex (1-in-108), the community consensus of roughly 1 secret per 3-4 boxes, and pokegym/PokeBeach box reports; pokeden appears to misclassify. Also corrected PackRip's pack structure ('4 common + 1 energy'): BW-era English packs are 5 common + 1 reverse holo with no fixed energy slot.\n\nReverse-holo slot distribution (common 0.5 / uncommon 0.42 / rare 0.08) is an era-typical approximation proportional to bucket sizes for the non-holo reverse pool; reverse-holo did not commonly upgrade to ex/ultra/secret in BW6, so those are excluded from that slot.\n\nConfidence = medium: backed by multiple aggregator pull-rate pages and consistent community box reports, but no single large published per-set study (TPCi had randomized, non-guaranteed rates in this era). Vintage sealed BW6 box carries a large collector premium, so per-pack EV will sit well below current sealed box price — expected, not a rate error.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.42,
+        "rare": 0.08
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6521,
+        "rare-holo": 0.242,
+        "ex": 0.0556,
+        "ultra-rare": 0.042,
+        "secret-rare": 0.0083
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

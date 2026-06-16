@@ -1,0 +1,55 @@
+{
+  "setId": "ex-firered-leafgreen",
+  "era": "ex",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/EX_FireRed_%26_LeafGreen_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.tcgplayer.com/product/98946/pokemon-firered-and-leafgreen-firered-and-leafgreen-booster-pack",
+    "https://toywiz.com/pokemon-ex-fire-red-leaf-green-booster-pack/",
+    "https://www.psacard.com/articles/articleview/10126/psa-set-registry-collecting-2004-poke-mon-ex-fire-red-leaf-green-breathing-into-tcg"
+  ],
+  "notes": "EX-era set (2004-08-30). Pack = 9 cards confirmed two ways: Bulbapedia Booster-pack page states the entire EX Series had 9-card boosters and 36-pack boxes; FRLG booster product listing (TCGplayer/ToyWiz via search) gives '5 Commons, a Reverse Holo, a Rare-or-better, and 2 Uncommons' = 5+2+1+1 = 9. Modeled exactly that way.\n\nAvailable buckets {rare-holo:17, rare:14, uncommon:36, common:36, ex:9, secret-rare:4}. Intentionally NO gold-star bucket: Gold Stars debuted in EX Team Rocket Returns (the NEXT set), so FRLG has zero Gold Stars (Bulbapedia FRLG page lists only Common/Uncommon/Rare/Rare Holo/Rare Holo ex/Rare Secret). The 4 secret rares = Charmander 113, Articuno ex 114, Moltres ex 115, Zapdos ex 116 (legendary-bird ex's).\n\nRare-or-better slot resolves across {rare, rare-holo, ex, secret-rare}, sums to exactly 1.0:\n- ex=0.083 (~1:12 packs, ~3/box). Flipside Gaming (Part 1, aggregating Pokebeach/Pokegym) sources the EX-era ex band as 1:36 (Holon Phantoms, scarce end) to 1:8-12 (Power Keepers, generous end). FRLG is mid-era and ex-heavy (9 ex's), so placed toward the generous middle.\n- secret-rare=0.009 (~1:108, ~1 per 3 boxes for the 4 secrets combined). Flipside notes EX-era secret rares sit below the ex rate in frequency.\n- rare-holo=0.333 (~1:3 packs, ~12 holos/box). Era ~1:3 holo convention; cross-checks the community '~12+ rares per box' figure (12/36=0.333).\n- rare=remainder=0.575.\n\nReverse-holo slot modeled with plain common/uncommon ids per dataset convention (value is what matters); neutral 50/50 split given equal 36/36 common/uncommon pools.\n\nConfidence LOW: no FRLG-specific published pull-rate study; rates are EX-era community/retailer averages mapped onto the set. Vintage sealed boxes carry a heavy collector premium so EV/booster sits far below box price — expected, rates not inflated.\n\nVALIDATION: file written to data/pull-rates/ex-firered-leafgreen.json; `npm run validate:data` reports 'All datasets valid'. All slot distributions sum to 1.0; slot card-counts total 9 = packSize; all distribution keys are a strict subset of the available buckets.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.575,
+        "rare-holo": 0.333,
+        "ex": 0.083,
+        "secret-rare": 0.009
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

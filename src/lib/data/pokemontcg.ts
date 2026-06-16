@@ -1,4 +1,5 @@
 import type { PricedCard } from "../ev/types";
+import { normalizeRarity, type RarityId } from "../ev/rarity";
 
 /**
  * pokemontcg.io price + image source. Provides real, per-printing Cardmarket
@@ -18,11 +19,13 @@ export interface PtcgCard {
   image: string | null;
   eur: number | null;
   usd: number | null;
+  rarity: string | null;
 }
 
 interface PtcgApiCard {
   number?: string | number;
   name: string;
+  rarity?: string | null;
   images?: { small?: string; large?: string } | null;
   tcgplayer?: { prices?: Record<string, { market?: number | null; mid?: number | null; low?: number | null } | null> | null } | null;
   cardmarket?: { prices?: { trendPrice?: number | null; averageSellPrice?: number | null; avg7?: number | null } | null } | null;
@@ -81,7 +84,7 @@ export async function fetchPtcgCards(setIds: string[], fetchImpl: typeof fetch =
     for (let page = 1; page <= 4; page++) {
       const q = encodeURIComponent(`set.id:${setId}`);
       const data = await getJson<{ data: PtcgApiCard[] }>(
-        `${PTCG_BASE}/cards?q=${q}&pageSize=250&page=${page}&select=number,name,images,tcgplayer,cardmarket`,
+        `${PTCG_BASE}/cards?q=${q}&pageSize=250&page=${page}&select=number,name,rarity,images,tcgplayer,cardmarket`,
         fetchImpl,
       );
       const cards = data?.data ?? [];
@@ -92,6 +95,7 @@ export async function fetchPtcgCards(setIds: string[], fetchImpl: typeof fetch =
           image: c.images?.large ?? c.images?.small ?? null,
           eur: ptcgEur(c),
           usd: ptcgUsd(c),
+          rarity: c.rarity ?? null,
         });
       }
       if (cards.length < 250) break;
@@ -141,6 +145,40 @@ export function overlayPtcgPrices(cards: PricedCard[], ptcg: PtcgCard[]): number
     if (m.eur != null) c.prices.eur = m.eur;
     if (m.usd != null) c.prices.usd = m.usd;
     if (!c.image && m.image) c.image = m.image;
+    upgradeRarity(c, m);
   }
   return matched;
+}
+
+// Tier ranks for the rarity upgrade. TCGdex lumps vintage hits (EX ex, Gold
+// Star, Lv.X, Prime, LEGEND, secrets) into "Rare"/"Rare Holo" or leaves them
+// null; pokemontcg.io has the real rarity. Anything not listed here is a "hit".
+const RARITY_RANK: Partial<Record<RarityId, number>> = {
+  common: 0,
+  uncommon: 1,
+  rare: 2,
+  "rare-holo": 3,
+};
+const rank = (r: RarityId | null): number => (r == null ? -1 : RARITY_RANK[r] ?? 5);
+
+/**
+ * Refine a card's rarity from pokemontcg.io, UPGRADE-ONLY so modern sets (whose
+ * TCGdex rarity is already fine) are never disturbed: only sharpen TCGdex's
+ * coarse "rare"/"rare-holo" to a higher tier, and fill a null rarity solely with
+ * a genuine hit (rank ≥ 5). A regular rare stays rare; nothing is downgraded.
+ */
+function upgradeRarity(c: PricedCard, m: PtcgCard): void {
+  if (!m.rarity) return;
+  const ptcg = normalizeRarity(m.rarity);
+  if (ptcg == null) return;
+  const cur = c.rarity;
+  if (cur === "rare" || cur === "rare-holo") {
+    if (rank(ptcg) > rank(cur)) {
+      c.rarity = ptcg;
+      c.rawRarity = m.rarity;
+    }
+  } else if (cur == null && rank(ptcg) >= 5) {
+    c.rarity = ptcg;
+    c.rawRarity = m.rarity;
+  }
 }

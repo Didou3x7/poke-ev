@@ -1,0 +1,55 @@
+{
+  "setId": "ex-legend-maker",
+  "era": "ex",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://kantoshark.com/blog/pokemon-gold-star-cards-the-ultimate-collectors-guide/",
+    "https://www.serebii.net/card/exlegendmaker/",
+    "https://www.vintageisthenewold.com/faq/what-are-the-chances-of-getting-a-secret-rare-in-a-booster-box"
+  ],
+  "notes": "EX Legend Maker (ex12, Feb 2006), EX-era 9-card booster, 36 packs/box, NO ETB. Pack model: 4 common + 3 uncommon + 1 reverse-holo + 1 rare-or-better, per Bulbapedia (e-Card through EX Series = 9 cards/pack; 1 reverse-holo guaranteed since Legendary Collection). Set has exactly 7 Pokemon-ex (Arcanine/Armaldo/Banette/Dustox/Flygon/Mew/Walrein), 3 Gold Stars (Regirock/Regice/Registeel ★, 90-92), and 1 secret rare (Pikachu delta 93/92) - matches given buckets exactly. Chase-card rates SOURCED, mapped onto the rare slot: Pokemon-ex ~1:12-18 packs (Flipside, EX-era standard) -> 0.067/pack; Gold Star ~1:72 packs / 1 per 2 boxes (Flipside + Kanto Shark, consistent) -> 0.0139/pack; secret rare modeled conservatively at ~1:66 (era secret rares ran 1:36-1:72; single SR in set, no per-set study, vintageisthenewold gives 1:72 baseline) -> 0.0151/pack. Remaining rare-slot mass split rare-holo 0.30 / non-holo rare 0.604 (era-typical: holo rare ~1:3 packs). Reverse slot is common/uncommon filler, weighted toward commons (27 common vs 26 uncommon): common 0.55 / uncommon 0.45. confidence=low per integrity rules: era-average rates applied without a dedicated per-set pull-rate study (no large LM-specific sample exists; vintage set). Vintage SEALED box carries a large collector premium, so EV/booster will sit far below sealed box price - expected, not inflated. All four slot distributions sum to exactly 1.0.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.55,
+        "uncommon": 0.45
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.604,
+        "rare-holo": 0.3,
+        "ex": 0.067,
+        "gold-star": 0.0139,
+        "secret-rare": 0.0151
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

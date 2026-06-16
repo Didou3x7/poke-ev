@@ -1,0 +1,54 @@
+{
+  "setId": "ex-dragon",
+  "era": "ex",
+  "confidence": "medium",
+  "sources": [
+    "https://www.elitefourum.com/t/guide-to-early-ex-series-pull-rates/30710",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Dragon_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two"
+  ],
+  "notes": "EX Dragon (ex3), 2003, ex-era English booster: 9 cards/pack, 36 packs/box, NO ETB (era predates ETBs). Confirmed slot structure (Bulbapedia Booster pack TCG): e-Card/EX series boosters = 9 cards; every pack has 1 rare-or-better + reverse-holo (introduced Legendary Collection) + ~3 uncommons + remainder commons. Per-set rates from Elite Fourum 'Guide to early EX Series pull rates' (community sample), which gives EX Dragon per 36-pack box: 36 rare-tier slots total, of which 6 ex, 5 holo rares, 1 secret rare, leaving 24 plain rares (secret rare 'displaces a holo pull' per the guide; 6+5+1+24=36 = exactly 1 rare-slot/pack). This yields rare-slot distribution: rare 24/36=.6667, rare-holo 5/36=.1389, ex 6/36=.1667, secret-rare 1/36=.0278. Secret-rare ~1/box = 1:36 matches Flipside/Bulbapedia (Charmander-Charmeleon-Charizard secret line returned in ex Dragon at ~1:36). NO Gold Star bucket: Gold Stars debuted in EX Team Rocket Returns, AFTER ex Dragon, and the set's available buckets confirm none. Reverse-holo slot mapped to common/uncommon/rare era filler; weighted toward common per typical reverse distribution. Base slots: 3 uncommon + 4 common. Confidence MEDIUM: per-set figures are a community sample (Elite Fourum), not a large published study, but corroborated by independent secret-rare 1:36 figure. Buckets used are a subset of the given set buckets {rare-holo, rare, uncommon, common, ex, secret-rare}; each slot sums to 1.0. Booster boxes are vintage collector sealed product (high sealed premium), so EV/booster will sit well below box price as expected.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "Rare or better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6667,
+        "rare-holo": 0.1389,
+        "ex": 0.1667,
+        "secret-rare": 0.0277
+      }
+    },
+    {
+      "name": "Reverse holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.6,
+        "uncommon": 0.3,
+        "rare": 0.1
+      }
+    },
+    {
+      "name": "Uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "Commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "setId": "plasma-blast",
+  "era": "bw",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/bw10/plasma-blast/pull-rates",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.pokebeach.com/2013/05/plasma-blast-elite-trainer-box",
+    "https://toywiz.com/pokemon-black-white-plasma-blast-elite-trainer-box-genesect/",
+    "https://api.pokemontcg.io/v2/cards?q=set.id:bw10"
+  ],
+  "notes": "VERIFIED. Plasma Blast (bw10) is a standard BW-era set: 10 modeled cards/pack, 36-pack booster box AND 8-pack ETB both confirmed real products (ToyWiz/PokeBeach: ETB = 8 packs + 40 energy + accessories). shipEv=true.\n\nPRIMARY SOURCE = ThePriceDex per-set pull-rate table for bw10 (fetched verbatim): Secret Rare 1 in 112.5; Ultra Rare (Full Art) 1 in 35.5; Rare Holo EX 1 in 18; Rare ACE 1 in 24; Rare Holo 1 in 4.2; Rare 1 in 1.5. Per-box figures match: ~2 EX/box, ~1.0 UR/box, ~0.3 SR/box. Sample size undisclosed -> confidence \"medium\" (not \"high\").\n\nCROSS-CHECK vs Flipside Gaming BW-era baseline (fetched): Pokemon-EX ~1:18 packs (EXACT match to ThePriceDex 1:18); Full Art UR ~1:18-36 (ThePriceDex 1:35.5 sits at the lean end, consistent); Secret Rare ~1:72 baseline (ThePriceDex 1:112.5 leaner — Plasma Blast has only 4 secrets, so a leaner rate is expected, within set variance). Order of magnitude corroborated by two independent sources.\n\nBUCKET MAPPING — keys are a strict subset of this set's buckets {common:26, rare:19, uncommon:33, ex:6, rare-holo:11, ultra-rare:6, secret-rare:4}. Confirmed against pokemontcg.io raw rarities (105 cards): Common 26, Uncommon 33, Rare 15, Rare ACE 4, Rare Holo 11, Rare Holo EX 6, Rare Ultra 6, Rare Secret 4. CRITICAL: in this set's bucketing the 4 ACE SPEC cards (G Booster, G Scope, Master Ball + Computer Search/Scramble Switch) are folded into the `rare` bucket (15 Rare + 4 ACE = 19), NOT ultra-rare — there is no separate ACE bucket. So I fold ThePriceDex's \"Rare ACE 1:24\" into the `rare` bucket, NOT ultra-rare. The `ex` bucket = Rare Holo EX (1:18); `ultra-rare` = Full Art (Rare Ultra, 1:35.5); `secret-rare` = Rare Secret (1:112.5).\n\nRARE-OR-BETTER SLOT (fires every pack; conditional dist = per-pack rates):\n- secret-rare = 1/112.5 = 0.0089\n- ultra-rare  = 1/35.5  = 0.0282\n- ex          = 1/18    = 0.0556\n- rare-holo   = 1/4.2   = 0.2381\n- rare        = plain rare (0.6276) + Rare ACE (1/24 = 0.0417) = 0.6692\nSum = 1.0000 exactly (rounding residual absorbed into `rare`).\n\nREVERSE-HOLO SLOT (separate parallel slot): ThePriceDex Reverse Rare Holo 1/11.2 = 0.0893, Reverse Rare 1/7.2 = 0.1389; remainder split common/uncommon by pool counts (26 common, 33 uncommon) -> common 0.3401, uncommon 0.4317. Sum = 1.0.\n\nPack = 5 common + 3 uncommon + 1 reverse-holo + 1 rare-or-better = 10. No shiny-rare or rainbow bucket in BW era — correctly absent. Vintage 2013 sealed product carries a collector premium, so per-pack EV will sit well below current sealed box prices — expected, rates NOT inflated.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.3401,
+        "uncommon": 0.4317,
+        "rare": 0.1389,
+        "rare-holo": 0.0893
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6692,
+        "rare-holo": 0.2381,
+        "ex": 0.0556,
+        "ultra-rare": 0.0282,
+        "secret-rare": 0.0089
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

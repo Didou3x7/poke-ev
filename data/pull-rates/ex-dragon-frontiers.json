@@ -1,0 +1,56 @@
+{
+  "setId": "ex-dragon-frontiers",
+  "era": "ex",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Dragon_Frontiers_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://kantoshark.com/blog/pokemon-gold-star-cards-the-ultimate-collectors-guide/",
+    "https://pooka.app/card-spotlights/gold-star-phenomenon",
+    "https://www.elitefourum.com/t/pull-rates-for-gold-stars-from-ex-blister-packs/34175"
+  ],
+  "notes": "EX-era set (EX Dragon Frontiers, English release 2006-11-08, set code EX/#30, 101 cards, Delta Species). BOOSTER STRUCTURE: 9 cards/pack, 36 packs/box, NO ETB (era predates ETBs). Bulbapedia Booster-pack page (fetched) confirms EX-series boosters had 9 cards, every pack guaranteed >=1 Rare, ~3 Uncommon, remainder Common, plus 1 Reverse-Holo (since Legendary Collection). Modeled as 5 common + 2 uncommon + 1 reverse-holo + 1 rare-or-better = 9, matching the in-dataset ex-crystal-guardians / ex-firered-leafgreen precedents.\n\nAVAILABLE BUCKETS (given): {rare-holo:12, rare:16, uncommon:31, common:30, ex:10, gold-star:2}. Bulbapedia DF set page (fetched) rarity breakdown: 21 Common, 20 Uncommon, 15 Rare, 12 Rare Holo, 10 Rare Holo ex, 2 Rare Holo Star (Gold Star). HIT buckets match exactly: rare-holo:12 = 12 Rare Holo; ex:10 = 10 Rare Holo ex; gold-star:2 = the 2 Gold Stars (Charizard Star delta 100/101 + Mew Star delta 101/101). Charizard Gold Star is the iconic chase of this set. Common/uncommon/rare bucket counts differ slightly from the printed checklist because the TCGdex/engine classifier groups some cards differently, but that does not affect the value-driving hit buckets.\n\nRARE-OR-BETTER SLOT resolves across {rare, rare-holo, ex, gold-star}:\n- gold-star = 0.014 (~1:72 packs = ~1 per 2 booster boxes, both Gold Stars combined). Sourced from Flipside Gaming (~1:72 packs for most sets), Kanto Shark (~1 per 72 packs), Pooka (one per two booster boxes / 1 in 72 packs) and the elitefourum thread (1/72 packs would have a gold star). 1/72 = 0.0139 rounded to 0.014.\n- ex = 0.083 (~1:12 packs, ~3 ex per 36-pack box). Flipside Gaming sources the EX-era ex band from Pokebeach/Pokegym at 1:36 (scarce end) up to 1:8-12 (generous end, ex Power Keepers). DF is a mid-era ex-heavy set (10 ex), placed at the more-generous middle (1:12), identical to the Crystal Guardians / FRLG precedent.\n- rare-holo = 0.333 (~1:3 packs, ~12 holos/box; 12 Rare Holo in set lines up).\n- rare = remainder = 1 - 0.014 - 0.083 - 0.333 = 0.570 (plain non-holo rare).\nSlot sums to exactly 1.0.\n\nREVERSE-HOLO SLOT: dataset convention models EX-era reverse-holo filler with plain common/uncommon ids; near-equal pools (common:30/uncommon:31) -> neutral 50/50.\n\nCONFIDENCE 'low': no per-set published pull-rate STUDY for this vintage set; ex band, gold-star ~1:72 and holo ~1:3 are EX-era community/retailer averages mapped onto DF, not a DF-specific large sample. Vintage sealed DF boxes carry a heavy collector premium (Charizard Gold Star chase), so EV/booster will sit far below sealed box price - expected; rates are NOT inflated. INTEGRITY: every slot sums to exactly 1.0; all distribution keys are a strict subset of the set's available buckets; validated via node script (ALL VALID). Config written to /Users/alexandreott/Desktop/POKEEV/data/pull-rates/ex-dragon-frontiers.json.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.57,
+        "rare-holo": 0.333,
+        "ex": 0.083,
+        "gold-star": 0.014
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

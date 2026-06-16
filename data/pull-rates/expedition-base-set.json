@@ -1,0 +1,49 @@
+{
+  "setId": "expedition-base-set",
+  "era": "wotc",
+  "confidence": "medium",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Expedition_Base_Set_(TCG)",
+    "https://www.elitefourum.com/t/how-were-expedition-base-set-reverse-rares-distributed/30980",
+    "https://pokecardvalues.co.uk/sets/ecard1/expedition-base-set/",
+    "https://toywiz.com/pokemon-trading-card-game-expedition-base-set-booster-box-36-packs/"
+  ],
+  "notes": "Expedition Base Set (ecard1), first e-Card-series set, English release Sept 2002. CONFIRMED pack structure (Bulbapedia): packs reduced from 11 to 9 cards = 5 Common + 2 Uncommon + 1 Reverse Holofoil (\"refractor\" reverse, new to e-Card) + 1 Rare-or-Rare-Holo. Booster box = 36 packs (ToyWiz \"36 Packs\", DA Card World). No ETB (did not exist in this era).\n\nRARE SLOT: holo ~1 in 3 packs (era standard, corroborated by community per-holo ~1.03% giving ~12 holos/box across 36 packs; elitefourum confirms a holo does NOT replace the non-holo rare — every pack still yields a non-holo rare and may additionally yield a holo). Modeled rare slot as rare-holo 1/3, rare 2/3. The chase \"rare-holo\" foil hit bucket is produced only by this slot.\n\nREVERSE SLOT: e-Card refractor reverse, distributed RARITY-FLAT across the first 159 singles (elitefourum: \"every single card individually has the same odds in the reverse spot\"; per-card ~0.63%). A reverse-holo of a rare is the reverse printing of the rare (maps to the `rare` bucket), NOT the chase foil `rare-holo` bucket. Per the WOTC/e-Card era directive, modeled the added reverse-holo slot as 50/50 common/uncommon filler so as not to inflate the hit rate; the small share of reverse rares is folded out for simplicity and does not affect the chase rare-holo EV.\n\nConfidence MEDIUM: pack composition and box size are firmly sourced (Bulbapedia + retail listings); the 1-in-3 holo rate is an era-average corroborated by community samples rather than a large per-set study.\n\nHit bucket for EV = rare-holo (the foil chase cards). Vintage sealed box carries a large collector premium, so EV/booster is expected to sit well below box price — rates were NOT inflated to compensate.\n\nBucket check: distribution keys are a subset of available buckets {rare-holo, rare, uncommon, common}. Each slot sums to exactly 1.0. Slot count = 5 common + 2 uncommon + 1 reverse + 1 rare = 9 = packSize.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.3333,
+        "rare": 0.6667
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

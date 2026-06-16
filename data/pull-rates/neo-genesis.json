@@ -1,0 +1,40 @@
+{
+  "setId": "neo-genesis",
+  "era": "wotc",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.psacard.com/articles/articleview/9409/psa-set-registry-collecting-2000-poke-mon-neo-genesis-1st-edition",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)"
+  ],
+  "notes": "Neo Genesis (neo1, 2000), early WOTC/Neo era. Confirmed across PSA registry article, Flipside Gaming rarity review, and Bulbapedia: 11-card booster = 7 common + 3 uncommon + 1 rare slot. Holo rare inserted in approximately 1 in 3 packs (community/era-average rate; WOTC never officially published exact odds). NO reverse-holo slot — reverse holos began with Legendary Collection, which came AFTER Neo Destiny, so the entire Neo block (Genesis through Destiny) has no reverse-holo filler. NO secret rares in Neo Genesis (Crystal/secret rares are an e-Card-era feature). The single rare slot resolves to non-holo rare ~2/3 of packs (0.6667) or rare-holo ~1/3 (0.3333). Hit bucket = rare-holo. No ETB existed in this era. Booster box = 36 packs; sealed vintage box carries a large collector premium so EV/booster will sit far below box price — expected, rates not inflated to compensate. Confidence=low: applying the era-average 1:3 holo rate without a Neo-Genesis-specific community pull study. Available buckets {rare-holo, rare, uncommon, common} all used; each slot distribution sums to exactly 1.0.",
+  "packSize": 11,
+  "slots": [
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.3333,
+        "rare": 0.6667
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "common",
+      "count": 7,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

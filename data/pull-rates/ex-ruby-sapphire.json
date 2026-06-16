@@ -1,0 +1,55 @@
+{
+  "setId": "ex-ruby-sapphire",
+  "era": "ex",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/ex1/ex-ruby-sapphire/pull-rates",
+    "https://www.elitefourum.com/t/guide-to-early-ex-series-pull-rates/30710",
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Ruby_&_Sapphire_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.pokebeach.com/forums/threads/ex-series-booster-boxes-ruby-sapphire-era-ones-pull-rates.147541/"
+  ],
+  "notes": "EX-era set (released 2003-06-18), pokemontcg id ex1, 109 cards. Booster box = 36 packs. NO ETB existed in this era -> etbPacks=null.\n\nPACK STRUCTURE (9 cards/pack, confirmed by ThePriceDex pull-rate study + Bulbapedia pack-structure prose): 1 reverse-holo + 1 rare-or-better + 2 uncommon + 5 common. (Energy filler from the real pack carries no EV / has no available bucket here, so the 9 modeled slots = 5 common + 2 uncommon + 1 rare-or-better + 1 reverse, matching the era baseline.)\n\nAVAILABLE BUCKETS {rare-holo:14, rare:13, uncommon:34, common:40, ex:8}. Bulbapedia confirms 8 Pokemon-ex (rarity 'Rare Holo ex': Chansey/Electabuzz/Hitmonchan/Lapras/Magmar/Mewtwo/Scyther/Sneasel ex), matching the ex:8 bucket. R&S has NO Gold Star and NO secret rare (Gold Stars began in EX Team Rocket Returns), so those keys are correctly absent.\n\nRARE-OR-BETTER SLOT (1 per pack, 36/box): resolves to ex, rare-holo, or rare. ThePriceDex per-set study: Rare Holo EX ~1 in 6 packs (~6/box), Rare Holo ~1 in 6 packs (~6/box), remainder non-holo rare (~24/box). Corroborated by the Elite Fourum early-EX guide (~6 ex/box, ~6 holo/box for R&S; early print runs even higher at 9-10 ex/box). So ex=6/36=0.167, rare-holo=6/36=0.167, rare=0.666 (sum=1.000). This 1:6 ex rate is on the generous early-print end of Flipside's 1:12-18 era average, justified by the per-set study; rates NOT inflated.\n\nREVERSE-HOLO SLOT (1 per pack): ThePriceDex reverse breakdown per box (rev common 14.1, rev uncommon 11.1, rev rare 4.3, rev rare-holo 4.6, rev energy 2.0). Energy has no available bucket, so dropped and the remaining four renormalized: common 14.1/34.1=0.41, uncommon 11.1/34.1=0.33, rare 4.3/34.1=0.13, rare-holo 4.6/34.1=0.13 (sum=1.000). Reverse foils mapped onto plain common/uncommon/rare/rare-holo ids per the dataset convention (their market value is what matters).\n\nCONFIDENCE 'medium': backed by a per-set pull-rate study (ThePriceDex) plus a community early-EX guide (Elite Fourum) and corroborating retailer/community reports — community-sample grade, not a large published study, so not 'high'. Vintage sealed boxes carry a large collector premium, so EV/booster will sit far below box price — expected.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.666,
+        "rare-holo": 0.167,
+        "ex": 0.167
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.41,
+        "uncommon": 0.33,
+        "rare": 0.13,
+        "rare-holo": 0.13
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

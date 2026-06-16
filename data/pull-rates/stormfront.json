@@ -1,0 +1,53 @@
+{
+  "setId": "stormfront",
+  "era": "dp",
+  "confidence": "medium",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Stormfront_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/",
+    "https://www.dacardworld.com/gaming/pokemon-usa-ex-dandp-stormfront-booster-box"
+  ],
+  "notes": "Stormfront (dp7) is a late Diamond & Pearl-era set (released Nov 2008). DP-era booster = 9 cards: 1 rare-or-better, 3 uncommons, 4 commons, 1 reverse-holo (Bulbapedia booster-pack structure; guaranteed 1 rare + ~3 uncommon + 1 reverse holo since Legendary Collection). Box = 36 packs, NO ETB (vintage era). Two modeled slots:\n\nRARE SLOT (1/pack): Distribution maps fine era rates onto this set's buckets by summing. Sourced rates -> secret-rare (3 retro Charizard-line + shiny cards): ~1:36 packs per Flipside = 0.028. lv-x (Level X): Stormfront is a LATE DP set so the more favorable 1:18 packs rate applies (Flipside: \"1:36 for the first sets... 1:18 for later sets\") = 0.056 (~2 per box). rare-holo: DP-era holo ~1:3 packs umbrella, net of lv-x/secret holo overlap = 0.306. rare (plain): remainder = 0.610. Sum = 1.0. Per box that is ~22 plain rares, ~11 holos, ~2 Level X, ~1 secret/shiny.\n\nREVERSE-HOLO SLOT (1/pack): 1 reverse holofoil guaranteed per pack (Bulbapedia). Reverse appears across common/uncommon/rare faces; modeled proportional to the set's non-Level-X pool weighted toward commons: common 0.45, uncommon 0.40, rare 0.15. Sum = 1.0. (Reverse-holo Level X / secret rares do not exist, so those buckets are excluded from this slot.)\n\nConfidence MEDIUM: rates are real community/era-average figures (Flipside rarity review + Bulbapedia structure) but there is no large per-set published pull study for Stormfront specifically. Vintage sealed boxes carry a large collector premium, so computed EV/booster will sit far below box price - expected, not a reason to inflate rates.\n\nAvailable buckets honored: distribution keys are a strict subset of {rare-holo, rare, uncommon, common, lv-x, secret-rare}. Each slot sums to exactly 1.0.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.61,
+        "rare-holo": 0.306,
+        "lv-x": 0.056,
+        "secret-rare": 0.028
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.45,
+        "uncommon": 0.4,
+        "rare": 0.15
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

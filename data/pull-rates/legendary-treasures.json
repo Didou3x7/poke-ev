@@ -1,0 +1,57 @@
+{
+  "setId": "legendary-treasures",
+  "era": "bw",
+  "confidence": "medium",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://bulbapedia.bulbagarden.net/wiki/Legendary_Treasures_(TCG)",
+    "https://pokegym.net/community/index.php?threads/legendary-treasures-pull-rates.180847/",
+    "https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-32"
+  ],
+  "notes": "BW11 Legendary Treasures, released 2013. Standard BW 10-card pack: 5 common, 3 uncommon, 1 reverse-holo, 1 rare-slot. Box = 36 packs. Sourced rates: EX (Pokemon-EX Full Art) at a generous 1:9 packs (Flipside Gaming \"A Comprehensive Review of Rarity Part Two\") -> 0.11 of rare slot. Secret rare (gold Reshiram/Zekrom, 2 cards) at the BW-era ~1:72 packs slot rate -> ~0.014. The gold full-art versions themselves are far rarer (reported 1 per 2 cases) but the secret-rare slot occupancy maps to the era ~1:72. Ultra-rare bucket here = the 5 Radiant Collection Full Arts (Rare Ultra); LT was famously generous on ultra-rares (\"insane amount of ultra rares in a box\"), mapped to ~1:18 (0.055), roughly double the standard BW 1:36 UR rate. Box-break reports cited ~18-21 holo rares per box of 36 -> rare-holo ~0.54 of rare slot; non-holo rare is the remainder. Reverse-holo slot lands on common/uncommon/rare/rare-holo pool (no EX in reverse slot for this era). confidence=medium: EX 1:9 and secret 1:72 are published era/set figures, but holo-per-box and UR generosity come from community box-break samples rather than a large per-set study. Vintage sealed box carries a heavy collector premium so EV/booster will sit well below box price - expected. Distribution keys are a subset of the set's available buckets {common, uncommon, rare, rare-holo, ex, secret-rare, ultra-rare}; each slot sums to 1.0.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "Commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "Uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "Reverse Holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.35,
+        "rare": 0.1,
+        "rare-holo": 0.05
+      }
+    },
+    {
+      "name": "Rare Slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.281,
+        "rare-holo": 0.54,
+        "ex": 0.11,
+        "ultra-rare": 0.055,
+        "secret-rare": 0.014
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

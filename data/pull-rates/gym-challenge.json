@@ -1,0 +1,41 @@
+{
+  "setId": "gym-challenge",
+  "era": "wotc",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://www.pokebeach.com/forums/threads/cards-from-booster-packs.62576/",
+    "https://www.pokemastercenter.com/pokemon-base-set-guide/"
+  ],
+  "notes": "Gym Challenge (gym2), WotC Gym series, released 2000 — pre-2002 early WotC, so NO reverse-holo slot. Booster = 11 cards. Bulbapedia confirms 11-card boosters for all WotC sets Base through Neo Destiny (which includes the Gym series). Composition per pack: 1 rare-or-better, 3 uncommon, 7 common. Holo insertion rate ~1 in 3 packs is the well-documented WotC-era baseline (Flipside Gaming rarity review: \"Rare (guaranteed 1 per pack), and Holo (approximately 1:3 packs)\"; PokeBeach forum + PokeMaster base-set guide corroborate 1-in-3 holo for early sets base-rocket/gym). No per-set published study exists for Gym Challenge, so this maps the era-average WotC rate onto the set's buckets -> confidence LOW.\n\nSlot mapping onto available buckets {rare-holo:20, rare:21, uncommon:42, common:49}:\n- rare slot (1 card): holo 1/3 -> rare-holo 0.3333, otherwise non-holo rare 0.6667. Hit bucket = rare-holo.\n- uncommon slot (3 cards): uncommon 1.0.\n- common slot (7 cards): common 1.0. (WotC Gym boosters historically include energy in the card pool; this set's only matching bucket is common, so all 7 map to common.)\nEach distribution sums to 1.0. All keys are a subset of the set's buckets.\n\nBooster BOX = 36 packs (vintage collector item with large sealed premium; EV/booster is expected to sit well below box price — rates not inflated to compensate). NO ETB existed for this era -> products displayPacks/etbPacks = null.\n\nCaveat: 0.3333+0.6667 rounds the 1/3 holo rate; effective rare-holo per pack ~0.333, i.e. ~1 holo every 3 packs as documented.",
+  "packSize": 11,
+  "slots": [
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.3333,
+        "rare": 0.6667
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "common",
+      "count": 7,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

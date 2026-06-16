@@ -1,0 +1,53 @@
+{
+  "setId": "ex-team-magma-vs-team-aqua",
+  "era": "ex",
+  "confidence": "medium",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Team_Magma_vs_Team_Aqua_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two"
+  ],
+  "notes": "EX Series booster: 9 cards = 5 common + 2 uncommon + 1 reverse-holo + 1 rare-or-better slot; 36 packs/box, no ETB (era predates ETBs). Sources: Bulbapedia Booster pack page confirms 9-card EX-Series packs; Dexerto/PokeBeach community confirm 5C/2U/1RH/1rare layout.\n\nRARE SLOT distribution (sums to 1.0):\n- secret-rare: ~1:36 packs = 0.028. Flipside Gaming explicitly names \"ex Dragon and ex Team Magma vs. Team Aqua\" at ~1:36 packs. Set has 2 secret rares (Absol 96/95, Jirachi 97/95).\n- ex (Pokemon-ex): ~1:36 packs = 0.028 (1 per booster box). Flipside Gaming: ex-era ex cards averaged 1:36 packs for most sets (only ex Power Keepers was the 1:8-12 outlier). Set has 7 ex cards.\n- Remainder 0.944 split evenly between the 12 rare-holo and 12 rare cards (equal counts) per era convention that ~half of rare slots are holo: rare-holo 0.472, rare 0.472.\n\nREVERSE-HOLO SLOT: era reverse-foil slot is common/uncommon filler (no rare-bucket bleed). Modeled as common 0.72 / uncommon 0.28 to mirror the set's 32 common vs 32 uncommon pool weighted toward commons in the reverse slot.\n\nNO gold-star bucket: Gold Stars debuted in ex Team Rocket Returns (the NEXT set); this set predates them, so gold-star is correctly absent from the available buckets. Confidence=medium: secret-rare rate is a per-set community figure; ex and rare-holo splits are era-average rates applied to this set's bucket counts.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "Commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "Uncommons",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "Reverse Holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.72,
+        "uncommon": 0.28
+      }
+    },
+    {
+      "name": "Rare or better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.472,
+        "rare-holo": 0.472,
+        "ex": 0.028,
+        "secret-rare": 0.028
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

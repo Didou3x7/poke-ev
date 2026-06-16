@@ -1,0 +1,56 @@
+{
+  "setId": "plasma-freeze",
+  "era": "bw",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Plasma_Freeze_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Elite_Trainer_Box_(TCG)",
+    "https://www.serebii.net/card/plasmafreeze/",
+    "https://www.pokemoncenter.com/product/141-11822/pokemon-trading-card-game-black-and-white-plasma-freeze-booster-display-36-packs",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)"
+  ],
+  "notes": "RESEARCH (sourced, adversarial):\n- Set structure (Bulbapedia Plasma_Freeze_(TCG), fetched OK; Serebii plasmafreeze cross-check): 122-card English set = 116 numbered + 6 secret. Regular Pokemon-EX (Heatran/Thundurus/Deoxys/Latias/Latios/Tornadus), matching Full Art EX 'Rare Ultra' variants (#109-115 range), and 6 secret rares #117-122 (Empoleon, Sigilyph, Garbodor, Garchomp, Max Potion, Ultra Ball) — all NON-EX (regular Pokemon + Trainer items), so they map cleanly onto the secret-rare bucket. The given set buckets (ex=6, ultra-rare=8, secret-rare=6, rare-holo=14, rare=24) are taken as authoritative for distribution keys; minor source disagreement on exact EX/FA counts (6 vs 7) does not affect the per-pack rate mapping, which is driven by era anchors not card counts.\n- Pull rates (Flipside Gaming 'Comprehensive Review of Rarity Part Two', fetched OK): for the 'Next Destinies - Plasma Blast' window (which INCLUDES Plasma Freeze / BW9): Pokemon-EX ~1:18 packs, Ultra Rare / Full Art EX ~1:36 packs, Secret Rare ~1:2 booster boxes (=1/72 packs). No large per-set opening study exists for BW9; community reports (PokeBeach English Booster Box Pull Rates thread) describe Plasma Freeze as high-variance ('all over the place', boxes with 0-3 Full Arts) but are consistent with the ~2 EX + ~1 FA EX per box era average. Hence confidence=low (era-average rates, not a per-set study).\n- Pack structure (Bulbapedia Booster_pack_(TCG)): BW packs = 10 game cards (the 11th Basic Energy began Sun & Moon). BW-era baseline confirmed: 10 cards = 5 common + 3 uncommon + 1 reverse-holo + 1 rare-or-better.\n- Products: standard 36-pack Booster Display confirmed (Pokemon Center listing 141-11822; ToyWiz/Potomac/TCGplayer corroborate). NO Elite Trainer Box: per Bulbapedia Elite_Trainer_Box_(TCG), ETBs launched with Plasma Storm (Feb 2013, 7 packs) and 'Plasma Freeze, Legendary Treasures, and Flashfire did NOT receive an ETB' due to the staggered early rollout. etb = null.\n\nMAPPING ONTO BUCKETS (rare-or-better slot, count=1, per-pack):\n  ex (regular Pokemon-EX) = 1/18 = 0.05556\n  ultra-rare (Full Art EX) = 1/36 = 0.02778\n  secret-rare = 1/72 = 0.01389  (1 per 2 boxes)\n  Subtotal specials = 0.09723\n  rare-holo: a BW box runs ~12 holos/36 packs; ~3.5 holo slots are taken by the EX/FA-EX/secret cards above, leaving ~8.5 pure rare-holo per box = 0.23611/pack. This holo/non-holo split is DERIVED from era box structure, not a per-set opening study.\n  rare (non-holo) = 1 - 0.09723 - 0.23611 = 0.66666 (remainder/filler)\n  Sum check: 0.66666 + 0.23611 + 0.05556 + 0.02778 + 0.01389 = 1.00000 — exact.\n\nHIT ECONOMY SANITY: any-EX-or-better ~9.7%/pack (~3.5/box: ~2 regular EX + ~1 FA EX + ~0.5 secret), secret-rare ~1.4% (1 per 2 boxes). Matches published era economy. Not over-claimed. Vintage sealed box premium far exceeds EV/booster — expected for a 2013 set; rates NOT inflated to compensate.\n\nCONFIDENCE = low: special-card rates are era/window figures (Next Destinies-Plasma Blast) applied without a per-set BW9 study; the rare-holo vs non-holo split is reconstructed from era box structure.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.66666,
+        "rare-holo": 0.23611,
+        "ex": 0.05556,
+        "ultra-rare": 0.02778,
+        "secret-rare": 0.01389
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

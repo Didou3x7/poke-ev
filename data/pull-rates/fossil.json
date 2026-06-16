@@ -1,0 +1,41 @@
+{
+  "setId": "fossil",
+  "era": "wotc",
+  "confidence": "medium",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.elitefourum.com/t/wotc-holo-pull-possibilities/15438",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Fossil_(TCG)"
+  ],
+  "notes": "Fossil (base3), released Oct 1999, early WOTC era. Set = 62 cards: 15 rare-holo, 15 rare, 16 uncommon, 16 common (Bulbapedia), matching the provided buckets exactly. Booster = 11 cards (Bulbapedia: Base Set through Neo Destiny boosters held 11 cards). Era structure: 1 rare-or-better slot + 3 uncommons + 7 commons (WOTC official pack odds, confirmed by search results). Holo rate ~1:3 packs: Flipside Gaming states 1:3; Elite Fourum community box reports cluster at ~12 holos per 36-pack box (12/36 = 1/3 exactly), range 9-15. So the rare slot yields a holo 1/3 of the time and a plain rare 2/3. NO reverse-holo slot — reverse holos were introduced in Legendary Collection (2002), AFTER Fossil; both Flipside Gaming and Bulbapedia confirm this. Hit bucket = rare-holo. confidence=medium: rate rests on community sampling (no large per-set published study) but is consistent across multiple independent sources and matches the documented 1:3 era average. Booster BOX = 36 packs (no ETB existed in this era). Expected holos per box ≈ 36 × 1/3 = 12, consistent with community box-opening reports.",
+  "packSize": 11,
+  "slots": [
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.3333,
+        "rare": 0.6667
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "common",
+      "count": 7,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

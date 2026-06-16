@@ -1,0 +1,54 @@
+{
+  "setId": "ex-hidden-legends",
+  "era": "ex",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Hidden_Legends_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://pokeasset.com/2023/04/15/gold-star-pokemon-cards/",
+    "https://pack-kingdom.com/pokemon-booster-pack-pull-rates/",
+    "https://cardmavin.com/pokemon/ex/hidden-legends-set-list"
+  ],
+  "notes": "EX Hidden Legends (ex5, released June 2004), ex-era English booster: 9 cards/pack, 36 packs/box, NO ETB (vintage). Per-pack structure (Bulbapedia Booster pack TCG): ~4 common, ~3 uncommon, 1 reverse-holo (common/uncommon/rare filler with set-logo stamp), 1 rare-or-better slot. Set composition (Bulbapedia / CardMavin / given buckets): 32 common, 33 uncommon, 12 rare, 15 rare-holo, 9 ex (Rare Holo ex), 1 secret-rare (Groudon 102/101 = \"Rare Secret\", a gold-bordered ★ card numbered beyond the 101-card base set).\n\nGOLD STAR: confirmed ABSENT. Gold Star cards debuted in the NEXT set, EX Team Rocket Returns; PokeAsset's list of the 10 Gold-Star sets does not include Hidden Legends. The available buckets also lack a gold-star key, consistent with this. So the top of the rare slot is ex (9 cards) and the single secret rare.\n\nRare-slot modeling (sums to 1.0): ex 0.069 (~2.5 ex/box; mid-ex-era falls between Power Keepers' generous ~1:8-12 and Holon Phantoms' stingy ~1:36 — community era estimate ~2-3 ex per 36-pack box); secret-rare 0.014 (~0.5/box; ex-era single secret rares run ~1 per 2 boxes, ~1:72 packs era average); rare-holo 0.397 (~14.3/box; \"holo rare ~1 in 3 packs\" modern baseline scaled up for this set's larger 15-card holo pool); rare 0.52 (~18.7/box non-holo rare, the default rare). Sum of rare-or-better slot = 36/box, matching the \"12+ rares-or-better per box\" guideline.\n\nReverse-holo slot distribution mapped to the set's common/uncommon/rare buckets proportional to pool sizes (32 commons, 33 uncommons, 27 rare+rare-holo): common 0.40, uncommon 0.41, rare 0.19 (rare reverses fold rare+rare-holo printings into the 'rare' bucket since reverse-holos exist of all three).\n\nconfidence=low: no per-set published pull-rate study exists for ex-era; figures are era-average community estimates applied to this set's known composition. shipEv=true (this is a real booster product with a standard ex-era structure). Vintage sealed box carries a large collector premium, so EV/pack will sit far below the sealed box price — expected, not a sign the rates are too low.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "Common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "Uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "Reverse Holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.4,
+        "uncommon": 0.41,
+        "rare": 0.19
+      }
+    },
+    {
+      "name": "Rare or better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.52,
+        "rare-holo": 0.397,
+        "ex": 0.069,
+        "secret-rare": 0.014
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

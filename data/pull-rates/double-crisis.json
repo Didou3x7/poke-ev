@@ -1,0 +1,50 @@
+{
+  "setId": "double-crisis",
+  "era": "xy",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/dc1/double-crisis/pull-rates",
+    "https://bulbapedia.bulbagarden.net/wiki/Double_Crisis_(TCG)",
+    "https://www.pokemon.com/us/pokemon-tcg/double-crisis",
+    "https://bulbanews.bulbagarden.net/wiki/Here's_everything_known_about_Double_Crisis"
+  ],
+  "notes": "Double Crisis (dc1) is a 34-card XY-era SPECIAL mini-set (Team Magma vs Team Aqua), NOT a standard booster line. Packs are 7 cards (not the 10-card XY baseline) and were NEVER sold in a standard 36-pack booster box — they shipped only in Double Crisis blisters (4 packs) and Collector's Pin 4-packs (Magma/Aqua). No ETB exists. So products.displayPacks and products.etbPacks are null; EV is per-pack only.\n\nPack structure (7 cards) reconciled from ThePriceDex per-slot pull rates:\n- 3x Common (100% common)\n- 2x Uncommon (100% uncommon)\n- 1x Rare-or-better slot: Rare Holo vs Ultra Rare. Set has NO non-holo rare bucket; the 6 rare-holo cards (Camerupt, Walrein, Sharpedo, etc.) fill this slot. Ultra Rare (the two EX: Team Aqua's Kyogre-EX #6, Team Magma's Groudon-EX #15) pull at 1 in 9 packs = 0.111; rare-holo = 0.889. (ThePriceDex: UR 1/9, Rare Holo 1/1.1 -> sums to ~1.0, confirming a single shared rare slot.)\n- 1x Reverse Holo slot: physically present (eBay confirms reverse-holo Team Aqua Grunt 26/34, Team Magma Grunt 30/34). This set's available buckets do NOT include a reverse-holo bucket, so I mapped the reverse slot onto the rarities it draws from using ThePriceDex reverse odds (Rev Common 1/2.3, Rev Uncommon 1/2.7, Rev Rare Holo 1/5.3), normalized: common 0.4375, uncommon 0.3727, rare-holo 0.1898.\n\nEvery distribution key is a subset of the given buckets {common, uncommon, rare-holo, ultra-rare}; each slot sums to exactly 1.0. ultra-rare:2 matches the two EX cards exactly; 14+12+6+2 = 34 matches the set size.\n\nConfidence = medium: figures come from a dedicated per-set aggregator (ThePriceDex dc1 pull-rates) consistent with XY-era structure, but there is no large independent published opening study for this small special set. A standard 36-pack box / 8-pack ETB does not apply to this product, so box-vs-EV premium is moot here.",
+  "packSize": 7,
+  "slots": [
+    {
+      "name": "Common",
+      "count": 3,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "Uncommon",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "Rare",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.889,
+        "ultra-rare": 0.111
+      }
+    },
+    {
+      "name": "Reverse Holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.4375,
+        "uncommon": 0.3727,
+        "rare-holo": 0.1898
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

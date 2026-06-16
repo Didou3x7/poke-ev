@@ -1,0 +1,55 @@
+{
+  "setId": "fates-collide",
+  "era": "xy",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://api.pokemontcg.io/v2/cards?q=set.id:xy10&pageSize=250",
+    "https://bulbapedia.bulbagarden.net/wiki/Fates_Collide_(TCG)",
+    "https://www.pokebeach.com/forums/threads/the-look-what-i-pulled-pull-rates-thread.111190/page-60",
+    "https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-52"
+  ],
+  "notes": "No large published per-set study exists for Fates Collide (XY10), so XY-era baseline rates are applied -> confidence \"low\". Era baselines come from Flipside Gaming \"A Comprehensive Review of Rarity Part Two\" (fetched and confirmed): Pokemon-EX ~1/6 packs, Ultra Rare (Full Art / Mega-EX / Full Art Trainer) ~1/12 packs, Pokemon BREAK ~1/12 packs, Secret Rare ~1/72 packs. Coarse-bucket mapping was VERIFIED against the live pokemontcg.io xy10 rarity counts (fetched via curl since the dripshop/cardchill pages 403/429'd): Common 26 -> common (EXACT vs engine 26); Uncommon 46 -> uncommon (engine 47, off-by-1 = the unmodeled basic Energy); Rare 20 -> rare bucket (EXACT vs engine 20); Rare Holo 5 -> rare-holo (EXACT vs engine 5); Rare Holo EX 13 + Rare Ultra 13 + Rare BREAK 5 = 31 -> engine ultra-rare (engine 30, ~match); Rare Secret 1 -> secret-rare (EXACT vs engine 1). The engine ultra-rare bucket therefore = Pokemon-EX + Full Art/Mega-EX ultra + BREAK, so per-pack rates were SUMMED: ultra-rare = P(EX 1/6) + P(UR 1/12) + P(BREAK 1/12) = 0.166667 + 0.083333 + 0.083333 = 0.333333. secret-rare = 1/72 = 0.013889. rare (= non-holo Rare + Rare Holo, the rest of the rare-or-better slot) = remainder = 0.652778. rare-or-better slot sums to exactly 1.0 (re-validated arithmetically). Box-level cross-check at 36 packs: 0.333333*36 = 12 EX-class hits/box and 0.013889*36 = 0.5 secret/box. The 12 EX-class hits/box is on the high side of the conservative per-set baseline but matches community box-opening reports on PokeBeach/Reddit (averaged ~5 EX + ~2 Mega + 2-3 BREAK + 1-2 Full Art = roughly 10-12 hits/box), and 0.5 secret/box matches the reported \"0-1 secret rare per box\". One rare-or-better hit per pack -> sane, no over-claiming. Pack structure = standard XY: 4 commons, 3 uncommons, 1 reverse-holo (modeled as 50/50 common/uncommon filler, no value), 1 rare-or-better EV slot; 10th card is a basic Energy and is not modeled. Distribution keys are a strict subset of this set's available buckets {common, uncommon, rare, rare-holo, ultra-rare, secret-rare}; note this set splits rare into both rare (non-holo) and rare-holo buckets, with the EV value flowing into the combined \"rare\" share of the EV slot. This is a STANDARD XY booster set, not a starter/special product: 36-pack Booster Display and 8-pack Elite Trainer Box both per XY-era standard.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.652778,
+        "ultra-rare": 0.333333,
+        "secret-rare": 0.013889
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

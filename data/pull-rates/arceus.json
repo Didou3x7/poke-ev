@@ -1,0 +1,55 @@
+{
+  "setId": "arceus",
+  "era": "dp",
+  "confidence": "medium",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Platinum:_Arceus_(TCG)",
+    "https://www.pokebeach.com/forums/threads/card-ratios.81556/",
+    "https://www.dacardworld.com/gaming/pokemon-platinum-arceus-booster-box"
+  ],
+  "notes": "Platinum—Arceus (pl4), the final DP/Platinum-era main set. Booster = 10 cards: 5 common, 3 uncommon, 1 reverse holo, 1 rare-or-better (Bulbapedia booster-pack page + DP/Platinum confirmations). Box = 36 packs, no ETB existed in this era (displayPacks=36, etbPacks=null).\n\nRARE SLOT: Lv.X rate set to 0.067 (~1 in 15 packs ~= 2.4 Lv.X per 36-pack box). This is a blend of two sourced figures: Flipside Gaming gives ~1:18 packs (2/box) for later Lv.X-era sets, and PokeBeach card-ratios lists the Legends Awakened–Arceus group at 3 Lv.X per box (1:12–1:18). 0.067 sits between them. Remaining rare slot (0.933) split rare-holo 0.33 / rare 0.67 (= 0.308 / 0.625); no official holo:rare ratio was ever published (confirmed via search), so this uses the era convention of roughly one holo rare per ~3 packs, also roughly tracking the set's 12 rare-holo vs 32 rare non-LvX rare pool.\n\nREVERSE-HOLO SLOT: no dedicated reverse-holo bucket in this set's available buckets, so the reverse slot is mapped onto the underlying rarity buckets weighted by the reverse-eligible pool (common 32, uncommon 29, rare 32, rare-holo 12 = 105): common 0.305, uncommon 0.276, rare 0.305, rare-holo 0.114.\n\nSECRET RARE / SHINY: the set's Shiny Pokemon (SH10–SH12: Shinx, Ponyta, Bagon) are a separate non-numbered subset outside these buckets, and there is no secret-rare bucket available, so they are intentionally NOT modeled — consistent with the given buckets {rare-holo, rare, uncommon, common, lv-x}.\n\nConfidence = medium: figures come from a community/era-average source (Flipside) plus a community card-ratio guide (PokeBeach), not a large per-set published study. All four non-common slots sum to exactly 1.0. Note vintage Arceus sealed boxes carry a large collector premium, so modeled EV/booster will sit well below box price — expected, not a rate problem.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverseHolo",
+      "count": 1,
+      "distribution": {
+        "common": 0.305,
+        "uncommon": 0.276,
+        "rare": 0.305,
+        "rare-holo": 0.114
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.625,
+        "rare-holo": 0.308,
+        "lv-x": 0.067
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

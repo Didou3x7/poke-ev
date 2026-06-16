@@ -1,0 +1,44 @@
+{
+  "setId": "neo-destiny",
+  "era": "wotc",
+  "confidence": "medium",
+  "sources": [
+    "https://www.elitefourum.com/t/shinings-in-neo-rev-neo-destiny-booster-box-pull-rate/26810",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://cardchill.com/article/pokemon-tcg-pull-rates-explained-what-to-expect-from-booster-packs",
+    "https://toywiz.com/pokemon-neo-destiny-booster-box-36-packs/"
+  ],
+  "notes": "EARLY-WOTC (Neo, 2002) booster, NO reverse-holo slot (Bulbapedia: reverse holo began with Legendary Collection, the set AFTER Neo Destiny). 11 cards/pack = 7 common + 3 uncommon + 1 rare-or-better (Bulbapedia + ToyWiz both confirm 11 cards/pack; PSACard registry confirms 7C/3U/1R). Box = 36 packs (ToyWiz, PSACard, multiple). NO ETB existed in 2002 -> etbPacks=null.\n\nRARE-SLOT MAPPING (per-pack holo rate ~1 in 3, corroborated by Flipside Gaming and Bulbapedia \"early WOTC ~1:3\"):\n- P(holo-or-better) = 1/3 = 0.33333\n- P(non-holo rare) = 2/3 = 0.66667\n\nBUCKET NOTE (critical, verified against data/snapshot/snapshot.json): this set's available buckets are {rare-holo:16, rare:27, uncommon:37, common:33}. There is NO secret-rare bucket. The 8 Shining Pokemon (#106-113) are catalogued by TCGdex/pokemontcg.io as rawRarity \"Rare\" -> they live in the `rare` bucket, NOT rare-holo and NOT a separate secret-rare. So per the integrity rule (map fine rates onto available buckets by summing), the Shining secret-rare rate (~1:12 packs per Flipside/CardChill; ~2-3 Shinings per 36-pack box per Elite Fourum box openings) is ABSORBED into the `rare` bucket. The 16 `rare-holo` cards = the 16 regular holos (#1-16, e.g. Dark Espeon, Dark Tyranitar). High-value Shinings raise the `rare` bucket's average EV automatically since they sit inside it.\n\nTherefore rare slot: rare-holo = 0.33333 (the 1-in-3 holo hit), rare = 0.66667. Sum = 1.0.\n\nHIT BUCKET = rare-holo (~33.3% per pack, ~12 holos per box of 36). Consistent with Elite Fourum's \"~12 holos per box, Shinings are part of that holo allotment, ~25% of holo pulls are Shinings.\"\n\nVINTAGE BOX SEALED PREMIUM: Neo Destiny is a 2002 collector set; sealed box price carries a large collector premium, so EV/booster will be far below sealed box price -- expected, rates NOT inflated to compensate.\n\nCONFIDENCE = medium: community/aggregator samples (Elite Fourum box openings; Flipside/CardChill ~1:3 holo and ~1:12 Shining figures) and well-documented WOTC era structure, but no large published per-set opening study (none exists for vintage). PSACard set-registry article (HTTP 403, not fetchable) was corroborated via ToyWiz + Bulbapedia for the 11-card 7/3/1 structure.",
+  "packSize": 11,
+  "slots": [
+    {
+      "name": "common",
+      "count": 7,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.33333,
+        "rare": 0.66667
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

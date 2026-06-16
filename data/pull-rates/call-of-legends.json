@@ -1,0 +1,51 @@
+{
+  "setId": "call-of-legends",
+  "era": "hgss",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Call_of_Legends_(TCG)",
+    "https://www.pokebeach.com/forums/threads/what-are-the-ratios-of-a-box-of-call-of-legends.94475/",
+    "https://www.pokemon.com/us/pokemon-tcg/call-of-legends",
+    "https://www.pokellector.com/Call-of-Legends-Expansion/"
+  ],
+  "notes": "Call of Legends (col1) is a transitional HGSS-era reprint set: 95 main-set cards + 11 Shiny Legendary \"SL\" secret cards = 106 total; HGSS-era booster = 10 cards/pack, 36 packs/box, NO ETB. This set has NO Primes or LEGENDs of its own — the only chase cards are the SL shinies, which sit in the holo tier and are mapped onto the rare-holo bucket.\n\nPACK STRUCTURE (era baseline, confirmed 10 cards/pack by Pokemon.com & Bulbapedia): 5 common, 3 uncommon, 1 rare slot, 1 reverse-holo slot.\n\nRARE SLOT: Resolves to a regular rare or a rare-holo. SL Shiny Legendaries pull at ~1:18 packs (Flipside Gaming era review), i.e. ~2 per 36-pack box — consistent with PokeBeach box reports of 1-4 shinies/box (avg ~2). Main-set rare-holos seed at roughly the standard era ~1:3 holo rate. Net per rare slot: rare-holo ~0.33 (SL ~0.055 folded in via the holo tier + main holos ~0.275), regular rare ~0.67. This matches box reports of ~1-2 main holos + ~2 SL = ~3-4 holos across 36 rare slots (~0.30 holo).\n\nREVERSE-HOLO SLOT: In this era the reverse slot draws from common/uncommon/rare across the set. Distributed proportional to non-holo set counts (common 31, uncommon 25, rare 17; total 73): common 0.42, uncommon 0.35, rare 0.23.\n\nCONFIDENCE low: no large per-set published pull-rate study exists for this vintage set. Figures combine Flipside Gaming era-average rates (SL ~1:18, Primes 1:6-7 / LEGENDs 1:12-18 — neither present in this set) with small community box samples from PokeBeach. Vintage sealed box carries a large collector premium, so calculated EV/pack will sit far below box price; that is expected and rates were NOT inflated to compensate.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.67,
+        "rare-holo": 0.33
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.42,
+        "uncommon": 0.35,
+        "rare": 0.23
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

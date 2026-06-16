@@ -1,0 +1,55 @@
+{
+  "setId": "hs-undaunted",
+  "era": "hgss",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Undaunted_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/HeartGold_%26_SoulSilver_(TCG)",
+    "https://www.pokebeach.com/forums/threads/undaunted-pack-rates.83741/",
+    "https://toywiz.com/pokemon-heartgold-soulsilver-undaunted-booster-box-36-packs-sealed/"
+  ],
+  "notes": "HGSS-era set (HS Undaunted / hgss3, released 2010-08-18). BOOSTER STRUCTURE: 10 cards/pack on the standard English HGSS-era template (5 common + 3 uncommon + 1 rare-or-better + 1 reverse-holo/insert slot). Booster box = 36 packs. NO ETB existed in this era -> etb=null. Display = 36-pack box.\n\nAVAILABLE BUCKETS (given): {rare-holo:10, rare:15, uncommon:26, common:29, prime:6, legend:4, ultra-rare:1}. NOTE there is no secret-rare bucket in this set's catalog; the set's one secret (Alph Lithograph) maps to the ultra-rare:1 bucket. Bulbapedia composition (re-fetched): 17 Common, 16 Uncommon, 16 Rare, 10 Rare Holo, 6 Rare Prime, 4 Rare Holo LEGEND, 1 Rare Secret (Alph Lithograph). Catalog bucket counts (common 29 / uncommon 26 / rare 15) differ from Bulbapedia's printed-checklist counts because TCGdex/engine classification splits some cards differently, but the special-hit buckets that drive EV (prime 6, legend 4, ultra-rare/secret 1, rare-holo 10) match Bulbapedia exactly.\n\nSPECIAL-HIT PLACEMENT: In the English HGSS era, Pokemon Prime / Pokemon LEGEND / the secret card REPLACED the reverse-holofoil in the pack (Bulbapedia: Prime 'replaced the Reverse Holofoil in booster packs'), NOT the rare slot. So the rare-or-better slot stays a normal rare vs rare-holo, and the special pulls live in the reverse/insert slot. This is the structurally-correct HGSS model (a pack can have a normal rare AND a Prime/LEGEND).\n\nRARE-OR-BETTER SLOT (1 card): rare-holo = 0.333 (~1:3 packs, ~12 holos per 36-pack box), the era-standard ~1:3 holo convention used across this dataset for vintage English rare slots; rare = remainder 0.667. Sums to 1.0.\n\nREVERSE/INSERT SLOT (1 card): special-pull probabilities from Flipside Gaming Part Two (the authoritative HGSS-era rarity write-up) -\n  - prime = 0.1538 (1:6.5 packs, midpoint of the sourced '1:6-7 booster packs' Prime band -> ~5.5 Primes/36-pack box).\n  - legend = 0.0667 (1:15 packs, midpoint of the sourced '1:12-18 packs' LEGEND band; LEGEND cards come as two halves, so this is the per-half insertion rate mapped onto the legend bucket -> ~2.4 LEGEND halves/box).\n  - ultra-rare = 0.0093 (1:108 packs = 1:3 boxes, the sourced Alph Lithograph secret-rare rate; mapped to this set's ultra-rare bucket since there is no secret-rare bucket).\n  - residual = reverse-holo filler modeled with plain base ids (their market value is what matters), split by pool size 29 common / 26 uncommon: common = 0.4061, uncommon = 0.3641.\n  Slot sums to exactly 1.0.\n\nCROSS-CHECK: per-box expectations (5.54 Primes, 2.4 LEGEND halves, 0.34 secret, ~12 holos) are consistent with a community box-opening report (pokebeach Undaunted pack-rates thread, surfaced via toywiz 36-pack box listing) where one full 36-pack box yielded 5 of 6 Primes and most LEGEND halves but not the secret.\n\nCONFIDENCE: 'low' - no per-set published pull-rate STUDY exists for this vintage set; the Prime/LEGEND/secret bands are HGSS-era community/retailer averages (Flipside Gaming aggregating the era) applied to Undaunted, and the ~1:3 holo rate is an era convention, not an Undaunted-specific large sample. Vintage sealed HGSS boxes carry a heavy collector premium, so EV/booster will sit far below box price - expected; rates are NOT inflated to compensate.\n\nINTEGRITY: every slot sums to exactly 1.0; all distribution keys {common, uncommon, rare, rare-holo, prime, legend, ultra-rare} are a strict subset of this set's available buckets. No invented per-set percentages.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.667,
+        "rare-holo": 0.333
+      }
+    },
+    {
+      "name": "reverse-holo-insert",
+      "count": 1,
+      "distribution": {
+        "common": 0.4061,
+        "uncommon": 0.3641,
+        "prime": 0.1538,
+        "legend": 0.0667,
+        "ultra-rare": 0.0093
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

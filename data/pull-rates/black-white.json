@@ -1,0 +1,56 @@
+{
+  "setId": "black-white",
+  "era": "bw",
+  "confidence": "medium",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Black_%26_White_(TCG)",
+    "https://support.pokemon.com/hc/en-us/articles/360000981613-What-can-I-expect-in-a-Pok%C3%A9mon-Trading-Card-Game-booster-pack",
+    "https://stop2shop.com/bw-box.html"
+  ],
+  "notes": "Black & White base set (BW1, 2011), 10-card English booster, 36 packs/box. NO ETB for this set (Elite Trainer Boxes began later in the BW series with Plasma Storm), so etbPacks=null. Bulbapedia confirms BW1 rarities: Common, Uncommon, Rare, Rare Holo, Rare Ultra (Full Art) — BW1 was the first set with modern Full Art Ultra Rares; plus 1 Secret Rare. stop2shop product listing confirms the 36-pack box.\n\nVerified per-pack odds (Flipside Gaming rarity review, Part Two): Ultra Rare (Full Art) ~1:36 packs = 0.0278; Secret Rare ~1:72 packs = 0.0139. These are applied directly to the rare slot.\n\nRare slot (1 card) construction: started from UR=0.028 and SR=0.014 (the two sourced ratios), leaving remaining 0.958 to split between non-holo rare and rare-holo. Split by the set's card-count ratio in the rare pool (19 non-holo : 12 holo = 0.613 : 0.387), giving rare=0.587 and rare-holo=0.371. Slot sums to 1.000. Official Pokemon support page confirms the era's guaranteed-rare slot (1 Rare + 3 Uncommon + 1 Reverse Holo + remaining Common), so the rare slot is modeled as always filled by rare-or-better.\n\nReverse-holo slot (1 card): in BW1 reverse-holo variants exist for common/uncommon/rare/rare-holo (not for Full Art ultra/secret). Distributed proportional to those four bucket counts (44/37/19/12 of 112): common 0.393, uncommon 0.330, rare 0.170, rare-holo 0.107 (sum 1.000). This is an estimate from bucket sizes, not a published reverse-slot study.\n\nDistribution keys are all within the set's available buckets {common, uncommon, rare-holo, rare, ultra-rare, secret-rare}. Confidence=medium: UR/SR ratios come from a community/retailer rarity compilation (Flipside) rather than a large per-set pull study, and the holo-vs-nonholo rare split and reverse-slot split are reasoned from card counts. Note the sealed BW1 booster BOX is a vintage collector item with a large sealed premium, so modeled EV/pack will fall well below box price — expected, not a flaw in the rates.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.587,
+        "rare-holo": 0.371,
+        "ultra-rare": 0.028,
+        "secret-rare": 0.014
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.393,
+        "uncommon": 0.33,
+        "rare": 0.17,
+        "rare-holo": 0.107
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

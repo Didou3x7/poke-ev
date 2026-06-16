@@ -1,0 +1,56 @@
+{
+  "setId": "furious-fists",
+  "era": "xy",
+  "confidence": "medium",
+  "sources": [
+    "https://cardcodex.com/pokemon/xy/furious-fists/furious-fists-booster-box-xy3/",
+    "https://cardcodex.com/pokemon/xy/furious-fists/furious-fists-elite-trainer-box-xy3/",
+    "https://cardcodex.com/pokemon/xy/furious-fists/dragonite-ex-74-111-rare-holo-ex/",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://pack-kingdom.com/pokemon-booster-pack-pull-rates/"
+  ],
+  "notes": "Furious Fists (XY3): 10 cards/pack (1 rare-or-better slot + 1 reverse-holo + commons/uncommons + a basic Energy not modeled). Box=36 packs, ETB=8 packs (per Cardcodex ETB page). Rare-slot distribution taken directly from Cardcodex's per-set Furious Fists pull rates, which sum to exactly 100% across the rare slot: Rare 66.7%, Rare Holo 19.6%, Rare Holo EX 8.8%, Ultra Rare (full art / M-EX) 3.9%, Secret Rare 1.0%. This set's buckets have NO separate rare-holo-ex bucket, so Cardcodex's \"Rare Holo EX\" (8.8%) + \"Ultra Rare\" (3.9%) are SUMMED into this set's single ultra-rare bucket = 0.127. Cross-checked against Flipside Gaming XY-era averages (EX ~1:6-1:18, full art ~1:12, secret rare rare) and the individual Dragonite-EX page (1:80 packs per card) — all consistent with the Cardcodex aggregate. Per-box expectation: ~7 rare-holo, ~4-5 ultra-rare (EX+FA combined), ~0.36 secret rare (1 secret rare roughly every ~3 packs short of every box, i.e. ~1 per ~2.8 boxes from the 1:102.9 figure). Reverse-holo slot modeled as common/uncommon only (no sourced per-set reverse-holo rare breakdown for XY3); rare cards in the reverse slot are not separately credited to avoid inventing rates. confidence=medium: relies on Cardcodex's per-set community/aggregated estimates rather than a large published opening study, but corroborated across 3 independent sources and internally consistent (rare-slot sums to 1.0).",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.55,
+        "uncommon": 0.45
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.667,
+        "rare-holo": 0.196,
+        "ultra-rare": 0.127,
+        "secret-rare": 0.01
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

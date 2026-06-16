@@ -1,0 +1,55 @@
+{
+  "setId": "rising-rivals",
+  "era": "dp",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Rising_Rivals_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_packs_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.serebii.net/card/risingrivals/",
+    "https://www.codedyellow.com/rising-rivals-card-list/",
+    "https://www.cardrake.com/cards/pl2-112"
+  ],
+  "notes": "Platinum-series LV.X-era set (pl2, English 2009-05-16, 111 main cards + RT1-RT6 Rotom + 3 secret Pikachu). Booster = 9 cards/pack, 36-pack box, NO ETB (etb=null) — same vintage structure as the dataset's ex-dragon-frontiers precedent: 5 common + 2 uncommon + 1 reverse-holo + 1 rare-or-better. Bulbapedia booster-pack page confirms: 1 rare + ~3 uncommon + remainder common + 1 reverse-holo per pack (international).\n\nBuckets confirmed against data/snapshot/snapshot.json: rare-holo:13 (#1-13/111 standard holos), rare:30, uncommon:32, common:33, lv-x:9 (#103-111/111), secret-rare:3 (#112-114/111 crosshatch Pikachu). The 6 Rotom RT holos are NOT a separate catalog bucket in the snapshot, so per the integrity rule they are folded into the rare-holo band rather than inventing a bucket the set lacks.\n\nrare-or-better slot distribution (sums to exactly 1.0):\n- secret-rare 0.0278 = 1:36 packs (~1 secret Pikachu/box) — Flipside Gaming part-two reports the special-holo/secret-era rate at ~1:36.\n- lv-x 0.0556 = 1:18 packs (~2 LV.X/box) — Flipside Gaming part-two: '~1:18 packs for later sets in the LV. X era' (Platinum period); corroborated by Rising Rivals community ~2/box reports. Conservative end of the cited 1:9-1:18 band; vintage rates not inflated.\n- rare-holo 0.3333 = ~1:3 packs (~12/box) era holo baseline; absorbs the 6 Rotom RT holos the catalog doesn't expose.\n- rare 0.5833 = remainder (plain non-holo rare).\nReverse-holo slot: neutral 50/50 common/uncommon (pools near-equal 33/32), modeled with plain ids per dataset convention.\n\nConfidence LOW: no per-set published study; uses sourced DP/LV.X-era community/retailer averages mapped onto Rising Rivals. Sealed boxes carry a heavy collector premium so EV/booster will sit far below box price — expected, not compensated for. All keys {common, uncommon, rare, rare-holo, lv-x, secret-rare} are a strict subset of the set's available buckets; every slot sums to exactly 1.0; slot card counts total packSize=9. Config written to data/pull-rates/rising-rivals.json and passes `npm run validate:data` (58 sets, all valid).",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.5833,
+        "rare-holo": 0.3333,
+        "lv-x": 0.0556,
+        "secret-rare": 0.0278
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

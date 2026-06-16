@@ -1,0 +1,50 @@
+{
+  "setId": "diamond-pearl",
+  "era": "dp",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Diamond_%26_Pearl_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-17"
+  ],
+  "notes": "Diamond & Pearl base set (dp1), 2007 — first set of the DP era. Booster pack = 10 cards (increased from 9 in the prior era), confirmed by Bulbapedia: 5 Common, 3 Uncommon, 1 Reverse Holofoil, 1 Rare-or-Rare-Holo. Box = 36 packs. No ETB (vintage 2007 set predates Elite Trainer Boxes, ~2013).\n\nRARE SLOT (1 per pack): contains regular rare, rare-holo, or Level X. Level X rate = 1:36 packs (0.0278) per Flipside Gaming's rarity review, which explicitly states \"approximately 1:36 packs for the first sets in the Diamond and Pearl era\" — dp1 is the first set, so this is the directly-applicable figure (≈1 Level X per booster box). The remaining 0.9722 of the rare slot is split between the 25 regular rares and 17 rare-holos proportionally to their pool sizes (no per-set holo:rare study exists for dp1, so pool-proportional mapping is used): rare = 0.9722×25/42 = 0.5787, rare-holo = 0.9722×17/42 = 0.3935.\n\nREVERSE SLOT (1 per pack): DP-era reverse-holo parallels existed for commons, uncommons, and regular rares (holo-rares and Lv.X had no reverse parallel). Distributed by pool size across the 110 eligible cards: common 47/110=0.4273, uncommon 38/110=0.3455, rare 25/110=0.2273.\n\nCONFIDENCE = low: no large published per-set pull-rate study for dp1; figures rest on an era-level Level X rate (1:36, well documented and consistent across sources) plus pool-proportional mapping for the holo/rare and reverse splits. Vintage booster boxes carry a large sealed/collector premium, so EV/booster will sit well below box market price — expected, not a flaw. PokeBeach pull-rate thread (page 17) returned HTTP 403 and could not be fetched; cited as a corroborating source surfaced in search but not independently verified.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse",
+      "count": 1,
+      "distribution": {
+        "common": 0.4272,
+        "uncommon": 0.3455,
+        "rare": 0.2273
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.5787,
+        "rare-holo": 0.3935,
+        "lv-x": 0.0278
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

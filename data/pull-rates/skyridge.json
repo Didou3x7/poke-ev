@@ -1,0 +1,51 @@
+{
+  "setId": "skyridge",
+  "era": "wotc",
+  "confidence": "medium",
+  "sources": [
+    "https://www.elitefourum.com/t/skyridge-crystal-pull-rate-data/30299",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.psacard.com/articles/articleview/9581/psa-set-registry-collecting-2002-poke-mon-expedition-e-xciting-overlooked-card-issue",
+    "https://www.pokebeach.com/forums/threads/skyridge-aquapolis-holo-pull-rate.95675/"
+  ],
+  "notes": "e-Card era (ecard3) pack = 9 cards: 5 common, 2 uncommon, 1 reverse-holo, 1 rare-or-better. Confirmed by PSA Set Registry / collector documentation (Expedition/Aquapolis/Skyridge share this structure) and the e-Card series ADDED the reverse-holo slot (per task baseline; Legendary Collection introduced reverse holos to WOTC). Holo (rare-holo) rate in the rare slot ~1 in 3 packs (Flipside Gaming era review; long-standing WOTC standard). Crystal (secret-rare) cards: Skyridge has 6 Crystal cards available in BOTH holo and reverse-holo printings (unique to Skyridge). EliteFourum compiled 9 documented box breaks: 1.66 holo crystals/box AND 1.66 reverse-holo crystals/box average (small, acknowledged-inconclusive sample, high variance — one box had zero). 1.66/36 packs = 0.046 per pack. SLOT MAPPING: Common slot (x5)=common. Uncommon slot (x2)=uncommon. Reverse slot (x1): holo crystal lives in rare slot, reverse crystal lives here at 0.046 secret-rare; remaining 0.954 modeled 50/50 common/uncommon filler -> common 0.477, uncommon 0.477. Rare slot (x1): secret-rare (holo crystal) 0.046; of remaining 0.954, holo 1/3 -> rare-holo 0.318, non-holo rare 2/3 -> rare 0.636. Hit bucket = rare-holo + secret-rare. Vintage e-Card boxes carry a large sealed collector premium so EV/booster will sit well below box price — expected, not a rate error. Counted secret-rare across both slots = ~0.092/pack = ~3.3/box, consistent with 1.66 holo + 1.66 reverse = 3.32/box. Confidence medium: pack structure is solid/published; crystal rate is a community 9-box sample; holo 1/3 is era-average not a per-set study.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 2,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse",
+      "count": 1,
+      "distribution": {
+        "common": 0.477,
+        "uncommon": 0.477,
+        "secret-rare": 0.046
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.636,
+        "rare-holo": 0.318,
+        "secret-rare": 0.046
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

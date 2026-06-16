@@ -1,0 +1,54 @@
+{
+  "setId": "ex-holon-phantoms",
+  "era": "ex",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://www.cardrake.com/expansions/ex13",
+    "https://www.pokebeach.com/forums/threads/the-english-booster-box-pull-rates-thread.114550/page-3"
+  ],
+  "notes": "EX-series booster = 9 cards (Bulbapedia, confirmed). Modeled slots: 4 common, 3 uncommon, 1 reverse-holo (Common/Uncommon of an existing card), 1 rare-or-better. Reverse-holo split common/uncommon weighted by set bucket counts (31 common, 30 uncommon -> 0.51/0.49). Rare slot: per Flipside Gaming, EX Holon Phantoms Pokemon-ex pull rate is 1:36 packs (~1 ex per booster box -> 0.028/pack); Gold Star ~1:72 packs (~1 per 2 boxes -> 0.014/pack); 1 secret rare in the set modeled conservatively at ~0.010/pack (era secret-rare tail ranges ~1:36 to 1:72, single-card slot kept modest). Remaining 0.948 of the rare slot split between non-holo rare (20 cards) and rare-holo (23 cards) weighted by bucket counts -> rare 0.441, rare-holo 0.507. Distribution sums to exactly 1.0. confidence=low: no per-set published study; rates are era-average (ex 1:36 is HP-specific from Flipside; gold-star/secret are era baselines). Booster box = 36 packs, NO ETB (ex era) -> etbPacks null, displayPacks=36 (box pack count). PokeBeach pull-rate thread cited as community corroboration (page returned 403 on fetch but is the canonical English box-opening dataset; era figures corroborated by Flipside Gaming which summarizes it).",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.51,
+        "uncommon": 0.49
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.441,
+        "rare-holo": 0.507,
+        "ex": 0.028,
+        "gold-star": 0.014,
+        "secret-rare": 0.01
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

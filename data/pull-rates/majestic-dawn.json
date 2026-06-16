@@ -1,0 +1,52 @@
+{
+  "setId": "majestic-dawn",
+  "era": "dp",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Majestic_Dawn_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Diamond_%26_Pearl_(TCG)"
+  ],
+  "notes": "Majestic Dawn (dp5), 100-card set, Diamond & Pearl era. NO secret rares (set has no secret-rare bucket); 4 Lv.X (Garchomp, Glaceon, Leafeon, Porygon-Z) per Bulbapedia Majestic Dawn page. Pack = 10 cards: ~5 common, 3 uncommon, 1 reverse holo, 1 guaranteed rare-or-better (Bulbapedia booster-pack page; every DP-era intl booster guarantees >=1 rare). Box = 36, no ETB (vintage product). Rare slot: Lv.X published rate ~1:36 packs (Flipside rarity review; \"1:36 for first DP-era sets\") => lv-x=0.028 of rare slots. Remaining ~0.972 split between non-holo rare and rare-holo, weighted ~2:1 non-holo:holo consistent with DP-era ~10-12 holos/box and the set's 20 rare vs 14 rare-holo counts => rare 0.660, rare-holo 0.312. Reverse-holo slot drawn from the reversible pool (commons/uncommons/rares/holo-rares, excludes Lv.X); distributed proportional to bucket counts in that 96-card pool: common 32, uncommon 30, rare 20, rare-holo 14. Confidence LOW: no per-set opened-box study sourceable; rates are era-average mapped onto this set's published composition. Lv.X rate is the only firmly published figure. Vintage sealed box carries large collector premium, so EV/booster will sit well below box price - expected, not a rate error.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.333,
+        "uncommon": 0.3125,
+        "rare": 0.2085,
+        "rare-holo": 0.146
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.66,
+        "rare-holo": 0.312,
+        "lv-x": 0.028
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

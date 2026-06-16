@@ -1,0 +1,43 @@
+{
+  "setId": "jungle",
+  "era": "wotc",
+  "confidence": "medium",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Jungle_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.psacard.com/articles/articleview/9327/psa-set-registry-collecting-1999-poke-mon-jungle-1st-edition-card",
+    "https://goldin.co/item/1999-wizards-of-the-coast-pokemon-jungle-1st-edition-factory-sealed-bokajwe"
+  ],
+  "notes": "Early-WotC booster (June 1999, base2). 11 cards/pack: 7 common, 3 uncommon, 1 rare-or-better. Holo seeded ~1 in 3 packs, matching Base Set's 3:1 ratio. Confirmed by Bulbapedia, PSA Set Registry and Flipside Gaming. Bulbapedia explicitly notes WotC added Non-Holofoil prints of the 16 Holo Rares specifically so packs would NOT guarantee a holo, preserving the 1:3 seeding while enlarging the 64-card set — this is exactly why the set has parallel rare-holo(16) and rare(16) buckets. No reverse-holo slot existed pre-2002, so no reverse slot is modeled. Rare slot resolves to rare-holo 1/3 and non-holo rare 2/3. Booster box = 36 packs; no ETB existed in this era. Confidence medium: the 1:3 holo rate is a well-documented WotC-era figure (printed on packs) rather than a large per-set opened-pack study, but it is corroborated across multiple independent sources. Vintage sealed boxes carry a large collector premium, so EV/booster is expected to sit far below box price — rates are NOT inflated to compensate.",
+  "packSize": 11,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 7,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare-slot",
+      "count": 1,
+      "distribution": {
+        "rare": 0.666667,
+        "rare-holo": 0.333333
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

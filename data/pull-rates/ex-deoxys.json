@@ -1,0 +1,57 @@
+{
+  "setId": "ex-deoxys",
+  "era": "ex",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/ex8/ex-deoxys/pull-rates",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://www.elitefourum.com/t/deoxys-gold-star-pull-rate/20026",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.psacard.com/articles/articleview/10271/psa-set-registry-collecting-2005-poke-mon-ex-deoxys-trading-card-game-searching-rayquaza"
+  ],
+  "notes": "EX Deoxys (ex8), 2005 EX-era set. Booster = 9 cards / 36-packs per box, no ETB (vintage). Pack structure (Bulbapedia: 9-card EX-era packs; era baseline): 4 common + 3 uncommon + 1 reverse-holo filler + 1 rare-or-better slot = 9.\n\nRARE SLOT distribution from ThePriceDex per-pack odds (rare 1/1.5=0.667, rare-holo 1/4=0.25, Pokemon-ex 1/13.5=0.074) plus Gold Star at the community-consensus 1/72 (~1 per 2 boxes, corroborated by Elite Fourum thread citing Flipside Gaming/PokeGym/smpratte). Note ThePriceDex lists Gold Star lower at 1/108; I used the better-sourced 1/72 community figure. These figures naturally sum to ~1.0 across the rare slot, confirming they are the rare-slot resolution distribution. Secret-rare (1 card in set) is not separately published for EX era and is rarer than Gold Star; carved a small 0.0021 (~1 in ~480) slice and normalized rare bucket so the slot sums to exactly 1.0.\n\nREVERSE SLOT distribution from ThePriceDex reverse-rarity odds (RevCommon 1/2.3=0.435, RevUncommon 1/3.2=0.313, RevRare 1/7.9=0.127, RevRareHolo 1/7.3=0.137), mapped onto this set's buckets (common/uncommon/rare/rare-holo) and rounded to sum 1.0.\n\nConfidence MEDIUM: ThePriceDex gives a per-set EX Deoxys table and the Gold Star rate has multi-source community corroboration, but no large published study exists for EX-era and secret-rare odds are inferred. EX Deoxys was printed in low quantities (one of the scarcest EX sets), so sealed boxes carry a large collector premium — EV/booster will sit well below box price, which is expected for vintage.\n\nAvailable buckets used (all subset of given set): common, uncommon, rare, rare-holo, ex, gold-star, secret-rare.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "Commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "Uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "Reverse Holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.43,
+        "uncommon": 0.31,
+        "rare": 0.13,
+        "rare-holo": 0.13
+      }
+    },
+    {
+      "name": "Rare or Better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6715,
+        "rare-holo": 0.25,
+        "ex": 0.0625,
+        "gold-star": 0.0139,
+        "secret-rare": 0.0021
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

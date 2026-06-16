@@ -1,0 +1,57 @@
+{
+  "setId": "boundaries-crossed",
+  "era": "bw",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Boundaries_Crossed_(TCG)",
+    "https://www.pittpokeresearch.com/pokemon-set/Boundaries-Crossed",
+    "https://www.collectorscache.com/buylist/pokemon_sealed_products-pokemon_booster_boxes/pokemon_black__white_bw7_boundaries_crossed_booster_box/199133",
+    "https://pokemonsim.com/set/bw7"
+  ],
+  "notes": "BW7 Boundaries Crossed (released 2012-11-07): 10 cards/pack, 36 packs/booster box. No Elite Trainer Box existed for this set — ETBs began with Plasma Storm (Feb 2013), so etbPacks=null and the only sealed product is the booster box (displayPacks=36). Confirmed via pittpokeresearch, collectorscache, Bulbapedia.\n\nPack composition follows the BW-era baseline: 5 common, 3 uncommon, 1 reverse-holo, 1 rare-or-better (\"rare slot\").\n\nRare-slot distribution is built from Flipside Gaming's era-average Actual Rarity figures (the only fetchable quantitative source; PokeGym and PokeBeach pull-rate threads were HTTP 403): Pokemon-EX ~1:18 packs -> ~2/box -> 0.056; Ultra Rare (Full Art) ~1:36 early BW improving toward ~1:18-24 in later sets, used ~1:24 -> ~1.5/box -> 0.042; Secret Rare ~1:72 packs -> ~0.5/box -> 0.014. Remaining 0.888 of the rare slot split rare-holo vs rare (~1/3 holo split typical of BW), giving rare-holo 0.300 and rare 0.588. Slot sums to exactly 1.0.\n\nAce Spec / Rare Ace cards (BW7 introduced 4) have no dedicated bucket in this set's available rarities; they are absorbed into the rare-holo/rare buckets per pokemontcg.io classification, so no separate distribution key is used.\n\nReverse-holo slot mapped across the set's reversible buckets (common/uncommon dominate, with small rare/rare-holo tail), summing to 1.0.\n\nconfidence=low: these are era-average rates applied without a published per-set study; granular BW7 community box-break threads exist but were not fetchable. EX/box (~2), FA/box (~1.5), secret/box (~0.5) are consistent with both the cited rates and the set's bucket counts (6 ex, 9 ultra-rare, 4 secret-rare). Vintage booster box carries a large sealed/collector premium, so EV/booster will sit well below the box's market price — expected, rates not inflated to compensate.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.55,
+        "uncommon": 0.4,
+        "rare": 0.04,
+        "rare-holo": 0.01
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.588,
+        "rare-holo": 0.3,
+        "ex": 0.056,
+        "ultra-rare": 0.042,
+        "secret-rare": 0.014
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

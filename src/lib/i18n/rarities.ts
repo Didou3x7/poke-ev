@@ -28,6 +28,11 @@ const labels: Record<RarityId, { fr: string; en: string }> = {
   "shiny-vault": { fr: "Shiny Vault", en: "Shiny Vault" },
   "mega-ex": { fr: "Méga-ex", en: "Mega ex" },
   "black-white-rare": { fr: "Rare Noir & Blanc", en: "Black & White Rare" },
+  "ex": { fr: "Rare Holo ex", en: "Rare Holo ex" },
+  "gold-star": { fr: "Gold Star", en: "Gold Star" },
+  "lv-x": { fr: "Niveau X", en: "Level X" },
+  "prime": { fr: "Prime", en: "Prime" },
+  "legend": { fr: "LÉGENDE", en: "LEGEND" },
 };
 
 export function rarityLabel(id: RarityId, locale: Locale): string {

@@ -1,0 +1,54 @@
+{
+  "setId": "noble-victories",
+  "era": "bw",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://www.dacardworld.com/gaming/pokemon-usa-pokemon-black-and-white-booster-box",
+    "https://toywiz.com/pokemon-black-white-booster-box-36-packs/"
+  ],
+  "notes": "BW3 Noble Victories, Black & White era. Pack = 10 cards: 5 common, 3 uncommon, 1 reverse-holo, 1 rare-or-better slot. Box = 36 packs (no ETB existed for this 2011 set; sealed product was the booster box + theme decks). Set-SPECIFIC rates from Flipside Gaming \"Rarity in the Pokemon TCG Part Two\", which names Noble Victories explicitly: Ultra Rare (Full Art) ~1:18 packs (=2 per box), Secret Rare ~1:72 packs (=0.5 per box, i.e. ~1 every 2 boxes; NV has exactly 1 secret rare, Pikachu 101/101). Rare slot composition: UR=1/18=0.0556, SR=1/72=0.0139, remainder 0.9305 split between non-holo rare and rare-holo using the BW-era ~1-in-3 holo-rare cadence (~13 holos visible across 36 packs) -> rare-holo 0.3105, rare 0.62. Reverse-holo slot has no dedicated bucket in this set's rarity list, so it is mapped across common/uncommon/rare-holo (a reverse can be any common/uncommon/rare; weighted toward common/uncommon which dominate the pool). confidence=low: era/set-level published ratios from a single curated source, no large per-set pull-rate study available for a 2011 vintage set. Vintage sealed box carries a large collector premium, so booster-EV will sit well below box price — expected, not a rate problem.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.62,
+        "rare-holo": 0.3105,
+        "ultra-rare": 0.0556,
+        "secret-rare": 0.0139
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.55,
+        "uncommon": 0.36,
+        "rare-holo": 0.09
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

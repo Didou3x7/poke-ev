@@ -1,0 +1,57 @@
+{
+  "setId": "ancient-origins",
+  "era": "xy",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/xy7/ancient-origins/pull-rates",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.tumblr.com/falseredstart/126865578608/pok%C3%A9mon-tcg-ancient-origins-pulls",
+    "https://toywiz.com/pokemon-trading-card-game-xy-ancient-origins-hoopa-elite-trainer-box/",
+    "https://www.amazon.com/TCG-Ancient-Origins-Discontinued-manufacturer/dp/B00Y1NZ6GA",
+    "https://www.pokemoncenter.com/pok%C3%A9mon-tcg:-xy-ancient-origins-elite-trainer-box-150-80033"
+  ],
+  "notes": "RESEARCH (sourced, adversarial; XY era set xy7).\n\nBUCKET CHECK (re-derived from engine snapshot, NOT taken on faith): data/snapshot/snapshot.json -> sets['ancient-origins'] holds 101 cards bucketing EXACTLY to the task's stated available buckets: common 23, uncommon 29, rare 13, ultra-rare 23, rare-holo 8, secret-rare 5. All distribution keys used (rare, rare-holo, ultra-rare, secret-rare) are a strict subset. CRITICAL: this set has NO 'ex' bucket -- I inspected the 23 ultra-rare cards and they fold ALL the EX cards together: 8 regular Pokemon-EX (#7,25,27,36,37,42,57,68), 3 Mega-EX (#8,28,43), Steven full-art supporter (#95), and the 11 full-art 'rare ultra' reprints (#84-94). So this project's 'ultra-rare' bucket = ThePriceDex's 'Rare Holo EX' (11 cards, 4.0/box) PLUS its 'Ultra Rare/Full Art' (12 cards, 1.7/box). The 5 secret-rares (#96 Primal Kyogre, #97 Primal Groudon, #98 M Rayquaza gold, #99 Energy Retrieval gold, #100 Trainers' Mail gold) match the snapshot exactly.\n\nPACK STRUCTURE (ThePriceDex pull-rate page, fetched OK): 10 cards/pack, 36 packs/box, reverse-holo slot present. XY era is pre-Sun&Moon so NO basic-energy 11th card -> all 10 are game cards: 5 common + 3 uncommon + 1 reverse-holo + 1 rare-or-better (ThePriceDex confirms '5 commons, 3 uncommons per pack'; matches the BW/XY pre-S&M baseline used in next-destinies.json).\n\nPULL RATES -- two independent sources triangulated:\n1) ThePriceDex (xy7 pull-rates, fetched OK) per-box averages over 36 packs: Rare Holo EX 4.0/box, Ultra Rare (full-art) 1.7/box, Secret Rare 0.7/box, Rare Holo (non-EX) 5.6/box, Rare non-holo 24/box. Sum of the 36 rare-slot cards: 4.0+1.7+0.7+5.6+24 = 36.0 (closes exactly).\n2) falseredstart 64-BOX community sample (fetched OK): 441 ultra-or-secret-rares across 64 boxes = 6.9/box premium, 'one UR/SR every 5 packs'. ThePriceDex premium = EX 4.0 + UR 1.7 + SR 0.7 = 6.4/box -> the two independent samples agree (6.4 vs 6.9), confirming neither is inflated.\n3) Flipside Gaming 'Rarity Part Two' (fetched OK): 'By Ancient Origins, pull rates had dropped to approximately 1:6 packs for EXs and 1:12 packs for URs', secret 'maintained 1:72 pack', Mega-EX share the EX rate. Consistent with the above.\n\nMAPPING ONTO BUCKETS (rare-or-better slot, count=1, per-pack = per-box/36):\n  ultra-rare = (4.0 EX-holo + 1.7 full-art-UR)/36 = 5.7/36 = 0.158333 -> 0.1583\n  secret-rare = 0.7/36 = 0.019444 -> 0.0194\n  rare-holo = 5.6/36 = 0.155556 -> 0.1556\n  rare (non-holo) = remainder = 24/36 = 0.666667 -> 0.6667\n  Sum = 0.6667+0.1556+0.1583+0.0194 = 1.0000 exact. No double-counting: the 5.7 EX/UR + 0.7 SR + 5.6 RH + 24 rare = 36 = exactly one rare-or-better per pack.\n\nHIT ECONOMY SANITY: premium (ultra-rare+secret-rare) = 6.40/box, matching the 64-box sample's 6.4-6.9 band; any-holo-or-better = 12.0/box (~1 of every 3 packs holo+). Secret-rare ~1:51 packs (0.7/box) -- close to Flipside's '1:72' (community samples run a touch hot). Not over-claimed.\n\nPRODUCTS: standard 36-pack booster Display Box confirmed (ThePriceDex '36 packs per booster box' + snapshot sealed 'display'). Elite Trainer Box is a REAL product = 8 packs of 10 cards (ToyWiz Hoopa ETB '8 Booster Packs', Amazon B00Y1NZ6GA, Pokemon Center 150-80033, PocketMonsters) -> etbPacks=8. Note: the engine snapshot currently carries only a 'display' + single 'booster' sealed entry (no ETB price), so the EV engine will key off the booster box; etbPacks=8 records the real, sourced structure for when an ETB price is added.\n\nCONFIDENCE = medium (honest): two REAL community samples (a published 64-box count of 441 UR/SR + ThePriceDex's per-box study) corroborate each other and Flipside's era figures, which is stronger than 'low'; but no single large vendor-grade opening study exists and the rare-holo-vs-EX split leans on ThePriceDex's tiering, keeping it below 'high'. VINTAGE NOTE: 2015 set, sealed box carries a large collector premium (snapshot box ~$8.2k), so EV/booster sits far below box price -- expected, rates NOT inflated to compensate.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6667,
+        "rare-holo": 0.1556,
+        "ultra-rare": 0.1583,
+        "secret-rare": 0.0194
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

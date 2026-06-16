@@ -1,0 +1,67 @@
+{
+  "setId": "dragon-vault",
+  "era": "bw",
+  "confidence": "medium",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Dragon_Vault_(TCG)",
+    "https://www.serebii.net/card/dragonvault/",
+    "https://www.cardrake.com/expansions/dv1",
+    "https://www.pokellector.com/Dragon-Vault-Expansion/",
+    "https://www.tcgcollector.com/sets/11117/dragon-vault"
+  ],
+  "notes": "SPECIAL MINI-SET (NOT a standard BW booster). Dragon Vault (dv1), English release 2012-10-05, BW-era special expansion, 21 cards (20 Normal #1/20-20/20 + 1 Secret #21/20 Kyurem). The chase card is Kyurem 21/20 (secret).\n\nPACK STRUCTURE (well-sourced, the load-bearing fact): Bulbapedia Dragon Vault page (fetched) states each booster pack contained EXACTLY 5 HOLOFOIL cards and that ALL cards in the set are holographic (\"intentionally designed with every card as a holofoil, creating a premium product\"). There is NO common/uncommon/reverse-holo/rare-slot structure here - it is not a normal 10-card BW pack. So the standard BW baseline (1 rare + 3 unc + 5 com + 1 RH) does NOT apply and was deliberately NOT used. packSize=5, every slot draws a holofoil from the same all-holo 21-card pool.\n\nDISTRIBUTION MODEL: With every card foil and packs being 5 random holos from a 21-card all-foil pool, each of the 5 slots is modeled as a uniform draw across the set proportional to bucket size. Catalog buckets (given) = {rare-holo:18, rare:2, common:1} (=21 cards; these labels are the engine classifier's split of the otherwise unmarked all-holo set - the cards carry \"no rarity markings\" per pokellector/Bulbapedia, all are holographic). Proportional draw: rare-holo = 18/21 = 0.857, rare = 2/21 = 0.095, common = 1/21 = 0.048. Sums to 0.857+0.095+0.048 = 1.000 exactly. All 5 slots use this identical distribution (5 independent foil pulls from the same pool). This is a STRUCTURAL consequence of \"all cards holo, 5 per pack\" - not an invented per-card percentage.\n\nDISTRIBUTION (NO published per-set rates were invented): no per-rarity-tier pull study exists because the set has only one effective rarity tier (all holo). The keys {rare-holo, rare, common} are a strict subset of the available buckets {rare-holo, rare, common}. Every slot sums to exactly 1.0.\n\nPRODUCTS: Bulbapedia confirms Dragon Vault was NOT sold in traditional booster boxes - \"only made available in the Dragon Vault Blisters released on October 5, 2012.\" There was NO 36-pack booster box and NO ETB. The sold unit was a single-pack blister (1 pack of 5 holos + a Holographic promo). display.packs = 1 (one blister pack); etb = null. Sealed Dragon Vault blisters/setbox carry a collector premium with the Kyurem chase, so EV/pack will sit below sealed prices - expected, rates not inflated.\n\nCONFIDENCE: 'medium'. The pack structure (5 holofoil cards/pack, all-holo set, blister-only) is directly and clearly sourced from Bulbapedia, and the uniform-draw distribution is a direct structural consequence rather than an estimated hit-rate; but there is no large published statistical sample of opened Dragon Vault packs, so not 'high'.",
+  "packSize": 5,
+  "slots": [
+    {
+      "name": "holo-1",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.857,
+        "rare": 0.095,
+        "common": 0.048
+      }
+    },
+    {
+      "name": "holo-2",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.857,
+        "rare": 0.095,
+        "common": 0.048
+      }
+    },
+    {
+      "name": "holo-3",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.857,
+        "rare": 0.095,
+        "common": 0.048
+      }
+    },
+    {
+      "name": "holo-4",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.857,
+        "rare": 0.095,
+        "common": 0.048
+      }
+    },
+    {
+      "name": "holo-5",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.857,
+        "rare": 0.095,
+        "common": 0.048
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 1
+    },
+    "etb": null
+  }
+}

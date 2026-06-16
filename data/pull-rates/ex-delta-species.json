@@ -1,0 +1,54 @@
+{
+  "setId": "ex-delta-species",
+  "era": "ex",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Delta_Species_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://api.pokemontcg.io/v2/cards?q=set.id:ex11&pageSize=250&select=number,name,rarity"
+  ],
+  "notes": "EX-era (ex11) standard booster: shipEv=true. A real 36-pack sealed booster box exists and is a tradeable product (CardTrader / PriceCharting / multiple distributor listings fetched in search). Vintage sealed box carries a large collector premium, so modeled EV/booster will be far below box price — expected, not compensated for.\n\nSTRUCTURE (Bulbapedia 'Booster pack (TCG)', re-fetched, verbatim): \\\"Beginning with the e-Card Series and continuing through the entirety of the EX Series, boosters had only 9 cards.\\\" and \\\"Since the release of the Legendary Collection expansion, one Reverse-Holo ... print of a Common, Uncommon, or Rare card has also been included in every booster.\\\" => packSize=9 = 1 rare-or-better + 3 uncommon + 4 common + 1 reverse-holo. Box = 36 packs (corroborated by search: \\\"nine cards in each booster pack and 36 packs in a box\\\"). NO ETB existed in the EX era => products.etb=null, displayPacks=36.\n\nBUCKETS — EXACT match to the engine's available buckets, verified against pokemontcg.io set.id:ex11 (re-fetched live via curl, 114 cards): Common 34, Uncommon 35, Rare 20, Rare Holo 18, Rare Holo EX 3, Rare Holo Star 3, Rare Secret 1. Mapping to engine buckets: rare-holo=18, rare=20, ex=3 (the 3 Eeveelution Pokemon-ex: Flareon/Jolteon/Vaporeon ex), gold-star=3 (Groudon★ #111, Kyogre★ #112, Metagross★ #113), secret-rare=1 (#114). No 'shiny'/'ultra-rare' buckets in this set — correctly absent.\n\nRARE-OR-BETTER SLOT (EV driver), built ONLY from re-fetchable EX-era sources:\n- gold-star = 1:72. Flipside review (re-fetched, verbatim): gold stars \\\"appearing at approximately 1:72 packs (2 booster boxes) for most of the sets\\\" (Power Keepers was the only easier outlier; Delta Species is a standard set) => 0.014.\n- ex (Pokemon-ex) = era-typical ~1:18 packs (~2 per 36-pack box). Flipside gives the EX-era spread: ex \\\"in Holon Phantoms ... 1:36 booster packs (1 per booster box)\\\" (the immediately preceding set) up to Power Keepers \\\"1:8-12\\\" (acknowledged easy outlier). A standard 3-ex mainline set like Delta Species sits between these; ~1:18 is the era-typical midpoint => 0.056. No Delta-Species-SPECIFIC published study was sourceable, hence confidence=low (era-average applied without a per-set study).\n- secret-rare = 1 secret card (#114); EX-era secrets are roughly as scarce as gold stars (~1:72) => 0.014.\n- rare-holo = ~1:3 packs (the long-standing WotC/EX-era holo-rare convention, ~12 holos per 36-pack box) => 0.333.\n- rare (non-holo) = remainder = 1 - 0.333 - 0.056 - 0.014 - 0.014 = 0.583.\nSlot sums to EXACTLY 1.000. Hit economy sanity: holo-or-better ~1 every 2.4 packs; ~2 ex/box; ~1 gold star per 2 boxes — consistent with the documented EX-era box. NO rates inflated to chase the high vintage box price.\n\nREVERSE-HOLO slot: Bulbapedia says it is a Common/Uncommon/Rare. Modeled as filler 50/50 common/uncommon to match sibling EX/early-era configs (shining-legends, dragon-majesty) where reverse-holo carries no chase value in the coarse model; sums to 1.0.\n\nSOURCES PRUNED: dropped elitefourum SM/SS thread (re-fetched — explicitly covers only Sun&Moon and Sword&Shield, NO EX-era data) and PSA set-registry article (HTTP 403, not fetchable). Kept only genuinely fetched/corroborated URLs. Flipside 'part-two' returned no EX-era pack detail on re-fetch, so only the part-one URL is cited.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.583,
+        "rare-holo": 0.333,
+        "ex": 0.056,
+        "gold-star": 0.014,
+        "secret-rare": 0.014
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

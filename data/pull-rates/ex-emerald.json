@@ -1,0 +1,51 @@
+{
+  "setId": "ex-emerald",
+  "era": "ex",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/ex9/ex-emerald/pull-rates",
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Emerald_(TCG)",
+    "https://www.elitefourum.com/t/guide-to-early-ex-series-pull-rates/30710",
+    "https://www.psacard.com/articles/articleview/10380/collecting-2005-poke-mon-ex-emerald-trading-card-game-set-lots-variety-but-no-gold"
+  ],
+  "notes": "EX Emerald (ex9, 2005), 9 cards/pack, 36 packs/box, NO ETB (vintage). Confirmed by Bulbapedia + ThePriceDex + Elite Fourum + PSA. Set has NO gold stars (PSA article title 'No Gold'; Elite Fourum confirms; bucket list lacks gold-star). Secret rare = Farfetch'd 107/106 (1 in set). Rare slot odds from ThePriceDex EX Emerald pull-rates page: Rare Holo ex 1-in-12 packs (~3 ex/box), Rare Holo 1-in-4 packs (~9 holos/box -> Elite Fourum: Emerald has the highest avg holos-per-box of all EX-series sets), Rare 1-in-1.5 packs (~24/box). Secret rare ~0.3/box = ~1 per 3 boxes (EX-era norm, ThePriceDex/Elite Fourum). Per-pack rare-slot distribution: ex 1/12=0.0833, rare-holo 1/4=0.25, secret-rare 0.3/36=0.0083, rare=remainder 0.6584; yields ~3 ex, ~9 holo, ~24 rare, ~0.3 secret per box (matches sourced box yields). Reverse slot: EX Emerald is first English set with Holofoil Basic Energy replacing reverse in every 3rd pack; reverse slot has NO dedicated bucket so mapped onto common/uncommon filler per ThePriceDex reverse composition (rev common ~11.6 + holo energy 12 vs rev uncommon 7.0 + rev rare/holo 5.5) -> ~0.6 common / 0.4 uncommon. Confidence medium: per-set ThePriceDex study + community (Elite Fourum) cross-confirmation, but reverse-slot bucket mapping is approximate. Vintage box price carries large sealed premium so EV/pack will be well below box price - expected, rates not inflated.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6584,
+        "rare-holo": 0.25,
+        "ex": 0.0833,
+        "secret-rare": 0.0083
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.6,
+        "uncommon": 0.4
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

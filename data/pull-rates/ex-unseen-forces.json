@@ -1,0 +1,55 @@
+{
+  "setId": "ex-unseen-forces",
+  "era": "ex",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Unseen_Forces_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.pokedata.io/product/EX+Unseen+Forces+Booster+Box"
+  ],
+  "notes": "EX Series booster (released 2005-08-22). PACK STRUCTURE: 9 cards/pack = 4 common + 3 uncommon + 1 rare-or-better + 1 reverse-holo (Bulbapedia 'Booster pack (TCG)' confirms e-Card/EX-era packs are 9 cards with a guaranteed reverse foil of a Common, Uncommon, or Rare). Booster box = 36 packs (corroborated by multiple retailer listings). NO ETB (did not exist in this era) -> etbPacks=null. Display = 36-pack box.\n\nREVERSE-HOLO SLOT: this set has NO 'reverse-holo' bucket, so the guaranteed reverse foil (a Common/Uncommon/Rare reprint) is mapped onto common/uncommon/rare weighted by each rarity's pool size in the available buckets (common:31, uncommon:34, rare:16) -> common 0.382716 / uncommon 0.419753 / rare 0.197531 (sums to 1.0). This carries no premium value, matching the engine's treatment of a reverse filler slot.\n\nRARE-OR-BETTER SLOT (per-pack, sourced from Flipside Gaming EX-era rates): Pokemon-ex ~1:12-18 packs early ex sets -> used 1:18 = 0.055556 (=2 ex/box, consistent with community '2-5 ex/box' range, conservative for a mid-late ex set). Gold Star ~1:72 packs (1 per 2 boxes) -> 0.013889 (=0.5/box). Secret Rare ~1:36 packs (Flipside ex Dragon / Team Magma vs Aqua analog; Unseen Forces has 2 secret rares = Rocket's Persian ex #116, Celebi ex #117) -> 0.027778 (=1/box). Remaining mass 0.902778 split between rare and rare-holo weighted by this set's bucket counts (rare:16, rare-holo:19) -> rare 0.412698 / rare-holo 0.490079. Slot sums to exactly 1.0.\n\nBUCKET MAPPING vs Bulbapedia composition (115-card main set): 28 Common, 16 Uncommon, 14 Rare, 19 Rare Holo (incl. 28 Unown A-? Holos), 12 Rare Holo ex, 3 Gold Star (Entei/Raikou/Suicune #113-115/115), 2 Secret (#116-117). Catalog buckets {rare-holo:19, rare:16, uncommon:34, common:31, ex:12, gold-star:3, secret-rare:2} match the Bulbapedia rare-holo(19)/ex(12)/gold-star(3)/secret-rare(2) hit counts exactly; common/uncommon/rare counts differ from the printed checklist because TCGdex/engine classification splits a few cards differently, but the slot economy depends only on the sourced premium rates which are mapped exactly.\n\nCONFIDENCE: 'low' — no per-set published pull-rate STUDY exists for this 2005 vintage set; ex/gold-star/secret rates are era-average figures from Flipside Gaming applied without a per-set study. Vintage sealed boxes carry a large collector premium (box ~$200+), so EV/booster sits far below box price — expected, rates NOT inflated to compensate.",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.490079,
+        "rare": 0.412698,
+        "ex": 0.055556,
+        "secret-rare": 0.027778,
+        "gold-star": 0.013889
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.382716,
+        "uncommon": 0.419753,
+        "rare": 0.197531
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

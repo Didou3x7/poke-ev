@@ -35,6 +35,13 @@ export const RARITY_IDS = [
   // Mega Evolution era (2025+)
   "mega-ex",
   "black-white-rare",
+  // Vintage hit rarities (EX 2003-07 / DP 2007-09 / HGSS 2010-11) — pokemontcg.io
+  // distinguishes these where TCGdex lumps them all into "Rare".
+  "ex", // EX-era Pokémon-ex ("Rare Holo EX")
+  "gold-star", // EX-era Gold Star ("Rare Holo Star")
+  "lv-x", // DP-era Level X ("Rare Holo LV.X")
+  "prime", // HGSS-era Prime ("Rare PRIME")
+  "legend", // HGSS-era LEGEND (two-card)
 ] as const;
 
 export type RarityId = (typeof RARITY_IDS)[number];
@@ -74,8 +81,13 @@ const RAW_TO_ID: Record<string, RarityId> = {
   "shiny ultra rare": "shiny-ultra-rare",
   // Sword & Shield
   "rare holo v": "rare-holo-v",
-  "rare holo ex": "rare-holo-v",
   "rare holo gx": "rare-holo-v",
+  // Vintage EX/DP/HGSS hit rarities (from the pokemontcg.io rarity overlay)
+  "rare holo ex": "ex",
+  "rare holo star": "gold-star",
+  "rare holo lv.x": "lv-x",
+  "rare prime": "prime",
+  "legend": "legend",
   "rare holo vmax": "rare-holo-vmax",
   "rare holo vstar": "rare-holo-vstar",
   // TCGdex word order (Holo Rare V / VMAX / VSTAR)

@@ -1,0 +1,54 @@
+{
+  "setId": "supreme-victors",
+  "era": "dp",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Supreme_Victors_(TCG)",
+    "https://www.dacardworld.com/gaming/pokemon-usa-platinum-supreme-victors-booster-box",
+    "https://www.pokemonwizard.com/sets/1384/supreme-victors",
+    "https://bulbapedia.bulbagarden.net/wiki/Diamond_&_Pearl_(TCG)"
+  ],
+  "notes": "Platinum-series set (pl3), DP/Platinum-era 10-card booster, 36 packs/box, NO ETB. Pack structure confirmed for the era (Bulbapedia booster pack page + D&P structure): 10 cards = 5 common + 3 uncommon + 1 reverse-holo + 1 rare-or-better. Buckets used are a subset of the set's available buckets {rare-holo, rare, uncommon, common, lv-x, secret-rare}.\n\nRare-or-better slot distribution: rare 0.589, rare-holo 0.30, lv-x 0.097, secret-rare 0.014 (sums to 1.0).\n- lv-x 0.097: SV is Lv.X-rich at ~3-4 Lv.X per booster box (community samples = ~1:9-1:12 packs). 3.5/36 packs = 0.097. This is more generous than the Flipside era \"later Lv.X 1:18\" baseline because SV specifically runs 3-4/box per multiple dealer/community sources. 7 Lv.X exist in the set.\n- secret-rare 0.014: era secret-rare baseline ~1:72 packs (~1:2 boxes), per Flipside (Time-Space Distortion reference). SV has 3 secret rares (Articuno 148/147, Moltres 149/147, Zapdos 150/147). 1/72 = 0.0139.\n- rare-holo 0.30: era convention ~1-in-3 packs yields a holo rare (14 holo-rares in set). Remainder goes to non-holo rare.\n\nReverse-holo slot distribution: distributed across reverse-eligible base rarities (common/uncommon/rare; holo-rare/lv-x/secret-rare are NOT reverse-eligible in this era) by relative pool size (45 common, 47 uncommon, 37 rare; pool 129): common 0.35, uncommon 0.36, rare 0.29 (sums to 1.0).\n\nconfidence=low: no per-set published pull-rate study exists for SV; figures are era-average rates (Flipside community review) plus SV-specific community Lv.X-per-box samples, mapped onto the set buckets. Vintage box price carries a large sealed-collector premium, so EV/booster will be far below box price — expected, rates NOT inflated to compensate.\n\nINTEGRITY: minor source discrepancy noted — some eBay listings label SV packs \"Pack of 10 Cards\" while one listing said 10; Bulbapedia confirms all DP/Platinum-era English packs are 10 cards, so packSize=10 (NOT the 9-card prompt baseline, which was a DP-era generalization; SV is 10). Bulbapedia set page lists 14 rare-holo / 34 rare / 39 uncommon / 59 common for the numbered run but the authoritative bucket counts supplied by the task {rare-holo:14, rare:37, uncommon:47, common:45, lv-x:7, secret-rare:3} were used for the distributions.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.35,
+        "uncommon": 0.36,
+        "rare": 0.29
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.589,
+        "rare-holo": 0.3,
+        "lv-x": 0.097,
+        "secret-rare": 0.014
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}

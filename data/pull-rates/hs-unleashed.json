@@ -1,0 +1,56 @@
+{
+  "setId": "hs-unleashed",
+  "era": "hgss",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://sixprizes.com/2011/04/10/money-and-mathematics-booster/",
+    "https://www.pokebeach.com/forums/threads/probability-of-primes-legends-in-triumphant.88621/",
+    "https://bulbapedia.bulbagarden.net/wiki/Unleashed_(TCG)",
+    "https://www.dacardworld.com/gaming/pokemon-heartgold-and-soulsilver-unleashed-booster-box"
+  ],
+  "notes": "HGSS-era set (HS—Unleashed, hgss2, released 2010-05-12). 10 cards/pack modeled as 5 common + 3 uncommon + 1 reverse-holo + 1 rare-or-better. Booster box = 36 packs. NO ETB (did not exist in this era) -> etbPacks=null.\n\nPACK MECHANICS (sourced): SixPrizes \"Money and Mathematics\" confirms the HGSS pack = 5 common, 3 uncommon, 1 rare, 1 random/reverse-holo slot, and that Pokemon Prime/LEGEND cards \"never take the place of the rare card.\" Per the task's era baseline (which models prime/legend/ultra-rare inside the conditional distribution of the rare-or-better slot), I fold the Prime/LEGEND/secret incidence into that single rare-or-better slot's distribution so the slot economy reproduces the real per-box hit counts.\n\nPER-BOX ECONOMICS (sourced): Flipside Gaming (Part Two) gives the HGSS-era rates — Prime ~1:6-7 packs, LEGEND ~1:12-18 packs, Alph Lithograph secret rare ~1:108 packs (=1:3 boxes). PokeBeach Triumphant probability thread (same era preset structure) corroborates ~5-6 Primes/box (~1:6) and ~3 LEGEND cards/box (~1:12). Applied to the 36-pack box:\n- prime = 6/36 = 0.167 (~6 Primes/box)\n- legend = 3/36 = 0.083 (~3 LEGEND cards/box; the set has 3 LEGEND pairs = 6 halves, bucket legend:6)\n- ultra-rare (Alph Lithograph \"Unleashed TWO\", the set's lone secret, bucket ultra-rare:1) = 1/108 = 0.009 (~1 per 3 boxes)\nRemaining 0.741 of the slot splits rare-holo vs plain rare at the era ~1:3 holo cadence: rare-holo = 0.247 (~9 holos/box), rare = 0.494. Slot sums to exactly 1.0.\n\nREVERSE-HOLO slot is filler (Unleashed has reverse-foil variants of the non-holo cards; master set ~83 reverses). Distributed across the reverse-eligible pool by per-card share — common 28, uncommon 28, rare 16 → common 0.389, uncommon 0.389, rare 0.222 (sums to 1.0). No major chase in this slot; kept conservative to avoid inflating EV.\n\nBUCKET KEYS: every distribution key is a subset of this set's available buckets {rare-holo:11, rare:16, uncommon:28, common:28, prime:6, legend:6, ultra-rare:1}. Set composition cross-checked on Bulbapedia: 6 Rare Prime (Crobat/Kingdra/Lanturn/Steelix/Tyranitar/Ursaring), 3 LEGEND pairs (Entei&Raikou, Raikou&Suicune, Suicune&Entei = 6 halves = bucket legend:6), 1 Rare Secret = Alph Lithograph (= bucket ultra-rare:1).\n\nCONFIDENCE: 'low' — no per-set published pull-rate STUDY exists for this vintage set; rates are HGSS era-averages (Flipside + SixPrizes) calibrated against the Triumphant community box data, applied to Unleashed's actual rarity composition. Vintage sealed boxes carry a large collector premium, so EV/booster will sit far below box price — expected; rates NOT inflated to compensate.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.389,
+        "uncommon": 0.389,
+        "rare": 0.222
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.494,
+        "rare-holo": 0.247,
+        "prime": 0.167,
+        "legend": 0.083,
+        "ultra-rare": 0.009
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "setId": "legends-awakened",
+  "era": "dp",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Legends_Awakened_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Diamond_&_Pearl_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.pokebeach.com/forums/threads/number-of-lv-x-cards-in-a-dp-box.8784/",
+    "https://www.dacardworld.com/gaming/pokemon-usa-ex-dandp-legends-awaken-booster-box"
+  ],
+  "notes": "DP-era set (Diamond & Pearl: Legends Awakened, English release 2008-08-20, set code DP6, 146 cards). Booster box = 36 packs (era standard, confirmed by Bulbapedia + multiple retailer listings: ToyWiz, Potomac, StockX). NO ETB existed in this era -> etb=null. Display = 36-pack box.\n\nBOOSTER STRUCTURE: 10 cards/pack. Bulbapedia Diamond & Pearl (TCG) page (fetched): DP-era packs 'increased from 9 cards to 10 cards' = 5 Common + 3 Uncommon + 1 Reverse-Holofoil + 1 Rare-or-Rare-Holo. (Note: the engine baseline prompt assumed 9 cards/pack — corrected to 10 per the fetched Bulbapedia DP structure.) Modeled as 5 common + 3 uncommon + 1 reverse-holo + 1 rare-or-better = 10. No basic-energy card in DP boosters.\n\nAVAILABLE BUCKETS (given): {rare-holo:17, rare:28, uncommon:46, common:48, lv-x:7}. Bulbapedia LA set page rarity breakdown (fetched): 17 Rare Holo, 26 Rare, 29 Uncommon, 47 Common, 7 Rare Holo LV.X (Azelf, Gliscor, Magnezone, Mesprit, Mewtwo, Rhyperior, Uxie LV.X). Catalog rare/uncommon/common counts differ slightly from Bulbapedia's printed-checklist split because the TCGdex/engine classifier groups a handful of cards differently, but the HIT buckets that drive EV match exactly: rare-holo:17 = Bulbapedia 17 Rare Holo; lv-x:7 = Bulbapedia 7 Rare Holo LV.X. NO secret rares / Shiny / Star cards exist in this set — the top tier is the 7 LV.X (Bulbapedia fetch confirms 'No secret rares or Shiny/Star cards appear in this set'), so the available buckets correctly lack a secret-rare bucket.\n\nRARE-OR-BETTER SLOT (the 1 'rare or better' card per pack): resolves across {rare, rare-holo, lv-x}.\n  - lv-x = 0.055 (~1:18 packs = ~2 LV.X per 36-pack box). Sourced from Flipside Gaming Part Two (fetched directly): LV.X 'a more favorable 1:18 pull rate for later sets in the LV. X era' (Legends Awakened onward). Corroborated by the LA-specific community figure surfaced in search ('a Level X in about 1 in every 15-18 packs' -> ~2-3/box); the lower-end 1:18 (2/box) is used as the conservatively-sourced central value. 1/18 = 0.0556, rounded to 0.055.\n  - rare-holo = 0.278 (~1:3.6 packs, ~10 rare-holos per box). Derived from the DP-era ~1:3 'holo in roughly 1 of every 3 packs' convention (~12 holos/box total) minus the ~2 LV.X that occupy holo slots: (12 - 2)/36 = 10/36 = 0.278. Holo-per-pack ~1:3 is the DP-era community baseline (Flipside, plus LA-specific 'holo in about 1 in every 3 packs' from search), consistent with the set's 17 Rare Holo pool.\n  - rare = remainder = 1 - 0.055 - 0.278 = 0.667 (plain non-holo rare, ~24 per box).\n  Slot sums to exactly 1.0.\n\nREVERSE-HOLO SLOT: per dataset convention, DP-era reverse-holo filler modeled with plain common/uncommon ids (market value is what matters). LA pools are near-equal (common:48 / uncommon:46), so a neutral 50/50 common/uncommon split is used. Sums to 1.0.\n\nCONFIDENCE: 'low' — no per-set published large-scale pull-rate STUDY exists for this vintage set. The LV.X 1:18 band, holo ~1:3, and rare/rare-holo/lv-x ordering are DP/LV.X-era community + retailer averages (Flipside Gaming aggregating community data, Bulbapedia pack-structure page, plus the LA-specific 1:15-18 LV.X and ~1:3 holo figures surfaced in search) mapped onto Legends Awakened, not an LA-specific verified large sample.\n\nVintage sealed Legends Awakened boxes carry a heavy collector premium (the 7 LV.X, esp. Mewtwo LV.X and the lake-trio LV.X, are the chase), so EV/booster will sit far below sealed box price — expected; rates are NOT inflated to compensate.\n\nINTEGRITY: every slot sums to exactly 1.0; all distribution keys {common, uncommon, rare, rare-holo, lv-x} are a strict subset of this set's available buckets {rare-holo, rare, uncommon, common, lv-x}. No invented per-set percentages — the 1:18 LV.X, ~1:3 holo, and rare/holo ordering are the sourced era/LA figures.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.667,
+        "rare-holo": 0.278,
+        "lv-x": 0.055
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

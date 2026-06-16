@@ -1,0 +1,56 @@
+{
+  "setId": "xy",
+  "era": "xy",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.codedyellow.com/xy-base-set-card-list/",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://www.pokebeach.com/forums/threads/odds-in-pokemon-packs.3916/"
+  ],
+  "notes": "XY base set (xy1), released Feb 2014, 146 cards, the FIRST set of the XY era. Booster = 10 cards: 1 rare-or-better slot, 3 uncommon, ~5 common, 1 reverse-holo (+ basic Energy, not modeled). Box = 36 packs, ETB = 8 packs.\n\nSET COMPOSITION (codedyellow.com card list): NO secret rares (set ends at 146/146, no cards above). Poke EV buckets given (ultra-rare:14, rare-holo:16, rare:26, uncommon:42, common:48) have no secret-rare/ex bucket, so Poke EV has merged ALL 14 EX cards (8 half-art Rare Holo EX + 6 full-art EX, cards 141-146: Venusaur/M Venusaur/Blastoise/M Blastoise/Yveltal/Xerneas/Skarmory/Emolga EX) into the 'ultra-rare' bucket. rare-holo:16 = non-EX holo rares; rare:26 = plain rares.\n\nPULL RATES (Flipside Gaming Part Two): XY-era pull rates 'started out matching those found in Plasma Blast' (xy1 is the very first XY set, so it uses these leaner starting rates, NOT the later Ancient Origins 1:6 EX / 1:12 UR rates). Plasma Blast rates per source: Pokemon-EX ~1:18 packs, Ultra Rare / Full Art ~1:36 packs. Since Poke EV merges both half-art EX (1:18) and full-art EX (1:36) into one 'ultra-rare' bucket, I summed them: 1/18 + 1/36 = 3/36 = 0.0833 of packs yield any EX. No secret rares in this set, so no secret-rare contribution (consistent with integrity rules — not inventing a bucket the set lacks).\n\nRARE SLOT (1/pack, resolves to rare / rare-holo / ultra-rare): ultra-rare 0.0833 (combined EX, sourced). Remaining 0.9167 split between plain rare and holo rare using the long-standing ~1:3 holo convention (Bulbapedia/PokeBeach: holo rare ~1 in 3 packs since early era): rare-holo 0.30, rare 0.6167. Sums to 1.0.\n\nREVERSE-HOLO SLOT (1/pack): Poke EV has no reverse-holo rarity bucket and reverse holos in this era can be any common/uncommon/rare, so modeled as drawing from common/uncommon/rare pools weighted by available counts (48/42/26 = 116 total): common 0.4138, uncommon 0.3621, rare 0.2241. Sums to 1.0.\n\nUNCOMMON slot (3/pack) and COMMON slots (4/pack) modeled at count 3 and 4 respectively.\n\nConfidence = LOW: no per-set XY1 published pull-rate study exists; figures are era-average Plasma-Blast-start rates (Flipside, derived from community Reddit case data) applied to xy1, plus the standard ~1:3 holo convention. This is the correct confidence tier per the integrity rules (era-average rates without a per-set study). Vintage sealed XY1 boxes carry a large collector premium, so modeled EV/booster will sit well below sealed box price — expected, not a reason to inflate rates.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "Rare or better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.6167,
+        "rare-holo": 0.3,
+        "ultra-rare": 0.0833
+      }
+    },
+    {
+      "name": "Uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "Common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "Reverse holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.4138,
+        "uncommon": 0.3621,
+        "rare": 0.2241
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

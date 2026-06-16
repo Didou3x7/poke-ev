@@ -1,0 +1,58 @@
+{
+  "setId": "breakthrough",
+  "era": "xy",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://cardchill.com/article/pokemon-tcg-pull-rates-explained-what-to-expect-from-booster-packs",
+    "https://www.pokemonwizard.com/sets/1661/breakthrough",
+    "https://www.pokemoncenter.com/product/151-80003/pokemon-tcg-xy-brea-kthrough-sleeved-booster-pack-10-cards",
+    "https://toywiz.com/pokemon-xy-breakthrough-purple-elite-trainer-box-mega-mewtwo-x/",
+    "https://www.pokemoncenter.com/product/699-16709/pokemon-tcg-xy-brea-kthrough-elite-trainer-box-mewtwo-x",
+    "https://bulbapedia.bulbagarden.net/wiki/BREAKthrough_(TCG)"
+  ],
+  "notes": "RESEARCH (sourced, adversarial) for XY BREAKthrough (xy8), an XY-era set.\n\nERA ANCHORS (Flipside Gaming \"Comprehensive Review of Rarity Part Two\", fetched OK; corroborated by Card Chill pull-rate article, found in search but blocked HTTP 429 on direct fetch): XY-era per-pack rates settled around Pokemon-EX ~1:6, Ultra Rare / Full Art / Mega-EX ~1:12, Pokemon BREAK ~1:12, Secret Rare ~1:72 (1 per ~2 boxes; constant across the era). These are era figures, not a per-set BREAKthrough opening study.\n\nCOMMUNITY SAMPLE (pokemonwizard.com BREAKthrough page, surfaced + summarized in web search): a single 32-pack box reported 5 holos, 7 EXs, 3 BREAKs, 7 reverse-holo rares. That gives, for the hit slot, ultra-rare-bucket (EX+BREAK) = 10/32 = 0.3125/pack and rare-holo = 5/32 = 0.156/pack. Treated as a single small box (n=1), so it caps confidence, but it cross-checks the era anchors and the per-box economy.\n\nBUCKET MAPPING — CRITICAL: this set's available buckets are {common, uncommon, rare, rare-holo, ultra-rare, secret-rare, null} with NO separate \"ex\" bucket. So ALL of Pokemon-EX, Mega-EX, Pokemon BREAK, and Full-Art Trainers collapse into ultra-rare (the given count ultra-rare=24 reflects exactly that: ~6 EX printings + M-EX + 5 BREAK + full-art trainers). secret-rare=2 = the two secret Mewtwo-EX full arts (163/162, 164/162) -> ~1 per 2 boxes. The \"null\" bucket (1 card) is an unclassified/promo-style entry, not a pulled slot, so it is excluded from the distribution.\n\nDISTRIBUTION (single rare-or-better hit slot, per-pack, sums to 1.0 exactly):\n  ultra-rare = 0.27 (EX+M-EX+BREAK+FA-trainer combined; held slightly under the 0.3125 video-box sample since opening videos over-represent hits; consistent with EX 1:6 ~0.19 of EX-family + BREAK ~1:12 ~0.083)\n  rare-holo  = 0.15 (community 5/32=0.156; rounded)\n  secret-rare= 0.0139 (1:72 era constant)\n  rare       = 0.5661 (remainder/non-holo rare fill)\n  SUM = 1.000000 (verified by script).\nPER-BOX SANITY (x36): 9.72 ultra-rare/box (matches the sample's ~10 EX+BREAK and the \"guaranteed handful of EX + Mega + BREAK per box\" reports), 5.4 rare-holo/box, 0.5 secret/box (1 per 2 boxes), 20.4 non-holo rares/box. Total = 36 hits = 36 packs. Hit economy sane, not over-claimed.\n\nFILLER SLOTS (XY-era baseline, confirmed era structure): 4 common (common=1.0), 3 uncommon (uncommon=1.0), 1 reverse-holo modeled 50/50 common/uncommon filler (sums to 1.0). 10th card = basic Energy (XY8 packs are 10 cards including an Energy per the Pokemon Center sleeved-booster listing), not modeled.\n\nPRODUCTS: packSize=10 (Pokemon Center XY-BREAKthrough Sleeved Booster Pack \"10 Cards\"). displayPacks=36 (standard XY 36-pack booster box; eBay/Blowout/Magic Card Shop listings). etbPacks=8 (XY-BREAKthrough Elite Trainer Box includes 8 booster packs per ToyWiz + Pokemon Center listings). Vintage (2015) sealed-box collector premium means EV/booster will sit well below box price — expected, rates not inflated to compensate.\n\nCONFIDENCE = low: special-card rates are XY-era figures (not a large per-set BREAKthrough study); the rare-holo vs non-holo split and ultra-rare blend rest on a single small community box opening plus era anchors. Honest cap.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.5661,
+        "rare-holo": 0.15,
+        "ultra-rare": 0.27,
+        "secret-rare": 0.0139
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 8
+    }
+  }
+}

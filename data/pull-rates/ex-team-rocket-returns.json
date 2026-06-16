@@ -1,0 +1,56 @@
+{
+  "setId": "ex-team-rocket-returns",
+  "era": "ex",
+  "confidence": "low",
+  "sources": [
+    "https://www.dondiegotrading.com/blogs/news/what-are-pokemon-gold-star-cards",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/EX_Team_Rocket_Returns_(TCG)",
+    "https://www.pokellector.com/card/Charmeleon-EX-Team-Rocket-Returns-RR-110",
+    "https://www.cardtrader.com/en/cards/here-comes-team-rocket-secret-rare-111-109-ex-team-rocket-returns"
+  ],
+  "notes": "EX-era (ex Series) booster: 9 cards/pack = 1 rare-or-better + ~3 uncommon + ~4 common + 1 reverse-holo (Bulbapedia Booster_pack(TCG): \"e-Card through entirety of EX Series, boosters had only 9 cards\"; reverse-holo every pack since Legendary Collection). Box = 36 packs, no ETB (era-correct).\n\nRare slot distribution derived from sourced rates:\n- Gold Star ~1:72 packs = 0.014 (dondiegotrading + Flipside, both cite \"approximately 1:72 packs / 1 per 2 booster boxes\"). Set has 3 Gold Stars (Mudkip/Torchic/Treecko 107-109/109).\n- Pokemon-ex (Rocket's ex) ~3 per box of 36 = 0.083 (dondiegotrading: \"~three EX cards per box\", consistent with Flipside ex-era ~1:12-18). Set has 11 Rocket's-ex (96-106).\n- Secret rare ~1:36 packs total = 0.028 (Flipside: comparable ex-era sets ex Dragon and Team Magma vs Aqua \"approximately 1:36 packs\"). TRR has 2 secret rares: Charmeleon 110/109 and Here Comes Team Rocket! 111/109.\n- Remaining 0.875 of the rare slot split rare-holo 0.25 vs non-holo rare 0.625, anchored to dondiegotrading \"~nine holos per box\" (9/36=0.25); set has 14 rare-holo + 14 rare buckets. Rest of rare slots = plain rare.\nRare slot sums to 1.0 exactly.\n\nReverse-holo slot mapped to set's available buckets (no dedicated reverse-holo bucket exists for this set) as common/uncommon filler 0.6/0.4 (era-typical, commons weighted heavier). Uncommon slots -> uncommon 1.0; common slots -> common 1.0.\n\nConfidence LOW: no per-set published pull-rate STUDY for TRR; figures are era-average community rates (pokebeach/pokegym-sourced via Flipside, plus dondiegotrading) applied to this set. Gold-star and secret-rare anchors are solid era values; rare-holo vs rare split is the softest assumption. Vintage sealed box carries large collector premium so EV/pack will sit well below box price (expected).",
+  "packSize": 9,
+  "slots": [
+    {
+      "name": "Rare or better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.625,
+        "rare-holo": 0.25,
+        "ex": 0.083,
+        "secret-rare": 0.028,
+        "gold-star": 0.014
+      }
+    },
+    {
+      "name": "Reverse holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.6,
+        "uncommon": 0.4
+      }
+    },
+    {
+      "name": "Uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "Common",
+      "count": 4,
+      "distribution": {
+        "common": 1
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "setId": "neo-revelation",
+  "era": "wotc",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Neo_Revelation_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg",
+    "https://www.dacardworld.com/gaming/wotc-pokemon-neo-3-revelation-1st-edition-booster-box"
+  ],
+  "notes": "WotC Neo-era set (released 2001-09-21, pre-2002 -> NO reverse-holo slot per the era rule). Booster structure confirmed across sources: 11 physical cards/pack modeled as the engine's WotC baseline 7 common + 3 uncommon + 1 rare-or-better (2 basic Energy carry no EV, not modeled). Booster box = 36 packs; NO ETB existed in this era -> etb=null.\n\nHOLO RATE: Holographic Rares ~1 in 3 packs across the Neo series (Flipside Gaming: \"Holo (approximately 1:3 packs)\"; DA Card World Neo Revelation booster-box listing corroborates the ~1-in-3 foil chance). Single rare-or-better slot resolves to rare-holo = 1/3 = 0.333, rare = 2/3 = 0.667. Sums to exactly 1.0.\n\nBUCKET MAPPING: available buckets {rare-holo:14, rare:15, uncommon:17, common:20}. Bulbapedia rarity breakdown (re-fetched): 14 Holographic Rare, 10 Rare, 14 Uncommon, 26 Common, 2 Shining Holo (#65-66). rare-holo:14 is an EXACT match to Bulbapedia's 14 Holographic Rares. Neo Revelation introduced SHINING Pokemon (Shining Gyarados/Magikarp) = the era's secret rares, pulled ~1:18 packs (Flipside). This set's buckets include NO secret-rare key, so per the integrity rule (keys must be a subset of available buckets) the Shining cards are NOT given a separate bucket — they fall inside rare-holo and their ~1:18 incidence is a subset of the ~1:3 holo slot. Slot economy depends only on the sourced holo-vs-rare split.\n\nCONFIDENCE 'low': no per-set published pull-rate study for this vintage set; the 1:3 holo rate is an era-average from community/retailer sources, consistent with the WotC baseline. Vintage sealed boxes carry a large collector premium, so EV/booster will sit far below box price (expected; rates not inflated). File written to /Users/alexandreott/Desktop/POKÉ EV/data/pull-rates/neo-revelation.json and passes `npx tsx scripts/validate-data.ts` (\"All datasets valid\").",
+  "packSize": 11,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 7,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.667,
+        "rare-holo": 0.333
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

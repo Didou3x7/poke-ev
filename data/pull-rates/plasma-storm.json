@@ -1,0 +1,58 @@
+{
+  "setId": "plasma-storm",
+  "era": "bw",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/bw8/plasma-storm/pull-rates",
+    "https://api.pokemontcg.io/v2/cards?q=set.id:bw8 (rarity counts: Common 41, Uncommon 42, Rare 26, Rare ACE 3, Rare Holo 10, Rare Holo EX 8, Rare Ultra 5, Rare Secret 3)",
+    "https://bulbapedia.bulbagarden.net/wiki/Plasma_Storm_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbanews.bulbagarden.net/wiki/Elite_Trainer_Box_has_been_revealed_for_Plasma_Storm",
+    "https://bulbapedia.bulbagarden.net/wiki/Elite_Trainer_Box_(TCG)"
+  ],
+  "notes": "RESEARCH (sourced, adversarial):\n- Set structure (Bulbapedia Plasma_Storm_(TCG) + pokemontcg.io bw8 rarity counts, both fetched OK): 138 cards = 135 numbered + 3 secret. pokemontcg.io rarity tally: Common 41, Uncommon 42, Rare 26, Rare ACE 3, Rare Holo 10, Rare Holo EX 8, Rare Ultra 5, Rare Secret 3 (sums to 138).\n- BUCKET MAPPING (critical): the given buckets are {common 41, uncommon 42, rare 29, rare-holo 10, ex 8, ultra-rare 5, secret-rare 3}. The set has NO 'ace-spec' bucket, so the 3 ACE SPEC (Rare ACE: Dowsing Machine, Scramble Switch, Victory Piece) were folded into 'rare' by the bucket builder: 26 Rare + 3 Rare ACE = 29 = given rare bucket. So ACE SPEC hits are absorbed into 'rare'. ex=8 = Rare Holo EX. ultra-rare=5 = Rare Ultra (4 Full Art EX + Colress Full Art). secret-rare=3 = Charizard 136, Blastoise 137, Random Receiver 138.\n- Pull rates (ThePriceDex bw8 pull-rates page, fetched OK; community-aggregate sample): per-box averages over a 36-pack box: Secret Rare 0.5/box (1 in 75), Ultra Rare 0.9/box (1 in 42.2), Rare Holo EX 2.7/box (1 in 13.5), Rare ACE 1.5/box (1 in 24), Rare Holo 8/box (1 in 4.5). Converted to per-pack (x/36) for the rare-or-better slot.\n- Pack structure (Bulbapedia Booster_pack_(TCG)): BW-era packs = 10 game cards = 5 common + 3 uncommon + 1 reverse-holo + 1 rare-or-better (Basic Energy 11th card only began Sun & Moon). ThePriceDex independently confirms 5 common + 3 uncommon + 10 cards.\n- Products: standard 36-pack Booster Display Box. Plasma Storm is the FIRST-EVER Elite Trainer Box (released 2013-02-06, Bulbanews fetched OK) and it contained 7 packs, NOT the later-standard 8 (Bulbanews + DA Card World listing both state 7). So etb packs = 7.\n\nMAPPING ONTO BUCKETS (rare-or-better slot, count=1, per-pack):\n  secret-rare = 0.5/36 = 0.01389\n  ultra-rare  = 0.9/36 = 0.025\n  ex (Rare Holo EX) = 2.7/36 = 0.075\n  rare-holo   = 8/36  = 0.22222\n  rare (non-holo Rare + folded ACE SPEC) = remainder = 1 - 0.22222 - 0.075 - 0.025 - 0.01389 = 0.66389\n    (of this, ~0.04167 is the ACE-SPEC contribution at 1.5/box; ~0.62222 is plain non-holo Rare)\n  SUM = 0.66389 + 0.22222 + 0.075 + 0.025 + 0.01389 = 1.00000 (exact)\n\nHIT ECONOMY SANITY: any EX-or-better ~11.4%/pack (~4.1/box: ~2.7 Rare Holo EX + ~0.9 Full Art Ultra + ~0.5 Secret). Plus ~1.5 ACE SPEC/box and ~8 Rare Holo/box. Matches ThePriceDex per-box averages and the published structure; not over-claimed. Vintage 2013 sealed box carries a large collector premium, so EV/booster sits well below current sealed box price - expected, not inflated.\n\nCONFIDENCE = medium: ThePriceDex provides a per-set community-aggregate pull-rate dataset for bw8 (the five special-card rates are explicit published figures), and the bucket mapping is verified card-by-card against pokemontcg.io rarity counts. Not 'high' because ThePriceDex is a community/derived sample rather than a large first-party opening study; the rare vs rare-holo split rests on its aggregate box averages.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.66389,
+        "rare-holo": 0.22222,
+        "ex": 0.075,
+        "ultra-rare": 0.025,
+        "secret-rare": 0.01389
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": {
+      "packs": 7
+    }
+  }
+}

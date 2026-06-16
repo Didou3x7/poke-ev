@@ -1,0 +1,55 @@
+{
+  "setId": "next-destinies",
+  "era": "bw",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://bulbapedia.bulbagarden.net/wiki/Next_Destinies_(TCG)",
+    "https://www.dacardworld.com/gaming/pokemon-black-and-white-next-destinies-booster-box",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Elite_Trainer_Box_(TCG)"
+  ],
+  "notes": "Next Destinies (BW4), released 2012-02-08. Sourced anchors: Flipside Gaming's rarity review gives the BW4 special-card rates — Pokemon-EX ~1:18 packs (~2/box), Full Art EX / Ultra Rare ~1:36 packs (~1/box), Secret Rare ~1:2 boxes (=1/72 packs). Bulbapedia confirms set structure (103 cards: 6 regular Pokemon-EX, 6 Full Art EX #94-99, 4 secret rares #100-103) which matches the given buckets EXACTLY (ex=6, ultra-rare=6, secret-rare=4, rare-holo=10). BW-era pack = 10 game cards (Basic Energy 11th card only began Sun & Moon): 5 common + 3 uncommon + 1 reverse-holo (common/uncommon 50/50) + 1 rare-or-better.\n\nRare-slot mapping (per-pack): ex=0.05556 (1/18), ultra-rare=0.02778 (1/36), secret-rare=0.01389 (1/72), rare-holo=0.23611 (derived: ~8.5 pure holos/box after the ~3.5 EX/FA/secret holo slots are removed from the ~12 holos/box era structure), rare=0.66666 (remainder). Sums to exactly 1.0.\n\nProducts: standard 36-pack Booster Display Box confirmed (DA Card World). NO ETB — Elite Trainer Boxes were introduced with Plasma Storm (Feb 2013), after Next Destinies, so etbPacks=null.\n\nConfidence=low: the three special-card rates are published era/per-set figures but there is no large dedicated BW4 opening study, and the rare-holo vs non-holo split is reconstructed from era box structure rather than a counted sample. shipEv=true: a real booster product exists with sourceable rates.\n\nConfig written to /Users/alexandreott/Desktop/POKÉ EV/data/pull-rates/next-destinies.json and passes the project validator (npm run validate:data: \"All datasets valid\", 59 pull-rate sets). Vintage sealed-box premium will exceed EV/booster — expected for a 2012 set.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "common",
+      "count": 5,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare": 0.66666,
+        "rare-holo": 0.23611,
+        "ex": 0.05556,
+        "ultra-rare": 0.02778,
+        "secret-rare": 0.01389
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

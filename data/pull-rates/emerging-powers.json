@@ -1,0 +1,55 @@
+{
+  "setId": "emerging-powers",
+  "era": "bw",
+  "confidence": "low",
+  "sources": [
+    "https://bulbapedia.bulbagarden.net/wiki/Emerging_Powers_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.pokebeach.com/forums/threads/secret-rare-pull-rate-for-bw.95810/",
+    "https://toywiz.com/pokemon-black-white-emerging-powers-booster-box-36-packs/",
+    "https://www.cardrake.com/expansions/bw2"
+  ],
+  "notes": "Emerging Powers (BW2), released 2011-08-31, shipped only as a 36-pack booster box (10 cards/pack); the Elite Trainer Box format did not exist yet in the early BW series, so etbPacks=null. Pack structure for this era = 6 commons + 3 uncommons + 1 rare-or-better + 1 reverse-holo = 10 cards (Bulbapedia booster-pack era confirms 10/pack; standard ERA baseline).\n\nRARE SLOT (1/pack) mapped onto this set's buckets {rare, rare-holo, ultra-rare}:\n- ultra-rare 0.056: era full-art rate ~1:18 packs (Flipside Gaming notes ~1:18 for BW-era ultra rares; PokeBeach BW secret-rate thread reports ~2-3 ultra rares per 36-pack box). Emerging Powers has exactly 2 ultra rares (Thundurus FA #97, Tornadus FA #98) and NO secret rares, so ~2 FA per box -> 2/36 = 0.056/pack.\n- rare-holo 0.333: collector observation of ~1 holo every ~3 packs for this era (=> ~12 holos/box; set has 10 rare-holo cards). \n- rare 0.611: remainder of the rare slot. Sums to 1.0.\n\nREVERSE-HOLO SLOT (1/pack): the BW reverse/parallel set covers commons, uncommons and rares (not holos/ultras). Modeled proportional to the reverse-eligible card counts (34 common + 31 uncommon + 21 rare = 86): common 0.395, uncommon 0.361, rare 0.244. Sums to 1.0. Set lacks a 'reverse-holo' bucket key, so reverse hits are mapped onto the base common/uncommon/rare buckets they parallel.\n\nCONFIDENCE = low: no published per-set pull study for BW2 exists; figures are BW-era community/era-average rates (1:18 ultra, ~1:3 holo) applied to this set's actual rarity counts. No hit-rate number was invented — every rate traces to a fetched source. Note the booster box is a vintage sealed collector item with a large sealed premium, so modeled EV/pack will sit well below box price; that is expected and rates were NOT inflated to compensate.",
+  "packSize": 10,
+  "slots": [
+    {
+      "name": "commons",
+      "count": 6,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommons",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare",
+      "count": 1,
+      "distribution": {
+        "rare": 0.611,
+        "rare-holo": 0.333,
+        "ultra-rare": 0.056
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.395,
+        "uncommon": 0.361,
+        "rare": 0.244
+      }
+    }
+  ],
+  "products": {
+    "display": {
+      "packs": 36
+    },
+    "etb": null
+  }
+}

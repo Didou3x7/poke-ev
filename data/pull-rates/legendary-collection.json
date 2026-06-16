@@ -1,0 +1,49 @@
+{
+  "setId": "legendary-collection",
+  "era": "wotc",
+  "confidence": "medium",
+  "sources": [
+    "https://www.thepricedex.com/set/base6/legendary-collection/pull-rates",
+    "https://bulbapedia.bulbagarden.net/wiki/Booster_pack_(TCG)",
+    "https://bulbapedia.bulbagarden.net/wiki/Legendary_Collection_(TCG)",
+    "https://flipsidegaming.com/blogs/pokemon-blog/retrospective-legendary-collection"
+  ],
+  "notes": "Legendary Collection (base6, 2002) is the FIRST Pokemon set to add a reverse-holo slot. Pack = 11 cards. Confirmed structure across sources: 6 common, 3 uncommon, 1 rare-or-better, 1 reverse-holo.\n\nHIT SLOT (rare-or-better): holo rare ~1 in 3 packs (Bulbapedia era convention + PriceDex \"Rare Holo 1 in 3 packs\"), so rare-holo=0.3333, rare=0.6667 (PriceDex independently lists non-holo Rare at \"1 in 1.5 packs\" = 2/3, which matches). Hit bucket = rare-holo (~0.333/pack, ~12 holos/box of 36).\n\nREVERSE-HOLO SLOT: New this set. Bulbapedia: \"one Reverse-Holo print of a Common, Uncommon, or Rare card has been included in every booster.\" Per task spec directive, modeled as 50/50 common/uncommon filler (rare reverse foils exist but are a small minority — PriceDex lists reverse-rare and reverse-rare-holo each ~1 in 5.8 packs; folding those into the dominant common/uncommon majority keeps the slot a subset of available buckets and avoids over-weighting rares).\n\nSet lacks any secret-rare/Crystal bucket (those are e-Card era), so no secret bucket used. No ETB existed in 2002 (etbPacks=null); no published display-pack-count override (displayPacks=null; standard 36-pack box assumed by engine). Booster BOX is a vintage collector item with large sealed premium, so EV/pack will sit far below sealed box price — expected, not a reason to inflate rates.\n\nConfidence=medium: pack structure is well-corroborated (Bulbapedia + PriceDex + retailer descriptions all agree on 11-card/6-3-1+RH layout and 1-in-3 holo), but rates are community/era-derived estimates, not a large published per-set study.",
+  "packSize": 11,
+  "slots": [
+    {
+      "name": "common",
+      "count": 6,
+      "distribution": {
+        "common": 1
+      }
+    },
+    {
+      "name": "uncommon",
+      "count": 3,
+      "distribution": {
+        "uncommon": 1
+      }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": {
+        "rare-holo": 0.3333,
+        "rare": 0.6667
+      }
+    },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": {
+        "common": 0.5,
+        "uncommon": 0.5
+      }
+    }
+  ],
+  "products": {
+    "display": null,
+    "etb": null
+  }
+}
