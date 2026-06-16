@@ -1,0 +1,26 @@
+{
+  "setId": "evolutions",
+  "era": "xy",
+  "confidence": "low",
+  "sources": [
+    "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two",
+    "https://www.pokebeach.com/forums/threads/the-look-what-i-pulled-pull-rates-thread.111190/"
+  ],
+  "notes": "No per-set published study; XY-era average rates applied (confidence low). Flipside Gaming 'Comprehensive Review of Rarity Part Two': by late XY, EX ~1:6 packs (0.1667), Ultra Rare/Full Art ~1:12 (0.0833), Secret Rare ~1:72 (0.0139). Coarse-bucket mapping onto this set's available rarities {common, uncommon, rare, rare-holo, ultra-rare, secret-rare}: ultra-rare (EX + Full Art + M-EX, 25 cards) = 0.1667+0.0833 = 0.25; secret-rare (5 cards) = 0.0139; remainder of the rare-or-better slot splits rare-holo ~0.30 (XY holo ~1 in 3.3 packs) and non-holo rare 0.4361. Sums to 1.0. Identical era model to the other XY sets (Phantom Forces etc.). Standard XY pack: 4 commons, 3 uncommons, 1 reverse-holo (any rarity foiled), 1 rare-or-better, + 1 basic Energy (10th, not modelled). Booster box = 36 packs, Elite Trainer Box = 8 packs.",
+  "packSize": 10,
+  "slots": [
+    { "name": "commons", "count": 4, "distribution": { "common": 1 } },
+    { "name": "uncommons", "count": 3, "distribution": { "uncommon": 1 } },
+    {
+      "name": "reverse-holo",
+      "count": 1,
+      "distribution": { "common": 0.327, "uncommon": 0.356, "rare": 0.183, "rare-holo": 0.134 }
+    },
+    {
+      "name": "rare-or-better",
+      "count": 1,
+      "distribution": { "rare": 0.4361, "rare-holo": 0.3, "ultra-rare": 0.25, "secret-rare": 0.0139 }
+    }
+  ],
+  "products": { "display": { "packs": 36 }, "etb": { "packs": 8 } }
+}
