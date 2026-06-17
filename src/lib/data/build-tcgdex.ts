@@ -149,12 +149,18 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
         let eur = c.prices.eur ?? (c.prices.usd != null ? round2(c.prices.usd / fx.eurUsd) : null);
         let usd = c.prices.usd ?? (c.prices.eur != null ? round2(c.prices.eur * fx.eurUsd) : null);
         // Reconcile wild EUR/USD divergence (a Cardmarket/TCGplayer data artifact
-        // — e.g. €140 vs $0.44 on a common). Real modern cards diverge <2×, so a
-        // >6× gap means one side is junk; clamp the outlier to the other's value.
+        // — e.g. €140 vs $0.44 on a common): clamp the outlier to the other side.
+        // Genuine chase cards (grails) legitimately diverge up to ~5× by
+        // condition/market, so the bar there is 6×. But a common/uncommon should
+        // track closely across markets, so a >3.5× gap on a low-rarity card is
+        // junk (a €44 basic Energy that is $8) — clamp it tighter so it can't
+        // pollute the EV's common bucket or the "most valuable" list.
         if (eur != null && usd != null && eur > 0 && usd > 0) {
+          const lowRarity = c.rarity === "common" || c.rarity === "uncommon";
+          const thr = lowRarity ? 3.5 : 6;
           const ratio = (eur * fx.eurUsd) / usd;
-          if (ratio > 6) eur = round2(usd / fx.eurUsd);
-          else if (ratio < 1 / 6) usd = round2(eur * fx.eurUsd);
+          if (ratio > thr) eur = round2(usd / fx.eurUsd);
+          else if (ratio < 1 / thr) usd = round2(eur * fx.eurUsd);
         }
         // Gallery subsets pull from a dedicated slot but TCGdex tags them with
         // ordinary rarities (rare/ultra/secret). Their collector numbers are the
