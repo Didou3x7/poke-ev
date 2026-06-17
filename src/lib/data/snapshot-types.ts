@@ -45,27 +45,28 @@ function localizeCardImage(url: string, locale: "fr" | "en"): string {
 }
 
 /**
- * The set's chase card — its most valuable single card (shown with the locale's
- * market price). Ranked by the LOWER of the Cardmarket EUR and TCGplayer USD
- * prices (USD converted at an approximate rate), not the raw locale price: a
- * genuine chase is expensive in BOTH markets, so a single-market data artifact
- * in either currency (a €104 uncommon that is only $23; a $1399 listing on a
- * €333 card) can't win over the real chase. Requires a locale price + image so
- * there is always something to display.
+ * The set's chase card — its single most expensive card in the locale's own
+ * market (Cardmarket EUR for FR, TCGplayer USD for EN), so FR shows the
+ * EUR-priciest and EN the USD-priciest (they can legitimately differ). We only
+ * skip commons/uncommons: their low-liquidity listings throw up price artifacts
+ * (a €104 uncommon that is really worth $23) that would otherwise outrank the
+ * real chase, while genuine chases are always rare-or-better. Fall back to any
+ * priced card if a set somehow has no rare+ price.
  */
-const CHASE_FX = 1.15; // approximate EUR→USD, only for cross-market chase ranking
-function chaseScore(c: SnapshotCard): number {
-  const e = c.eur ?? 0;
-  const u = (c.usd ?? 0) / CHASE_FX;
-  return e > 0 && u > 0 ? Math.min(e, u) : Math.max(e, u);
-}
-
 export function pickChaseCard(set: { cards: SnapshotCard[] }, locale: "fr" | "en"): ChaseCard | null {
   const key = locale === "fr" ? "eur" : "usd";
+  const priced = (c: SnapshotCard) => c[key] != null && c[key]! > 0 && c.image != null;
+  const isLowRarity = (c: SnapshotCard) => c.rarity === "common" || c.rarity === "uncommon";
   let best: SnapshotCard | null = null;
   for (const c of set.cards) {
-    if (c[key] == null || !c.image) continue;
-    if (!best || chaseScore(c) > chaseScore(best)) best = c;
+    if (!priced(c) || isLowRarity(c)) continue;
+    if (!best || c[key]! > best[key]!) best = c;
+  }
+  if (!best) {
+    for (const c of set.cards) {
+      if (!priced(c)) continue;
+      if (!best || c[key]! > best[key]!) best = c;
+    }
   }
   if (!best || best.image == null) return null;
   return {
