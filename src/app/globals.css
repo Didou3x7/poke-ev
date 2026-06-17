@@ -13,6 +13,9 @@
   --color-surface-2: #161b27;
   --color-line: rgba(140, 160, 200, 0.13);
   --color-line-strong: rgba(140, 160, 200, 0.26);
+  /* Resting border for interactive inputs — ~3.8:1 on the #0f131c field so it
+     meets WCAG 1.4.11 non-text contrast (the faint --color-line does not). */
+  --color-line-input: #647087;
   --color-fg: #e8ecf4;
   --color-fg-muted: #8a93a6;
   --color-fg-faint: #7c8598;

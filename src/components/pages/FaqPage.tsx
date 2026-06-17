@@ -20,7 +20,7 @@ export async function FaqPage({ locale }: { locale: Locale }) {
 
   return (
     <SiteShell locale={locale} page="faq" pricesUpdatedAt={snapshot.generatedAt} demo={snapshot.demo}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <div className="bg-grid">
         <div className="mx-auto w-full max-w-3xl px-4 pb-8 pt-16 sm:px-6">
           <h1 className="rise font-display text-4xl font-bold tracking-tight sm:text-5xl">{t.faq.title}</h1>

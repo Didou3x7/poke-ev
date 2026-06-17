@@ -57,7 +57,7 @@ export async function LandingPage({ locale }: { locale: Locale }) {
 
   return (
     <SiteShell locale={locale} page="home" pricesUpdatedAt={payload.generatedAt} demo={payload.demo}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       {/* ——— hero ——— */}
       <section className="bg-grid relative overflow-hidden">
         <div aria-hidden className="aurora-wrap">

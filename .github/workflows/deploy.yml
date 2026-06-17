@@ -61,7 +61,7 @@ jobs:
 
       - name: Deploy to Vercel (production)
         run: |
-          npm i -g vercel@latest
+          npm i -g vercel@54.14.0   # pinned (supply-chain) — bump deliberately
           vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
           vercel build --prod --token="$VERCEL_TOKEN"
           # --archive=tgz uploads a single tarball instead of thousands of

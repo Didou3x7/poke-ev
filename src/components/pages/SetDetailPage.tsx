@@ -88,9 +88,9 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
 
   return (
     <SiteShell locale={locale} page="set" slug={set.id} pricesUpdatedAt={snapshot.generatedAt} demo={snapshot.demo}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb).replace(/</g, "\\u003c") }} />
       {jsonLd ? (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       ) : null}
       <div className="bg-grid">
         <div className="mx-auto w-full max-w-6xl px-4 pb-10 pt-14 sm:px-6">

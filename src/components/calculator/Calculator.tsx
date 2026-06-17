@@ -224,7 +224,7 @@ export function Calculator({
   })();
 
   const inputCls =
-    "w-full rounded-xl border border-line bg-ink-850 px-4 py-3 text-fg placeholder:text-fg-faint focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-holo-violet/40 transition-colors duration-150";
+    "w-full rounded-xl border border-line-input bg-ink-850 px-4 py-3 text-fg placeholder:text-fg-faint focus:border-holo-violet focus:outline-none focus:ring-2 focus:ring-holo-violet/40 transition-colors duration-150";
 
   return (
     <div className={compact ? "" : "holo-ring rounded-2xl p-5 sm:p-7"}>
@@ -413,7 +413,7 @@ export function Calculator({
               aria-label={t.boosterCount}
               value={boosterQty}
               onChange={(e) => changeQty(Number(e.target.value))}
-              className="h-9 w-16 rounded-lg border border-line bg-ink-850 text-center text-fg tnum focus:border-line-strong focus:outline-none focus:ring-2 focus:ring-holo-violet/40 [appearance:textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
+              className="h-9 w-16 rounded-lg border border-line-input bg-ink-850 text-center text-fg tnum focus:border-holo-violet focus:outline-none focus:ring-2 focus:ring-holo-violet/40 [appearance:textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
             />
             <button
               type="button"

@@ -27,10 +27,8 @@ export interface CalcProduct {
 export interface CalcTopCard {
   name: string;
   number: string | null;
-  image: string | null;
   value: number;
   probabilityPerPack: number;
-  evContribution: number;
 }
 
 export interface CalcSetData {
@@ -115,10 +113,8 @@ export async function buildCalculatorPayload(locale: Locale): Promise<Calculator
           {
             name: localizedCardName(card, locale),
             number: card.number,
-            image: card.image,
             value: tc.value,
             probabilityPerPack: tc.probabilityPerPack,
-            evContribution: tc.evContribution,
           },
         ];
       }),

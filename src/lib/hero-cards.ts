@@ -24,7 +24,9 @@ interface BiCard {
   en: { name: string; tag: string };
 }
 
-const img = (locale: Locale, path: string) => `https://assets.tcgdex.net/${locale}/${path}/high.webp`;
+// low.webp (245×337) is plenty for the ~200px hero slots and far lighter than
+// high.webp (600px) — matters because the whole 24-card pool is preloaded.
+const img = (locale: Locale, path: string) => `https://assets.tcgdex.net/${locale}/${path}/low.webp`;
 
 export function heroCardImage(locale: Locale, card: HeroCard): string {
   return img(locale, card.path);

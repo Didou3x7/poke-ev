@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               url: SITE_URL,
               logo: `${SITE_URL}/pwa-512.png`,
               description: "Le terminal d'Expected Value des produits scellés Pokémon TCG.",
-            }),
+            }).replace(/</g, "\\u003c"),
           }}
         />
         {UMAMI_WEBSITE_ID ? (

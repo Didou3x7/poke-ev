@@ -34,7 +34,10 @@ export async function GET(request: NextRequest) {
   const locale: Locale = params.get("locale") === "en" ? "en" : "fr";
   const setId = params.get("set");
   const verdict = params.get("verdict");
-  const margin = params.get("margin");
+  // Reflected into the share-card text — strip anything but the expected
+  // money/percent glyphs and cap the length so a crafted query can't distort the
+  // image or inject odd content.
+  const margin = ((params.get("margin") ?? "").replace(/[^0-9+\-.,%€$ ]/g, "").slice(0, 12)) || null;
 
   const set = setId ? getSetById(setId) : null;
   const snapshot = set ? await getSnapshot() : null;

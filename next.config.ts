@@ -17,11 +17,29 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
+    // CSP only in production — `next dev` HMR needs 'unsafe-eval'. Covers the
+    // site's real origins: card art (tcgdex / pokemontcg), cookieless umami
+    // analytics. 'unsafe-inline' for script/style is required (Next hydration +
+    // Tailwind/motion inline styles, no nonce pipeline).
+    const csp = [
+      "default-src 'self'",
+      "base-uri 'self'",
+      "object-src 'none'",
+      "frame-ancestors 'none'",
+      "form-action 'self'",
+      "script-src 'self' 'unsafe-inline' https://cloud.umami.is",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https://assets.tcgdex.net https://images.pokemontcg.io https://*.tcggo.com",
+      "font-src 'self' data:",
+      "connect-src 'self' https://cloud.umami.is https://*.umami.is",
+      "manifest-src 'self'",
+    ].join("; ");
     return [
       {
         source: "/:path*",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
+          ...(isProd ? [{ key: "Content-Security-Policy", value: csp }] : []),
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           // The app uses no device APIs — deny them all to shrink the attack surface.
