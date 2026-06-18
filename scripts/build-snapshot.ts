@@ -179,6 +179,60 @@ async function main() {
     return;
   }
 
+  // --recompute-ev: re-run the EV engine over the existing snapshot's cards (no
+  // network). Use after an EV-engine change to refresh packEv/topCards/breakdown
+  // without re-fetching prices, so the effect is isolated from market drift.
+  if (args.includes("--recompute-ev")) {
+    const snapshot = readPrior();
+    const pullRates = getPullRates();
+    const toEv = (ev: ReturnType<typeof computeSetEv>) => ({
+      packEv: ev.packEv,
+      packStdDev: ev.packStdDev,
+      priceCompleteness: ev.priceCompleteness,
+      unknownRarityCards: ev.unknownRarityCards,
+      rarityBreakdown: ev.rarityBreakdown,
+      topCards: ev.topCards.map((c) => ({
+        cardId: c.card.id, probabilityPerPack: c.probabilityPerPack,
+        value: c.value, evContribution: c.evContribution,
+      })),
+    });
+    let recomputed = 0;
+    for (const set of Object.values(snapshot.sets)) {
+      const config = pullRates.get(set.setId);
+      if (!config) continue;
+      const cards: PricedCard[] = set.cards.map((c) => ({
+        id: c.id, name: c.name, number: c.number, rarity: c.rarity as RarityId | null,
+        rawRarity: c.rawRarity, prices: { eur: c.eur, usd: c.usd }, image: c.image,
+      }));
+      set.ev = {
+        fr: toEv(computeSetEv(cards, config, "fr", { topCardsCount: 12 })),
+        en: toEv(computeSetEv(cards, config, "en", { topCardsCount: 12 })),
+      };
+      recomputed++;
+    }
+    console.log(`recompute-ev: ${recomputed} sets re-scored (no network)`);
+    writeSnapshot(snapshot);
+    return;
+  }
+
+  // --sealed-only: refresh just the sealed[] of the existing snapshot (TCGCSV +
+  // estimate-fill). Fast — no TCGdex/pokemontcg card rebuild, prices untouched.
+  if (args.includes("--sealed-only")) {
+    const snapshot = readPrior();
+    const provider = new TcgcsvProvider({ eurUsd: snapshot.fx?.eurUsd });
+    const res = await mergeSealedPrices({
+      snapshot,
+      provider,
+      catalogSets: getAllSets(),
+      pullRates: getPullRates(),
+      budget: 1000,
+      log: console.log,
+    });
+    console.log(`sealed-only (tcgcsv): ${res.matched.length} matched, ${res.unmatched.length} unmatched`);
+    writeSnapshot(res.snapshot);
+    return;
+  }
+
   // Default source: TCGdex (free, real prices, no key). Use --source=tcggo for
   // the RapidAPI path (full rebuild from RapidAPI, needs a paid key).
   if (source === "tcgdex") {
@@ -191,6 +245,7 @@ async function main() {
         snapshot,
         provider,
         catalogSets: getAllSets(),
+        pullRates: getPullRates(),
         budget: 1000,
         log: console.log,
       });

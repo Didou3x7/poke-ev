@@ -38,7 +38,11 @@ export async function buildFeaturedSets(locale: Locale, count = 8): Promise<Feat
     const packs = hasDisplay ? config.products.display!.packs : 1;
     const headlineEv = ev.packEv * packs;
 
-    const sealedQuotes = snap.sealed.filter((p) => p.kind === headlineKind && p[priceKey] != null);
+    // Real quotes only — the landing's open/keep badge must not ride on a
+    // derived estimate.
+    const sealedQuotes = snap.sealed.filter(
+      (p) => p.kind === headlineKind && p[priceKey] != null && !p.estimated,
+    );
     const sealedPrice = sealedQuotes.length
       ? Math.min(...sealedQuotes.map((p) => p[priceKey]!))
       : null;

@@ -73,6 +73,47 @@ describe("computeSetEv", () => {
     expect(ev.packEv).toBeCloseTo(4.0, 10); // unchanged
   });
 
+  it("folds rare-holo into a config's rare bucket when rare-holo isn't referenced", () => {
+    // The overlay can re-tag a set's rares as "rare-holo"; a config that only
+    // names "rare" must still pull them (else they'd silently score 0 EV).
+    const cfg: PullRateConfig = {
+      ...config,
+      slots: [{ name: "rare", count: 1, distribution: { rare: 1 } }],
+    };
+    const set = [card("r1", "rare", 2), card("h1", "rare-holo", 4), card("h2", "rare-holo", 6)];
+    const ev = computeSetEv(set, cfg, "fr");
+    // pooled mean (2+4+6)/3 = 4, all three contribute
+    expect(ev.packEv).toBeCloseTo(4, 10);
+    const rare = ev.rarityBreakdown.find((r) => r.rarity === "rare")!;
+    expect(rare.cardsInSet).toBe(3);
+  });
+
+  it("keeps rare and rare-holo separate when a config references BOTH", () => {
+    const cfg: PullRateConfig = {
+      ...config,
+      slots: [{ name: "rare", count: 1, distribution: { rare: 0.5, "rare-holo": 0.5 } }],
+    };
+    const set = [card("r1", "rare", 2), card("h1", "rare-holo", 10)];
+    const ev = computeSetEv(set, cfg, "fr");
+    // separate buckets: 0.5×2 + 0.5×10 = 6 (no folding)
+    expect(ev.packEv).toBeCloseTo(6, 10);
+    expect(ev.rarityBreakdown.find((r) => r.rarity === "rare")!.cardsInSet).toBe(1);
+    expect(ev.rarityBreakdown.find((r) => r.rarity === "rare-holo")!.cardsInSet).toBe(1);
+  });
+
+  it("drops mis-priced basic energies from the pull pools but keeps cheap ones", () => {
+    const cfg: PullRateConfig = { ...config, slots: [{ name: "c", count: 1, distribution: { common: 1 } }] };
+    const set = [
+      { ...card("e1", "common", 50), name: "Darkness Energy" }, // mis-tagged holo insert → excluded
+      { ...card("e2", "common", 0.1), name: "Fire Energy" }, // genuine cheap common → kept
+      card("c1", "common", 0.2),
+    ];
+    const ev = computeSetEv(set, cfg, "fr");
+    const pool = ev.rarityBreakdown.find((r) => r.rarity === "common")!;
+    expect(pool.cardsInSet).toBe(2); // Fire Energy + c1, NOT the $50 Darkness Energy
+    expect(ev.packEv).toBeCloseTo((0.1 + 0.2) / 2, 6); // mean of the 2 kept, not pulled up by 50
+  });
+
   it("handles a rarity present in rates but absent from the set (0 contribution)", () => {
     const cfg: PullRateConfig = {
       ...config,

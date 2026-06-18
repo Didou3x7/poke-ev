@@ -31,14 +31,14 @@
     },
     {
       "name": "uncommon",
-      "count": 3,
+      "count": 2,
       "distribution": {
         "uncommon": 1
       }
     },
     {
       "name": "common",
-      "count": 4,
+      "count": 5,
       "distribution": {
         "common": 1
       }

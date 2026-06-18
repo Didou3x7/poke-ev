@@ -4,7 +4,7 @@ import { computeSetEv } from "../ev/engine";
 import type { PricedCard, SetEv } from "../ev/types";
 import { getAllSets, getEraOfSet, getPullRates } from "./catalog";
 import { fetchFxRate } from "./build-core";
-import { TcgdexProvider, fetchSetCardNames } from "./tcgdex";
+import { TcgdexProvider, fetchSetCardNames, mapLimit } from "./tcgdex";
 import { fetchPtcgCards, overlayPtcgPrices } from "./pokemontcg";
 import type { Snapshot, SnapshotSet, SnapshotSetEv } from "./snapshot-types";
 
@@ -92,6 +92,19 @@ export interface TcgdexBuildOptions {
   prior?: Snapshot;
   only?: string[];
   concurrency?: number;
+  /** How many sets to build in parallel. Overlaps the per-set network waits
+   *  (notably pokemontcg.io rate-limit backoff) so the full 128-set refresh
+   *  finishes inside the cron's function-time budget. */
+  setConcurrency?: number;
+  /** Soft wall-clock budget (ms). Past it, stop starting new sets and return
+   *  what's done — unreached sets keep their prior data. Lets a tight serverless
+   *  function persist partial progress instead of timing out mid-build. */
+  maxMillis?: number;
+  /** Called after every `persistEvery` sets complete, with the in-progress
+   *  snapshot — the caller can persist it so a later timeout can't lose work. */
+  onProgress?: (snapshot: Snapshot, done: number, total: number) => Promise<void> | void;
+  /** Sets between onProgress callbacks (default 25). */
+  persistEvery?: number;
   log?: (message: string) => void;
 }
 
@@ -111,13 +124,30 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
   // Every catalog set with a TCGdex mapping is refreshed — even without a
   // pull-rate file. Such a set gets real card + sealed prices and a chase card,
   // but ev:null (EV indisponible) until a sourced pull-rate file is added.
-  const targets = getAllSets().filter(
-    (s) => map[s.id] && (!options.only || options.only.includes(s.id)),
-  );
+  // Stalest-first: a partial run (deadline hit) then refreshes the most
+  // out-of-date sets, so even on a tight budget every set cycles through fast.
+  const targets = getAllSets()
+    .filter((s) => map[s.id] && (!options.only || options.only.includes(s.id)))
+    .sort((a, b) =>
+      (options.prior?.sets[a.id]?.updatedAt ?? "").localeCompare(options.prior?.sets[b.id]?.updatedAt ?? ""),
+    );
   log(`TCGdex: ${targets.length} mapped sets to refresh (fx EUR→USD ${fx.eurUsd})`);
 
+  const startMs = Date.now();
+  const persistEvery = options.persistEvery ?? 25;
+  const snapshotNow = (): Snapshot => ({ version: 1, generatedAt: nowIso, demo: false, fx, sets, cursor: 0 });
   let done = 0;
-  for (const set of targets) {
+  let skipped = 0;
+  // Build sets in parallel. tcgdex is keyless/generous; the slow part is the
+  // sequential pokemontcg.io backoff, and running several sets at once overlaps
+  // those waits so the whole catalog fits in one cron run. Modest fan-out keeps
+  // us a polite client (each set still fans out internally up to `concurrency`).
+  await mapLimit(targets, options.setConcurrency ?? 6, async (set) => {
+    // Past the soft deadline: stop starting new sets (they keep prior data).
+    if (options.maxMillis != null && Date.now() - startMs > options.maxMillis) {
+      skipped++;
+      return;
+    }
     // A set may draw from several TCGdex sets joined with "+" (e.g. Hidden Fates
     // main + Shiny Vault: "sm115+sma"). The first id is primary — it drives the
     // logo, episodeId and FR names; cards from every id are merged.
@@ -137,7 +167,7 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
       // (which would revert correct prices + re-break image-gap chases).
       if (ptcgMap[set.id] && ptcgCards.length === 0 && options.prior?.sets[set.id]) {
         log(`↺ ${set.id} — pokemontcg.io unavailable, keeping prior data`);
-        continue;
+        return;
       }
       // Overlay real, per-printing pokemontcg.io prices (fixes TCGdex's
       // variant-mixed EUR/USD) and fill any images TCGdex lacks; keep TCGdex
@@ -203,11 +233,16 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
       done++;
       const evNote = fr && en ? `fr ${fr.packEv.toFixed(2)}€ / en $${en.packEv.toFixed(2)}` : "no pull rates (EV off)";
       log(`✓ ${set.id} (${getEraOfSet(set.id)?.era}) — ${cards.length} cards · ${matched} ptcg · ${evNote}`);
+      // Persist partial progress so a later timeout can't lose this run's work.
+      if (options.onProgress && done % persistEvery === 0) {
+        await options.onProgress(snapshotNow(), done, targets.length);
+      }
     } catch (e) {
       log(`✗ ${set.id} failed: ${(e as Error).message}`);
     }
-  }
+  });
 
-  log(`TCGdex done: ${done}/${targets.length} sets, ${provider.callsUsed()} HTTP calls`);
-  return { version: 1, generatedAt: nowIso, demo: false, fx, sets, cursor: 0 };
+  const note = skipped > 0 ? ` (${skipped} skipped past deadline — kept prior, will lead next run)` : "";
+  log(`TCGdex done: ${done}/${targets.length} sets, ${provider.callsUsed()} HTTP calls${note}`);
+  return snapshotNow();
 }

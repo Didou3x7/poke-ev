@@ -8,7 +8,7 @@
     "https://bulbapedia.bulbagarden.net/wiki/Roaring_Skies_(TCG)",
     "https://flipsidegaming.com/blogs/pokemon-blog/a-comprehensive-review-of-rarity-in-the-pokemon-tcg-part-two"
   ],
-  "notes": "XY6 Roaring Skies, 10-card XY-era pack: 1 rare-or-better, 3 uncommon, 4 common, 1 reverse holo (basic Energy not modeled). Per-box (36-pack) averages sourced from ThePriceDex per-set pull-rate study: Rare 24.0, Rare Holo 5.6, Rare Holo EX 4.0, Ultra Rare (full art/M-EX) 2.1, Secret Rare 0.3. This set's available buckets have NO separate \"ex\" bucket: pokemontcg.io's xy6 ultra-rare bucket (count 23) combines BOTH the Rare Holo EX cards (Bulbapedia \"Rare Holo EX\") AND the Rare Ultra full arts (#98-106), so I SUMMED ThePriceDex's \"Rare Holo EX\" (4.0/box) + \"Ultra Rare\" (2.1/box) = 6.1/box into the single ultra-rare bucket. Rare-slot distribution = per-box averages / 36: rare 24/36=0.6667, rare-holo 5.6/36=0.1556, ultra-rare 6.1/36=0.1694, secret-rare 0.3/36=0.0083 (sums to 1.0, matches 36 rare slots/box). DA Card World box spec (\"22 ultra rares + 2 secret per box\") is a looser dealer figure that lumps all foils; I preferred ThePriceDex's itemized per-rarity study. Reverse slot from ThePriceDex per-box reverse counts (Common 15.5, Uncommon 12.2, Rare 5.4, Rare Holo 3.0 = 36.1), normalized onto this set's reverse-eligible buckets (common/uncommon/rare/rare-holo). Confidence medium: itemized per-set community/aggregator study, not a published manufacturer rate. Secret-rare (~1 in 125 packs) is rare; vintage sealed box carries a large collector premium so booster EV will sit well below box market price, as expected.",
+  "notes": "XY6 Roaring Skies, 10-card XY-era pack: 1 rare-or-better, 3 uncommon, 5 common, 1 reverse holo (basic Energy not modeled). Per-box (36-pack) averages sourced from ThePriceDex per-set pull-rate study: Rare 24.0, Rare Holo 5.6, Rare Holo EX 4.0, Ultra Rare (full art/M-EX) 2.1, Secret Rare 0.3. This set's available buckets have NO separate \"ex\" bucket: pokemontcg.io's xy6 ultra-rare bucket (count 23) combines BOTH the Rare Holo EX cards (Bulbapedia \"Rare Holo EX\") AND the Rare Ultra full arts (#98-106), so I SUMMED ThePriceDex's \"Rare Holo EX\" (4.0/box) + \"Ultra Rare\" (2.1/box) = 6.1/box into the single ultra-rare bucket. Rare-slot distribution = per-box averages / 36: rare 24/36=0.6667, rare-holo 5.6/36=0.1556, ultra-rare 6.1/36=0.1694, secret-rare 0.3/36=0.0083 (sums to 1.0, matches 36 rare slots/box). DA Card World box spec (\"22 ultra rares + 2 secret per box\") is a looser dealer figure that lumps all foils; I preferred ThePriceDex's itemized per-rarity study. Reverse slot from ThePriceDex per-box reverse counts (Common 15.5, Uncommon 12.2, Rare 5.4, Rare Holo 3.0 = 36.1), normalized onto this set's reverse-eligible buckets (common/uncommon/rare/rare-holo). Confidence medium: itemized per-set community/aggregator study, not a published manufacturer rate. Secret-rare (~1 in 125 packs) is rare; vintage sealed box carries a large collector premium so booster EV will sit well below box market price, as expected.",
   "packSize": 10,
   "slots": [
     {
@@ -30,7 +30,7 @@
     },
     {
       "name": "common",
-      "count": 4,
+      "count": 5,
       "distribution": {
         "common": 1
       }

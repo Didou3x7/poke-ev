@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import type { ConfidenceScore } from "@/lib/ev/types";
 
 /** Three-part confidence gauge with the composite score. */
@@ -35,7 +35,7 @@ export function ConfidenceBar({
         {parts.map((part, i) => (
           <div key={part.key}>
             <div className="h-1.5 overflow-hidden rounded-full bg-ink-850">
-              <motion.div
+              <m.div
                 initial={{ width: 0 }}
                 whileInView={{ width: `${part.value}%` }}
                 viewport={{ once: true }}

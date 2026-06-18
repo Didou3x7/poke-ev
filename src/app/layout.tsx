@@ -45,11 +45,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "Poké EV",
-              url: SITE_URL,
-              logo: `${SITE_URL}/pwa-512.png`,
-              description: "Le terminal d'Expected Value des produits scellés Pokémon TCG.",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": `${SITE_URL}/#organization`,
+                  name: "Poké EV",
+                  url: SITE_URL,
+                  logo: { "@type": "ImageObject", url: `${SITE_URL}/pwa-512.png`, width: 512, height: 512 },
+                  description: "Le terminal d'Expected Value des produits scellés Pokémon TCG.",
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": `${SITE_URL}/#website`,
+                  name: "Poké EV",
+                  url: SITE_URL,
+                  inLanguage: ["fr-FR", "en-US"],
+                  publisher: { "@id": `${SITE_URL}/#organization` },
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/sets?q={search_term_string}` },
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+              ],
             }).replace(/</g, "\\u003c"),
           }}
         />

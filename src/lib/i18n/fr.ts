@@ -115,6 +115,9 @@ export const fr: Dict = {
     sealedMarket: "Prix du scellé sur le marché",
     sealedPremium: "Premium scellé vs ouverture",
     sealedUnknown: "Prix scellé non coté dans le snapshot",
+    sealedEstimated: "estimé",
+    sealedEstimatedNote:
+      "Estimé à partir du prix réel du booster à l'unité — le marché ne cote pas ce produit scellé.",
     topCards: "Les cartes les plus chères",
     topCardsProb: "proba / booster",
     rarityBreakdown: "Contribution par rareté",
@@ -151,7 +154,13 @@ export const fr: Dict = {
     sortEv: "EV décroissant",
     sortDate: "Plus récent",
     sortName: "Nom (A→Z)",
+    sortPrice: "Carte chase (prix)",
+    sortConfidence: "Confiance",
     resultCount: "{n} sets",
+    bestEvTitle: "Meilleurs EV du moment",
+    bestEvSub: "Les boosters au plus haut Expected Value aujourd'hui.",
+    chaseLabel: "chase",
+    conf: { high: "Confiance élevée", medium: "Confiance moyenne", low: "Confiance faible" },
   },
   setDetail: {
     productsTitle: "Produits scellés",
@@ -166,6 +175,27 @@ export const fr: Dict = {
     noSealed: "Aucun produit scellé coté dans le snapshot pour ce set.",
     showAllCards: "Afficher toutes les cartes",
     hideCards: "Réduire",
+  },
+  cardPage: {
+    eyebrow: "Carte chase",
+    priceLabel: "Prix marché (Cardmarket FR)",
+    rarityLabel: "Rareté",
+    numberLabel: "Numéro",
+    setLabel: "Extension",
+    intro:
+      "{card} est la carte la plus chère de {set}, cotée {price} sur Cardmarket FR. Prix mis à jour chaque jour.",
+    introNoPrice:
+      "{card} est la carte la plus recherchée de {set}. Cote en cours d'actualisation.",
+    setEvLabel: "EV du booster",
+    viewSet: "Voir l'extension {set}",
+    openInCalculator: "Ouvrir le calculateur d'EV",
+    updatedDaily: "Cote rafraîchie quotidiennement",
+    priceUnavailable: "Cote indisponible",
+    rankText: "{rank}ᵉ carte la plus chère de {set}",
+    rankTextTop: "Carte la plus chère de {set}",
+    evShareLabel: "Part de l'EV booster",
+    evShareText: "À elle seule, cette carte représente {pct} % de l'Expected Value d'un booster {set}.",
+    relatedTitle: "Autres cartes recherchées de {set}",
   },
   faq: {
     title: "FAQ",
@@ -322,6 +352,11 @@ export const fr: Dict = {
       title: "EV {name} · faut-il ouvrir ? | Poké EV",
       description:
         "Expected Value de {name} : EV booster {ev}, verdicts display/ETB au prix marché, top hits et contribution par rareté. Prix Cardmarket FR du jour.",
+    },
+    card: {
+      title: "Prix {card} {set} · cote {price} | Poké EV",
+      description:
+        "Prix de {card} ({set}) : {price} sur Cardmarket FR, mis à jour chaque jour. Rareté, numéro, image HD et EV du booster {set}.",
     },
     faq: {
       title: "Méthode de calcul & FAQ · comment l'EV est-il calculé ? | Poké EV",

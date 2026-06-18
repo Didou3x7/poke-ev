@@ -39,10 +39,10 @@
       "name": "rare-or-better",
       "count": 1,
       "distribution": {
-        "rare": 0.575,
-        "rare-holo": 0.333,
+        "rare": 0.667,
+        "rare-holo": 0.222,
         "ex": 0.083,
-        "secret-rare": 0.009
+        "secret-rare": 0.028
       }
     }
   ],

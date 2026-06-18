@@ -115,6 +115,9 @@ export const en: Dict = {
     sealedMarket: "Sealed market price",
     sealedPremium: "Sealed premium vs opening",
     sealedUnknown: "Sealed price not quoted in the snapshot",
+    sealedEstimated: "estimated",
+    sealedEstimatedNote:
+      "Estimated from the real single-booster price — the market quotes no sealed price for this product.",
     topCards: "Most valuable cards",
     topCardsProb: "odds / pack",
     rarityBreakdown: "Contribution by rarity",
@@ -151,7 +154,13 @@ export const en: Dict = {
     sortEv: "EV (high → low)",
     sortDate: "Newest",
     sortName: "Name (A→Z)",
+    sortPrice: "Chase card (price)",
+    sortConfidence: "Confidence",
     resultCount: "{n} sets",
+    bestEvTitle: "Best EV right now",
+    bestEvSub: "The highest Expected-Value booster packs today.",
+    chaseLabel: "chase",
+    conf: { high: "High confidence", medium: "Medium confidence", low: "Low confidence" },
   },
   setDetail: {
     productsTitle: "Sealed products",
@@ -166,6 +175,26 @@ export const en: Dict = {
     noSealed: "No sealed product quoted in the snapshot for this set.",
     showAllCards: "Show all cards",
     hideCards: "Collapse",
+  },
+  cardPage: {
+    eyebrow: "Chase card",
+    priceLabel: "Market price (TCGPlayer US)",
+    rarityLabel: "Rarity",
+    numberLabel: "Number",
+    setLabel: "Set",
+    intro:
+      "{card} is the most valuable card in {set}, priced {price} on TCGPlayer US. Updated every day.",
+    introNoPrice: "{card} is the most sought-after card in {set}. Price refreshing.",
+    setEvLabel: "Booster pack EV",
+    viewSet: "View the {set} set",
+    openInCalculator: "Open the EV calculator",
+    updatedDaily: "Price refreshed daily",
+    priceUnavailable: "Price unavailable",
+    rankText: "#{rank} most valuable card in {set}",
+    rankTextTop: "Most valuable card in {set}",
+    evShareLabel: "Share of pack EV",
+    evShareText: "This single card makes up {pct}% of a {set} booster's Expected Value.",
+    relatedTitle: "Other sought-after {set} cards",
   },
   faq: {
     title: "FAQ",
@@ -322,6 +351,11 @@ export const en: Dict = {
       title: "{name} EV · should you open it? | Poké EV",
       description:
         "Expected Value of {name}: pack EV {ev}, booster box/ETB verdicts at market price, top hits and rarity breakdown. Fresh TCGPlayer US prices.",
+    },
+    card: {
+      title: "{card} {set} price · {price} | Poké EV",
+      description:
+        "{card} ({set}) price: {price} on TCGPlayer US, updated daily. Rarity, number, HD image and the {set} booster EV.",
     },
     faq: {
       title: "Method & FAQ · how is EV calculated? | Poké EV",

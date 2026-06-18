@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { m, useReducedMotion } from "motion/react";
 
 /**
  * Scroll-triggered reveal for below-the-fold content. Animates in once when it
@@ -20,7 +20,7 @@ export function Reveal({
   as?: "div" | "li" | "article";
 }) {
   const reduce = useReducedMotion();
-  const MotionTag = motion[as];
+  const MotionTag = m[as];
 
   if (reduce) {
     const Tag = as;

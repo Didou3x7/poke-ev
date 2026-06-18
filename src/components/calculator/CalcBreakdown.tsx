@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import type { CalcSetData } from "@/lib/view/calculator-vm";
 import { formatMoney, type Locale } from "@/lib/i18n/config";
 import type { Dict } from "@/lib/i18n/types";
@@ -24,7 +24,7 @@ export function CalcBreakdown({
         <h3 className="font-mono text-[11px] uppercase tracking-[0.18em] text-fg-faint">{t.topCards}</h3>
         <ol className="mt-3 space-y-1.5">
           {data.topCards.slice(0, 8).map((card, i) => (
-            <motion.li
+            <m.li
               key={`${card.name}-${card.number ?? i}`}
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -41,7 +41,7 @@ export function CalcBreakdown({
                 </p>
               </div>
               <span className="font-mono text-sm text-fg tnum">{formatMoney(card.value, locale)}</span>
-            </motion.li>
+            </m.li>
           ))}
         </ol>
       </section>

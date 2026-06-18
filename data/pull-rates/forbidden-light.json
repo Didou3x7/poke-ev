@@ -17,7 +17,7 @@
   "slots": [
     {
       "name": "common",
-      "count": 4,
+      "count": 5,
       "distribution": {
         "common": 1
       }

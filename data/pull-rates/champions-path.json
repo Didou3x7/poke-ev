@@ -27,8 +27,9 @@
       "name": "reverse-slot",
       "count": 1,
       "distribution": {
-        "common": 0.5,
-        "uncommon": 0.5
+        "common": 0.52,
+        "uncommon": 0.31,
+        "rare-holo": 0.17
       }
     },
     {

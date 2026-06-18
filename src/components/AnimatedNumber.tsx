@@ -1,14 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  animate,
-  useInView,
-  useMotionValue,
-  useReducedMotion,
-  useTransform,
-  motion,
-} from "motion/react";
+import { animate, useInView, useMotionValue, useReducedMotion, useTransform, m } from "motion/react";
 
 /** Server-safe integer counter (no function props across the RSC boundary). */
 export function AnimatedInt({
@@ -76,7 +69,7 @@ export function AnimatedNumber({
 
   return (
     <span ref={ref} className={className}>
-      <motion.span className="tnum">{text}</motion.span>
+      <m.span className="tnum">{text}</m.span>
     </span>
   );
 }

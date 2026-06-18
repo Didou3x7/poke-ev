@@ -55,6 +55,8 @@ export interface SealedPrice {
   name: string;
   prices: MarketPrice;
   image?: string | null;
+  /** True when the price is derived (no live market quote for this exact product). */
+  estimated?: boolean;
 }
 
 /** Per-rarity aggregation used for breakdowns. */
@@ -104,6 +106,8 @@ export interface VerdictInput {
   packStdDev: number;
   /** Real sealed market price for this product, when known. */
   sealedMarketPrice: number | null;
+  /** True when sealedMarketPrice is a derived estimate, not a live quote. */
+  sealedEstimated?: boolean;
 }
 
 export type VerdictKind = "open" | "keep" | "unavailable";
@@ -121,6 +125,8 @@ export interface Verdict {
   sealedMarketPrice: number | null;
   /** sealedMarketPrice − openEv when the sealed price is known. */
   sealedPremium: number | null;
+  /** True when sealedMarketPrice is a derived estimate, not a live quote. */
+  sealedEstimated: boolean;
 }
 
 export interface ConfidenceInput {

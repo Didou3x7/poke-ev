@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { m, useReducedMotion } from "motion/react";
 import type { RarityBreakdown } from "@/lib/ev/types";
 import type { RarityId } from "@/lib/ev/rarity";
 import { rarityLabel } from "@/lib/i18n/rarities";
@@ -44,7 +44,7 @@ export function RarityDonut({
         <svg width="160" height="160" viewBox="0 0 160 160" className="-rotate-90">
           <circle cx="80" cy="80" r={R} fill="none" stroke="var(--color-ink-850)" strokeWidth="16" />
           {segments.map((s, i) => (
-            <motion.circle
+            <m.circle
               key={s.row.rarity}
               cx="80"
               cy="80"

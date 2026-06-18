@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { buildTcgdexSnapshot } from "@/lib/data/build-tcgdex";
 import { mergeSealedPrices } from "@/lib/data/sealed-merge";
 import { TcgcsvProvider } from "@/lib/data/tcgcsv";
-import { getAllSets } from "@/lib/data/catalog";
+import { getAllSets, getPullRates } from "@/lib/data/catalog";
 import { readBundledSnapshot } from "@/lib/data/snapshot";
 import { EMPTY_SNAPSHOT, type Snapshot } from "@/lib/data/snapshot-types";
 
@@ -45,7 +45,6 @@ export async function GET(request: NextRequest) {
 
   const prior = (await readPriorFromBlob()) ?? readBundledSnapshot() ?? EMPTY_SNAPSHOT;
   const logs: string[] = [];
-  let snapshot = await buildTcgdexSnapshot({ prior, log: (m) => logs.push(m) });
 
   const { put } = await import("@vercel/blob");
   const persist = (snap: Snapshot) =>
@@ -55,6 +54,19 @@ export async function GET(request: NextRequest) {
       allowOverwrite: true,
       contentType: "application/json",
     });
+
+  // Resumable build: stalest sets first, partial progress persisted every 25
+  // sets, and a soft deadline (~230s) that leaves headroom under maxDuration for
+  // the sealed step + final write — so a slow day never times out mid-build and
+  // loses work; unreached sets keep prior data and lead the next run.
+  let snapshot = await buildTcgdexSnapshot({
+    prior,
+    maxMillis: 230_000,
+    onProgress: async (snap) => {
+      await persist(snap);
+    },
+    log: (m) => logs.push(m),
+  });
 
   // Persist card/EV data first — robust if the sealed step is slow or fails.
   await persist(snapshot);
@@ -67,6 +79,7 @@ export async function GET(request: NextRequest) {
       snapshot,
       provider,
       catalogSets: getAllSets(),
+      pullRates: getPullRates(),
       budget: 1000,
       log: (m) => logs.push(m),
     });

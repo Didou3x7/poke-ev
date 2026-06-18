@@ -30,6 +30,18 @@ interface TcgcsvPrice {
   marketPrice?: number | null;
   midPrice?: number | null;
   lowPrice?: number | null;
+  highPrice?: number | null;
+}
+
+/**
+ * Best usable USD for a price row: the realised market price, else the mid, else
+ * the low ask. highPrice is skipped on purpose — for illiquid vintage sealed it
+ * is a single inflated ask (e.g. a $100k Base Set box listing) that would poison
+ * the comparison. Returns null when the row carries no usable number.
+ */
+function rowUsd(p: TcgcsvPrice | undefined): number | null {
+  if (!p) return null;
+  return p.marketPrice ?? p.midPrice ?? p.lowPrice ?? null;
 }
 
 /** Drop TCGplayer's "CODE##: " / "SV: " set-name prefix so names match the catalog. */
@@ -74,15 +86,21 @@ export class TcgcsvProvider implements PriceProvider {
       this.getJson<TcgcsvProduct>(`/${externalId}/products`),
       this.getJson<TcgcsvPrice>(`/${externalId}/prices`),
     ]);
-    const priceOf = new Map<number, TcgcsvPrice>();
-    for (const p of prices) if (!priceOf.has(p.productId)) priceOf.set(p.productId, p);
+    // A product can carry several price rows (subtypes); keep the highest usable
+    // value so a present "Normal" row is never shadowed by an empty variant row.
+    const priceOf = new Map<number, number>();
+    for (const p of prices) {
+      const usd = rowUsd(p);
+      if (usd == null) continue;
+      const prev = priceOf.get(p.productId);
+      if (prev == null || usd > prev) priceOf.set(p.productId, usd);
+    }
 
     const out: SealedPrice[] = [];
     for (const product of products) {
       const kind = classifySealed(product.name);
       if (!kind) continue;
-      const price = priceOf.get(product.productId);
-      const usd = price?.marketPrice ?? price?.midPrice ?? price?.lowPrice ?? null;
+      const usd = priceOf.get(product.productId) ?? null;
       if (usd == null) continue;
       out.push({
         kind,

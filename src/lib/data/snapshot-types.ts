@@ -40,7 +40,7 @@ export interface ChaseCard {
 
 /** Snapshot stores the EN CDN url (…/en/…). Swap the locale segment so the FR
  *  site shows the French print; callers fall back to the EN url via onError. */
-function localizeCardImage(url: string, locale: "fr" | "en"): string {
+export function localizeCardImage(url: string, locale: "fr" | "en"): string {
   return locale === "en" ? url : url.replace("/assets.tcgdex.net/en/", `/assets.tcgdex.net/${locale}/`);
 }
 
@@ -100,6 +100,8 @@ export interface SnapshotSealed {
   eur: number | null;
   usd: number | null;
   image: string | null;
+  /** True when derived (no live market quote for this exact sealed product). */
+  estimated?: boolean;
 }
 
 export interface SnapshotSet {

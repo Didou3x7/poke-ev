@@ -1,18 +1,15 @@
 import { Suspense } from "react";
 import { getDict } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/config";
-import { buildCalculatorPayload } from "@/lib/view/calculator-vm";
+import { buildCalculatorShell } from "@/lib/view/calculator-vm";
 import { SiteShell } from "@/components/SiteShell";
 import { Calculator } from "@/components/calculator/Calculator";
 
 export async function CalculatorPage({ locale }: { locale: Locale }) {
   const t = getDict(locale);
-  const payload = await buildCalculatorPayload(locale);
+  const payload = await buildCalculatorShell(locale);
   // EMPTY_SNAPSHOT fallback: no EV data anywhere and the 1970 sentinel date.
-  const snapshotMissing =
-    !payload.demo &&
-    Object.keys(payload.evData).length === 0 &&
-    payload.generatedAt.startsWith("1970");
+  const snapshotMissing = !payload.demo && payload.evCount === 0 && payload.generatedAt.startsWith("1970");
 
   return (
     <SiteShell locale={locale} page="calculator" pricesUpdatedAt={payload.generatedAt} demo={payload.demo}>

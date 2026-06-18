@@ -6,6 +6,7 @@ import { rarityLabel } from "@/lib/i18n/rarities";
 import { getEraOfSet, getPullRatesForSet, getSetById } from "@/lib/data/catalog";
 import { getSnapshot } from "@/lib/data/snapshot";
 import { localizedCardName, pickChaseCard } from "@/lib/data/snapshot-types";
+import { cardSlugMap } from "@/lib/view/card-meta";
 import { computeVerdict } from "@/lib/ev/verdict";
 import type { ProductKind } from "@/lib/ev/types";
 import type { RarityId } from "@/lib/ev/rarity";
@@ -27,6 +28,9 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
   const ev = snap?.ev ? snap.ev[locale] : null;
   const priceKey = locale === "fr" ? ("eur" as const) : ("usd" as const);
   const chase = snap ? pickChaseCard(snap, locale) : null;
+  const slugMap = await cardSlugMap(set.id);
+  const chaseId = chase ? snap?.cards.find((c) => c.image === chase.imageEn)?.id : undefined;
+  const chaseSlug = chaseId ? slugMap.get(chaseId) : undefined;
 
   const packsOf = (kind: ProductKind): number | null => {
     if (kind === "booster") return 1;
@@ -47,6 +51,7 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
               packEv: ev.packEv,
               packStdDev: ev.packStdDev,
               sealedMarketPrice: p[priceKey],
+              sealedEstimated: p.estimated,
             })
           : null;
       return { ...p, packs, verdict };
@@ -58,7 +63,9 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
   });
   const maxContribution = Math.max(...(ev?.rarityBreakdown.map((r) => r.evContribution) ?? [0]), 0.0001);
 
-  const offers = sealed.filter((p) => p[priceKey] != null);
+  // Only REAL quotes feed the Product/AggregateOffer schema — estimates must
+  // never be published as marketplace offers.
+  const offers = sealed.filter((p) => p[priceKey] != null && !p.estimated);
   const jsonLd =
     offers.length > 0 && !snapshot.demo
       ? {
@@ -129,16 +136,34 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
               )}
             </div>
             {chase ? (
-              <ChaseCard
-                name={chase.name}
-                image={chase.image}
-                imageEn={chase.imageEn}
-                setName={name}
-                eyebrow={t.calculator.chaseLabel}
-                value={formatMoney(chase.value, locale)}
-                eager
-                className="justify-self-center lg:justify-self-end"
-              />
+              chaseSlug ? (
+                <Link
+                  href={localePath(locale, "card", chaseSlug)}
+                  aria-label={chase.name}
+                  className="group justify-self-center transition-transform duration-200 hover:-translate-y-0.5 lg:justify-self-end"
+                >
+                  <ChaseCard
+                    name={chase.name}
+                    image={chase.image}
+                    imageEn={chase.imageEn}
+                    setName={name}
+                    eyebrow={t.calculator.chaseLabel}
+                    value={formatMoney(chase.value, locale)}
+                    eager
+                  />
+                </Link>
+              ) : (
+                <ChaseCard
+                  name={chase.name}
+                  image={chase.image}
+                  imageEn={chase.imageEn}
+                  setName={name}
+                  eyebrow={t.calculator.chaseLabel}
+                  value={formatMoney(chase.value, locale)}
+                  eager
+                  className="justify-self-center lg:justify-self-end"
+                />
+              )
             ) : null}
           </div>
         </div>
@@ -168,7 +193,15 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
                   <dl className="mt-4 space-y-1.5 font-mono text-sm">
                     <div className="flex justify-between">
                       <dt className="text-fg-faint">{t.setDetail.marketPrice}</dt>
-                      <dd className="tnum">{formatMoney(p[priceKey]!, locale)}</dd>
+                      <dd className="tnum" title={p.estimated ? t.calculator.sealedEstimatedNote : undefined}>
+                        {p.estimated ? "≈ " : ""}
+                        {formatMoney(p[priceKey]!, locale)}
+                        {p.estimated ? (
+                          <span className="ml-1 text-[10px] uppercase tracking-wide text-fg-faint">
+                            {t.calculator.sealedEstimated}
+                          </span>
+                        ) : null}
+                      </dd>
                     </div>
                     {p.verdict ? (
                       <>
@@ -203,22 +236,36 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
             <section aria-label={t.setDetail.topHits}>
               <h2 className="font-display text-xl font-semibold">{t.setDetail.topHits}</h2>
               <ol className="mt-4 space-y-1.5">
-                {topCards.slice(0, 10).map((tc, i) => (
-                  <li
-                    key={tc.cardId}
-                    className="flex items-center gap-3 rounded-xl border border-line bg-surface px-3 py-2"
-                  >
-                    <span className="w-5 text-right font-mono text-xs text-fg-faint tnum">{i + 1}</span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{localizedCardName(tc.card, locale)}</p>
-                      <p className="font-mono text-[10px] text-fg-faint">
-                        {tc.card.number ? `#${tc.card.number} · ` : ""}
-                        {(tc.probabilityPerPack * 100).toFixed(2)} % {t.calculator.topCardsProb}
-                      </p>
-                    </div>
-                    <span className="font-mono text-sm tnum">{formatMoney(tc.value, locale)}</span>
-                  </li>
-                ))}
+                {topCards.slice(0, 10).map((tc, i) => {
+                  const cardSlug = slugMap.get(tc.cardId);
+                  const inner = (
+                    <>
+                      <span className="w-5 text-right font-mono text-xs text-fg-faint tnum">{i + 1}</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">{localizedCardName(tc.card, locale)}</p>
+                        <p className="font-mono text-[10px] text-fg-faint">
+                          {tc.card.number ? `#${tc.card.number} · ` : ""}
+                          {(tc.probabilityPerPack * 100).toFixed(2)} % {t.calculator.topCardsProb}
+                        </p>
+                      </div>
+                      <span className="font-mono text-sm tnum">{formatMoney(tc.value, locale)}</span>
+                    </>
+                  );
+                  return (
+                    <li key={tc.cardId}>
+                      {cardSlug ? (
+                        <Link
+                          href={localePath(locale, "card", cardSlug)}
+                          className="holo-hover flex items-center gap-3 rounded-xl border border-line bg-surface px-3 py-2 transition-colors hover:border-line-strong"
+                        >
+                          {inner}
+                        </Link>
+                      ) : (
+                        <div className="flex items-center gap-3 rounded-xl border border-line bg-surface px-3 py-2">{inner}</div>
+                      )}
+                    </li>
+                  );
+                })}
               </ol>
             </section>
             <section aria-label={t.setDetail.byRarity}>

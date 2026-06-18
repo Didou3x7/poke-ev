@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import type { VerdictKind } from "@/lib/ev/types";
 
 const styles: Record<VerdictKind, { text: string; ring: string; bg: string; glow: string }> = {
@@ -37,7 +37,7 @@ export function VerdictBadge({
 }) {
   const s = styles[kind];
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0.86 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: "spring", stiffness: 320, damping: 22, delay: 0.15 }}
@@ -49,6 +49,6 @@ export function VerdictBadge({
         {label}
       </span>
       {sub ? <span className="max-w-64 text-center text-xs leading-snug text-fg-muted">{sub}</span> : null}
-    </motion.div>
+    </m.div>
   );
 }

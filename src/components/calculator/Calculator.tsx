@@ -1,29 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { computeVerdict } from "@/lib/ev/verdict";
-import type { ProductKind, Verdict } from "@/lib/ev/types";
-import type { CalculatorPayload, CalcSetData, CalcSetOption } from "@/lib/view/calculator-vm";
-import { formatMoney, formatPct, localePath, marketInfo, type Locale } from "@/lib/i18n/config";
+import type { ProductKind } from "@/lib/ev/types";
+import type { CalculatorShell, CalcSetData, CalcSetOption } from "@/lib/view/calculator-vm";
+import { marketInfo, type Locale } from "@/lib/i18n/config";
 import { tpl } from "@/lib/i18n";
 import type { Dict } from "@/lib/i18n/types";
 import { track } from "@/lib/analytics";
-import { AnimatedNumber } from "@/components/AnimatedNumber";
-import { VerdictBadge } from "@/components/VerdictBadge";
-import { ConfidenceBar } from "@/components/ConfidenceBar";
-import { ChaseCard } from "@/components/ChaseCard";
-import { CalcBreakdown } from "./CalcBreakdown";
-
-interface Result {
-  setId: string;
-  kind: ProductKind;
-  packs: number;
-  price: number;
-  verdict: Verdict;
-  data: CalcSetData;
-}
+import { CalcResult, type Result } from "./CalcResult";
 
 /** Shown before a set is picked, so the segmented control isn't empty. */
 const PRODUCT_FALLBACK = [
@@ -37,7 +24,7 @@ export function Calculator({
   dict,
   compact = false,
 }: {
-  payload: CalculatorPayload;
+  payload: CalculatorShell;
   dict: Pick<Dict, "calculator" | "verdict" | "confidence">;
   compact?: boolean;
 }) {
@@ -57,12 +44,35 @@ export function Calculator({
   const [listOpen, setListOpen] = useState(false);
   // -1 = no option highlighted; drives the combobox's aria-activedescendant.
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [copied, setCopied] = useState(false);
   const hydratedFromUrl = useRef(false);
+
+  // Per-set EV data is fetched on demand (the page ships only the light shell),
+  // and each loaded set is cached so re-selecting it is instant.
+  const [evCache, setEvCache] = useState<Record<string, CalcSetData | null>>({});
+  const ensureData = useCallback(
+    async (id: string): Promise<CalcSetData | null> => {
+      if (id in evCache) return evCache[id];
+      try {
+        const res = await fetch(`/api/calc/${locale}/${encodeURIComponent(id)}`);
+        const d = res.ok ? ((await res.json()) as CalcSetData) : null;
+        setEvCache((c) => ({ ...c, [id]: d }));
+        return d;
+      } catch {
+        setEvCache((c) => ({ ...c, [id]: null }));
+        return null;
+      }
+    },
+    [evCache, locale],
+  );
 
   const name = (s: CalcSetOption) => (locale === "fr" ? s.nameFr : s.nameEn);
   const selected = payload.sets.find((s) => s.id === setId) ?? null;
-  const data = setId ? payload.evData[setId] : undefined;
+  const data = setId ? evCache[setId] ?? undefined : undefined;
+
+  // Load the chosen set's EV data (populates the product control + result).
+  useEffect(() => {
+    if (setId && !(setId in evCache)) void ensureData(setId);
+  }, [setId, evCache, ensureData]);
 
   // Product segmented control (role=radiogroup): roving tabindex + arrow keys,
   // per the WAI-ARIA radio pattern the roles announce to assistive tech.
@@ -132,10 +142,11 @@ export function Calculator({
     }
   }, [activeIndex]);
 
-  function compute(id = setId, productKind = kind, text = priceText, qty = boosterQty): void {
-    const d = id ? payload.evData[id] : undefined;
+  async function compute(id = setId, productKind = kind, text = priceText, qty = boosterQty): Promise<void> {
     const price = parsePrice(text);
-    if (!id || !d || price == null) return;
+    if (!id || price == null) return;
+    const d = await ensureData(id);
+    if (!d) return;
     const product = d.products.find((p) => p.kind === productKind) ?? d.products[0];
     // A booster's pack count is the user-chosen quantity; display/ETB are fixed.
     const packs = product.kind === "booster" ? Math.max(1, Math.min(99, Math.round(qty))) : product.packs;
@@ -152,6 +163,7 @@ export function Calculator({
       packEv: d.packEv,
       packStdDev: d.packStdDev,
       sealedMarketPrice,
+      sealedEstimated: product.sealedEstimated,
     });
     setResult({ setId: id, kind: product.kind, packs, price, verdict, data: d });
     track("Calculation", { set: id, product: product.kind });
@@ -164,7 +176,7 @@ export function Calculator({
   function changeQty(next: number): void {
     const q = Math.max(1, Math.min(99, Math.round(next) || 1));
     setBoosterQty(q);
-    if (result && kind === "booster") compute(setId, "booster", priceText, q);
+    if (result && kind === "booster") void compute(setId, "booster", priceText, q);
   }
 
   // Rehydrate a shared result from the query string (deep links).
@@ -174,54 +186,17 @@ export function Calculator({
     const qsSet = searchParams.get("set");
     const qsProduct = searchParams.get("product") as ProductKind | null;
     const qsPrice = searchParams.get("price");
-    if (qsSet && payload.evData[qsSet] && qsPrice && parsePrice(qsPrice) != null) {
+    if (qsSet && payload.sets.some((s) => s.id === qsSet) && qsPrice && parsePrice(qsPrice) != null) {
       const k: ProductKind = qsProduct === "booster" || qsProduct === "etb" ? qsProduct : "display";
       const qsQty = Math.max(1, Math.min(99, Number(searchParams.get("qty")) || 1));
       setSetId(qsSet);
       setKind(k);
       setBoosterQty(qsQty);
       setPriceText(qsPrice);
-      compute(qsSet, k, qsPrice, qsQty);
+      void compute(qsSet, k, qsPrice, qsQty);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  async function share(): Promise<void> {
-    if (!result || !selected) return;
-    const url = window.location.href;
-    const text = tpl(t.shareText, {
-      verdict: dict.verdict[result.verdict.kind === "open" ? "open" : "keep"],
-      set: name(selected),
-      ev: formatMoney(result.verdict.openEv, locale),
-      price: formatMoney(result.price, locale),
-      margin: formatPct(result.verdict.marginPct, locale),
-    });
-    track("Share", { set: result.setId });
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "Poké EV", text, url });
-        return;
-      } catch {
-        /* user cancelled — fall through to clipboard */
-      }
-    }
-    await navigator.clipboard.writeText(`${text}\n${url}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2200);
-  }
-
-  const fxLine = (() => {
-    if (!result || !payload.fx) return null;
-    const { eurUsd, asOf } = payload.fx;
-    const converted =
-      locale === "fr" ? result.verdict.openEv * eurUsd : result.verdict.openEv / eurUsd;
-    const formatted = new Intl.NumberFormat(locale === "fr" ? "fr-FR" : "en-US", {
-      style: "currency",
-      currency: locale === "fr" ? "USD" : "EUR",
-      maximumFractionDigits: 2,
-    }).format(converted);
-    return { formatted, note: tpl(t.converterNote, { rate: eurUsd.toFixed(4), date: asOf }) };
-  })();
 
   const inputCls =
     "w-full rounded-xl border border-line-input bg-ink-850 px-4 py-3 text-fg placeholder:text-fg-faint focus:border-holo-violet focus:outline-none focus:ring-2 focus:ring-holo-violet/40 transition-colors duration-150";
@@ -262,7 +237,7 @@ export function Calculator({
           />
           <AnimatePresence>
             {listOpen ? (
-              <motion.ul
+              <m.ul
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
@@ -301,7 +276,7 @@ export function Calculator({
                     </li>
                   ))
                 )}
-              </motion.ul>
+              </m.ul>
             ) : null}
           </AnimatePresence>
         </div>
@@ -321,7 +296,9 @@ export function Calculator({
             placeholder={t.pricePlaceholder}
             value={priceText}
             onChange={(e) => setPriceText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && compute()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void compute();
+            }}
           />
         </div>
       </div>
@@ -359,7 +336,7 @@ export function Calculator({
                     rule (position:relative) outranks Tailwind's layered .absolute
                     utility, so without it the pill collapses to a 2px sliver. */}
                 {active ? (
-                  <motion.span
+                  <m.span
                     aria-hidden
                     layoutId={pillId}
                     style={{ position: "absolute" }}
@@ -381,8 +358,8 @@ export function Calculator({
         )}
         <button
           type="button"
-          onClick={() => compute()}
-          disabled={!setId || !data || parsePrice(priceText) == null}
+          onClick={() => void compute()}
+          disabled={!setId || !selected?.evAvailable || parsePrice(priceText) == null}
           className="group relative ml-auto overflow-hidden rounded-full px-6 py-2.5 font-display text-sm font-semibold tracking-wide text-ink-950 transition-transform duration-150 hover:scale-[1.03] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
           style={{ background: "var(--holo-gradient)" }}
         >
@@ -439,157 +416,15 @@ export function Calculator({
       ) : null}
 
       {/* ——— result ——— */}
-      <AnimatePresence mode="wait">
-        {result && selected ? (
-          <motion.div
-            key={`${result.setId}-${result.kind}-${result.price}`}
-            aria-live="polite"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-8"
-          >
-            <div className="grid items-center gap-6 md:grid-cols-[auto_1fr]">
-              <VerdictBadge
-                kind={result.verdict.kind}
-                label={dict.verdict[result.verdict.kind]}
-                sub={
-                  result.verdict.kind === "open" ? dict.verdict.openSub : dict.verdict.keepSubMargin
-                }
-              />
-              <div>
-                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-fg-faint">
-                  {t.openEv} · {t.products[result.kind]}
-                  {result.kind === "booster" && result.packs > 1 ? ` ×${result.packs}` : ""}
-                </p>
-                <p className="font-display text-5xl font-bold tracking-tight sm:text-6xl">
-                  <AnimatedNumber
-                    value={result.verdict.openEv}
-                    format={(n) => formatMoney(n, locale)}
-                    className="holo-text"
-                  />
-                </p>
-                <p className="mt-1 font-mono text-xs text-fg-muted tnum">
-                  {formatMoney(result.data.packEv, locale)} {t.perBooster}
-                  {fxLine ? (
-                    <span className="text-fg-faint">
-                      {" "}
-                      · ≈ {fxLine.formatted} <span title={fxLine.note}>ⓘ</span>
-                    </span>
-                  ) : null}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <Stat
-                label={t.margin}
-                value={`${formatMoney(result.verdict.marginAbs, locale)} (${formatPct(result.verdict.marginPct, locale)})`}
-                tone={result.verdict.marginAbs >= 0 ? "open" : "keep"}
-              />
-              <Stat
-                label={t.profitProbability}
-                value={formatPct(result.verdict.profitProbability, locale, false)}
-                tone={result.verdict.profitProbability >= 0.5 ? "open" : "keep"}
-                title={t.profitProbabilityNote}
-              />
-              <Stat
-                label={t.sealedMarket}
-                value={
-                  result.verdict.sealedMarketPrice != null
-                    ? formatMoney(result.verdict.sealedMarketPrice, locale)
-                    : t.sealedUnknown
-                }
-                tone="neutral"
-                sub={
-                  result.verdict.sealedPremium != null
-                    ? `${t.sealedPremium}: ${formatMoney(result.verdict.sealedPremium, locale)}`
-                    : undefined
-                }
-              />
-            </div>
-
-            <div className="mt-6">
-              <ConfidenceBar
-                confidence={result.data.confidence}
-                label={dict.confidence.label}
-                levelLabel={dict.confidence[result.data.confidence.label]}
-                partLabels={dict.confidence.parts}
-              />
-              <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-fg-faint">
-                {tpl(t.completeness, { pct: `${Math.round(result.data.priceCompleteness * 100)} %` })} ·{" "}
-                {tpl(t.evUpdated, {
-                  date: new Date(result.data.updatedAt).toLocaleDateString(
-                    locale === "fr" ? "fr-FR" : "en-US",
-                  ),
-                })}
-              </p>
-            </div>
-
-            {/* chase card — the set's headline card, shown just before sharing (full mode) */}
-            {!compact && result.data.chaseCard ? (
-              <div className="mt-10 border-t border-line pt-8">
-                <ChaseCard
-                  name={result.data.chaseCard.name}
-                  image={result.data.chaseCard.image}
-                  imageEn={result.data.chaseCard.imageEn}
-                  setName={name(selected)}
-                  eyebrow={t.chaseLabel}
-                  value={formatMoney(result.data.chaseCard.value, locale)}
-                />
-              </div>
-            ) : null}
-
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={share}
-                className="rounded-full border border-line px-5 py-2 text-sm text-fg transition-colors duration-150 hover:border-line-strong hover:bg-surface"
-              >
-                {copied ? t.shareCopied : t.share}
-              </button>
-              {compact ? (
-                <a
-                  href={`${localePath(locale, "calculator")}?set=${result.setId}&product=${result.kind}&price=${result.price}`}
-                  className="text-sm text-fg-muted underline-offset-4 transition-colors hover:text-fg hover:underline"
-                >
-                  {t.fullBreakdown}
-                </a>
-              ) : null}
-            </div>
-
-            {!compact ? (
-              <div className="mt-10">
-                <CalcBreakdown data={result.data} locale={locale} t={t} />
-              </div>
-            ) : null}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  tone,
-  sub,
-  title,
-}: {
-  label: string;
-  value: string;
-  tone: "open" | "keep" | "neutral";
-  sub?: string;
-  title?: string;
-}) {
-  const toneCls = tone === "open" ? "text-open" : tone === "keep" ? "text-keep" : "text-fg";
-  return (
-    <div className="rounded-xl border border-line bg-surface px-4 py-3" title={title}>
-      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-fg-faint">{label}</p>
-      <p className={`mt-1 font-mono text-base tnum ${toneCls}`}>{value}</p>
-      {sub ? <p className="mt-0.5 font-mono text-[10px] text-fg-faint tnum">{sub}</p> : null}
+      <CalcResult
+        result={result}
+        setName={selected ? name(selected) : ""}
+        dict={{ verdict: dict.verdict, confidence: dict.confidence }}
+        t={t}
+        compact={compact}
+        locale={locale}
+        fx={payload.fx}
+      />
     </div>
   );
 }

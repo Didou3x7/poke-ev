@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { getDict, tpl } from "@/lib/i18n";
 import { heroCardImage, heroCardPool } from "@/lib/hero-cards";
 import { absoluteUrl, localePath, type Locale } from "@/lib/i18n/config";
-import { buildCalculatorPayload } from "@/lib/view/calculator-vm";
+import { buildCalculatorShell } from "@/lib/view/calculator-vm";
 import { buildFeaturedSets } from "@/lib/view/featured";
 import { getAllSets } from "@/lib/data/catalog";
 import { SiteShell } from "@/components/SiteShell";
@@ -18,7 +18,7 @@ import { FeaturedSets } from "@/components/landing/FeaturedSets";
 
 export async function LandingPage({ locale }: { locale: Locale }) {
   const t = getDict(locale);
-  const payload = await buildCalculatorPayload(locale);
+  const payload = await buildCalculatorShell(locale);
   const featured = await buildFeaturedSets(locale, 14);
 
   // Fetch the first hero card (above-the-fold LCP candidate) during initial HTML

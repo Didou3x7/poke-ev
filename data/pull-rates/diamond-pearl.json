@@ -44,7 +44,9 @@
     }
   ],
   "products": {
-    "display": null,
+    "display": {
+      "packs": 36
+    },
     "etb": null
   }
 }

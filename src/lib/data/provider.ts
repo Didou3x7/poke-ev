@@ -30,14 +30,18 @@ export interface PriceProvider {
 /** Classify a sealed product name into booster / display / etb, or null to skip. */
 export function classifySealed(name: string): SealedPrice["kind"] | null {
   const n = name.toLowerCase();
-  // Drop tins, cases, lots, bundles and accessories: their prices (10× cases,
-  // mini-tin displays, premium collections…) would distort the per-product
-  // comparison the app makes against EV.
+  // Hard blocklist: things that are never a comparable single booster/box/ETB
+  // (cases, lots, blisters, tins, code cards, accessories). Note: "collection",
+  // "premium" and "deck" are deliberately NOT here — they'd nuke real boosters of
+  // sets whose NAME contains them (e.g. "Legendary Collection Booster Pack").
+  // Those soft cases are excluded instead by the strict whitelist below: a
+  // "Premium Collection" / "Theme Deck" simply never matches a core pattern.
   if (
-    /(code card|online|digital|redemption|mini ?tin|\btin\b|\bcase\b|\blot\b|\bhalf\b|bundle|blister|collection|premium|\bpin\b|binder|portfolio|sleeve|playmat|poster|sticker|\bdeck\b|build ?& ?battle|prerelease|tournament)/.test(n)
+    /(code card|online|digital|redemption|mini ?tin|\btin\b|\bcase\b|\blot\b|\bhalf\b|bundle|blister|\bpin\b|binder|portfolio|sleeve|playmat|poster|sticker|build ?& ?battle|prerelease|tournament)/.test(n)
   ) {
     return null;
   }
+  // Core product whitelist — these win over set names that contain soft words.
   if (/(booster box|booster display|display box)/.test(n)) return "display";
   if (/(elite trainer box|\betb\b)/.test(n)) return "etb";
   // A single pack is named "<set> Booster Pack" — not a box/display/bundle, and

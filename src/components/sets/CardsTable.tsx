@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { formatMoney, type Locale } from "@/lib/i18n/config";
 import { rarityLabel } from "@/lib/i18n/rarities";
 import type { RarityId } from "@/lib/ev/rarity";
@@ -14,8 +14,10 @@ export interface CardRow {
   price: number | null;
 }
 
-/** Sortable, collapsible card list for the set detail page. */
-export function CardsTable({
+/** Sortable, collapsible card list for the set detail page. Memoized — its
+ *  `cards` prop is a stable server-rendered list, so it never needs to re-sort
+ *  or re-render when an unrelated parent state changes. */
+function CardsTableInner({
   cards,
   locale,
   labels,
@@ -25,7 +27,7 @@ export function CardsTable({
   labels: { showAll: string; hide: string; title: string };
 }) {
   const [expanded, setExpanded] = useState(false);
-  const sorted = [...cards].sort((a, b) => (b.price ?? -1) - (a.price ?? -1));
+  const sorted = useMemo(() => [...cards].sort((a, b) => (b.price ?? -1) - (a.price ?? -1)), [cards]);
   const visible = expanded ? sorted : sorted.slice(0, 24);
 
   return (
@@ -61,3 +63,5 @@ export function CardsTable({
     </section>
   );
 }
+
+export const CardsTable = memo(CardsTableInner);

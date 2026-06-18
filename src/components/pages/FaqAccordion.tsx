@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, m, useReducedMotion } from "motion/react";
 
 /**
  * Premium FAQ accordion. Replaces the native <details> snap with a smooth
@@ -34,7 +34,7 @@ export function FaqAccordion({ items }: { items: { q: string; a: string }[] }) {
       {items.map((item, i) => {
         const isOpen = open.has(i);
         return (
-          <motion.div
+          <m.div
             key={item.q}
             initial={reduce ? false : { opacity: 0, y: 14 }}
             whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export function FaqAccordion({ items }: { items: { q: string; a: string }[] }) {
                 the rounded corners (and rounded) so it never pokes outside them;
                 the card no longer clips (overflow-hidden removed) so the trigger's
                 focus outline stays fully visible. */}
-            <motion.span
+            <m.span
               aria-hidden
               className="absolute inset-y-4 left-0 w-[2px] origin-top rounded-full"
               style={{ background: "var(--holo-gradient)" }}
@@ -67,7 +67,7 @@ export function FaqAccordion({ items }: { items: { q: string; a: string }[] }) {
                 className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left font-display text-base font-semibold"
               >
                 <span>{item.q}</span>
-                <motion.span
+                <m.span
                   aria-hidden
                   className={`shrink-0 font-mono text-lg leading-none transition-colors duration-300 ${
                     isOpen ? "text-holo-cyan" : "text-fg-faint group-hover:text-fg-muted"
@@ -76,13 +76,13 @@ export function FaqAccordion({ items }: { items: { q: string; a: string }[] }) {
                   transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 22 }}
                 >
                   +
-                </motion.span>
+                </m.span>
               </button>
             </h2>
 
             <AnimatePresence initial={false}>
               {isOpen ? (
-                <motion.div
+                <m.div
                   key="panel"
                   id={`faq-panel-${i}`}
                   role="region"
@@ -96,18 +96,18 @@ export function FaqAccordion({ items }: { items: { q: string; a: string }[] }) {
                   }}
                   className="overflow-hidden"
                 >
-                  <motion.p
+                  <m.p
                     initial={reduce ? false : { y: -6 }}
                     animate={{ y: 0 }}
                     transition={{ duration: reduce ? 0 : 0.4, ease: EASE }}
                     className="px-5 pb-5 text-sm leading-relaxed text-fg-muted"
                   >
                     {item.a}
-                  </motion.p>
-                </motion.div>
+                  </m.p>
+                </m.div>
               ) : null}
             </AnimatePresence>
-          </motion.div>
+          </m.div>
         );
       })}
     </div>

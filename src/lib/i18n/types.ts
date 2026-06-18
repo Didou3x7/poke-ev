@@ -91,6 +91,8 @@ export interface Dict {
     sealedMarket: string;
     sealedPremium: string;
     sealedUnknown: string;
+    sealedEstimated: string;
+    sealedEstimatedNote: string;
     topCards: string;
     topCardsProb: string;
     rarityBreakdown: string;
@@ -125,7 +127,13 @@ export interface Dict {
     sortEv: string;
     sortDate: string;
     sortName: string;
+    sortPrice: string;
+    sortConfidence: string;
     resultCount: string; // {n}
+    bestEvTitle: string;
+    bestEvSub: string;
+    chaseLabel: string;
+    conf: { high: string; medium: string; low: string };
   };
   setDetail: {
     productsTitle: string;
@@ -140,6 +148,25 @@ export interface Dict {
     noSealed: string;
     showAllCards: string;
     hideCards: string;
+  };
+  cardPage: {
+    eyebrow: string; // "Carte chase"
+    priceLabel: string;
+    rarityLabel: string;
+    numberLabel: string;
+    setLabel: string;
+    intro: string; // {card} {set} {price}
+    introNoPrice: string; // {card} {set}
+    setEvLabel: string;
+    viewSet: string;
+    openInCalculator: string;
+    updatedDaily: string;
+    priceUnavailable: string;
+    rankText: string; // {rank} {set}
+    rankTextTop: string; // {set} — when it's the #1 card
+    evShareLabel: string;
+    evShareText: string; // {pct} {set}
+    relatedTitle: string; // {set}
   };
   faq: {
     title: string;
@@ -156,6 +183,7 @@ export interface Dict {
     calculator: { title: string; description: string };
     sets: { title: string; description: string };
     set: { title: string; description: string }; // {name} {ev}
+    card: { title: string; description: string }; // {card} {set} {price}
     faq: { title: string; description: string };
     legal: { title: string; description: string };
     privacy: { title: string; description: string };

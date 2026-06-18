@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { formatMoney, localePath, type Locale } from "@/lib/i18n/config";
 import { tpl } from "@/lib/i18n";
 import type { Dict } from "@/lib/i18n/types";
@@ -19,8 +19,17 @@ export interface SetListItem {
   eraName: string;
   evAvailable: boolean;
   packEv: number | null;
+  chaseValue: number | null;
+  confidence: "high" | "medium" | "low" | null;
   logo: string | null;
 }
+
+const CONF_RANK: Record<string, number> = { high: 3, medium: 2, low: 1 };
+const CONF_DOT: Record<string, string> = {
+  high: "bg-open",
+  medium: "bg-amber-400",
+  low: "bg-keep",
+};
 
 export function SetsExplorer({
   items,
@@ -36,9 +45,26 @@ export function SetsExplorer({
   const [query, setQuery] = useState("");
   const [era, setEra] = useState<string | null>(null);
   const [evOnly, setEvOnly] = useState(false);
-  const [sort, setSort] = useState<"ev" | "date" | "name">("date");
+  const [sort, setSort] = useState<"ev" | "date" | "name" | "price" | "confidence">("date");
 
   const name = (s: SetListItem) => (locale === "fr" ? s.nameFr : s.nameEn);
+
+  // Honour a ?q= deep link (powers the sitewide WebSite SearchAction / Google
+  // sitelinks search box). Read once on mount to avoid a Suspense boundary.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (q) setQuery(q);
+  }, []);
+
+  // Top sets by EV right now — the "best EV" highlight strip.
+  const topEv = useMemo(
+    () =>
+      items
+        .filter((s) => s.evAvailable && s.packEv != null)
+        .sort((a, b) => (b.packEv ?? 0) - (a.packEv ?? 0))
+        .slice(0, 5),
+    [items],
+  );
 
   // Global EV ranking (across the whole catalog) so a set keeps its rank under
   // any filter/sort.
@@ -65,6 +91,13 @@ export function SetsExplorer({
         if (a.evAvailable !== b.evAvailable) return a.evAvailable ? -1 : 1;
         return (b.packEv ?? 0) - (a.packEv ?? 0);
       });
+    } else if (sort === "price") {
+      sorted.sort((a, b) => (b.chaseValue ?? 0) - (a.chaseValue ?? 0));
+    } else if (sort === "confidence") {
+      sorted.sort((a, b) => {
+        const d = (CONF_RANK[b.confidence ?? ""] ?? 0) - (CONF_RANK[a.confidence ?? ""] ?? 0);
+        return d !== 0 ? d : (b.packEv ?? 0) - (a.packEv ?? 0);
+      });
     } else if (sort === "name") {
       sorted.sort((a, b) => name(a).localeCompare(name(b), locale));
     } else {
@@ -82,6 +115,32 @@ export function SetsExplorer({
 
   return (
     <div>
+      {topEv.length > 0 ? (
+        <section aria-label={t.bestEvTitle} className="mb-8">
+          <h2 className="font-display text-lg font-semibold tracking-tight">{t.bestEvTitle}</h2>
+          <p className="mt-1 text-sm text-fg-muted">{t.bestEvSub}</p>
+          <ol className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {topEv.map((s, i) => (
+              <li key={s.id}>
+                <Link
+                  href={localePath(locale, "set", s.id)}
+                  className="holo-hover flex h-full flex-col justify-between gap-3 rounded-2xl border border-line bg-surface p-4 transition-colors duration-150 hover:border-line-strong"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="holo-ring shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-medium tnum">
+                      #{i + 1}
+                    </span>
+                    <span className="truncate font-display text-sm font-semibold">{name(s)}</span>
+                  </div>
+                  <span className="font-display text-lg font-bold tracking-tight holo-text tnum">
+                    {formatMoney(s.packEv!, locale)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
       <div className="flex flex-col gap-3">
         <input
           type="search"
@@ -119,6 +178,8 @@ export function SetsExplorer({
             >
               <option value="date">{t.sortDate}</option>
               <option value="ev">{t.sortEv}</option>
+              <option value="price">{t.sortPrice}</option>
+              <option value="confidence">{t.sortConfidence}</option>
               <option value="name">{t.sortName}</option>
             </select>
           </label>
@@ -130,7 +191,7 @@ export function SetsExplorer({
       ) : (
         <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((s, i) => (
-            <motion.li
+            <m.li
               key={s.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -169,7 +230,14 @@ export function SetsExplorer({
                 <div className="mt-4 flex items-baseline justify-between">
                   {s.evAvailable && s.packEv != null ? (
                     <>
-                      <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-fg-faint">
+                      <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-fg-faint">
+                        {s.confidence ? (
+                          <span
+                            className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${CONF_DOT[s.confidence]}`}
+                            title={t.conf[s.confidence]}
+                            aria-label={t.conf[s.confidence]}
+                          />
+                        ) : null}
                         {t.evBooster}
                       </span>
                       <span className="font-display text-xl font-bold tracking-tight holo-text tnum">
@@ -184,7 +252,7 @@ export function SetsExplorer({
                 </div>
               </Link>
               </TiltCard>
-            </motion.li>
+            </m.li>
           ))}
         </ul>
       )}

@@ -14,14 +14,14 @@
   "slots": [
     {
       "name": "Commons",
-      "count": 4,
+      "count": 5,
       "distribution": {
         "common": 1
       }
     },
     {
       "name": "Uncommons",
-      "count": 3,
+      "count": 2,
       "distribution": {
         "uncommon": 1
       }
@@ -40,9 +40,9 @@
       "name": "Rare or Better",
       "count": 1,
       "distribution": {
-        "rare": 0.6715,
+        "rare": 0.66,
         "rare-holo": 0.25,
-        "ex": 0.0625,
+        "ex": 0.074,
         "gold-star": 0.0139,
         "secret-rare": 0.0021
       }

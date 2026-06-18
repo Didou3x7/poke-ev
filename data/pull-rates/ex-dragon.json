@@ -32,14 +32,14 @@
     },
     {
       "name": "Uncommons",
-      "count": 3,
+      "count": 2,
       "distribution": {
         "uncommon": 1
       }
     },
     {
       "name": "Commons",
-      "count": 4,
+      "count": 5,
       "distribution": {
         "common": 1
       }

@@ -1,22 +1,14 @@
 "use client";
 
 import { useRef } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useMotionTemplate,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { AnimatePresence, m, useMotionValue, useMotionTemplate, useReducedMotion, useSpring, useTransform } from "motion/react";
 import type { HeroCard } from "@/lib/hero-cards";
 
 /**
  * A single holographic Pokémon card slot: pointer-tracked 3D tilt, a moving
  * iridescent foil and a cursor glare on a persistent frame, while the artwork
  * cross-fades as the pool rotates. Degrades to a clean static card under
- * prefers-reduced-motion.
+ * prefers-reduced-m.
  */
 export function HoloCard({
   card,
@@ -78,12 +70,12 @@ export function HoloCard({
 
   return (
     <div className={className} style={{ perspective: 1100 }}>
-      <motion.div
+      <m.div
         style={{ rotate: baseRotate }}
         animate={{ y: [0, -14, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: floatDelay }}
       >
-        <motion.div
+        <m.div
           ref={tiltRef}
           onPointerMove={handleMove}
           onPointerLeave={handleLeave}
@@ -108,7 +100,7 @@ export function HoloCard({
                 fade through each other; scale stays ≤ 1 so the card never
                 exceeds the window. initial={false} → first card shows instantly. */}
             <AnimatePresence initial={false}>
-              <motion.div
+              <m.div
                 key={card.path}
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -117,21 +109,21 @@ export function HoloCard({
                 className="absolute inset-0 will-change-[opacity,transform]"
               >
                 <CardImage src={src} name={card.name} eager={eager} fallbackSrc={fallbackSrc} />
-              </motion.div>
+              </m.div>
             </AnimatePresence>
-            <motion.div
+            <m.div
               aria-hidden
               className="holo-foil pointer-events-none absolute inset-0"
               style={{ backgroundPosition: foilPos }}
             />
-            <motion.div
+            <m.div
               aria-hidden
               className="pointer-events-none absolute inset-0 mix-blend-overlay"
               style={{ background: glare }}
             />
           </div>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
       <CardLabel name={card.name} tag={card.tag} cardKey={card.path} />
     </div>
   );
@@ -175,7 +167,7 @@ function CardLabel({ name, tag, cardKey }: { name: string; tag: string; cardKey?
   return (
     <div className="relative mt-3 h-9 text-center">
       <AnimatePresence initial={false}>
-        <motion.div
+        <m.div
           key={cardKey ?? name}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -185,7 +177,7 @@ function CardLabel({ name, tag, cardKey }: { name: string; tag: string; cardKey?
         >
           <p className="font-display text-sm font-semibold tracking-tight">{name}</p>
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg-faint">{tag}</p>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     </div>
   );

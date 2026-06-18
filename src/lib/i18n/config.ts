@@ -16,12 +16,13 @@ export type PageKey =
   | "calculator"
   | "sets"
   | "set"
+  | "card"
   | "faq"
   | "legal"
   | "privacy"
   | "cookies";
 
-const staticPaths: Record<Locale, Record<Exclude<PageKey, "set">, string>> = {
+const staticPaths: Record<Locale, Record<Exclude<PageKey, "set" | "card">, string>> = {
   fr: {
     home: "/",
     calculator: "/calculateur",
@@ -46,6 +47,10 @@ export function localePath(locale: Locale, page: PageKey, slug?: string): string
   if (page === "set") {
     if (!slug) throw new Error("set page needs a slug");
     return locale === "fr" ? `/sets/${slug}` : `/en/sets/${slug}`;
+  }
+  if (page === "card") {
+    if (!slug) throw new Error("card page needs a slug");
+    return locale === "fr" ? `/cartes/${slug}` : `/en/cards/${slug}`;
   }
   return staticPaths[locale][page];
 }

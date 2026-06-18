@@ -35,14 +35,58 @@ interface RarityPool {
   sumValueSq: number;
 }
 
-function buildPools(cards: PricedCard[], market: Market): Map<RarityId, RarityPool> {
+// Rarity tags that are pull-equivalent: a config often buckets the whole group
+// under ONE key, but the pokemontcg.io rarity overlay may tag a set's cards with
+// a sibling key — e.g. "rare" rares re-tagged "rare-holo", or Shiny-Vault cards
+// split into "shiny-rare" + "shiny-vault". When that happens those cards land in
+// a bucket no slot references → silently 0 EV.
+const RARITY_ALIAS_GROUPS: RarityId[][] = [
+  ["rare", "rare-holo"],
+  ["shiny-vault", "shiny-rare"],
+];
+
+/**
+ * Fold a card's rarity into the sibling key the config actually references, but
+ * ONLY when the config references exactly one member of the group. Configs that
+ * reference several members keep them separate (no behaviour change).
+ */
+function canonicalRarity(rarity: RarityId, referenced: Set<RarityId>): RarityId {
+  if (referenced.has(rarity)) return rarity;
+  for (const group of RARITY_ALIAS_GROUPS) {
+    if (!group.includes(rarity)) continue;
+    const target = group.find((r) => r !== rarity && referenced.has(r));
+    if (target) return target;
+  }
+  return rarity;
+}
+
+const BASIC_ENERGY = /^(grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy) energy$/i;
+const MISPRICED_ENERGY_USD = 5;
+
+/**
+ * A basic Energy tagged common/uncommon yet priced like a hit is a MIS-CLASSIFIED
+ * holographic energy insert (e.g. HGSS Darkness Energy ≈ $54, Call of Legends holo
+ * energies $40–130) — it is NOT pulled at the common-slot rate, so leaving it in the
+ * common pool grossly inflates the pack EV. Drop it from the pull pools.
+ * Deliberately value-gated, not era-gated: genuinely cheap basic energies (Base Set
+ * ≈ $0.40) ARE common-slot pulls and stay; holo energies already tagged rare/rare-holo
+ * (ex Holon Phantoms) aren't common/uncommon so they're untouched and keep their rate.
+ */
+function isMispricedEnergy(card: PricedCard): boolean {
+  if (card.rarity !== "common" && card.rarity !== "uncommon") return false;
+  if (!BASIC_ENERGY.test(card.name.trim())) return false;
+  return Math.max(card.prices.eur ?? 0, card.prices.usd ?? 0) >= MISPRICED_ENERGY_USD;
+}
+
+function buildPools(cards: PricedCard[], market: Market, referenced: Set<RarityId>): Map<RarityId, RarityPool> {
   const pools = new Map<RarityId, RarityPool>();
   for (const card of cards) {
-    if (!card.rarity) continue;
-    let pool = pools.get(card.rarity);
+    if (!card.rarity || isMispricedEnergy(card)) continue;
+    const rarity = canonicalRarity(card.rarity, referenced);
+    let pool = pools.get(rarity);
     if (!pool) {
-      pool = { rarity: card.rarity, cards: [], values: [], sumValue: 0, sumValueSq: 0 };
-      pools.set(card.rarity, pool);
+      pool = { rarity, cards: [], values: [], sumValue: 0, sumValueSq: 0 };
+      pools.set(rarity, pool);
     }
     pool.cards.push(card);
     const v = cardValue(card, market);
@@ -101,8 +145,8 @@ export function computeSetEv(
   market: Market,
   options: ComputeSetEvOptions = {},
 ): SetEv {
-  const pools = buildPools(cards, market);
   const perPack = expectedPerPackByRarity(config.slots);
+  const pools = buildPools(cards, market, new Set(perPack.keys()));
 
   const rarityBreakdown: RarityBreakdown[] = [];
   const contributions: CardContribution[] = [];

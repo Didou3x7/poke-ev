@@ -24,9 +24,11 @@ interface BiCard {
   en: { name: string; tag: string };
 }
 
-// low.webp (245×337) is plenty for the ~200px hero slots and far lighter than
-// high.webp (600px) — matters because the whole 24-card pool is preloaded.
-const img = (locale: Locale, path: string) => `https://assets.tcgdex.net/${locale}/${path}/low.webp`;
+// high.webp (≈600×825) renders crisp in the 210–236px hero slots on Hi-DPI/Retina
+// screens, where low.webp (245×337) would upscale and look pixelated. The hero is
+// desktop-only and the pool is warmed in the background (new Image()), so the
+// extra weight never blocks first paint.
+const img = (locale: Locale, path: string) => `https://assets.tcgdex.net/${locale}/${path}/high.webp`;
 
 export function heroCardImage(locale: Locale, card: HeroCard): string {
   return img(locale, card.path);

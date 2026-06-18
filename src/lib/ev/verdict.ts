@@ -45,7 +45,7 @@ export function profitProbability(
 }
 
 export function computeVerdict(input: VerdictInput): Verdict {
-  const { pricePaid, packs, packEv, packStdDev, sealedMarketPrice } = input;
+  const { pricePaid, packs, packEv, packStdDev, sealedMarketPrice, sealedEstimated } = input;
   const openEv = packs * packEv;
   const marginAbs = openEv - pricePaid;
   const marginPct = pricePaid > 0 ? marginAbs / pricePaid : 0;
@@ -67,5 +67,6 @@ export function computeVerdict(input: VerdictInput): Verdict {
     profitProbability: packEv > 0 ? profitProbability(pricePaid, packs, packEv, packStdDev) : 0,
     sealedMarketPrice,
     sealedPremium: sealedMarketPrice != null ? sealedMarketPrice - openEv : null,
+    sealedEstimated: sealedEstimated ?? false,
   };
 }

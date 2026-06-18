@@ -1,19 +1,12 @@
 "use client";
 
 import { useRef } from "react";
-import {
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "motion/react";
+import { m, useMotionTemplate, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
 
 /**
  * Lightweight pointer-tracked 3D tilt wrapper with a soft glare. Used to bring
  * the set catalog and landing cards to life on hover. Content stays fully
- * visible and untransformed under prefers-reduced-motion.
+ * visible and untransformed under prefers-reduced-m.
  */
 export function TiltCard({
   children,
@@ -55,20 +48,20 @@ export function TiltCard({
 
   return (
     <div className={className} style={{ perspective: 900 }} onPointerMove={onMove} onPointerLeave={onLeave}>
-      <motion.div
+      <m.div
         ref={ref}
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
         className="relative h-full [&>*]:h-full"
       >
         {children}
         {glare ? (
-          <motion.div
+          <m.div
             aria-hidden
             className="pointer-events-none absolute inset-0 rounded-[inherit]"
             style={{ background: glareBg }}
           />
         ) : null}
-      </motion.div>
+      </m.div>
     </div>
   );
 }
