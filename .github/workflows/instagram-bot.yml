@@ -1,0 +1,37 @@
+name: PokeEV Instagram Bot
+
+on:
+  schedule:
+    - cron: '0 17 * * *'   # 17h UTC = 19h Paris — ajuste si besoin
+  workflow_dispatch:         # permet de lancer manuellement depuis GitHub
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r instagram-bot/requirements.txt
+
+      - name: Run bot
+        env:
+          ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
+          META_ACCESS_TOKEN:      ${{ secrets.META_ACCESS_TOKEN }}
+          INSTAGRAM_BUSINESS_ID:  ${{ secrets.INSTAGRAM_BUSINESS_ID }}
+          POKEEV_DATA_DIR:        ${{ github.workspace }}/data
+          POKEEV_IMAGE_BASE_URL:  https://pokeev.com
+          STORY_PUBLIC_DIR:       /tmp/bot-stories
+          STORY_PUBLIC_URL:       https://pokeev.com/bot-stories
+          TOP_N_CARDS:            '5'
+          POST_TYPE:              carousel
+        run: |
+          cd instagram-bot
+          python main.py
