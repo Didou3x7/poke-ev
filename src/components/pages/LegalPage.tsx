@@ -20,7 +20,7 @@ export async function LegalPage({
       <div className="mx-auto w-full max-w-3xl px-4 pt-16 sm:px-6">
         <h1 className="rise font-display text-4xl font-bold tracking-tight">{doc.title}</h1>
         <p className="rise mt-3 font-mono text-xs uppercase tracking-[0.18em] text-fg-faint">
-          {locale === "fr" ? "Dernière mise à jour : juin 2026" : "Last updated: June 2026"}
+          {t.legalPages.lastUpdated}
         </p>
         <div className="mt-10 space-y-10">
           {doc.sections.map((section) => (

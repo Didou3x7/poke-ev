@@ -2,7 +2,7 @@
 
 import { m } from "motion/react";
 import type { CalcSetData } from "@/lib/view/calculator-vm";
-import { formatMoney, type Locale } from "@/lib/i18n/config";
+import { formatMoney, formatPct, type Locale } from "@/lib/i18n/config";
 import type { Dict } from "@/lib/i18n/types";
 import { RarityDonut } from "./RarityDonut";
 
@@ -37,7 +37,7 @@ export function CalcBreakdown({
                 <p className="truncate text-sm font-medium">{card.name}</p>
                 <p className="font-mono text-[10px] text-fg-faint">
                   {card.number ? `#${card.number} · ` : ""}
-                  {(card.probabilityPerPack * 100).toFixed(2)} % {t.topCardsProb}
+                  {formatPct(card.probabilityPerPack, locale, false, 2)} {t.topCardsProb}
                 </p>
               </div>
               <span className="font-mono text-sm text-fg tnum">{formatMoney(card.value, locale)}</span>

@@ -3,7 +3,7 @@ import { buildTcgdexSnapshot } from "@/lib/data/build-tcgdex";
 import { mergeSealedPrices } from "@/lib/data/sealed-merge";
 import { TcgcsvProvider } from "@/lib/data/tcgcsv";
 import { getAllSets, getPullRates } from "@/lib/data/catalog";
-import { readBundledSnapshot } from "@/lib/data/snapshot";
+import { isSnapshot, readBundledSnapshot } from "@/lib/data/snapshot";
 import { EMPTY_SNAPSHOT, type Snapshot } from "@/lib/data/snapshot-types";
 
 /**
@@ -28,7 +28,11 @@ async function readPriorFromBlob(): Promise<Snapshot | null> {
     if (!blobs[0]) return null;
     const res = await fetch(blobs[0].url, { cache: "no-store" });
     if (!res.ok) return null;
-    return (await res.json()) as Snapshot;
+    // Validate the shape before trusting it as the refresh base — a corrupt or
+    // partially-written blob must fall back to the bundled snapshot, never seed
+    // the next persist with garbage.
+    const parsed = (await res.json()) as unknown;
+    return isSnapshot(parsed) ? parsed : null;
   } catch {
     return null;
   }

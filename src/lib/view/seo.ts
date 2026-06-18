@@ -11,6 +11,7 @@ const pageToMeta: Record<PageKey, MetaKey> = {
   set: "set",
   card: "card",
   faq: "faq",
+  methodology: "methodology",
   legal: "legal",
   privacy: "privacy",
   cookies: "cookies",

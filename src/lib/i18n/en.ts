@@ -17,7 +17,7 @@ export const en: Dict = {
       priceSource: "Prices: TCGPlayer US ($) · Pull rates: sourced community dataset",
       rights: "Pokémon and related names are trademarks of Nintendo / Creatures / GAME FREAK. Unaffiliated fan project.",
     },
-    switchLang: "Passer en français",
+    switchLang: "Switch to French",
     demoBanner:
       "Demo data: synthetic numbers, not real prices. Generate a snapshot with your API key for live prices.",
     loading: "Loading…",
@@ -86,12 +86,12 @@ export const en: Dict = {
         text: "Beyond the average: booster variance gives you your real odds of breaking even.",
       },
     ],
-    seeAllSets: "See the full catalog →",
+    seeAllSets: "See the full catalog",
     tickerLabel: "LIVE EV",
     featuredTitle: "Top EV right now",
     featuredSub: "The expansions with the best expected value per pack, at today's market prices.",
     featuredVerdictAtMarket: "Verdict at market price",
-    featuredCta: "Analyze this set →",
+    evLabel: "EV / pack",
   },
   calculator: {
     title: "EV Calculator",
@@ -177,14 +177,14 @@ export const en: Dict = {
     hideCards: "Collapse",
   },
   cardPage: {
-    eyebrow: "Chase card",
     priceLabel: "Market price (TCGPlayer US)",
     rarityLabel: "Rarity",
     numberLabel: "Number",
-    setLabel: "Set",
     intro:
       "{card} is the most valuable card in {set}, priced {price} on TCGPlayer US. Updated every day.",
-    introNoPrice: "{card} is the most sought-after card in {set}. Price refreshing.",
+    introRank:
+      "{card} is the #{rank} most valuable card in {set}, priced {price} on TCGPlayer US. Updated every day.",
+    introNoPrice: "{card} is one of the most sought-after cards in {set}. Price refreshing.",
     setEvLabel: "Booster pack EV",
     viewSet: "View the {set} set",
     openInCalculator: "Open the EV calculator",
@@ -192,9 +192,9 @@ export const en: Dict = {
     priceUnavailable: "Price unavailable",
     rankText: "#{rank} most valuable card in {set}",
     rankTextTop: "Most valuable card in {set}",
-    evShareLabel: "Share of pack EV",
     evShareText: "This single card makes up {pct}% of a {set} booster's Expected Value.",
     relatedTitle: "Other sought-after {set} cards",
+    rarityPeersTitle: "Other {rarity} cards in {set}",
   },
   faq: {
     title: "FAQ",
@@ -242,7 +242,65 @@ export const en: Dict = {
       },
     ],
   },
+  methodology: {
+    title: "Methodology & transparency",
+    intro:
+      "How Poké EV turns a sealed product into a number. Sources, formula and limits — no black box.",
+    updated: "Last updated: June 2026",
+    sections: [
+      {
+        h: "The formula",
+        p: [
+          "A booster's Expected Value (EV) is a weighted sum: for every card in the set, we multiply its probability of showing up by its market value, then add it all up. Pack EV = Σ (pull rate × card value).",
+          "A booster box's EV is the pack EV times the real number of packs in the box (usually 36). An ETB follows the same logic with its own pack count. We only value the packs — accessories and goodies count as zero.",
+          "A card with no quoted price counts as zero, so our EV is a cautious floor, never inflated.",
+        ],
+      },
+      {
+        h: "The slot-by-slot model",
+        p: [
+          "A booster isn't a uniform draw: it's made of slots (commons, uncommons, the reverse slot, the rare or hit slot). Each slot carries its own rarity distribution, documented per set. Within a rarity, every card is assumed equally likely.",
+          "Reverse slots are modeled with the value of the matching commons and uncommons; premium replacements (illustration rares, ACE SPEC…) get their documented share of the odds.",
+        ],
+      },
+      {
+        h: "Pull rates",
+        p: [
+          "The price API doesn't provide pull rates. They come from a versioned static dataset, one file per set, built from public quantitative sources: large community opening campaigns and official Japanese rates where they exist.",
+          "Every file cites its sources and carries a confidence level. When no reliable source exists, we invent nothing: the set shows \"EV unavailable\".",
+        ],
+      },
+      {
+        h: "Prices",
+        p: [
+          "Prices come from a daily snapshot aggregated by TCGdex: Cardmarket (the European market, in euros) and TCGPlayer (the US market, in dollars). In English we show the TCGPlayer market price; in French, the Cardmarket trend price.",
+          "When a card is quoted on only one marketplace, we convert the other at the day's exchange rate so the value stays real. The snapshot timestamp is shown everywhere.",
+        ],
+      },
+      {
+        h: "The confidence index",
+        p: [
+          "Every EV ships with a confidence index blending three weighted components: pull-rate quality (40%), the share of the set's cards with a quoted price (35%) and price-snapshot freshness (25%).",
+          "Above 80 the data is solid; 55–80 is decent; below that, take it with a grain of salt.",
+        ],
+      },
+      {
+        h: "The OPEN / KEEP verdict",
+        p: [
+          "A single comparison decides the verdict: your price paid against the opening EV. If expected value beats what you paid, it's OPEN; otherwise KEEP, with the margin shown. The sealed market price is shown for reference and never changes the verdict.",
+        ],
+      },
+      {
+        h: "Probability of profit & limits",
+        p: [
+          "EV is an average. A single booster's variance is huge: it's all about the big hit. We approximate the distribution of the sum of packs with a normal law (central limit theorem): reliable for a box, indicative for a single pack.",
+          "Poké EV is a statistical estimation tool for information only, not financial advice. Prices are volatile and pull rates are community estimates. Open your boosters for the fun of it first.",
+        ],
+      },
+    ],
+  },
   legalPages: {
+    lastUpdated: "Last updated: June 2026",
     legal: {
       title: "Legal notice",
       sections: [
@@ -361,6 +419,11 @@ export const en: Dict = {
       title: "Method & FAQ · how is EV calculated? | Poké EV",
       description:
         "Full method: sourced pull rates, Cardmarket/TCGPlayer prices, OPEN/KEEP verdict, profit probability, confidence index and the tool's limits.",
+    },
+    methodology: {
+      title: "Methodology & transparency · how EV is calculated | Poké EV",
+      description:
+        "Poké EV's full method: the Expected Value formula, the slot-by-slot model, pull-rate and price sources, the confidence index and the tool's limits.",
     },
     legal: { title: "Legal notice | Poké EV", description: "Legal notice for pokeev.com." },
     privacy: {

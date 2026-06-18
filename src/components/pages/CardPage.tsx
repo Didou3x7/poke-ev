@@ -21,7 +21,9 @@ export async function CardPage({ locale, slug }: { locale: Locale; slug: string 
   const setPath = localePath(locale, "set", data.setId);
 
   const intro = data.priceFormatted
-    ? tpl(t.cardPage.intro, { card: data.cardName, set: data.setName, price: data.priceFormatted })
+    ? data.rank === 1
+      ? tpl(t.cardPage.intro, { card: data.cardName, set: data.setName, price: data.priceFormatted })
+      : tpl(t.cardPage.introRank, { card: data.cardName, rank: data.rank, set: data.setName, price: data.priceFormatted })
     : tpl(t.cardPage.introNoPrice, { card: data.cardName, set: data.setName });
   const rankText =
     data.rank === 1 ? tpl(t.cardPage.rankTextTop, { set: data.setName }) : tpl(t.cardPage.rankText, { rank: data.rank, set: data.setName });
@@ -151,6 +153,40 @@ export async function CardPage({ locale, slug }: { locale: Locale; slug: string 
               </h2>
               <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
                 {data.related.map((r) => (
+                  <li key={r.slug}>
+                    <Link
+                      href={localePath(locale, "card", r.slug)}
+                      className="holo-hover group flex h-full flex-col rounded-2xl border border-line bg-surface p-3 transition-colors hover:border-line-strong"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={r.image}
+                        alt={`${r.name} — ${data.setName}`}
+                        loading="lazy"
+                        className="mb-2 aspect-[5/7] w-full rounded-lg object-cover"
+                      />
+                      <span className="truncate text-xs font-medium leading-tight">{r.name}</span>
+                      {r.priceFormatted ? (
+                        <span className="mt-0.5 font-mono text-[11px] text-fg-muted tnum">{r.priceFormatted}</span>
+                      ) : null}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {/* Same-rarity peers — extra internal links into the long tail. */}
+          {data.rarityPeers.length > 0 ? (
+            <section
+              aria-label={tpl(t.cardPage.rarityPeersTitle, { rarity: data.rarity ?? "", set: data.setName })}
+              className="mt-12"
+            >
+              <h2 className="font-display text-xl font-semibold tracking-tight">
+                {tpl(t.cardPage.rarityPeersTitle, { rarity: data.rarity ?? "", set: data.setName })}
+              </h2>
+              <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                {data.rarityPeers.map((r) => (
                   <li key={r.slug}>
                     <Link
                       href={localePath(locale, "card", r.slug)}

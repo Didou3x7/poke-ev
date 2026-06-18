@@ -20,7 +20,7 @@ const MEMO_TTL_MS = 10 * 60 * 1000;
 
 let memo: { snapshot: Snapshot; at: number } | null = null;
 
-function isSnapshot(value: unknown): value is Snapshot {
+export function isSnapshot(value: unknown): value is Snapshot {
   return (
     !!value &&
     typeof value === "object" &&

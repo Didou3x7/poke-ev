@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCalcSetData } from "@/lib/view/calculator-vm";
+import { clientIp, rateLimit } from "@/lib/api/rate-limit";
 
 /**
  * On-demand per-set EV data for the calculator. The page ships only the light
@@ -9,12 +10,23 @@ import { getCalcSetData } from "@/lib/view/calculator-vm";
  */
 export const revalidate = 3600;
 
-export async function GET(_req: Request, { params }: { params: Promise<{ locale: string; set: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ locale: string; set: string }> }) {
   const { locale, set } = await params;
   if (locale !== "fr" && locale !== "en") {
     return NextResponse.json({ error: "bad locale" }, { status: 400 });
   }
-  const data = await getCalcSetData(locale, decodeURIComponent(set));
+  if (!rateLimit(`calc:${clientIp(req)}`, 240, 60_000)) {
+    return NextResponse.json({ error: "rate limited" }, { status: 429 });
+  }
+  let data;
+  try {
+    data = await getCalcSetData(locale, decodeURIComponent(set));
+  } catch (e) {
+    // Malformed %-encoding or a snapshot read failure must not surface as an
+    // opaque 500 — log context and return a clean error.
+    console.error("calc route failed", { set, error: String(e) });
+    return NextResponse.json({ error: "server error" }, { status: 500 });
+  }
   if (!data) return NextResponse.json({ error: "not found" }, { status: 404 });
   return NextResponse.json(data, {
     headers: { "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400" },

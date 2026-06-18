@@ -245,7 +245,7 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
                         <p className="truncate text-sm font-medium">{localizedCardName(tc.card, locale)}</p>
                         <p className="font-mono text-[10px] text-fg-faint">
                           {tc.card.number ? `#${tc.card.number} · ` : ""}
-                          {(tc.probabilityPerPack * 100).toFixed(2)} % {t.calculator.topCardsProb}
+                          {formatPct(tc.probabilityPerPack, locale, false, 2)} {t.calculator.topCardsProb}
                         </p>
                       </div>
                       <span className="font-mono text-sm tnum">{formatMoney(tc.value, locale)}</span>
@@ -298,7 +298,7 @@ export async function SetDetailPage({ locale, slug }: { locale: Locale; slug: st
 
         {/* full card list */}
         {snap && snap.cards.length > 0 ? (
-          <section>
+          <section aria-label={t.setDetail.cardsTitle}>
             <h2 className="font-display text-xl font-semibold">{t.setDetail.cardsTitle}</h2>
             <div className="mt-4">
               <CardsTable

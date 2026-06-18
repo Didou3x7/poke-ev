@@ -18,6 +18,7 @@ export type PageKey =
   | "set"
   | "card"
   | "faq"
+  | "methodology"
   | "legal"
   | "privacy"
   | "cookies";
@@ -28,6 +29,7 @@ const staticPaths: Record<Locale, Record<Exclude<PageKey, "set" | "card">, strin
     calculator: "/calculateur",
     sets: "/sets",
     faq: "/faq",
+    methodology: "/methodologie",
     legal: "/mentions-legales",
     privacy: "/confidentialite",
     cookies: "/cookies",
@@ -37,6 +39,7 @@ const staticPaths: Record<Locale, Record<Exclude<PageKey, "set" | "card">, strin
     calculator: "/en/calculator",
     sets: "/en/sets",
     faq: "/en/faq",
+    methodology: "/en/methodology",
     legal: "/en/legal-notice",
     privacy: "/en/privacy",
     cookies: "/en/cookies",
@@ -80,10 +83,10 @@ export function formatMoney(value: number, locale: Locale): string {
   }).format(value);
 }
 
-export function formatPct(ratio: number, locale: Locale, signed = true): string {
+export function formatPct(ratio: number, locale: Locale, signed = true, maxFractionDigits = 1): string {
   const pct = ratio * 100;
   const formatted = new Intl.NumberFormat(locale === "fr" ? "fr-FR" : "en-US", {
-    maximumFractionDigits: 1,
+    maximumFractionDigits: maxFractionDigits,
   }).format(Math.abs(pct));
   const sign = pct >= 0 ? (signed ? "+" : "") : "−";
   return `${sign}${formatted} %`;

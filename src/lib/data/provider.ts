@@ -52,6 +52,13 @@ export function classifySealed(name: string): SealedPrice["kind"] | null {
   return null;
 }
 
+/** Reject non-finite or non-positive prices at the data boundary — a corrupt
+ *  API value (NaN, Infinity, a negative number) must never reach the snapshot,
+ *  where it would render as "$NaN"/"$-12" and poison EV/premium math. */
+function cleanPrice(p: number | null | undefined): number | null {
+  return typeof p === "number" && Number.isFinite(p) && p > 0 ? p : null;
+}
+
 function mapCard(raw: TcggoCard): PricedCard {
   const cm = raw.prices?.cardmarket;
   const tp = raw.prices?.tcgplayer;
@@ -62,8 +69,8 @@ function mapCard(raw: TcggoCard): PricedCard {
     rarity: normalizeRarity(raw.rarity),
     rawRarity: raw.rarity ?? null,
     prices: {
-      eur: cm?.lowest_near_mint_FR ?? cm?.lowest_near_mint ?? null,
-      usd: tp?.market_price ?? tp?.mid_price ?? null,
+      eur: cleanPrice(cm?.lowest_near_mint_FR ?? cm?.lowest_near_mint),
+      usd: cleanPrice(tp?.market_price ?? tp?.mid_price),
     },
     image: raw.image ?? null,
   };
@@ -77,9 +84,10 @@ function mapProduct(raw: TcggoProduct): SealedPrice | null {
   // Sealed products expose Cardmarket lowest listings (FR market preferred) plus
   // 7d/30d averages as a fallback. TCGPlayer is usually absent for sealed, so
   // USD stays null on this source — we never fabricate it from EUR.
-  const eur =
-    cm?.lowest_FR ?? cm?.lowest_FR_EU_only ?? cm?.lowest ?? cm?.["30d_average"] ?? cm?.["7d_average"] ?? null;
-  const usd = tp?.market_price ?? tp?.mid_price ?? null;
+  const eur = cleanPrice(
+    cm?.lowest_FR ?? cm?.lowest_FR_EU_only ?? cm?.lowest ?? cm?.["30d_average"] ?? cm?.["7d_average"],
+  );
+  const usd = cleanPrice(tp?.market_price ?? tp?.mid_price);
   if (eur == null && usd == null) return null; // no usable price → skip the product
   return {
     kind,

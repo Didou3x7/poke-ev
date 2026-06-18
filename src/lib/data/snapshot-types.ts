@@ -55,17 +55,29 @@ export function localizeCardImage(url: string, locale: "fr" | "en"): string {
  */
 export function pickChaseCard(set: { cards: SnapshotCard[] }, locale: "fr" | "en"): ChaseCard | null {
   const key = locale === "fr" ? "eur" : "usd";
+  const other = locale === "fr" ? "usd" : "eur";
   const priced = (c: SnapshotCard) => c[key] != null && c[key]! > 0 && c.image != null;
   const isLowRarity = (c: SnapshotCard) => c.rarity === "common" || c.rarity === "uncommon";
+  // Deterministic order shared with the card-page ranking (card-meta.ts): the
+  // locale's price wins, ties broken by the OTHER market, then by id — so the
+  // set-page chase is always exactly the card its card page ranks #1.
+  const beats = (c: SnapshotCard, b: SnapshotCard | null): boolean => {
+    if (!b) return true;
+    if (c[key]! !== b[key]!) return c[key]! > b[key]!;
+    const co = c[other] ?? 0;
+    const bo = b[other] ?? 0;
+    if (co !== bo) return co > bo;
+    return c.id < b.id;
+  };
   let best: SnapshotCard | null = null;
   for (const c of set.cards) {
     if (!priced(c) || isLowRarity(c)) continue;
-    if (!best || c[key]! > best[key]!) best = c;
+    if (beats(c, best)) best = c;
   }
   if (!best) {
     for (const c of set.cards) {
       if (!priced(c)) continue;
-      if (!best || c[key]! > best[key]!) best = c;
+      if (beats(c, best)) best = c;
     }
   }
   if (!best || best.image == null) return null;

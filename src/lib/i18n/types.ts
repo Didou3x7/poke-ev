@@ -68,7 +68,7 @@ export interface Dict {
     featuredTitle: string;
     featuredSub: string;
     featuredVerdictAtMarket: string;
-    featuredCta: string;
+    evLabel: string;
   };
   calculator: {
     title: string;
@@ -150,12 +150,11 @@ export interface Dict {
     hideCards: string;
   };
   cardPage: {
-    eyebrow: string; // "Carte chase"
     priceLabel: string;
     rarityLabel: string;
     numberLabel: string;
-    setLabel: string;
-    intro: string; // {card} {set} {price}
+    intro: string; // {card} {set} {price} — rank #1 only
+    introRank: string; // {card} {rank} {set} {price} — rank #2+
     introNoPrice: string; // {card} {set}
     setEvLabel: string;
     viewSet: string;
@@ -164,16 +163,23 @@ export interface Dict {
     priceUnavailable: string;
     rankText: string; // {rank} {set}
     rankTextTop: string; // {set} — when it's the #1 card
-    evShareLabel: string;
     evShareText: string; // {pct} {set}
     relatedTitle: string; // {set}
+    rarityPeersTitle: string; // {rarity} {set}
   };
   faq: {
     title: string;
     sub: string;
     items: FaqItem[];
   };
+  methodology: {
+    title: string;
+    intro: string;
+    updated: string;
+    sections: LegalSection[];
+  };
   legalPages: {
+    lastUpdated: string;
     legal: { title: string; sections: LegalSection[] };
     privacy: { title: string; sections: LegalSection[] };
     cookies: { title: string; sections: LegalSection[] };
@@ -185,6 +191,7 @@ export interface Dict {
     set: { title: string; description: string }; // {name} {ev}
     card: { title: string; description: string }; // {card} {set} {price}
     faq: { title: string; description: string };
+    methodology: { title: string; description: string };
     legal: { title: string; description: string };
     privacy: { title: string; description: string };
     cookies: { title: string; description: string };

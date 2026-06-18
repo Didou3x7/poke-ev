@@ -160,7 +160,7 @@ export function CalcResult({
               partLabels={dict.confidence.parts}
             />
             <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-fg-faint">
-              {tpl(t.completeness, { pct: `${Math.round(result.data.priceCompleteness * 100)} %` })} ·{" "}
+              {tpl(t.completeness, { pct: formatPct(result.data.priceCompleteness, locale, false, 0) })} ·{" "}
               {tpl(t.evUpdated, {
                 date: new Date(result.data.updatedAt).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-US"),
               })}

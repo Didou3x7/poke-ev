@@ -36,6 +36,9 @@ function CardsTableInner({
         {visible.map((card) => (
           <li
             key={card.id}
+            // Skip paint/layout for off-screen rows — large sets (200+ cards)
+            // would otherwise render the whole list on expand.
+            style={{ contentVisibility: "auto", containIntrinsicSize: "auto 52px" } as React.CSSProperties}
             className="flex items-center justify-between gap-3 rounded-lg border border-line bg-surface px-3 py-2"
           >
             <div className="min-w-0">

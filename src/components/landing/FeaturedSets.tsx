@@ -63,7 +63,7 @@ export function FeaturedSets({
                   <div className="mt-6 flex items-end justify-between">
                     <div>
                       <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-fg-faint">
-                        {locale === "fr" ? "EV / booster" : "EV / pack"}
+                        {t.evLabel}
                       </p>
                       <p className="font-display text-3xl font-bold tracking-tight holo-text tnum">
                         {formatMoney(s.packEv, locale)}

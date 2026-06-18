@@ -5,6 +5,7 @@ import type { NextRequest } from "next/server";
 import { getSetById } from "@/lib/data/catalog";
 import { getSnapshot } from "@/lib/data/snapshot";
 import { formatMoney, type Locale } from "@/lib/i18n/config";
+import { clientIp, rateLimit } from "@/lib/api/rate-limit";
 
 /**
  * Dynamic share cards: /api/og?locale=fr&page=home
@@ -30,9 +31,15 @@ async function loadFonts() {
 }
 
 export async function GET(request: NextRequest) {
+  // ImageResponse generation is CPU-heavy — throttle bursts (best-effort, see
+  // rate-limit.ts). Distinct URLs are otherwise edge-cached for an hour.
+  if (!rateLimit(`og:${clientIp(request)}`, 60, 60_000)) {
+    return new Response("Too many requests", { status: 429 });
+  }
   const params = request.nextUrl.searchParams;
   const locale: Locale = params.get("locale") === "en" ? "en" : "fr";
-  const setId = params.get("set");
+  // Cap length so a crafted query can't probe with unbounded input.
+  const setId = (params.get("set") ?? "").slice(0, 64) || null;
   const verdict = params.get("verdict");
   // Reflected into the share-card text — strip anything but the expected
   // money/percent glyphs and cap the length so a crafted query can't distort the
