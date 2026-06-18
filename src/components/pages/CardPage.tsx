@@ -158,12 +158,16 @@ export async function CardPage({ locale, slug }: { locale: Locale; slug: string 
                       href={localePath(locale, "card", r.slug)}
                       className="holo-hover group flex h-full flex-col rounded-2xl border border-line bg-surface p-3 transition-colors hover:border-line-strong"
                     >
+                      {/* EN scan: always present on TCGdex; the FR print scan
+                          404s for many sets, so thumbnails use the reliable EN
+                          image (the big hero still shows the localized print). */}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={r.image}
+                        src={r.imageEn}
                         alt={`${r.name} — ${data.setName}`}
                         loading="lazy"
-                        className="mb-2 aspect-[5/7] w-full rounded-lg object-cover"
+                        decoding="async"
+                        className="mb-2 aspect-[5/7] w-full rounded-lg bg-ink-850 object-cover"
                       />
                       <span className="truncate text-xs font-medium leading-tight">{r.name}</span>
                       {r.priceFormatted ? (
@@ -192,12 +196,16 @@ export async function CardPage({ locale, slug }: { locale: Locale; slug: string 
                       href={localePath(locale, "card", r.slug)}
                       className="holo-hover group flex h-full flex-col rounded-2xl border border-line bg-surface p-3 transition-colors hover:border-line-strong"
                     >
+                      {/* EN scan: always present on TCGdex; the FR print scan
+                          404s for many sets, so thumbnails use the reliable EN
+                          image (the big hero still shows the localized print). */}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={r.image}
+                        src={r.imageEn}
                         alt={`${r.name} — ${data.setName}`}
                         loading="lazy"
-                        className="mb-2 aspect-[5/7] w-full rounded-lg object-cover"
+                        decoding="async"
+                        className="mb-2 aspect-[5/7] w-full rounded-lg bg-ink-850 object-cover"
                       />
                       <span className="truncate text-xs font-medium leading-tight">{r.name}</span>
                       {r.priceFormatted ? (

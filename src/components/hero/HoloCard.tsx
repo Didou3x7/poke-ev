@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { AnimatePresence, m, useMotionValue, useMotionTemplate, useReducedMotion, useSpring, useTransform } from "motion/react";
 import type { HeroCard } from "@/lib/hero-cards";
 
@@ -142,8 +142,19 @@ function CardImage({
 }) {
   // No opacity gate on load: cached images don't fire onLoad reliably, which
   // would leave them invisible. The AnimatePresence wrapper handles fades.
+  const ref = useRef<HTMLImageElement>(null);
+  // Hydration-safe fallback: an eager FR scan can 404 BEFORE React attaches
+  // onError (the event then never replays), so on mount we also swap any image
+  // that already failed. Covers the localized hero on sets with no FR scan.
+  useEffect(() => {
+    const img = ref.current;
+    if (fallbackSrc && img && img.complete && img.naturalWidth === 0 && img.src !== fallbackSrc) {
+      img.src = fallbackSrc;
+    }
+  }, [fallbackSrc, src]);
   return (
     <img
+      ref={ref}
       src={src}
       alt={name}
       width={600}
