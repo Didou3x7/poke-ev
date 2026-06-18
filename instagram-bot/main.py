@@ -161,6 +161,39 @@ def fmt_usd(v):
     return f"${v:,.0f}" if v else "—"
 
 
+# ------------------------------- upscaling -------------------------------- #
+def upscale_card(image_url):
+    """AI-upscale a 600px card scan to ≈1800px via Replicate (Real-ESRGAN), so
+    the slide renders razor-sharp. Returns the HD url, or None (graceful) when
+    REPLICATE_API_TOKEN is unset or the job fails."""
+    token = os.environ.get("REPLICATE_API_TOKEN")
+    if not token or not image_url:
+        return None
+    import requests
+
+    h = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    try:
+        ver = requests.get("https://api.replicate.com/v1/models/nightmareai/real-esrgan",
+                           headers=h, timeout=20).json()["latest_version"]["id"]
+        pred = requests.post("https://api.replicate.com/v1/predictions", headers=h, timeout=20,
+                             json={"version": ver, "input": {"image": image_url, "scale": 3, "face_enhance": False}}).json()
+        pid = pred.get("id")
+        if not pid:
+            return None
+        for _ in range(40):
+            p = requests.get(f"https://api.replicate.com/v1/predictions/{pid}", headers=h, timeout=20).json()
+            status = p.get("status")
+            if status == "succeeded":
+                out = p.get("output")
+                return out if isinstance(out, str) else (out[0] if out else None)
+            if status in ("failed", "canceled"):
+                return None
+            time.sleep(3)
+    except Exception as exc:  # noqa: BLE001 — never fail a post over upscaling
+        log(f"  upscale failed ({exc})")
+    return None
+
+
 # ------------------------------ art direction ----------------------------- #
 def art_direct(api_key, theme_key, tag, items):
     from anthropic import Anthropic
@@ -222,11 +255,13 @@ def build_slides(base, theme_key, tag, brief, items):
     base = base.rstrip("/")
     cover = (f"{base}/api/ig?slide=cover&theme={theme_key}"
              f"&title={q(brief['coverTitle'])}&tag={q(brief['coverTag'])}&sub={q(brief['coverSub'])}")
-    cards = [
-        f"{base}/api/ig?slide=card&set={q(it['id'])}&rank={i}&theme={theme_key}"
-        f"&tag={q(brief['coverTag'])}&price={q(fmt_usd(it['verified_usd']))}"
-        for i, it in enumerate(items, 1)
-    ]
+    cards = []
+    for i, it in enumerate(items, 1):
+        u = (f"{base}/api/ig?slide=card&set={q(it['id'])}&rank={i}&theme={theme_key}"
+             f"&tag={q(brief['coverTag'])}&price={q(fmt_usd(it['verified_usd']))}")
+        if it.get("hd_image"):
+            u += f"&img={q(it['hd_image'])}"
+        cards.append(u)
     cta = f"{base}/api/ig?slide=cta"
     return cover, cards, cta
 
@@ -363,6 +398,11 @@ def do_plan():
         it["verified_usd"] = rec["display_usd"] or it["chase_usd"]
         verify.append(rec)
         log(f"  verify {it['chase_name']}: snap {fmt_usd(rec['snap_usd'])} | live {fmt_usd(rec['live_usd'])} → {rec['note']}")
+
+    # AI-upscale each featured card scan to ≈1800px (no-op without REPLICATE_API_TOKEN)
+    for it in items:
+        it["hd_image"] = upscale_card(it["chase_image"])
+        log(f"  upscale {it['chase_name']}: {'HD ✓' if it['hd_image'] else 'native (no token/failed)'}")
 
     api_key = env("ANTHROPIC_API_KEY")
     if api_key:

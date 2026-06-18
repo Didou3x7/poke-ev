@@ -62,6 +62,25 @@ function textParam(v: string | null, maxLen: number): string | null {
   return cleaned || null;
 }
 
+/** Card-art image override (e.g. an AI-upscaled scan). Only trusted hosts are
+ *  allowed so the endpoint can't be turned into an arbitrary-image proxy. */
+function imgParam(v: string | null): string | null {
+  if (!v) return null;
+  try {
+    const u = new URL(v);
+    const ok =
+      u.protocol === "https:" &&
+      (u.hostname === "images.pokemontcg.io" ||
+        u.hostname === "replicate.delivery" ||
+        u.hostname.endsWith(".replicate.delivery") ||
+        u.hostname.endsWith(".blob.vercel-storage.com") ||
+        u.hostname === "assets.tcgdex.net");
+    return ok ? u.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
 async function loadFonts() {
   const dir = join(process.cwd(), "src", "assets", "og");
   const [clash, satoshi] = await Promise.all([
@@ -247,12 +266,15 @@ export async function GET(request: NextRequest) {
     // back to the snapshot value. Card art + name stay snapshot-sourced (trusted).
     const priceOverride = moneyParam(p.get("price"));
     const evOverride = moneyParam(p.get("ev"));
+    // The bot may pass an AI-upscaled (≈1800px) card image; a high-res source
+    // downscaled into the slide is far crisper than the native 600px scan.
+    const hd = imgParam(p.get("img"));
     element = cardSlide({
       rank,
       tag: theme.tag,
       name: chase.name,
       setName: set.nameEn,
-      image: hiResCardImage(chase.imageEn),
+      image: hd ?? hiResCardImage(chase.imageEn),
       price: priceOverride ?? formatMoney(chase.value, "en"),
       ev: evOverride ?? (ev ? formatMoney(ev, "en") : null),
     });
