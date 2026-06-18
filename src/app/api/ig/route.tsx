@@ -31,6 +31,24 @@ const THEMES: Record<string, { tag: string; title: string; sub: string }> = {
   ev: { tag: "BEST EV", title: "HIGHEST EV", sub: "The sets with the most expected value per booster right now." },
 };
 
+/** pokemontcg.io ships a light `<num>.png` (≈245px, used site-wide for CWV) and
+ *  a crisp `<num>_hires.png` (≈1024px). The IG slide is 1080px wide and rendered
+ *  once per post (no CWV cost), so always use the hi-res print. */
+function hiResCardImage(url: string): string {
+  if (url.includes("images.pokemontcg.io") && url.endsWith(".png") && !url.endsWith("_hires.png")) {
+    return url.replace(/\.png$/, "_hires.png");
+  }
+  return url;
+}
+
+/** Only money glyphs survive, capped — a price override is reflected into the
+ *  image, so it must not let a crafted query inject arbitrary text. */
+function moneyParam(v: string | null): string | null {
+  if (!v) return null;
+  const cleaned = v.replace(/[^0-9.,$€\s+−-]/g, "").trim().slice(0, 14);
+  return cleaned || null;
+}
+
 async function loadFonts() {
   const dir = join(process.cwd(), "src", "assets", "og");
   const [clash, satoshi] = await Promise.all([
@@ -110,7 +128,12 @@ function cardSlide(opts: { rank: number; tag: string; name: string; setName: str
       <div style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative" }}>
         <div style={{ position: "absolute", top: 70, width: 720, height: 720, borderRadius: 9999, background: GLOW }} />
         <div style={{ display: "flex", position: "relative", alignItems: "flex-start" }}>
-          <img src={opts.image} width={520} height={728} style={{ borderRadius: 22, objectFit: "contain" }} />
+          <img
+            src={opts.image}
+            width={580}
+            height={812}
+            style={{ borderRadius: 24, objectFit: "contain", boxShadow: "0 36px 90px -24px rgba(0,0,0,0.85)" }}
+          />
           <div
             style={{
               position: "absolute",
@@ -200,14 +223,18 @@ export async function GET(request: NextRequest) {
     const chase = snap ? pickChaseCard(snap, "en") : null;
     if (!set || !chase) return new Response("not found", { status: 404 });
     const ev = snap?.ev?.en?.packEv;
+    // The bot may pass already-verified, cross-checked numbers; otherwise fall
+    // back to the snapshot value. Card art + name stay snapshot-sourced (trusted).
+    const priceOverride = moneyParam(p.get("price"));
+    const evOverride = moneyParam(p.get("ev"));
     element = cardSlide({
       rank,
       tag: theme.tag,
       name: chase.name,
       setName: set.nameEn,
-      image: chase.imageEn,
-      price: formatMoney(chase.value, "en"),
-      ev: ev ? formatMoney(ev, "en") : null,
+      image: hiResCardImage(chase.imageEn),
+      price: priceOverride ?? formatMoney(chase.value, "en"),
+      ev: evOverride ?? (ev ? formatMoney(ev, "en") : null),
     });
   } else {
     element = coverSlide(theme);
