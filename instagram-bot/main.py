@@ -274,7 +274,7 @@ def publish_media(ig, token, cid):
     return graph_post(f"{ig}/media_publish", {"creation_id": cid, "access_token": token})["id"]
 
 
-def do_publish(plan):
+def publish_to_instagram(plan):
     ig = env("INSTAGRAM_BUSINESS_ID", required=True)
     token = env("META_ACCESS_TOKEN", required=True)
     children = []
@@ -383,23 +383,18 @@ def do_plan():
         "hashtags": brief["hashtags"],
         "sets": [it["id"] for it in items],
     }
+    plan["verify"] = verify
     plan_path.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
     log(f"wrote plan -> {plan_path}")
     log("CAPTION:\n" + plan["caption"])
     for u in [cover, *cards, cta]:
         log("  slide: " + u)
     write_summary(plan, verify)
+    return plan
 
 
-def do_publish():
-    plan_path = Path(env("PLAN_PATH", "plan.json"))
+def record_history(plan):
     history_path = Path(env("HISTORY_PATH", "history.json"))
-    plan = json.loads(plan_path.read_text(encoding="utf-8"))
-    if os.environ.get("DRY_RUN", "").lower() in ("1", "true", "yes"):
-        log("DRY_RUN — would publish but skipping.")
-        return
-    do_publish(plan)
-    # record what we posted so future runs dedup it
     try:
         hist = json.loads(history_path.read_text(encoding="utf-8"))
     except (ValueError, OSError):
@@ -409,12 +404,83 @@ def do_publish():
     log("updated history.json")
 
 
-def main():
-    cmd = sys.argv[1] if len(sys.argv) > 1 else "plan"
-    if cmd == "publish":
-        do_publish()
+# ------------------------------- telegram gate ---------------------------- #
+def tg_api(token, method, payload):
+    import requests
+
+    r = requests.post(f"https://api.telegram.org/bot{token}/{method}", json=payload, timeout=HTTP_TIMEOUT)
+    data = r.json()
+    if not data.get("ok"):
+        raise RuntimeError(f"telegram {method}: {data}")
+    return data["result"]
+
+
+def tg_send_preview(token, chat_id, plan):
+    media = [{"type": "photo", "media": u} for u in [plan["cover"], *plan["cards"], plan["cta"]]][:10]
+    tg_api(token, "sendMediaGroup", {"chat_id": chat_id, "media": media})
+    table = "\n".join(
+        f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
+        for v in plan.get("verify", [])
+    )
+    text = (f"🎴 PokeEV post — {plan['theme'].upper()} ({plan['date']})\n\n"
+            f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION:\n{plan['caption']}\n\nPublish this carousel + story?")
+    kb = {"inline_keyboard": [[{"text": "✅ Approve", "callback_data": "approve"},
+                               {"text": "❌ Reject", "callback_data": "reject"}]]}
+    tg_api(token, "sendMessage", {"chat_id": chat_id, "text": text[:4000], "reply_markup": kb})
+
+
+def tg_wait_approval(token, chat_id, timeout=1200):
+    deadline = time.time() + timeout
+    seen = tg_api(token, "getUpdates", {"timeout": 0})  # skip backlog
+    offset = (seen[-1]["update_id"] + 1) if seen else 0
+    while time.time() < deadline:
+        updates = tg_api(token, "getUpdates", {"offset": offset, "timeout": 25})
+        for u in updates:
+            offset = u["update_id"] + 1
+            cq = u.get("callback_query")
+            if cq and str(cq["message"]["chat"]["id"]) == str(chat_id):
+                tg_api(token, "answerCallbackQuery", {"callback_query_id": cq["id"], "text": "Got it ✓"})
+                decided = cq.get("data") == "approve"
+                tg_api(token, "sendMessage",
+                       {"chat_id": chat_id, "text": "📤 Publishing…" if decided else "🚫 Skipped."})
+                return decided
+    tg_api(token, "sendMessage", {"chat_id": chat_id, "text": "⌛️ No answer — not posting today."})
+    return None
+
+
+# --------------------------------- main ----------------------------------- #
+def do_run():
+    """Plan → Telegram approval gate → publish (single workflow run)."""
+    plan = do_plan()
+    tg_token = env("TELEGRAM_BOT_TOKEN")
+    tg_chat = env("TELEGRAM_CHAT_ID")
+    if not (tg_token and tg_chat):
+        log("Telegram gate not configured (TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID) — preview only, NOT posting.")
+        return
+    if os.environ.get("DRY_RUN", "").lower() in ("1", "true", "yes"):
+        log("DRY_RUN — sending Telegram preview but skipping publish.")
+        tg_send_preview(tg_token, tg_chat, plan)
+        return
+    tg_send_preview(tg_token, tg_chat, plan)
+    log("Telegram preview sent — waiting for approval (≤20 min)…")
+    approved = tg_wait_approval(tg_token, tg_chat, timeout=int(env("APPROVAL_TIMEOUT", "1200") or "1200"))
+    if approved:
+        publish_to_instagram(plan)
+        record_history(plan)
+    elif approved is False:
+        log("Rejected — not posting.")
     else:
+        log("Approval timed out — not posting.")
+
+
+def main():
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "run"
+    if cmd == "plan":
         do_plan()
+    elif cmd == "publish":  # manual fallback: post the last plan.json
+        publish_to_instagram(json.loads(Path(env("PLAN_PATH", "plan.json")).read_text(encoding="utf-8")))
+    else:
+        do_run()
 
 
 if __name__ == "__main__":
