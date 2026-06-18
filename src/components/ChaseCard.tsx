@@ -39,6 +39,7 @@ export function ChaseCard({
         src={image}
         fallbackSrc={imageEn}
         baseRotate={0}
+        maxTilt={5}
         eager={eager}
         className="w-[200px] sm:w-[220px]"
       />

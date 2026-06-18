@@ -174,7 +174,11 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
       // FR/EN prints + names. Only then convert across currencies for the few
       // cards still missing one market, so EV stays complete.
       const base: PricedCard[] = rawCards.map((c) => ({ ...c, prices: { ...c.prices } }));
-      const matched = overlayPtcgPrices(base, ptcgCards);
+      // Vintage sets (pre-Black & White, ~2011) have old, crooked TCGdex card
+      // photographs; replace them with pokemontcg.io's clean, straight scans.
+      // Modern sets keep TCGdex (already clean AND carrying French prints).
+      const useCleanScans = set.releaseDate < "2011-01-01";
+      const matched = overlayPtcgPrices(base, ptcgCards, useCleanScans);
       const cards: PricedCard[] = base.map((c) => {
         let eur = c.prices.eur ?? (c.prices.usd != null ? round2(c.prices.usd / fx.eurUsd) : null);
         let usd = c.prices.usd ?? (c.prices.eur != null ? round2(c.prices.eur * fx.eurUsd) : null);

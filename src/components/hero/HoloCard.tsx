@@ -17,6 +17,7 @@ export function HoloCard({
   baseRotate = 0,
   floatDelay = 0,
   eager = false,
+  maxTilt = 16,
   className = "",
 }: {
   card: HeroCard;
@@ -26,6 +27,9 @@ export function HoloCard({
   baseRotate?: number;
   floatDelay?: number;
   eager?: boolean;
+  /** Max pointer-tilt in degrees. 0 = no 3D tilt (card stays flat — used for the
+   *  big chase card, where a strong skew reads as "crooked"). */
+  maxTilt?: number;
   className?: string;
 }) {
   const reduce = useReducedMotion();
@@ -36,8 +40,8 @@ export function HoloCard({
   const sx = useSpring(px, { stiffness: 140, damping: 18, mass: 0.4 });
   const sy = useSpring(py, { stiffness: 140, damping: 18, mass: 0.4 });
 
-  const rotateY = useTransform(sx, [0, 1], [16, -16]);
-  const rotateX = useTransform(sy, [0, 1], [-16, 16]);
+  const rotateY = useTransform(sx, [0, 1], [maxTilt, -maxTilt]);
+  const rotateX = useTransform(sy, [0, 1], [-maxTilt, maxTilt]);
   const glareX = useTransform(sx, [0, 1], ["0%", "100%"]);
   const glareY = useTransform(sy, [0, 1], ["0%", "100%"]);
   const foilX = useTransform(sx, [0, 1], ["0%", "100%"]);

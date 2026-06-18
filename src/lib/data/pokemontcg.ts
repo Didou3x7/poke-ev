@@ -92,7 +92,9 @@ export async function fetchPtcgCards(setIds: string[], fetchImpl: typeof fetch =
         out.push({
           number: c.number != null ? String(c.number) : "",
           name: c.name,
-          image: c.images?.large ?? c.images?.small ?? null,
+          // `small` (≈245px, ~180KB) is plenty for our ≤220px card displays and
+          // far lighter than `large` (_hires, often 500KB–1MB) — keeps CWV sane.
+          image: c.images?.small ?? c.images?.large ?? null,
           eur: ptcgEur(c),
           usd: ptcgUsd(c),
           rarity: c.rarity ?? null,
@@ -118,7 +120,7 @@ const numKey = (n: string) => n.replace(/^0+(?=\d)/, "");
  * differ between the two sources). Real prices win; the TCGdex value is kept
  * only where pokemontcg.io has none. Returns how many cards were matched.
  */
-export function overlayPtcgPrices(cards: PricedCard[], ptcg: PtcgCard[]): number {
+export function overlayPtcgPrices(cards: PricedCard[], ptcg: PtcgCard[], preferImage = false): number {
   const byNumber = new Map<string, PtcgCard[]>();
   const byName = new Map<string, PtcgCard[]>();
   for (const p of ptcg) {
@@ -144,7 +146,10 @@ export function overlayPtcgPrices(cards: PricedCard[], ptcg: PtcgCard[]): number
     matched++;
     if (m.eur != null) c.prices.eur = m.eur;
     if (m.usd != null) c.prices.usd = m.usd;
-    if (!c.image && m.image) c.image = m.image;
+    // Normally only fill an image TCGdex lacks. For vintage sets (preferImage),
+    // pokemontcg.io's clean, straight, full-bleed scans REPLACE TCGdex's old
+    // crooked/uneven photographs.
+    if (m.image && (preferImage || !c.image)) c.image = m.image;
     upgradeRarity(c, m);
   }
   return matched;
