@@ -7,7 +7,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // The /data datasets are read with fs at runtime — make sure Vercel traces them.
   outputFileTracingIncludes: {
-    "/**": ["./data/**/*"],
+    // /data datasets + the OG brand fonts (Clash Display / Satoshi) are read with
+    // fs at runtime by the image routes — make sure Vercel traces them.
+    "/**": ["./data/**/*", "./src/assets/og/**"],
   },
   images: {
     remotePatterns: [
