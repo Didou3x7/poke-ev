@@ -168,6 +168,35 @@ def _hires(url):
     return url
 
 
+def _blob_put(local_path, pathname):
+    """Upload a local file to Vercel Blob (public) via the node SDK; return its URL."""
+    import subprocess
+
+    here = Path(__file__).parent
+    return subprocess.check_output(
+        ["node", str(here / "blob_upload.mjs"), local_path, pathname],
+        text=True, timeout=90, cwd=str(here),
+    ).strip() or None
+
+
+def _download_bytes(url, timeout=90, tries=3):
+    """GET a URL with retries (the /api/ig render can take ~6s); return bytes or raise.
+    The bot is patient where Telegram/Instagram's short fetch timeouts are not."""
+    import requests
+
+    last = None
+    for k in range(tries):
+        try:
+            r = requests.get(url, timeout=timeout)
+            if r.status_code == 200 and r.content:
+                return r.content
+            last = f"HTTP {r.status_code}"
+        except Exception as exc:  # noqa: BLE001
+            last = str(exc)
+        time.sleep(2 * (k + 1))
+    raise RuntimeError(f"download failed {url}: {last}")
+
+
 def upscale_card(image_url):
     """Free AI super-resolution (OpenCV LapSRN x4): the 600px scan → ~2400px,
     hosted on Vercel Blob so /api/ig can render it razor-sharp. Returns the HD
@@ -178,7 +207,6 @@ def upscale_card(image_url):
     tmp = None
     try:
         import hashlib
-        import subprocess
         import tempfile
 
         import cv2  # opencv-contrib-python (dnn_superres)
@@ -198,11 +226,7 @@ def upscale_card(image_url):
         os.close(fd)
         cv2.imwrite(tmp, out)
         pathname = f"ig-cards/{hashlib.md5(src.encode()).hexdigest()}.png"
-        url = subprocess.check_output(
-            ["node", str(here / "blob_upload.mjs"), tmp, pathname],
-            text=True, timeout=90, cwd=str(here),
-        ).strip()
-        return url or None
+        return _blob_put(tmp, pathname)
     except Exception as exc:  # noqa: BLE001 — never fail a post over upscaling
         log(f"  upscale failed ({exc})")
         return None
@@ -281,6 +305,36 @@ def build_slides(base, theme_key, tag, brief, items):
         cards.append(u)
     cta = f"{base}/api/ig?slide=cta"
     return cover, cards, cta
+
+
+def materialize_slides(urls):
+    """Render each /api/ig slide ONCE (the bot fetches it patiently) and re-host the
+    PNG on Vercel Blob as a static CDN file. Telegram and Instagram then download a
+    fast static object instead of a ~6s live render that blows their fetch timeouts.
+    Falls back to the original render URL for any slide that can't be hosted."""
+    if not os.environ.get("BLOB_READ_WRITE_TOKEN"):
+        return urls
+    import hashlib
+    import tempfile
+
+    out = []
+    for i, u in enumerate(urls, 1):
+        tmp = None
+        try:
+            data = _download_bytes(u, timeout=90, tries=3)
+            fd, tmp = tempfile.mkstemp(suffix=".png")
+            os.close(fd)
+            Path(tmp).write_bytes(data)
+            hosted = _blob_put(tmp, f"ig-slides/{hashlib.md5(u.encode()).hexdigest()}.png")
+            out.append(hosted or u)
+            log(f"  slide {i}/{len(urls)} hosted: {hosted}")
+        except Exception as exc:  # noqa: BLE001 — never fail a post over hosting
+            log(f"  slide {i} materialize failed ({exc}); using render URL")
+            out.append(u)
+        finally:
+            if tmp and os.path.exists(tmp):
+                os.unlink(tmp)
+    return out
 
 
 # ------------------------------- graph api -------------------------------- #
@@ -432,6 +486,10 @@ def do_plan():
         brief = fallback_brief(theme_key, tag, items)
 
     cover, cards, cta = build_slides(base, theme_key, tag, brief, items)
+    # Re-host each rendered slide as a static Blob PNG (fast CDN object) so Telegram
+    # and Instagram never have to fetch the slow on-the-fly /api/ig render directly.
+    hosted = materialize_slides([cover, *cards, cta])
+    cover, cards, cta = hosted[0], hosted[1:-1], hosted[-1]
     plan = {
         "date": datetime.now(timezone.utc).date().isoformat(),
         "theme": theme_key,
@@ -473,8 +531,27 @@ def tg_api(token, method, payload):
 
 
 def tg_send_preview(token, chat_id, plan):
-    media = [{"type": "photo", "media": u} for u in [plan["cover"], *plan["cards"], plan["cta"]]][:10]
-    tg_api(token, "sendMediaGroup", {"chat_id": chat_id, "media": media})
+    import json as _json
+
+    import requests
+
+    # Upload the actual image bytes (multipart attach://) instead of handing Telegram
+    # the slide URLs — Telegram's ~5s media-fetch timeout can't render an HD slide in
+    # time, but the bot can download it patiently and push the bytes.
+    urls = [plan["cover"], *plan["cards"], plan["cta"]][:10]
+    media, files = [], {}
+    for i, u in enumerate(urls):
+        name = f"p{i}"
+        media.append({"type": "photo", "media": f"attach://{name}"})
+        files[name] = (f"{name}.png", _download_bytes(u, timeout=90, tries=3), "image/png")
+    r = requests.post(
+        f"https://api.telegram.org/bot{token}/sendMediaGroup",
+        data={"chat_id": chat_id, "media": _json.dumps(media)},
+        files=files, timeout=120,
+    )
+    data = r.json()
+    if not data.get("ok"):
+        raise RuntimeError(f"telegram sendMediaGroup: {data}")
     table = "\n".join(
         f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
         for v in plan.get("verify", [])
