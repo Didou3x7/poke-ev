@@ -1,0 +1,9 @@
+{
+  "name": "pokeev-instagram-bot-upload",
+  "private": true,
+  "type": "module",
+  "description": "Tiny Vercel Blob uploader used by the Python bot to host AI-upscaled card art.",
+  "dependencies": {
+    "@vercel/blob": "^0.27.0"
+  }
+}

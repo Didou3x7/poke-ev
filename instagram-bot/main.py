@@ -162,36 +162,53 @@ def fmt_usd(v):
 
 
 # ------------------------------- upscaling -------------------------------- #
-def upscale_card(image_url):
-    """AI-upscale a 600px card scan to ≈1800px via Replicate (Real-ESRGAN), so
-    the slide renders razor-sharp. Returns the HD url, or None (graceful) when
-    REPLICATE_API_TOKEN is unset or the job fails."""
-    token = os.environ.get("REPLICATE_API_TOKEN")
-    if not token or not image_url:
-        return None
-    import requests
+def _hires(url):
+    if "images.pokemontcg.io" in url and url.endswith(".png") and not url.endswith("_hires.png"):
+        return url.replace(".png", "_hires.png")
+    return url
 
-    h = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+def upscale_card(image_url):
+    """Free AI super-resolution (OpenCV LapSRN x4): the 600px scan → ~2400px,
+    hosted on Vercel Blob so /api/ig can render it razor-sharp. Returns the HD
+    url, or None (graceful) without BLOB_READ_WRITE_TOKEN or on failure."""
+    if not os.environ.get("BLOB_READ_WRITE_TOKEN") or not image_url:
+        return None
+    here = Path(__file__).parent
+    tmp = None
     try:
-        ver = requests.get("https://api.replicate.com/v1/models/nightmareai/real-esrgan",
-                           headers=h, timeout=20).json()["latest_version"]["id"]
-        pred = requests.post("https://api.replicate.com/v1/predictions", headers=h, timeout=20,
-                             json={"version": ver, "input": {"image": image_url, "scale": 3, "face_enhance": False}}).json()
-        pid = pred.get("id")
-        if not pid:
+        import hashlib
+        import subprocess
+        import tempfile
+
+        import cv2  # opencv-contrib-python (dnn_superres)
+        import numpy as np
+        import requests
+
+        src = _hires(image_url)
+        data = requests.get(src, timeout=30).content
+        arr = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+        if arr is None:
             return None
-        for _ in range(40):
-            p = requests.get(f"https://api.replicate.com/v1/predictions/{pid}", headers=h, timeout=20).json()
-            status = p.get("status")
-            if status == "succeeded":
-                out = p.get("output")
-                return out if isinstance(out, str) else (out[0] if out else None)
-            if status in ("failed", "canceled"):
-                return None
-            time.sleep(3)
+        sr = cv2.dnn_superres.DnnSuperResImpl_create()
+        sr.readModel(str(here / "models" / "LapSRN_x4.pb"))
+        sr.setModel("lapsrn", 4)
+        out = sr.upsample(arr)
+        fd, tmp = tempfile.mkstemp(suffix=".png")
+        os.close(fd)
+        cv2.imwrite(tmp, out)
+        pathname = f"ig-cards/{hashlib.md5(src.encode()).hexdigest()}.png"
+        url = subprocess.check_output(
+            ["node", str(here / "blob_upload.mjs"), tmp, pathname],
+            text=True, timeout=90, cwd=str(here),
+        ).strip()
+        return url or None
     except Exception as exc:  # noqa: BLE001 — never fail a post over upscaling
         log(f"  upscale failed ({exc})")
-    return None
+        return None
+    finally:
+        if tmp and os.path.exists(tmp):
+            os.unlink(tmp)
 
 
 # ------------------------------ art direction ----------------------------- #

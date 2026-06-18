@@ -26,13 +26,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
       - run: pip install -r instagram-bot/requirements.txt
+      - run: npm install --no-save @vercel/blob   # tiny Blob uploader for HD card art
+        working-directory: instagram-bot
       - name: Plan → Telegram gate → publish
         working-directory: instagram-bot
         env:
           ANTHROPIC_API_KEY:     ${{ secrets.ANTHROPIC_API_KEY }}
           POKEMONTCG_API_KEY:    ${{ secrets.POKEMONTCG_API_KEY }}
-          REPLICATE_API_TOKEN:   ${{ secrets.REPLICATE_API_TOKEN }}
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
           META_ACCESS_TOKEN:     ${{ secrets.META_ACCESS_TOKEN }}
           INSTAGRAM_BUSINESS_ID: ${{ secrets.INSTAGRAM_BUSINESS_ID }}
           META_GRAPH_VERSION:    v21.0
