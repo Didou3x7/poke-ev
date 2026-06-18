@@ -83,7 +83,7 @@ export async function renderOgImage(locale: Locale): Promise<ImageResponse> {
           {dict.common.tagline}
         </div>
         <div style={{ position: "absolute", bottom: 48, fontSize: 26, letterSpacing: 3, color: "#7c8499", fontWeight: 400 }}>
-          pokeev.com
+          pokeev.com · @pokeev.tcg
         </div>
       </div>
     ),

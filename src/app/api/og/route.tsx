@@ -73,7 +73,9 @@ export async function GET(request: NextRequest) {
         : null;
   const verdictColor = verdict === "open" ? "#34D399" : "#F5B547";
   const disclaimer =
-    locale === "fr" ? "Estimation statistique, pas un conseil financier · pokeev.com" : "Statistical estimate, not financial advice · pokeev.com";
+    locale === "fr"
+      ? "Estimation statistique, pas un conseil financier · pokeev.com · @pokeev.tcg"
+      : "Statistical estimate, not financial advice · pokeev.com · @pokeev.tcg";
 
   return new ImageResponse(
     (

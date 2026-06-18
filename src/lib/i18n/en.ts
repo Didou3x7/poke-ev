@@ -16,6 +16,7 @@ export const en: Dict = {
       pricesUpdated: "Prices updated {date}",
       priceSource: "Prices: TCGPlayer US ($) · Pull rates: sourced community dataset",
       rights: "Pokémon and related names are trademarks of Nintendo / Creatures / GAME FREAK. Unaffiliated fan project.",
+      followInstagram: "Follow on Instagram",
     },
     switchLang: "Switch to French",
     demoBanner:

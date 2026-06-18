@@ -25,6 +25,7 @@ export interface Dict {
       pricesUpdated: string; // {date}
       priceSource: string;
       rights: string;
+      followInstagram: string;
     };
     switchLang: string;
     demoBanner: string;

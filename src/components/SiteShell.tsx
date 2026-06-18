@@ -92,6 +92,32 @@ export function SiteShell({
                 Poké<span className="holo-text">EV</span>
               </p>
               <p className="mt-2 text-sm leading-relaxed text-fg-muted">{t.common.footer.disclaimer}</p>
+              <a
+                href="https://instagram.com/pokeev.tcg"
+                target="_blank"
+                rel="me noopener noreferrer"
+                data-umami-event="Instagram Click"
+                aria-label={t.common.footer.followInstagram}
+                title={t.common.footer.followInstagram}
+                className="mt-4 inline-flex items-center gap-2 text-fg-muted transition-colors hover:text-fg"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.8}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5.5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none" />
+                </svg>
+                <span className="font-mono text-xs tracking-wide">@pokeev.tcg</span>
+              </a>
             </div>
             <div className="grid grid-cols-2 gap-x-10 gap-y-2.5 text-sm">
               <Link className="link-holo w-fit py-1.5 text-fg-muted transition-colors hover:text-fg" href={localePath(locale, "methodology")}>

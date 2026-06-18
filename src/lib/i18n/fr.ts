@@ -16,6 +16,7 @@ export const fr: Dict = {
       pricesUpdated: "Prix mis à jour le {date}",
       priceSource: "Prix : Cardmarket FR (€) · Pull rates : dataset communautaire sourcé",
       rights: "Pokémon et les noms associés sont des marques de Nintendo / Creatures / GAME FREAK. Site non affilié.",
+      followInstagram: "Suivre sur Instagram",
     },
     switchLang: "Passer en anglais",
     demoBanner:
