@@ -1,173 +1,243 @@
 #!/usr/bin/env python3
 """
-PokeEV Instagram bot.
+PokeEV Instagram bot — Claude art-directed, price-verified premium carousels.
 
-Reads the committed /data JSONs, picks the top-N sets by their single most
-valuable card, renders each as a public /api/og share image on pokeev.com, asks
-Claude for an English caption, then publishes a carousel (feed) + a story to
-Instagram via the Meta Graph API.
+Two phases around a manual GitHub approval gate:
 
-Env (provided by .github/workflows/instagram-bot.yml):
-  ANTHROPIC_API_KEY      - Claude key (caption generation)
-  META_ACCESS_TOKEN      - long-lived IG/Page token with instagram_content_publish
-  INSTAGRAM_BUSINESS_ID  - IG Business account id
-  POKEEV_DATA_DIR        - path to the repo /data dir (default: data)
-  POKEEV_IMAGE_BASE_URL  - public base for /api/og (default: https://pokeev.com)
-  TOP_N_CARDS            - number of slides (default: 5)
-  POST_TYPE              - "carousel" (default) — reserved for future modes
-  META_GRAPH_VERSION     - Graph API version (default: v21.0)
-  DRY_RUN                - "1" to print the plan without calling any API
+  python main.py plan      Rotate a theme, select sets (deduped vs recent posts),
+                           VERIFY every displayed price against live pokemontcg.io
+                           sources, ask Claude to art-direct the cover copy +
+                           caption, build the /api/ig slide URLs, and write
+                           plan.json + a rich GitHub step-summary preview.
+
+  python main.py publish    Read plan.json and publish the carousel + story +
+                           first comment via the Meta Graph API, then append the
+                           posted sets to history.json. Runs only after approval.
+
+Env: ANTHROPIC_API_KEY, META_ACCESS_TOKEN, INSTAGRAM_BUSINESS_ID, POKEMONTCG_API_KEY
+     (optional), POKEEV_DATA_DIR, POKEEV_IMAGE_BASE_URL, META_GRAPH_VERSION,
+     TOP_N_CARDS, PLAN_PATH, HISTORY_PATH, GITHUB_STEP_SUMMARY, DRY_RUN.
 """
 from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import time
+from datetime import date, datetime, timezone
 from pathlib import Path
 
+LOCALE = "en"
 CLAUDE_MODEL = "claude-sonnet-4-6"
-LOCALE = "en"  # the @pokeev.tcg account is English / international
 HTTP_TIMEOUT = 30
+PTCG_API = "https://api.pokemontcg.io/v2"
+DEDUP_DAYS = 14
+VERIFY_TOLERANCE = 0.15  # ≤15% live-vs-snapshot gap counts as agreement
+
+THEMES = {
+    "grails": {"tag": "GRAIL WATCH", "rank_by": "price"},
+    "ev": {"tag": "BEST EV", "rank_by": "ev"},
+}
 
 
-def env(name: str, default: str | None = None, required: bool = False) -> str | None:
-    value = os.environ.get(name, default)
-    if required and not value:
+def env(name, default=None, required=False):
+    v = os.environ.get(name, default)
+    if required and not v:
         sys.exit(f"[pokeev-bot] missing required env var: {name}")
-    return value
+    return v
 
 
-def log(msg: str) -> None:
+def log(msg):
     print(f"[pokeev-bot] {msg}", flush=True)
 
 
-def graph_base() -> str:
-    return f"https://graph.facebook.com/{env('META_GRAPH_VERSION', 'v21.0')}"
-
-
 # --------------------------------- data ----------------------------------- #
-def load_set_names(data_dir: Path) -> dict[str, dict]:
-    """set id -> {en, fr, year} from the per-era catalog files in data/sets/."""
-    names: dict[str, dict] = {}
+def load_set_names(data_dir: Path) -> dict:
+    names = {}
     for path in sorted((data_dir / "sets").glob("*.json")):
         try:
             doc = json.loads(path.read_text(encoding="utf-8"))
         except (ValueError, OSError):
             continue
         for s in doc.get("sets", []):
-            sid = s.get("id")
-            if sid:
-                names[sid] = {
-                    "en": s.get("nameEn") or sid,
-                    "fr": s.get("nameFr") or sid,
-                    "year": (s.get("releaseDate") or "")[:4],
-                }
+            if s.get("id"):
+                names[s["id"]] = {"en": s.get("nameEn") or s["id"], "year": (s.get("releaseDate") or "")[:4]}
     return names
 
 
-def card_value(card: dict) -> float:
-    """Ranking/display value: USD (the @pokeev.tcg account's currency) when
-    quoted, else EUR. Keeps the caption's prices in clean descending order and
-    matches the USD figure we print."""
-    return card.get("usd") or card.get("eur") or 0
+def card_value(c):
+    return c.get("usd") or c.get("eur") or 0
 
 
-def top_sets(snapshot: dict, names: dict[str, dict], n: int) -> list[dict]:
-    """Top-n DISTINCT sets ranked by their single most valuable card.
-
-    /api/og renders a set (its chase card + EV), so ranking by set — rather than
-    by raw card — guarantees n distinct, meaningful carousel slides even when the
-    priciest cards cluster in one set.
-    """
-    rows: list[dict] = []
+def select_sets(snapshot, names, rank_by, n, exclude):
+    rows = []
     for sid, s in snapshot.get("sets", {}).items():
+        if sid in exclude:
+            continue
         cards = [c for c in s.get("cards", []) if c.get("image") and card_value(c) > 0]
         if not cards:
             continue
         chase = max(cards, key=card_value)
         ev = (s.get("ev") or {}).get(LOCALE) or {}
         meta = names.get(sid, {})
-        rows.append(
-            {
-                "id": sid,
-                "name": meta.get("en", sid),
-                "year": meta.get("year", ""),
-                "chase_name": chase.get("name") or "?",
-                "chase_usd": chase.get("usd"),
-                "chase_eur": chase.get("eur"),
-                "pack_ev": ev.get("packEv"),
-            }
-        )
-    rows.sort(key=lambda r: (r["chase_usd"] or r["chase_eur"] or 0), reverse=True)
+        rows.append({
+            "id": sid,
+            "name": meta.get("en", sid),
+            "year": meta.get("year", ""),
+            "chase_name": chase.get("name") or "?",
+            "chase_usd": chase.get("usd"),
+            "chase_eur": chase.get("eur"),
+            "chase_image": chase.get("image"),
+            "pack_ev": ev.get("packEv"),
+        })
+    if rank_by == "ev":
+        rows = [r for r in rows if r["pack_ev"]]
+        rows.sort(key=lambda r: r["pack_ev"], reverse=True)
+    else:
+        rows.sort(key=lambda r: (r["chase_usd"] or r["chase_eur"] or 0), reverse=True)
     return rows[:n]
 
 
-def fmt_price(usd, eur) -> str:
-    if usd:
-        return f"${usd:,.0f}"
-    if eur:
-        return f"€{eur:,.0f}"
-    return "—"
+# ---------------------------- price verification -------------------------- #
+def _ptcg_get(url, params=None):
+    import requests
+
+    headers = {}
+    key = os.environ.get("POKEMONTCG_API_KEY")
+    if key:
+        headers["X-Api-Key"] = key
+    last = None
+    for attempt in range(3):  # the keyless tier is flaky; retry transient errors
+        try:
+            r = requests.get(url, params=params, headers=headers, timeout=20)
+            if r.ok:
+                return r.json()
+            if r.status_code == 404:
+                raise RuntimeError(f"pokemontcg {url} -> 404")
+            last = RuntimeError(f"pokemontcg {url} -> {r.status_code}")
+        except Exception as exc:  # noqa: BLE001 — retry network hiccups
+            last = exc
+        time.sleep(1.5 * (attempt + 1))
+    raise last or RuntimeError("pokemontcg unreachable")
 
 
-def og_url(base: str, set_id: str) -> str:
-    return f"{base.rstrip('/')}/api/og?set={set_id}&locale={LOCALE}"
+def verify_price(item):
+    """Cross-check the displayed USD price against live pokemontcg.io
+    (TCGplayer market + Cardmarket trend). Returns a record incl. the verified
+    USD figure to display and an agreement flag."""
+    snap_usd = item.get("chase_usd")
+    snap_eur = item.get("chase_eur")
+    rec = {"snap_usd": snap_usd, "snap_eur": snap_eur, "live_usd": None, "live_eur": None,
+           "agree": None, "note": "", "display_usd": snap_usd}
+    m = re.search(r"images\.pokemontcg\.io/([^/]+)/([^/.]+)\.png", item.get("chase_image") or "")
+    if not m:
+        rec["note"] = "no pokemontcg id (modern scan) — snapshot price kept"
+        return rec
+    card_id = f"{m.group(1)}-{m.group(2)}"
+    try:
+        data = (_ptcg_get(f"{PTCG_API}/cards/{card_id}") or {}).get("data") or {}
+    except Exception as exc:
+        rec["note"] = f"live fetch failed ({exc}) — snapshot price kept"
+        return rec
+    tp = (data.get("tcgplayer") or {}).get("prices") or {}
+    live_usd = max([v.get("market") or 0 for v in tp.values()] + [0]) or None
+    cm = (data.get("cardmarket") or {}).get("prices") or {}
+    live_eur = cm.get("trendPrice") or cm.get("averageSellPrice")
+    rec["live_usd"] = round(live_usd, 2) if live_usd else None
+    rec["live_eur"] = round(live_eur, 2) if live_eur else None
+    if snap_usd and live_usd:
+        gap = abs(live_usd - snap_usd) / snap_usd
+        rec["agree"] = gap <= VERIFY_TOLERANCE
+        # Trust the fresher live figure for what we publish.
+        rec["display_usd"] = round(live_usd, 2)
+        rec["note"] = "agree" if rec["agree"] else f"diverged {gap*100:.0f}% — using fresh live price"
+    else:
+        rec["note"] = "no live USD — snapshot price kept"
+    return rec
 
 
-# -------------------------------- caption --------------------------------- #
-def build_caption(api_key: str, sets: list[dict]) -> str:
-    from anthropic import Anthropic  # lazy: only when actually generating
+def fmt_usd(v):
+    return f"${v:,.0f}" if v else "—"
 
-    lines = []
-    for i, s in enumerate(sets, 1):
-        ev = f" | pack EV ${s['pack_ev']:.2f}" if s.get("pack_ev") else ""
-        lines.append(
-            f"{i}. {s['name']} ({s['year']}) - chase: {s['chase_name']} {fmt_price(s['chase_usd'], s['chase_eur'])}{ev}"
-        )
+
+# ------------------------------ art direction ----------------------------- #
+def art_direct(api_key, theme_key, tag, items):
+    from anthropic import Anthropic
+
+    lines = [
+        f"{i}. {it['name']} ({it['year']}) — {it['chase_name']} {fmt_usd(it['verified_usd'])}"
+        + (f" | booster EV ${it['pack_ev']:.2f}" if it.get("pack_ev") else "")
+        for i, it in enumerate(items, 1)
+    ]
+    angle = "the 5 sets sitting on the most valuable chase cards" if theme_key == "grails" \
+        else "the 5 sets with the highest booster Expected Value"
     prompt = (
-        "You write the Instagram caption for @pokeev.tcg, a Pokemon TCG Expected-Value tool (pokeev.com). "
-        "Audience: international Pokemon card collectors and investors. Voice: sharp, confident, a little hype, never cringe.\n\n"
-        "Write ONE Instagram caption in ENGLISH for today's carousel: the 5 Pokemon sets with the most valuable chase cards right now.\n\n"
-        f"DATA (today's prices, keep them accurate):\n" + "\n".join(lines) + "\n\n"
-        "Rules:\n"
-        "- Strong one-line hook first.\n"
-        "- Then a short punchy line per set/card.\n"
-        "- Work in that pokeev.com tells you whether a sealed box is worth opening (Expected Value vs the price you pay).\n"
-        "- CTA: link in bio -> pokeev.com.\n"
-        "- Finish with 8-15 relevant hashtags on the final line.\n"
-        "- Output ONLY the caption text: no preamble, no markdown, no surrounding quotes."
+        "You are the art director + copywriter for @pokeev.tcg, a premium Pokémon TCG "
+        "Expected-Value tool (pokeev.com). International, English-only, sharp insider voice, "
+        "never cringe. Today's carousel covers " + angle + ".\n\n"
+        "DATA (verified prices, keep accurate):\n" + "\n".join(lines) + "\n\n"
+        "Return ONLY a JSON object, no markdown, with keys:\n"
+        '  "coverTitle": 2-3 word punchy headline, ALL CAPS, ≤ 22 chars\n'
+        f'  "coverTag": short label ≤ 18 chars (e.g. "{tag}")\n'
+        '  "coverSub": one sharp sentence ≤ 120 chars\n'
+        '  "caption": the Instagram caption — strong hook line, then one short punchy line '
+        "per set/card, then a line that pokeev.com tells you if a sealed box is worth opening "
+        "(EV vs price), then CTA 'link in bio → pokeev.com'. No hashtags here.\n"
+        '  "hashtags": array of 12-15 relevant hashtag strings (mix broad + niche), no # repeated\n'
     )
     client = Anthropic(api_key=api_key)
-    msg = client.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=700,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
-    if not text:
-        raise RuntimeError("Claude returned an empty caption")
-    return text
+    msg = client.messages.create(model=CLAUDE_MODEL, max_tokens=900,
+                                 messages=[{"role": "user", "content": prompt}])
+    raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
+    raw = re.sub(r"^```(?:json)?|```$", "", raw, flags=re.MULTILINE).strip()
+    brief = json.loads(raw)
+    brief["hashtags"] = [h if h.startswith("#") else "#" + h for h in brief.get("hashtags", [])][:15]
+    return brief
 
 
-def fallback_caption(sets: list[dict]) -> str:
-    head = "The 5 Pokemon sets sitting on the priciest chase cards right now\n\n"
-    body = "\n".join(
-        f"{i}. {s['name']} - {s['chase_name']} {fmt_price(s['chase_usd'], s['chase_eur'])}"
-        for i, s in enumerate(sets, 1)
-    )
-    tail = (
-        "\n\nRip the box or keep it sealed? pokeev.com runs the math - Expected Value vs the price you pay. "
-        "Link in bio.\n\n"
-        "#pokemon #pokemontcg #pokemoncards #pokemoncardcollection #tcg #pokemoninvesting "
-        "#charizard #pokemoncommunity #vintagepokemon #pokeev"
-    )
-    return head + body + tail
+def fallback_brief(theme_key, tag, items):
+    title = "TOP 5 GRAILS" if theme_key == "grails" else "HIGHEST EV"
+    body = "\n".join(f"{i}. {it['name']} — {it['chase_name']} {fmt_usd(it['verified_usd'])}" for i, it in enumerate(items, 1))
+    return {
+        "coverTitle": title,
+        "coverTag": tag,
+        "coverSub": "The priciest Pokémon chase cards on the market right now." if theme_key == "grails"
+        else "The sets with the most expected value per booster right now.",
+        "caption": f"{title}\n\n{body}\n\nRip the box or keep it sealed? pokeev.com runs the math — "
+        "Expected Value vs the price you pay. Link in bio → pokeev.com",
+        "hashtags": ["#pokemon", "#pokemontcg", "#pokemoncards", "#pokemoncardcollection", "#tcg",
+                     "#pokemoninvesting", "#charizard", "#pokemoncommunity", "#vintagepokemon", "#pokeev"],
+    }
+
+
+# -------------------------------- urls ------------------------------------ #
+def q(s):
+    from urllib.parse import quote
+
+    return quote(str(s), safe="")
+
+
+def build_slides(base, theme_key, tag, brief, items):
+    base = base.rstrip("/")
+    cover = (f"{base}/api/ig?slide=cover&theme={theme_key}"
+             f"&title={q(brief['coverTitle'])}&tag={q(brief['coverTag'])}&sub={q(brief['coverSub'])}")
+    cards = [
+        f"{base}/api/ig?slide=card&set={q(it['id'])}&rank={i}&theme={theme_key}"
+        f"&tag={q(brief['coverTag'])}&price={q(fmt_usd(it['verified_usd']))}"
+        for i, it in enumerate(items, 1)
+    ]
+    cta = f"{base}/api/ig?slide=cta"
+    return cover, cards, cta
 
 
 # ------------------------------- graph api -------------------------------- #
-def graph_post(path: str, params: dict) -> dict:
-    import requests  # lazy
+def graph_base():
+    return f"https://graph.facebook.com/{env('META_GRAPH_VERSION', 'v21.0')}"
+
+
+def graph_post(path, params):
+    import requests
 
     r = requests.post(f"{graph_base()}/{path}", data=params, timeout=HTTP_TIMEOUT)
     if not r.ok:
@@ -175,8 +245,8 @@ def graph_post(path: str, params: dict) -> dict:
     return r.json()
 
 
-def graph_get(path: str, params: dict) -> dict:
-    import requests  # lazy
+def graph_get(path, params):
+    import requests
 
     r = requests.get(f"{graph_base()}/{path}", params=params, timeout=HTTP_TIMEOUT)
     if not r.ok:
@@ -184,102 +254,167 @@ def graph_get(path: str, params: dict) -> dict:
     return r.json()
 
 
-def wait_finished(creation_id: str, token: str, tries: int = 20, delay: int = 3) -> None:
+def wait_finished(cid, token, tries=20, delay=3):
     for _ in range(tries):
-        status = graph_get(creation_id, {"fields": "status_code", "access_token": token}).get("status_code")
-        if status == "FINISHED":
+        st = graph_get(cid, {"fields": "status_code", "access_token": token}).get("status_code")
+        if st == "FINISHED":
             return
-        if status == "ERROR":
-            raise RuntimeError(f"container {creation_id} failed processing (ERROR)")
+        if st == "ERROR":
+            raise RuntimeError(f"container {cid} ERROR")
         time.sleep(delay)
-    raise RuntimeError(f"container {creation_id} not FINISHED after {tries * delay}s")
+    raise RuntimeError(f"container {cid} not FINISHED")
 
 
-def create_container(ig_id, token, image_url=None, *, carousel_item=False, media_type=None, caption=None, children=None):
-    params = {"access_token": token}
-    if image_url:
-        params["image_url"] = image_url
-    if carousel_item:
-        params["is_carousel_item"] = "true"
-    if media_type:
-        params["media_type"] = media_type
-    if caption:
-        params["caption"] = caption
-    if children:
-        params["children"] = ",".join(children)
-    return graph_post(f"{ig_id}/media", params)["id"]
+def container(ig, token, **params):
+    params["access_token"] = token
+    return graph_post(f"{ig}/media", params)["id"]
 
 
-def publish(ig_id, token, creation_id):
-    return graph_post(f"{ig_id}/media_publish", {"creation_id": creation_id, "access_token": token})["id"]
+def publish_media(ig, token, cid):
+    return graph_post(f"{ig}/media_publish", {"creation_id": cid, "access_token": token})["id"]
 
 
-def post_carousel(ig_id, token, image_urls, caption):
+def do_publish(plan):
+    ig = env("INSTAGRAM_BUSINESS_ID", required=True)
+    token = env("META_ACCESS_TOKEN", required=True)
     children = []
-    for url in image_urls:
-        cid = create_container(ig_id, token, url, carousel_item=True)
-        log(f"  carousel item {cid} <- {url}")
+    for url in [plan["cover"], *plan["cards"], plan["cta"]]:
+        cid = container(ig, token, image_url=url, is_carousel_item="true")
+        log(f"  item {cid}")
         children.append(cid)
     for cid in children:
         wait_finished(cid, token)
-    parent = create_container(ig_id, token, media_type="CAROUSEL", caption=caption, children=children)
+    parent = container(ig, token, media_type="CAROUSEL", caption=plan["caption"], children=",".join(children))
     wait_finished(parent, token)
-    media_id = publish(ig_id, token, parent)
+    media_id = publish_media(ig, token, parent)
     log(f"✓ carousel published: {media_id}")
+    if plan.get("hashtags"):
+        graph_post(f"{media_id}/comments", {"message": " ".join(plan["hashtags"]), "access_token": token})
+        log("✓ hashtags posted as first comment")
+    scid = container(ig, token, image_url=plan["cover"], media_type="STORIES")
+    wait_finished(scid, token)
+    log(f"✓ story published: {publish_media(ig, token, scid)}")
     return media_id
 
 
-def post_story(ig_id, token, image_url):
-    cid = create_container(ig_id, token, image_url, media_type="STORIES")
-    wait_finished(cid, token)
-    media_id = publish(ig_id, token, cid)
-    log(f"✓ story published: {media_id}")
-    return media_id
+# -------------------------------- summary --------------------------------- #
+def write_summary(plan, verify):
+    path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not path:
+        return
+    out = [f"## 📸 PokeEV IG preview — {plan['theme'].upper()} ({plan['date']})", ""]
+    out.append("### Slides")
+    for label, url in [("Cover", plan["cover"]), *[(f"Card {i+1}", u) for i, u in enumerate(plan["cards"])], ("CTA", plan["cta"])]:
+        out.append(f"**{label}**\n\n![{label}]({url})\n")
+    out.append("### Price cross-check")
+    out.append("| Card | Snapshot $ | TCGplayer live $ | Cardmarket live € | Agreement |")
+    out.append("|---|---|---|---|---|")
+    for v in verify:
+        agree = "✅" if v["agree"] else ("⚠️ " + v["note"] if v["agree"] is False else "ℹ️ " + v["note"])
+        out.append(f"| {v['name']} | {fmt_usd(v['snap_usd'])} | {fmt_usd(v['live_usd'])} | "
+                   f"{('€%.0f' % v['live_eur']) if v['live_eur'] else '—'} | {agree} |")
+    out.append("\n### Caption\n\n```\n" + plan["caption"] + "\n```")
+    out.append("\n### First comment (hashtags)\n\n```\n" + " ".join(plan["hashtags"]) + "\n```")
+    Path(path).write_text("\n".join(out), encoding="utf-8")
+    log("wrote GitHub step summary preview")
 
 
 # --------------------------------- main ----------------------------------- #
-def main() -> None:
-    dry = (os.environ.get("DRY_RUN", "").lower() in ("1", "true", "yes"))
+def load_history(path: Path):
+    try:
+        items = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return set()
+    cutoff = date.today().toordinal() - DEDUP_DAYS
+    recent = set()
+    for e in items:
+        try:
+            if datetime.fromisoformat(e["date"]).date().toordinal() >= cutoff:
+                recent.update(e.get("sets", []))
+        except Exception:
+            continue
+    return recent
+
+
+def do_plan():
     data_dir = Path(env("POKEEV_DATA_DIR", "data"))
-    base_url = env("POKEEV_IMAGE_BASE_URL", "https://pokeev.com")
+    base = env("POKEEV_IMAGE_BASE_URL", "https://pokeev.com")
     n = max(1, min(10, int(env("TOP_N_CARDS", "5") or "5")))
+    plan_path = Path(env("PLAN_PATH", "plan.json"))
+    history_path = Path(env("HISTORY_PATH", "history.json"))
 
-    snap_path = data_dir / "snapshot" / "snapshot.json"
-    snapshot = json.loads(snap_path.read_text(encoding="utf-8"))
+    snapshot = json.loads((data_dir / "snapshot" / "snapshot.json").read_text(encoding="utf-8"))
     if snapshot.get("demo"):
-        sys.exit("[pokeev-bot] snapshot is demo data — refusing to post")
-
+        sys.exit("[pokeev-bot] snapshot is demo data — refusing to plan")
     names = load_set_names(data_dir)
-    sets = top_sets(snapshot, names, n)
-    if not sets:
-        sys.exit("[pokeev-bot] no sets with priced cards found")
-    image_urls = [og_url(base_url, s["id"]) for s in sets]
 
-    log(f"top {len(sets)} sets (snapshot {snapshot.get('generatedAt', '?')}):")
-    for s, u in zip(sets, image_urls):
-        log(f"  - {s['name']}: chase {s['chase_name']} {fmt_price(s['chase_usd'], s['chase_eur'])}  |  {u}")
+    theme_key = "grails" if date.today().toordinal() % 2 == 0 else "ev"
+    tag = THEMES[theme_key]["tag"]
+    exclude = load_history(history_path)
+    items = select_sets(snapshot, names, THEMES[theme_key]["rank_by"], n, exclude)
+    if not items:
+        sys.exit("[pokeev-bot] nothing to post after dedup")
+
+    # verify every displayed price
+    verify = []
+    for it in items:
+        rec = verify_price(it)
+        rec["name"] = it["chase_name"]
+        it["verified_usd"] = rec["display_usd"] or it["chase_usd"]
+        verify.append(rec)
+        log(f"  verify {it['chase_name']}: snap {fmt_usd(rec['snap_usd'])} | live {fmt_usd(rec['live_usd'])} → {rec['note']}")
 
     api_key = env("ANTHROPIC_API_KEY")
-    if dry or not api_key:
-        caption = fallback_caption(sets)
-        log("using fallback caption" + (" (DRY_RUN)" if dry else " (no ANTHROPIC_API_KEY)"))
-    else:
+    if api_key:
         try:
-            caption = build_caption(api_key, sets)
-        except Exception as exc:  # never fail the post over caption wording
-            log(f"Claude caption failed ({exc}); using fallback")
-            caption = fallback_caption(sets)
-    log("caption:\n" + caption)
+            brief = art_direct(api_key, theme_key, tag, items)
+        except Exception as exc:
+            log(f"Claude art-direction failed ({exc}); using fallback")
+            brief = fallback_brief(theme_key, tag, items)
+    else:
+        brief = fallback_brief(theme_key, tag, items)
 
-    if dry:
-        log("DRY_RUN — not contacting Instagram.")
+    cover, cards, cta = build_slides(base, theme_key, tag, brief, items)
+    plan = {
+        "date": datetime.now(timezone.utc).date().isoformat(),
+        "theme": theme_key,
+        "cover": cover, "cards": cards, "cta": cta,
+        "caption": brief["caption"],
+        "hashtags": brief["hashtags"],
+        "sets": [it["id"] for it in items],
+    }
+    plan_path.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"wrote plan -> {plan_path}")
+    log("CAPTION:\n" + plan["caption"])
+    for u in [cover, *cards, cta]:
+        log("  slide: " + u)
+    write_summary(plan, verify)
+
+
+def do_publish():
+    plan_path = Path(env("PLAN_PATH", "plan.json"))
+    history_path = Path(env("HISTORY_PATH", "history.json"))
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    if os.environ.get("DRY_RUN", "").lower() in ("1", "true", "yes"):
+        log("DRY_RUN — would publish but skipping.")
         return
+    do_publish(plan)
+    # record what we posted so future runs dedup it
+    try:
+        hist = json.loads(history_path.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        hist = []
+    hist.append({"date": plan["date"], "theme": plan["theme"], "sets": plan["sets"]})
+    history_path.write_text(json.dumps(hist[-200:], indent=2), encoding="utf-8")
+    log("updated history.json")
 
-    ig_id = env("INSTAGRAM_BUSINESS_ID", required=True)
-    token = env("META_ACCESS_TOKEN", required=True)
-    post_carousel(ig_id, token, image_urls, caption)
-    post_story(ig_id, token, image_urls[0])
-    log("done.")
+
+def main():
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "plan"
+    if cmd == "publish":
+        do_publish()
+    else:
+        do_plan()
 
 
 if __name__ == "__main__":

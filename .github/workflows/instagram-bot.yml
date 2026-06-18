@@ -1,37 +1,41 @@
 name: PokeEV Instagram Bot
 
+# PREPARE phase: rotate a theme, let Claude art-direct, cross-check every price
+# against live pokemontcg.io, and write a full preview (rendered slides + caption
+# + price table) to the run summary. It does NOT publish — the publish/approval
+# step is added once the gate mechanism is chosen (the GitHub-native required-
+# reviewer gate needs a paid plan on private repos).
+
 on:
   schedule:
-    - cron: '0 17 * * *'   # 17h UTC = 19h Paris — ajuste si besoin
-  workflow_dispatch:         # permet de lancer manuellement depuis GitHub
+    - cron: '0 17 * * *'   # 17:00 UTC = 19:00 Paris / ~1pm ET
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  post:
+  prepare:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v5
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install -r instagram-bot/requirements.txt
-
-      - name: Run bot
+      - run: pip install -r instagram-bot/requirements.txt
+      - name: Plan post (Claude + price verification)
+        working-directory: instagram-bot
         env:
-          ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
-          META_ACCESS_TOKEN:      ${{ secrets.META_ACCESS_TOKEN }}
-          INSTAGRAM_BUSINESS_ID:  ${{ secrets.INSTAGRAM_BUSINESS_ID }}
-          POKEEV_DATA_DIR:        ${{ github.workspace }}/data
-          POKEEV_IMAGE_BASE_URL:  https://pokeev.com
-          STORY_PUBLIC_DIR:       /tmp/bot-stories
-          STORY_PUBLIC_URL:       https://pokeev.com/bot-stories
-          TOP_N_CARDS:            '5'
-          POST_TYPE:              carousel
-        run: |
-          cd instagram-bot
-          python main.py
+          ANTHROPIC_API_KEY:     ${{ secrets.ANTHROPIC_API_KEY }}
+          POKEMONTCG_API_KEY:    ${{ secrets.POKEMONTCG_API_KEY }}
+          POKEEV_DATA_DIR:       ${{ github.workspace }}/data
+          POKEEV_IMAGE_BASE_URL: https://pokeev.com
+          TOP_N_CARDS:           '5'
+          PLAN_PATH:             plan.json
+          HISTORY_PATH:          history.json
+        run: python main.py plan
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ig-plan
+          path: instagram-bot/plan.json
+          retention-days: 7

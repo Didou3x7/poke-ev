@@ -49,6 +49,19 @@ function moneyParam(v: string | null): string | null {
   return cleaned || null;
 }
 
+/** Claude art-directs the cover copy per post. Reflected text is stripped of
+ *  markup/control chars and capped so a crafted query cannot inject content. */
+function textParam(v: string | null, maxLen: number): string | null {
+  if (!v) return null;
+  const cleaned = v
+    .replace(/[<>&{}\\]/g, "")
+    .replace(/[\u0000-\u001f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLen);
+  return cleaned || null;
+}
+
 async function loadFonts() {
   const dir = join(process.cwd(), "src", "assets", "og");
   const [clash, satoshi] = await Promise.all([
@@ -208,7 +221,14 @@ export async function GET(request: NextRequest) {
   }
   const p = request.nextUrl.searchParams;
   const slide = p.get("slide") ?? "cover";
-  const theme = THEMES[p.get("theme") ?? "grails"] ?? THEMES.grails;
+  const base = THEMES[p.get("theme") ?? "grails"] ?? THEMES.grails;
+  // Claude (the bot's art director) may override the cover copy per post; fall
+  // back to the theme preset. tag flows to the card slides' corner label too.
+  const theme = {
+    tag: textParam(p.get("tag"), 22) ?? base.tag,
+    title: textParam(p.get("title"), 26) ?? base.title,
+    sub: textParam(p.get("sub"), 130) ?? base.sub,
+  };
   const fonts = await loadFonts();
 
   let element: React.ReactElement;
