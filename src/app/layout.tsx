@@ -17,6 +17,18 @@ export const metadata: Metadata = {
   applicationName: "Poké EV",
   authors: [{ name: "Poké EV" }],
   formatDetection: { telephone: false },
+  // Declared explicitly (icons live in /public, not the app/ convention) so the
+  // favicon link advertises a 48×48 size. Next's auto-generated app/favicon.ico
+  // link emitted sizes="16x16", which Google Search treats as too small (it needs
+  // a ≥48px / multiple-of-48 favicon) and then shows no favicon at all.
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+    ],
+    shortcut: [{ url: "/favicon.ico", sizes: "48x48" }],
+    apple: [{ url: "/apple-icon", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport: Viewport = {
