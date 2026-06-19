@@ -125,7 +125,38 @@ const HoloText = ({ children, size, ls = -2 }: { children: React.ReactNode; size
   </span>
 );
 
+/** A holo "swipe →" cue — same on the cover and every card slide so people know
+ *  there's more to see (the carousel converts far better when they keep swiping). */
+const Swipe = () => (
+  <div style={{ display: "flex", alignItems: "center", fontSize: 22, letterSpacing: 3, color: "#8A93A6" }}>
+    <span>swipe</span>
+    <span style={{ fontFamily: "Clash", fontSize: 30, marginLeft: 12, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>→</span>
+  </div>
+);
+
+/** Lay out the cover hook so it always reads as a clean block: split into ≤2
+ *  length-balanced lines (break only on spaces, never mid-word) and pick a font
+ *  size that fits — no orphan words, no line that starts mid-sentence. */
+function titleLayout(title: string): { size: number; lines: string[] } {
+  const t = title.trim().replace(/\s+/g, " ");
+  const words = t.split(" ");
+  let lines = [t];
+  if (words.length > 1 && t.length > 9) {
+    let best = 1;
+    let bestDiff = Infinity;
+    for (let i = 1; i < words.length; i++) {
+      const diff = Math.abs(words.slice(0, i).join(" ").length - words.slice(i).join(" ").length);
+      if (diff < bestDiff) { bestDiff = diff; best = i; }
+    }
+    lines = [words.slice(0, best).join(" "), words.slice(best).join(" ")];
+  }
+  const longest = Math.max(...lines.map((l) => l.length));
+  const size = longest <= 8 ? 148 : longest <= 12 ? 124 : longest <= 17 ? 100 : 82;
+  return { size, lines };
+}
+
 function coverSlide(theme: { tag: string; title: string; sub: string }) {
+  const { size, lines } = titleLayout(theme.title);
   return (
     <Frame>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -136,21 +167,26 @@ function coverSlide(theme: { tag: string; title: string; sub: string }) {
       </div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
         <div style={{ display: "flex", fontSize: 26, letterSpacing: 6, color: "#7c8499" }}>POKÉMON TCG · EXPECTED VALUE</div>
-        <div style={{ display: "flex", marginTop: 14 }}>
-          <HoloText size={150}>{theme.title}</HoloText>
+        <div style={{ display: "flex", flexDirection: "column", marginTop: 20 }}>
+          {lines.map((ln, i) => (
+            <div key={i} style={{ display: "flex" }}>
+              <HoloText size={size}>{ln}</HoloText>
+            </div>
+          ))}
         </div>
         <div style={{ display: "flex", width: 180, height: 10, borderRadius: 10, marginTop: 36, backgroundImage: HOLO }} />
-        <div style={{ display: "flex", fontSize: 42, lineHeight: 1.3, color: "#aab2c5", marginTop: 40, maxWidth: 820 }}>{theme.sub}</div>
+        <div style={{ display: "flex", fontSize: 40, lineHeight: 1.32, color: "#aab2c5", marginTop: 36, maxWidth: 880 }}>{theme.sub}</div>
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 24, color: "#5C6477" }}>
-        <span>pokeev.com</span>
-        <span style={{ color: "#8A93A6" }}>swipe →</span>
+        <span>pokeev.com · @pokeev.tcg</span>
+        <Swipe />
       </div>
     </Frame>
   );
 }
 
 function cardSlide(opts: { rank: number; tag: string; name: string; setName: string; image: string; price: string; ev: string | null }) {
+  const nameSize = opts.name.length <= 14 ? 56 : opts.name.length <= 20 ? 48 : 40;
   return (
     <Frame>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -188,7 +224,7 @@ function cardSlide(opts: { rank: number; tag: string; name: string; setName: str
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", fontFamily: "Clash", fontSize: 56, letterSpacing: -1 }}>{opts.name}</div>
+        <div style={{ display: "flex", fontFamily: "Clash", fontSize: nameSize, letterSpacing: -1 }}>{opts.name}</div>
         <div style={{ display: "flex", fontSize: 24, letterSpacing: 2, color: "#7c8499", marginTop: 6 }}>{opts.setName.toUpperCase()}</div>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginTop: 26 }}>
           <div style={{ display: "flex", flexDirection: "column" }}>
@@ -202,7 +238,10 @@ function cardSlide(opts: { rank: number; tag: string; name: string; setName: str
             </div>
           ) : null}
         </div>
-        <div style={{ display: "flex", marginTop: 30, fontSize: 22, letterSpacing: 4, color: "#5C6477" }}>@pokeev.tcg · pokeev.com</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 30 }}>
+          <span style={{ display: "flex", fontSize: 22, letterSpacing: 4, color: "#5C6477" }}>@pokeev.tcg · pokeev.com</span>
+          <Swipe />
+        </div>
       </div>
     </Frame>
   );

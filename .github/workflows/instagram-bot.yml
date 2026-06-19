@@ -7,7 +7,7 @@ name: PokeEV Instagram Bot
 
 on:
   schedule:
-    - cron: '0 17 * * *'   # 17:00 UTC = 19:00 Paris / ~1pm ET
+    - cron: '0 18 * * *'   # 18:00 UTC = 2pm ET / 11am PT / 7pm London / 8pm Paris
   workflow_dispatch:
 
 permissions:
@@ -20,7 +20,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60   # room for the Telegram approve/revise loop
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5

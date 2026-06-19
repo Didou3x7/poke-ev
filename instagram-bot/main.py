@@ -236,7 +236,7 @@ def upscale_card(image_url):
 
 
 # ------------------------------ art direction ----------------------------- #
-def art_direct(api_key, theme_key, tag, items):
+def art_direct(api_key, theme_key, tag, items, feedback=None):
     from anthropic import Anthropic
 
     lines = [
@@ -247,26 +247,39 @@ def art_direct(api_key, theme_key, tag, items):
     angle = "the 5 sets sitting on the most valuable chase cards" if theme_key == "grails" \
         else "the 5 sets with the highest booster Expected Value"
     prompt = (
-        "You are the art director + copywriter for @pokeev.tcg, a premium Pokémon TCG "
-        "Expected-Value tool (pokeev.com). International, English-only, sharp insider voice, "
-        "never cringe. Today's carousel covers " + angle + ".\n\n"
-        "DATA (verified prices, keep accurate):\n" + "\n".join(lines) + "\n\n"
+        "You are the art director + copywriter for @pokeev.tcg, a PREMIUM Pokémon TCG "
+        "Expected-Value tool (pokeev.com). Audience: serious collectors & investors, mostly US. "
+        "Voice: sharp, confident insider — never cringe, no fake hype, no clickbait lies. "
+        "Every post must feel premium, viral, and unmistakably original. "
+        "Today's carousel covers " + angle + ".\n\n"
+        "DATA (verified prices — keep every number EXACT):\n" + "\n".join(lines) + "\n\n"
+        "The FIRST SLIDE must stop the scroll: a bold, curiosity-driving hook a collector can't "
+        "ignore — intrigue or a jaw-dropping truth, never a generic title.\n\n"
         "Return ONLY a JSON object, no markdown, with keys:\n"
-        '  "coverTitle": 2-3 word punchy headline, ALL CAPS, ≤ 22 chars\n'
-        f'  "coverTag": short label ≤ 18 chars (e.g. "{tag}")\n'
-        '  "coverSub": one sharp sentence ≤ 120 chars\n'
-        '  "caption": the Instagram caption — strong hook line, then one short punchy line '
-        "per set/card, then a line that pokeev.com tells you if a sealed box is worth opening "
-        "(EV vs price), then CTA 'link in bio → pokeev.com'. No hashtags here.\n"
-        '  "hashtags": array of 12-15 relevant hashtag strings (mix broad + niche), no # repeated\n'
+        '  "coverTitle": the scroll-stopping hook, ALL CAPS, 1-3 words, ≤ 20 chars (punchy, not a sentence)\n'
+        f'  "coverTag": short label ≤ 16 chars (e.g. "{tag}")\n'
+        '  "coverSub": one irresistible line that makes them swipe, ≤ 115 chars\n'
+        '  "caption": the Instagram caption, built to drive traffic to pokeev.com. Each item on its OWN '
+        "short line (so nothing wraps awkwardly):\n"
+        "       - a 1-line hook\n"
+        "       - one tight line per set: rank emoji, set name, the number that matters\n"
+        "       - a line: pokeev.com instantly tells you if a sealed box is worth opening (EV vs box price)\n"
+        "       - close with 'link in bio → pokeev.com'\n"
+        "     Name pokeev.com at least twice. No hashtags inside the caption.\n"
+        '  "hashtags": array of 15-20 strong hashtags (mix high-volume + niche collector tags), each unique\n'
     )
+    if feedback:
+        prompt += (
+            "\n\nThe editor reviewed the previous version and requested changes. APPLY THIS FEEDBACK "
+            f"precisely, keeping all prices exact:\n\"{feedback}\"\n"
+        )
     client = Anthropic(api_key=api_key)
-    msg = client.messages.create(model=CLAUDE_MODEL, max_tokens=900,
+    msg = client.messages.create(model=CLAUDE_MODEL, max_tokens=1100,
                                  messages=[{"role": "user", "content": prompt}])
     raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
     raw = re.sub(r"^```(?:json)?|```$", "", raw, flags=re.MULTILINE).strip()
     brief = json.loads(raw)
-    brief["hashtags"] = [h if h.startswith("#") else "#" + h for h in brief.get("hashtags", [])][:15]
+    brief["hashtags"] = [h if h.startswith("#") else "#" + h for h in brief.get("hashtags", [])][:20]
     return brief
 
 
@@ -442,11 +455,12 @@ def load_history(path: Path):
     return recent
 
 
-def do_plan():
+def prepare_items():
+    """The expensive, once-per-run work: pick the sets, cross-check every price live,
+    and AI-upscale each chase scan. Returns the context the slides are built from."""
     data_dir = Path(env("POKEEV_DATA_DIR", "data"))
     base = env("POKEEV_IMAGE_BASE_URL", "https://pokeev.com")
     n = max(1, min(10, int(env("TOP_N_CARDS", "5") or "5")))
-    plan_path = Path(env("PLAN_PATH", "plan.json"))
     history_path = Path(env("HISTORY_PATH", "history.json"))
 
     snapshot = json.loads((data_dir / "snapshot" / "snapshot.json").read_text(encoding="utf-8"))
@@ -461,7 +475,6 @@ def do_plan():
     if not items:
         sys.exit("[pokeev-bot] nothing to post after dedup")
 
-    # verify every displayed price
     verify = []
     for it in items:
         rec = verify_price(it)
@@ -470,42 +483,53 @@ def do_plan():
         verify.append(rec)
         log(f"  verify {it['chase_name']}: snap {fmt_usd(rec['snap_usd'])} | live {fmt_usd(rec['live_usd'])} → {rec['note']}")
 
-    # AI-upscale each featured card scan to ≈1800px (no-op without REPLICATE_API_TOKEN)
     for it in items:
         it["hd_image"] = upscale_card(it["chase_image"])
         log(f"  upscale {it['chase_name']}: {'HD ✓' if it['hd_image'] else 'native (no token/failed)'}")
 
+    return {"base": base, "theme_key": theme_key, "tag": tag, "items": items, "verify": verify}
+
+
+def make_brief(theme_key, tag, items, feedback=None):
+    """Claude art-direction (with optional editor feedback for the revise loop);
+    falls back to a safe preset if Claude is unavailable or errors."""
     api_key = env("ANTHROPIC_API_KEY")
     if api_key:
         try:
-            brief = art_direct(api_key, theme_key, tag, items)
-        except Exception as exc:
+            return art_direct(api_key, theme_key, tag, items, feedback=feedback)
+        except Exception as exc:  # noqa: BLE001
             log(f"Claude art-direction failed ({exc}); using fallback")
-            brief = fallback_brief(theme_key, tag, items)
-    else:
-        brief = fallback_brief(theme_key, tag, items)
+    return fallback_brief(theme_key, tag, items)
 
-    cover, cards, cta = build_slides(base, theme_key, tag, brief, items)
+
+def assemble_plan(ctx, brief):
+    """Build + re-host the slides for a creative brief, write plan.json, return the plan."""
+    cover, cards, cta = build_slides(ctx["base"], ctx["theme_key"], ctx["tag"], brief, ctx["items"])
     # Re-host each rendered slide as a static Blob PNG (fast CDN object) so Telegram
     # and Instagram never have to fetch the slow on-the-fly /api/ig render directly.
     hosted = materialize_slides([cover, *cards, cta])
     cover, cards, cta = hosted[0], hosted[1:-1], hosted[-1]
     plan = {
         "date": datetime.now(timezone.utc).date().isoformat(),
-        "theme": theme_key,
+        "theme": ctx["theme_key"],
         "cover": cover, "cards": cards, "cta": cta,
         "caption": brief["caption"],
         "hashtags": brief["hashtags"],
-        "sets": [it["id"] for it in items],
+        "sets": [it["id"] for it in ctx["items"]],
+        "verify": ctx["verify"],
     }
-    plan["verify"] = verify
-    plan_path.write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
-    log(f"wrote plan -> {plan_path}")
+    Path(env("PLAN_PATH", "plan.json")).write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
     log("CAPTION:\n" + plan["caption"])
     for u in [cover, *cards, cta]:
         log("  slide: " + u)
-    write_summary(plan, verify)
+    write_summary(plan, plan["verify"])
     return plan
+
+
+def do_plan():
+    ctx = prepare_items()
+    brief = make_brief(ctx["theme_key"], ctx["tag"], ctx["items"])
+    return assemble_plan(ctx, brief)
 
 
 def record_history(plan):
@@ -563,7 +587,13 @@ def tg_send_preview(token, chat_id, plan):
     tg_api(token, "sendMessage", {"chat_id": chat_id, "text": text[:4000], "reply_markup": kb})
 
 
-def tg_wait_approval(token, chat_id, timeout=1200):
+def tg_wait_decision(token, chat_id, timeout=1200):
+    """Wait for the editor's call. Returns (action, feedback):
+      ('approve', None)  → tapped ✅ Approve
+      ('revise', notes)  → replied with text changes (or tapped ❌ then sent notes)
+      ('cancel', None)   → replied 'cancel'/'skip'
+      ('timeout', None)  → no answer in time
+    Tapping ❌ Reject just prompts for notes and keeps listening."""
     deadline = time.time() + timeout
     seen = tg_api(token, "getUpdates", {"timeout": 0})  # skip backlog
     offset = (seen[-1]["update_id"] + 1) if seen else 0
@@ -574,20 +604,40 @@ def tg_wait_approval(token, chat_id, timeout=1200):
             cq = u.get("callback_query")
             if cq and str(cq["message"]["chat"]["id"]) == str(chat_id):
                 tg_api(token, "answerCallbackQuery", {"callback_query_id": cq["id"], "text": "Got it ✓"})
-                decided = cq.get("data") == "approve"
-                tg_api(token, "sendMessage",
-                       {"chat_id": chat_id, "text": "📤 Publishing…" if decided else "🚫 Skipped."})
-                return decided
+                if cq.get("data") == "approve":
+                    tg_api(token, "sendMessage", {"chat_id": chat_id, "text": "📤 Publishing…"})
+                    return "approve", None
+                tg_api(token, "sendMessage", {"chat_id": chat_id,
+                       "text": "✏️ What should change? Reply with your notes and I'll rework it — "
+                               "or send 'cancel' to skip today."})
+                continue  # keep listening for the notes
+            msg = u.get("message")
+            if msg and str(msg.get("chat", {}).get("id")) == str(chat_id):
+                txt = (msg.get("text") or "").strip()
+                if not txt:
+                    continue
+                if txt.lower() in ("cancel", "/cancel", "stop", "skip", "no"):
+                    tg_api(token, "sendMessage", {"chat_id": chat_id, "text": "🚫 Skipped — nothing posted today."})
+                    return "cancel", None
+                if txt.startswith("/"):
+                    continue  # ignore other slash-commands (e.g. /start)
+                tg_api(token, "sendMessage", {"chat_id": chat_id, "text": "🔄 Reworking with your notes…"})
+                return "revise", txt
     tg_api(token, "sendMessage", {"chat_id": chat_id, "text": "⌛️ No answer — not posting today."})
-    return None
+    return "timeout", None
 
 
 # --------------------------------- main ----------------------------------- #
 def do_run():
-    """Plan → Telegram approval gate → publish (single workflow run)."""
-    plan = do_plan()
+    """Plan → Telegram gate with a revise loop → publish. The heavy work (sets,
+    price cross-check, upscale) runs once; only the creative brief + slides are
+    regenerated when the editor asks for changes."""
+    ctx = prepare_items()
     tg_token = env("TELEGRAM_BOT_TOKEN")
     tg_chat = env("TELEGRAM_CHAT_ID")
+    brief = make_brief(ctx["theme_key"], ctx["tag"], ctx["items"])
+    plan = assemble_plan(ctx, brief)
+
     if not (tg_token and tg_chat):
         log("Telegram gate not configured (TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID) — preview only, NOT posting.")
         return
@@ -595,16 +645,25 @@ def do_run():
         log("DRY_RUN — sending Telegram preview but skipping publish.")
         tg_send_preview(tg_token, tg_chat, plan)
         return
-    tg_send_preview(tg_token, tg_chat, plan)
-    log("Telegram preview sent — waiting for approval (≤20 min)…")
-    approved = tg_wait_approval(tg_token, tg_chat, timeout=int(env("APPROVAL_TIMEOUT", "1200") or "1200"))
-    if approved:
-        publish_to_instagram(plan)
-        record_history(plan)
-    elif approved is False:
-        log("Rejected — not posting.")
-    else:
-        log("Approval timed out — not posting.")
+
+    timeout = int(env("APPROVAL_TIMEOUT", "1200") or "1200")
+    max_revisions = int(env("MAX_REVISIONS", "6") or "6")
+    for _ in range(max_revisions + 1):
+        tg_send_preview(tg_token, tg_chat, plan)
+        log("Telegram preview sent — waiting for approve / reject / feedback…")
+        action, feedback = tg_wait_decision(tg_token, tg_chat, timeout=timeout)
+        if action == "approve":
+            publish_to_instagram(plan)
+            record_history(plan)
+            return
+        if action in ("cancel", "timeout"):
+            log(f"{action} — not posting.")
+            return
+        log(f"Revise requested: {feedback}")
+        brief = make_brief(ctx["theme_key"], ctx["tag"], ctx["items"], feedback=feedback)
+        plan = assemble_plan(ctx, brief)
+    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Too many revisions — stopping for today."})
+    log("Max revisions reached — not posting.")
 
 
 def main():
