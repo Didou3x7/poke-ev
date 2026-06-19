@@ -81,6 +81,14 @@ def select_sets(snapshot, names, rank_by, n, exclude):
         chase = max(cards, key=card_value)
         ev = (s.get("ev") or {}).get(LOCALE) or {}
         meta = names.get(sid, {})
+        # Pull-odds for the "1 IN N PACKS" authority chip — only where it's real:
+        # match the chase card's id against the set's per-pack probability table.
+        chase_id = chase.get("id")
+        prob = None
+        for tc in ev.get("topCards") or []:
+            if tc.get("cardId") == chase_id:
+                prob = tc.get("probabilityPerPack")
+                break
         rows.append({
             "id": sid,
             "name": meta.get("en", sid),
@@ -90,6 +98,7 @@ def select_sets(snapshot, names, rank_by, n, exclude):
             "chase_eur": chase.get("eur"),
             "chase_image": chase.get("image"),
             "pack_ev": ev.get("packEv"),
+            "prob_per_pack": prob,
         })
     if rank_by == "ev":
         rows = [r for r in rows if r["pack_ev"]]
@@ -246,24 +255,30 @@ def art_direct(api_key, theme_key, tag, items, feedback=None):
     ]
     angle = "the 5 sets sitting on the most valuable chase cards" if theme_key == "grails" \
         else "the 5 sets with the highest booster Expected Value"
+    top = max((it.get("verified_usd") or 0) for it in items) if items else 0
     prompt = (
         "You are the art director + copywriter for @pokeev.tcg, a PREMIUM Pokémon TCG "
         "Expected-Value tool (pokeev.com). Audience: serious collectors & investors, mostly US. "
-        "Voice: sharp, confident insider — never cringe, no fake hype, no clickbait lies. "
-        "Every post must feel premium, viral, and unmistakably original. "
         "Today's carousel covers " + angle + ".\n\n"
+        "VOICE GUARDRAIL — serious collectors read hype as amateur. NEVER use these words: insane, "
+        "brutal, unhinged, wild, crazy, mind-blowing, 'brace', or money analogies (rent, car, PS5, "
+        "salary). The verified numbers carry the shock; restraint is the brand. Confident insider, "
+        "never cringe.\n\n"
+        "FORMAT — this carousel is a COUNTDOWN that reveals 5 cards from #5 (lowest price) up to #1 "
+        "(the grail, the biggest number). The cover already shows the #1 price " + fmt_usd(top) + " with "
+        "its last digits hidden behind a holo bar, so the whole carousel is ONE open loop that only "
+        "pays off on the final card. Your copy must honour that structure.\n\n"
         "DATA (verified prices — keep every number EXACT):\n" + "\n".join(lines) + "\n\n"
-        "The FIRST SLIDE must stop the scroll: a bold, curiosity-driving hook a collector can't "
-        "ignore — intrigue or a jaw-dropping truth, never a generic title.\n\n"
         "Return ONLY a JSON object, no markdown, with keys:\n"
-        '  "coverTitle": the scroll-stopping hook, ALL CAPS, 1-3 words, ≤ 20 chars (punchy, not a sentence)\n'
-        f'  "coverTag": short label ≤ 16 chars (e.g. "{tag}")\n'
-        '  "coverSub": one irresistible line that makes them swipe, ≤ 115 chars\n'
-        '  "caption": the Instagram caption, built to drive traffic to pokeev.com. Each item on its OWN '
-        "short line (so nothing wraps awkwardly):\n"
-        "       - a 1-line hook\n"
-        "       - one tight line per set: rank emoji, set name, the number that matters\n"
+        f'  "coverTag": a short series label, ALL CAPS, ≤ 16 chars (e.g. "GRAIL RUN", "{tag}")\n'
+        '  "coverSub": ONE restrained line, ≤ 115 chars, that names the climb and promises the saveable '
+        'ranking — must say #1 ends at the number shown and that the full ranking is the last slide. e.g. '
+        '"5 sealed-era grails, ranked #5 → #1. #1 ends at the number above. Full ranking on the last slide — save it."\n'
+        '  "caption": the Instagram caption. Each item on its OWN short line (nothing wraps):\n'
+        "       - a hook line that mirrors the loop (e.g. \"Swipe to #1 — it isn't the one you think.\")\n"
+        "       - one tight line per set, COUNTING DOWN #5 → #1: rank emoji, card name, price\n"
         "       - a line: pokeev.com instantly tells you if a sealed box is worth opening (EV vs box price)\n"
+        "       - 'Save the last slide.'\n"
         "       - close with 'link in bio → pokeev.com'\n"
         "     Name pokeev.com at least twice. No hashtags inside the caption.\n"
         '  "hashtags": array of 15-20 strong hashtags (mix high-volume + niche collector tags), each unique\n'
@@ -284,17 +299,24 @@ def art_direct(api_key, theme_key, tag, items, feedback=None):
 
 
 def fallback_brief(theme_key, tag, items):
-    title = "TOP 5 GRAILS" if theme_key == "grails" else "HIGHEST EV"
-    body = "\n".join(f"{i}. {it['name']} — {it['chase_name']} {fmt_usd(it['verified_usd'])}" for i, it in enumerate(items, 1))
+    ordered = sorted(items, key=lambda it: (it.get("verified_usd") or 0))  # cheapest → grail
+    n = len(ordered)
+    medals = {1: "🥇", 2: "🥈", 3: "🥉", 4: "4️⃣", 5: "5️⃣"}
+    lines = []
+    for i, it in enumerate(ordered):
+        rank = n - i
+        lines.append(f"{medals.get(rank, f'#{rank}')} {it['chase_name']} — {fmt_usd(it['verified_usd'])}")
+    body = "\n".join(lines)
+    top = fmt_usd(max((it.get("verified_usd") or 0) for it in items) if items else 0)
     return {
-        "coverTitle": title,
-        "coverTag": tag,
-        "coverSub": "The priciest Pokémon chase cards on the market right now." if theme_key == "grails"
-        else "The sets with the most expected value per booster right now.",
-        "caption": f"{title}\n\n{body}\n\nRip the box or keep it sealed? pokeev.com runs the math — "
-        "Expected Value vs the price you pay. Link in bio → pokeev.com",
+        "coverTag": "GRAIL RUN" if theme_key == "grails" else tag,
+        "coverSub": f"Five ranked #5 → #1. #1 ends at {top}. Full ranking on the last slide — save it.",
+        "caption": ("Swipe to #1 — it isn't the one you think.\n\n" + body
+                    + "\n\npokeev.com instantly tells you if a sealed box is worth opening — EV vs the box price."
+                    + "\nSave the last slide.\nlink in bio → pokeev.com"),
         "hashtags": ["#pokemon", "#pokemontcg", "#pokemoncards", "#pokemoncardcollection", "#tcg",
-                     "#pokemoninvesting", "#charizard", "#pokemoncommunity", "#vintagepokemon", "#pokeev"],
+                     "#pokemoninvesting", "#charizard", "#pokemoncommunity", "#vintagepokemon", "#pokeev",
+                     "#pokemongrails", "#sealedpokemon", "#pokemoninvestment", "#tcgcollector", "#vintagetcg"],
     }
 
 
@@ -305,19 +327,62 @@ def q(s):
     return quote(str(s), safe="")
 
 
+def _auto_teaser(ordered, pos, top_usd):
+    """Data-true forward hook from the card at `pos` (cheapest-first) to the next,
+    pricier card — re-arms the open loop on every swipe. #2 cliffhangs, #1 pays off."""
+    n = len(ordered)
+    rank = n - pos
+    if rank == 1:
+        return "YOU MADE IT — THIS IS #1"
+    if rank == 2:
+        return "ONLY THE GRAIL IS LEFT →"
+    this_usd = ordered[pos].get("verified_usd") or 0
+    nxt_usd = ordered[pos + 1].get("verified_usd") or 0
+    if this_usd and nxt_usd and nxt_usd / this_usd >= 1.4:
+        return f"NEXT IS {nxt_usd / this_usd:.1f}× THIS · KEEP GOING →"
+    gap = (top_usd or 0) - this_usd
+    if gap > 0:
+        return f"#1 IS STILL {fmt_usd(gap)} AWAY · SWIPE →"
+    return "KEEP SWIPING →"
+
+
 def build_slides(base, theme_key, tag, brief, items):
+    """The Vault Countdown: cover teases the biggest number (trailing digits locked),
+    cards climb #5 -> #1 with open-loop teasers + a climax frame on the grail, then a
+    saveable recap. cover(1) + n cards + recap + cta, a progress rail on every slide."""
     base = base.rstrip("/")
+    n = len(items)
+    total = n + 3
+    # Climb by chase-card price for BOTH themes so the headline number rises every
+    # swipe; the theme still decides which sets are featured + the EV/odds chip.
+    ordered = sorted(items, key=lambda it: (it.get("verified_usd") or 0))
+    top_usd = max((it.get("verified_usd") or 0) for it in items) if items else 0
+
     cover = (f"{base}/api/ig?slide=cover&theme={theme_key}"
-             f"&title={q(brief['coverTitle'])}&tag={q(brief['coverTag'])}&sub={q(brief['coverSub'])}")
+             f"&title={q(fmt_usd(top_usd))}&tag={q(brief['coverTag'])}&sub={q(brief['coverSub'])}"
+             f"&mask=2&step=1&total={total}")
+
     cards = []
-    for i, it in enumerate(items, 1):
-        u = (f"{base}/api/ig?slide=card&set={q(it['id'])}&rank={i}&theme={theme_key}"
-             f"&tag={q(brief['coverTag'])}&price={q(fmt_usd(it['verified_usd']))}")
+    for pos, it in enumerate(ordered):
+        rank = n - pos                      # cheapest emitted first shows '5', grail shows '1'
+        u = (f"{base}/api/ig?slide=card&set={q(it['id'])}&rank={rank}&theme={theme_key}"
+             f"&tag={q(brief['coverTag'])}&price={q(fmt_usd(it['verified_usd']))}"
+             f"&teaser={q(_auto_teaser(ordered, pos, top_usd))}&step={pos + 2}&total={total}")
         if it.get("hd_image"):
             u += f"&img={q(it['hd_image'])}"
+        if it.get("odds_str"):
+            u += f"&odds={q(it['odds_str'])}"
+        if rank == 1:
+            u += "&climax=1"
         cards.append(u)
-    cta = f"{base}/api/ig?slide=cta"
-    return cover, cards, cta
+
+    recap = (f"{base}/api/ig?slide=recap&theme={theme_key}"
+             f"&sets={q(','.join(it['id'] for it in ordered))}"
+             + "".join(f"&p{i}={q(fmt_usd(it['verified_usd']))}" for i, it in enumerate(ordered, 1))
+             + "".join(f"&img{i}={q(it['hd_image'])}" for i, it in enumerate(ordered, 1) if it.get("hd_image"))
+             + f"&step={n + 2}&total={total}")
+    cta = f"{base}/api/ig?slide=cta&step={total}&total={total}"
+    return cover, cards, recap, cta
 
 
 def materialize_slides(urls):
@@ -397,7 +462,10 @@ def publish_to_instagram(plan):
     ig = env("INSTAGRAM_BUSINESS_ID", required=True)
     token = env("META_ACCESS_TOKEN", required=True)
     children = []
-    for url in [plan["cover"], *plan["cards"], plan["cta"]]:
+    slides = ([plan["cover"], *plan["cards"]]
+              + ([plan["recap"]] if plan.get("recap") else [])
+              + [plan["cta"]])
+    for url in slides:
         cid = container(ig, token, image_url=url, is_carousel_item="true")
         log(f"  item {cid}")
         children.append(cid)
@@ -423,7 +491,11 @@ def write_summary(plan, verify):
         return
     out = [f"## 📸 PokeEV IG preview — {plan['theme'].upper()} ({plan['date']})", ""]
     out.append("### Slides")
-    for label, url in [("Cover", plan["cover"]), *[(f"Card {i+1}", u) for i, u in enumerate(plan["cards"])], ("CTA", plan["cta"])]:
+    labelled = [("Cover", plan["cover"]), *[(f"Card {i+1}", u) for i, u in enumerate(plan["cards"])]]
+    if plan.get("recap"):
+        labelled.append(("Recap", plan["recap"]))
+    labelled.append(("CTA", plan["cta"]))
+    for label, url in labelled:
         out.append(f"**{label}**\n\n![{label}]({url})\n")
     out.append("### Price cross-check")
     out.append("| Card | Snapshot $ | TCGplayer live $ | Cardmarket live € | Agreement |")
@@ -487,6 +559,13 @@ def prepare_items():
         it["hd_image"] = upscale_card(it["chase_image"])
         log(f"  upscale {it['chase_name']}: {'HD ✓' if it['hd_image'] else 'native (no token/failed)'}")
 
+    # Pull-odds chip — grails theme only (EV theme keeps the BOOSTER EV number).
+    # Never fabricated: only when the real per-pack probability resolved.
+    for it in items:
+        p = it.get("prob_per_pack") if theme_key == "grails" else None
+        odds = round(1 / p) if (p and 0 < p and 1 / p <= 9999) else None
+        it["odds_str"] = f"1 IN {odds:,} PACKS" if (odds and odds >= 2) else None
+
     return {"base": base, "theme_key": theme_key, "tag": tag, "items": items, "verify": verify}
 
 
@@ -504,15 +583,15 @@ def make_brief(theme_key, tag, items, feedback=None):
 
 def assemble_plan(ctx, brief):
     """Build + re-host the slides for a creative brief, write plan.json, return the plan."""
-    cover, cards, cta = build_slides(ctx["base"], ctx["theme_key"], ctx["tag"], brief, ctx["items"])
+    cover, cards, recap, cta = build_slides(ctx["base"], ctx["theme_key"], ctx["tag"], brief, ctx["items"])
     # Re-host each rendered slide as a static Blob PNG (fast CDN object) so Telegram
     # and Instagram never have to fetch the slow on-the-fly /api/ig render directly.
-    hosted = materialize_slides([cover, *cards, cta])
-    cover, cards, cta = hosted[0], hosted[1:-1], hosted[-1]
+    hosted = materialize_slides([cover, *cards, recap, cta])
+    cover, cards, recap, cta = hosted[0], hosted[1:-2], hosted[-2], hosted[-1]
     plan = {
         "date": datetime.now(timezone.utc).date().isoformat(),
         "theme": ctx["theme_key"],
-        "cover": cover, "cards": cards, "cta": cta,
+        "cover": cover, "cards": cards, "recap": recap, "cta": cta,
         "caption": brief["caption"],
         "hashtags": brief["hashtags"],
         "sets": [it["id"] for it in ctx["items"]],
@@ -520,7 +599,7 @@ def assemble_plan(ctx, brief):
     }
     Path(env("PLAN_PATH", "plan.json")).write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
     log("CAPTION:\n" + plan["caption"])
-    for u in [cover, *cards, cta]:
+    for u in [cover, *cards, recap, cta]:
         log("  slide: " + u)
     write_summary(plan, plan["verify"])
     return plan
@@ -562,7 +641,9 @@ def tg_send_preview(token, chat_id, plan):
     # Upload the actual image bytes (multipart attach://) instead of handing Telegram
     # the slide URLs — Telegram's ~5s media-fetch timeout can't render an HD slide in
     # time, but the bot can download it patiently and push the bytes.
-    urls = [plan["cover"], *plan["cards"], plan["cta"]][:10]
+    urls = ([plan["cover"], *plan["cards"]]
+            + ([plan["recap"]] if plan.get("recap") else [])
+            + [plan["cta"]])[:10]
     media, files = [], {}
     for i, u in enumerate(urls):
         name = f"p{i}"
