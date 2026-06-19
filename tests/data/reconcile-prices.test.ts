@@ -35,6 +35,21 @@ describe("reconcileCardPrices — fill + passthrough", () => {
   });
 });
 
+describe("reconcileCardPrices — vintage WotC EUR clamp", () => {
+  it("clamps a vintage hit's blended EUR (>3×) down to the USD-derived value", () => {
+    // Base Charizard: Cardmarket EUR blends shadowless/1st-ed (€2712) vs $630 unlimited.
+    const r = reconcileCardPrices(2712, 630, opts({ vintageEur: true }));
+    expect(r.usd).toBe(630);
+    expect(r.eur).toBeCloseTo(630 / FX, 0); // ≈ €548
+  });
+  it("does NOT clamp the same 3.9× gap on a modern set (hit bar stays 6×)", () => {
+    expect(reconcileCardPrices(2712, 630, opts({ vintageEur: false })).eur).toBe(2712);
+  });
+  it("leaves a small vintage EU premium (<3×) untouched", () => {
+    expect(reconcileCardPrices(150, 60, opts({ vintageEur: true })).eur).toBe(150); // 2.5×
+  });
+});
+
 describe("reconcileCardPrices — stale-EUR guard", () => {
   it("re-derives a stale EUR that sits well below the fresh USD (the Giratina case)", () => {
     // €183 vs $432 → ratio 0.49 (<0.8) and EUR is months old → derive from USD.

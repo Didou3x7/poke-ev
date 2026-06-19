@@ -49,6 +49,10 @@ jobs:
             git checkout -- data/sets data/sources/tcgdex-sets.json
           fi
           npm run snapshot
+          # Anti-regression gate: if a fixed price/EV bug recurs (reverse-holo leak,
+          # unreclassified vintage shiny, chase inversion), FAIL here so the bad
+          # snapshot is never committed or deployed — the site keeps the last good one.
+          npm run validate:snapshot
           git config user.name "Didou3x7"
           git config user.email "292510557+Didou3x7@users.noreply.github.com"
           git add data/snapshot/snapshot.json data/sets data/sources/tcgdex-sets.json

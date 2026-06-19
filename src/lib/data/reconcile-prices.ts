@@ -34,6 +34,11 @@ export interface ReconcileOpts {
   eurUsd: number;
   /** common/uncommon clamp tighter (3.5×) than hits (6×). */
   lowRarity: boolean;
+  /** Pre-2004 WotC/e-Card set: Cardmarket blends 1st-ed/shadowless/unlimited into
+   *  ONE EUR entry, so a holo's EUR can sit 3-5× over the per-printing USD (e.g.
+   *  Base Charizard €2712 vs $630 unlimited). Tighten the hit clamp to 3× for these
+   *  so the FR price tracks the (clean, per-printing) TCGplayer USD. */
+  vintageEur?: boolean;
   /** updatedAt of the Cardmarket (EUR) quote, for staleness detection. */
   eurAsOf?: string | null;
   /** Build-time epoch ms, compared against eurAsOf. */
@@ -45,7 +50,7 @@ export function reconcileCardPrices(
   rawUsd: number | null,
   opts: ReconcileOpts,
 ): { eur: number | null; usd: number | null } {
-  const { eurUsd, lowRarity, eurAsOf, nowMs } = opts;
+  const { eurUsd, lowRarity, vintageEur, eurAsOf, nowMs } = opts;
   // (1) fill a missing market from the other side.
   let eur = rawEur ?? (rawUsd != null ? round2(rawUsd / eurUsd) : null);
   let usd = rawUsd ?? (rawEur != null ? round2(rawEur * eurUsd) : null);
@@ -56,8 +61,9 @@ export function reconcileCardPrices(
       if ((eur * eurUsd) / usd < STALE_EUR_MAX_RATIO) eur = round2(usd / eurUsd);
     }
     // (3) symmetric divergence clamp. Genuine grails diverge up to ~5× by
-    // condition/market (bar 6×); low-rarity cards should track closely (3.5×).
-    const thr = lowRarity ? 3.5 : 6;
+    // condition/market (bar 6×); low-rarity cards should track closely (3.5×);
+    // vintage WotC hits are capped at 3× (their EUR blends pricier printings).
+    const thr = lowRarity ? 3.5 : vintageEur ? 3 : 6;
     const ratio = (eur * eurUsd) / usd;
     if (ratio > thr) eur = round2(usd / eurUsd);
     else if (ratio < 1 / thr) usd = round2(eur * eurUsd);

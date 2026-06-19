@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "snapshot": "tsx scripts/build-snapshot.ts",
     "discover": "tsx scripts/discover-sets.ts",
-    "validate:data": "tsx scripts/validate-data.ts"
+    "validate:data": "tsx scripts/validate-data.ts",
+    "validate:snapshot": "tsx scripts/validate-snapshot.ts"
   },
   "dependencies": {
     "@vercel/blob": "^2.4.0",

@@ -205,6 +205,8 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
         const { eur, usd } = reconcileCardPrices(c.prices.eur ?? null, c.prices.usd ?? null, {
           eurUsd: fx.eurUsd,
           lowRarity,
+          // Pre-2004 WotC/e-Card: Cardmarket EUR blends 1st-ed/shadowless printings.
+          vintageEur: set.releaseDate < "2004-01-01",
           eurAsOf: c.eurAsOf,
           nowMs: startMs,
         });
