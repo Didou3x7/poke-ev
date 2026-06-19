@@ -24,7 +24,7 @@ export interface PtcgCard {
   eurAsOf?: string | null;
 }
 
-interface PtcgApiCard {
+export interface PtcgApiCard {
   number?: string | number;
   name: string;
   rarity?: string | null;
@@ -33,20 +33,38 @@ interface PtcgApiCard {
   cardmarket?: { updatedAt?: string | null; prices?: { trendPrice?: number | null; averageSellPrice?: number | null; avg7?: number | null } | null } | null;
 }
 
-/** Best TCGPlayer USD market price across printings (holo → reverse → normal → 1st ed). */
-function ptcgUsd(card: PtcgApiCard): number | null {
+/** Base printings (no foil) — what a common/uncommon/non-holo rare IS in a pack. */
+const NON_HOLO_RARITIES = new Set<RarityId>(["common", "uncommon", "rare"]);
+
+/**
+ * TCGPlayer USD market price for the printing that MATCHES the card's rarity:
+ * `normal` for a base common/uncommon/rare, the holofoil for a holo/hit rare.
+ *
+ * Critically, a non-holo card NEVER takes the `reverseHolofoil` price. The reverse
+ * holo is a SEPARATE, far rarer pull — Legendary Collection reverse commons run
+ * into the $100s — and the EV engine already prices the reverse-holo slot from the
+ * base pools at the base price. Letting the reverse-holo printing stand in for the
+ * base card inflated EVERY common's value (e.g. LC Magikarp showed $699 instead of
+ * ~$2, blowing up the pack EV). Falls back to any printing only if the preferred
+ * ones are absent (so a card sold solely as one foil is still priced).
+ */
+export function ptcgUsd(card: PtcgApiCard): number | null {
   const prices = card.tcgplayer?.prices;
   if (!prices) return null;
-  const order = ["holofoil", "reverseHolofoil", "normal", "1stEditionHolofoil", "unlimitedHolofoil", "1stEdition", "unlimited"];
-  for (const k of order) {
-    const v = prices[k]?.market ?? prices[k]?.mid ?? prices[k]?.low;
-    if (v != null && v > 0) return v;
-  }
-  for (const variant of Object.values(prices)) {
-    const v = variant?.market ?? variant?.mid ?? variant?.low;
-    if (v != null && v > 0) return v;
-  }
-  return null;
+  const at = (k: string) => prices[k]?.market ?? prices[k]?.mid ?? prices[k]?.low ?? null;
+  const pick = (keys: string[]): number | null => {
+    for (const k of keys) {
+      const v = at(k);
+      if (v != null && v > 0) return v;
+    }
+    return null;
+  };
+  const r = normalizeRarity(card.rarity ?? null);
+  const nonHolo = r == null || NON_HOLO_RARITIES.has(r);
+  const order = nonHolo
+    ? ["normal", "1stEditionNormal", "unlimited", "1stEdition", "holofoil", "unlimitedHolofoil", "1stEditionHolofoil", "reverseHolofoil"]
+    : ["holofoil", "unlimitedHolofoil", "1stEditionHolofoil", "reverseHolofoil", "normal", "1stEditionNormal", "unlimited", "1stEdition"];
+  return pick(order) ?? pick(Object.keys(prices));
 }
 
 function ptcgEur(card: PtcgApiCard): number | null {

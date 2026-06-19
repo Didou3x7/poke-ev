@@ -1,6 +1,44 @@
 import { describe, expect, it } from "vitest";
-import { overlayPtcgPrices, type PtcgCard } from "@/lib/data/pokemontcg";
+import { overlayPtcgPrices, ptcgUsd, type PtcgApiCard, type PtcgCard } from "@/lib/data/pokemontcg";
 import type { PricedCard } from "@/lib/ev/types";
+
+// A pokemontcg.io API card with the given printing→market prices.
+const apiCard = (rarity: string | null, prices: Record<string, number>): PtcgApiCard => ({
+  number: "1",
+  name: "X",
+  rarity,
+  tcgplayer: { prices: Object.fromEntries(Object.entries(prices).map(([k, v]) => [k, { market: v }])) },
+});
+
+describe("ptcgUsd — price the printing that matches the card's rarity", () => {
+  it("a non-holo common/uncommon takes `normal`, NEVER the reverse-holo (Legendary Collection bug)", () => {
+    // LC Magikarp: base ~$2 normal, but a $700 reverse holo. The base card must price at $2.
+    expect(ptcgUsd(apiCard("Uncommon", { normal: 2.04, reverseHolofoil: 699.99 }))).toBe(2.04);
+    expect(ptcgUsd(apiCard("Common", { normal: 0.5, reverseHolofoil: 490.24 }))).toBe(0.5);
+    expect(ptcgUsd(apiCard("Rare", { normal: 3, reverseHolofoil: 120 }))).toBe(3);
+  });
+
+  it("a holo / hit rare takes the holofoil, not the cheap normal", () => {
+    expect(ptcgUsd(apiCard("Rare Holo", { holofoil: 499, reverseHolofoil: 30, normal: 1 }))).toBe(499);
+    expect(ptcgUsd(apiCard("Rare Holo EX", { holofoil: 80, normal: 2 }))).toBe(80);
+  });
+
+  it("falls back to whatever printing exists when the preferred one is absent", () => {
+    // A card sold solely as a reverse holo (no normal) still gets priced.
+    expect(ptcgUsd(apiCard("Common", { reverseHolofoil: 12 }))).toBe(12);
+    // A holo rare listed only as normal still gets priced.
+    expect(ptcgUsd(apiCard("Rare Holo", { normal: 7 }))).toBe(7);
+  });
+
+  it("an unknown/null rarity stays conservative (base printing, never inflates)", () => {
+    expect(ptcgUsd(apiCard(null, { normal: 2, reverseHolofoil: 300 }))).toBe(2);
+  });
+
+  it("returns null when there are no usable prices", () => {
+    expect(ptcgUsd(apiCard("Common", {}))).toBeNull();
+    expect(ptcgUsd({ number: "1", name: "X", rarity: "Common" })).toBeNull();
+  });
+});
 
 const card = (o: { number: string; name: string; eur?: number | null; usd?: number | null; image?: string | null }): PricedCard => ({
   id: o.number,
