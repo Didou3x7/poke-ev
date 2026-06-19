@@ -497,12 +497,9 @@ def publish_to_instagram(plan):
     wait_finished(parent, token)
     media_id = publish_media(ig, token, parent)
     log(f"✓ carousel published: {media_id}")
-    if plan.get("hashtags"):
-        try:  # never lose a published post over the first-comment hashtags
-            graph_post(f"{media_id}/comments", {"message": " ".join(plan["hashtags"]), "access_token": token})
-            log("✓ hashtags posted as first comment")
-        except Exception as exc:  # noqa: BLE001
-            log(f"  hashtag comment failed ({exc}); leaving them off the post")
+    # Hashtags are folded into the caption (compose_caption) so they publish atomically
+    # with the carousel — no fragile second /comments call that the Instagram-Login
+    # token may not be scoped for.
     try:  # the carousel is already live; the story is a bonus, never fatal
         scid = container(ig, token, image_url=slides[0], media_type="STORIES")
         wait_finished(scid, token)
@@ -531,7 +528,7 @@ def write_summary(plan, verify):
         out.append(f"**{label}**\n\n![{label}]({url})\n")
     if not verify:
         out.append("\n### Caption\n\n```\n" + plan["caption"] + "\n```")
-        out.append("\n### First comment (hashtags)\n\n```\n" + " ".join(plan["hashtags"]) + "\n```")
+        out.append("\n### Hashtags (folded into the caption above)\n\n```\n" + " ".join(plan["hashtags"]) + "\n```")
         Path(path).write_text("\n".join(out), encoding="utf-8")
         log("wrote GitHub step summary preview")
         return
@@ -1493,6 +1490,19 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
     return None
 
 
+def compose_caption(caption, hashtags):
+    """Fold the hashtags INTO the caption. Instagram only reliably renders tags that
+    are part of the published media's caption — posting them as a first comment needs
+    the instagram_business_manage_comments scope (which the Instagram-Login token may
+    lack) and fails silently. Folding them in also makes them visible in the Telegram
+    preview (which shows the caption) so the editor can actually see/approve them."""
+    body = (caption or "").rstrip()
+    tags = [t for t in (hashtags or []) if t]
+    if not tags:
+        return body
+    return f"{body}\n\n{' '.join(tags)}"
+
+
 def build_theme_plan(ctx, feedback=None):
     """Art-direct (Claude or fallback) + build the /api/ig slide URLs for the
     selected theme, re-host them on Blob, write plan.json, and return the flat plan."""
@@ -1544,8 +1554,8 @@ def build_theme_plan(ctx, feedback=None):
         "date": datetime.now(timezone.utc).date().isoformat(),
         "theme": theme,
         "slides": hosted,
-        "caption": brief["caption"],
-        "hashtags": brief["hashtags"],
+        "caption": compose_caption(brief["caption"], brief.get("hashtags")),
+        "hashtags": brief.get("hashtags", []),
         "keys": ctx["keys"],
         "verify": ctx["verify"],
     }
@@ -1668,8 +1678,10 @@ def tg_send_preview(token, chat_id, plan):
         f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
         for v in plan.get("verify", [])
     )
+    ntags = len(plan.get("hashtags") or [])
     text = (f"🎴 PokeEV post — {plan['theme'].upper()} ({plan['date']})\n\n"
-            f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION:\n{plan['caption']}\n\nPublish this carousel + story?")
+            f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION ({ntags} hashtags folded in):\n"
+            f"{plan['caption']}\n\nPublish this carousel + story?")
     kb = {"inline_keyboard": [[{"text": "✅ Approve", "callback_data": "approve"},
                                {"text": "❌ Reject", "callback_data": "reject"}]]}
     tg_api(token, "sendMessage", {"chat_id": chat_id, "text": text[:4000], "reply_markup": kb})
