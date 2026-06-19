@@ -1,8 +1,25 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { computeSetEv } from "../ev/engine";
-import { reclassifyVintageShiny } from "../ev/rarity";
+import { reclassifyVintageShiny, type RarityId } from "../ev/rarity";
 import type { PricedCard, SetEv } from "../ev/types";
+
+/**
+ * Explicit per-card rarity overrides ("setId:number") for the handful of secret
+ * cards BOTH sources mis-tag with an ordinary rarity and that no pattern can safely
+ * catch (a blanket rule would also hit e-Card "a/b" variants and regular suffixed
+ * cards). Each is pinned to the rarity its pull slot references so it leaves the
+ * common/uncommon pool: Dragon Vault's secret Kyurem, and the XY-era secret full-art
+ * trainers (Rare Ultra) which TCGdex tags "uncommon".
+ */
+const RARITY_OVERRIDES: Record<string, RarityId> = {
+  "dragon-vault:21": "secret-rare", // secret Kyurem, mis-tagged common
+  "ancient-origins:75a": "ultra-rare", // Hex Maniac full-art secret
+  "flashfire:88a": "ultra-rare", // Blacksmith full art
+  "generations:73a": "ultra-rare", // Team Flare Grunt full art
+  "fates-collide:111a": "ultra-rare", // Shauna full art
+  "breakpoint:98b": "ultra-rare", // Delinquent full art
+};
 import { getAllSets, getEraOfSet, getPullRates } from "./catalog";
 import { fetchFxRate } from "./build-core";
 import { TcgdexProvider, fetchSetCardNames, mapLimit } from "./tcgdex";
@@ -201,10 +218,8 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
         else if (/^GG/i.test(num)) rarity = "galarian-gallery";
         // Vintage secret shinies mislabeled "Rare" (Neo "Shining <name>", DP "SH##").
         else rarity = reclassifyVintageShiny(rarity, c.name, num);
-        // Dragon Vault's Kyurem #21/20 is the set's secret chase, but both sources tag
-        // it "common"; pin it to secret-rare so it leaves the common pool and its
-        // dedicated secret slot (data/pull-rates/dragon-vault.json) can reference it.
-        if (set.id === "dragon-vault" && num === "21") rarity = "secret-rare";
+        // Explicit per-card secret overrides (Dragon Vault Kyurem, XY full-art trainers).
+        rarity = RARITY_OVERRIDES[`${set.id}:${num}`] ?? rarity;
         return { ...c, rarity, prices: { eur, usd } };
       });
       const fr = config ? computeSetEv(cards, config, "fr", { topCardsCount: 12 }) : null;
