@@ -890,7 +890,7 @@ def fallback_connected(facts):
     }
 
 
-def artdirect_connected(api_key, facts, feedback=None):
+def artdirect_connected(api_key, facts):
     if not api_key:
         return fallback_connected(facts)
     lines = "\n".join(f"  {i+1}. {it['name']} ({it['setLabel']}) ${it['usd']}" for i, it in enumerate(facts["items"]))
@@ -911,8 +911,6 @@ def artdirect_connected(api_key, facts, feedback=None):
         'form one illustration, mention the artist, ask an engagement question.\n'
         '  "hashtags": 24-30 hashtags per the HASHTAGS rules above.\n'
     )
-    if feedback:
-        prompt += f"\n\nEditor feedback to apply precisely, keep all numbers exact:\n\"{feedback}\"\n"
     try:
         brief = claude_json(api_key, prompt, system=_VOICE)
     except Exception as exc:  # noqa: BLE001
@@ -1080,7 +1078,7 @@ def fallback_ripkeep(facts):
     }
 
 
-def artdirect_ripkeep(api_key, facts, feedback=None):
+def artdirect_ripkeep(api_key, facts):
     if not api_key:
         return fallback_ripkeep(facts)
     chase = ", ".join(f"{c['name']} {fmt_usd(c['usd'])}" for c in facts["chase"])
@@ -1104,8 +1102,6 @@ def artdirect_ripkeep(api_key, facts, feedback=None):
         'verdict, ask rip-or-keep.\n'
         '  "hashtags": 24-30 hashtags per the HASHTAGS rules above.\n'
     )
-    if feedback:
-        prompt += f"\n\nEditor feedback to apply precisely, keep all numbers exact:\n\"{feedback}\"\n"
     try:
         brief = claude_json(api_key, prompt, system=_VOICE)
     except Exception as exc:  # noqa: BLE001
@@ -1503,21 +1499,13 @@ def compose_caption(caption, hashtags):
     return f"{body}\n\n{' '.join(tags)}"
 
 
-def build_theme_plan(ctx, feedback=None):
-    """Art-direct (Claude or fallback) + build the /api/ig slide URLs for the
-    selected theme, re-host them on Blob, write plan.json, and return the flat plan."""
-    theme = ctx["theme"]
-    base = ctx["base"]
-    facts = ctx["facts"]
-    api_key = ctx["api_key"]
-
+def _fresh_brief(theme, api_key, facts):
+    """First-preview brief, built from scratch (no editor feedback yet)."""
     if theme == "connected":
-        brief = artdirect_connected(api_key, facts, feedback=feedback)
-        slides = slides_connected(base, facts, brief)
-    elif theme == "ripkeep":
-        brief = artdirect_ripkeep(api_key, facts, feedback=feedback)
-        slides = slides_ripkeep(base, facts, brief)
-    elif theme == "grails":
+        return artdirect_connected(api_key, facts)
+    if theme == "ripkeep":
+        return artdirect_ripkeep(api_key, facts)
+    if theme == "grails":
         brief = fallback_grail_brief(facts)
         if facts.get("vision"):  # fold vision research into the deterministic base
             v = facts["vision"]
@@ -1544,10 +1532,75 @@ def build_theme_plan(ctx, feedback=None):
         elif facts.get("artist"):
             brief["craftKicker"] = "THE ARTIST"
             brief["craftHeadline"] = facts["artist"]
-        brief = _grail_apply_feedback(api_key, facts, brief, feedback)
-        slides = slides_grails(base, facts, brief, hd_image=facts.get("hd_image"))
+        return brief
+    sys.exit(f"[pokeev-bot] unknown theme {theme}")
+
+
+def _slides_for(theme, base, facts, brief):
+    if theme == "connected":
+        return slides_connected(base, facts, brief)
+    if theme == "ripkeep":
+        return slides_ripkeep(base, facts, brief)
+    if theme == "grails":
+        return slides_grails(base, facts, brief, hd_image=facts.get("hd_image"))
+    sys.exit(f"[pokeev-bot] unknown theme {theme}")
+
+
+def patch_brief(api_key, prior_brief, feedback):
+    """SURGICAL revise. The editor rejected the post for ONE reason — apply only that
+    change and leave every other field byte-identical, so untouched slides cannot drift.
+    We send Claude the current copy and ask for ONLY the keys it must rewrite, then merge
+    `{**prior_brief, **patch}`. Any key not returned is, by construction, unchanged. No
+    key (or no api_key) -> the prior brief is returned verbatim."""
+    if not api_key:
+        log("  revise requested but no ANTHROPIC_API_KEY; keeping the post unchanged")
+        return prior_brief
+    # Expose only editable text/list copy — hide zoom-crop dicts, numbers, image URLs so
+    # Claude can neither see nor accidentally rewrite the layout.
+    editable = {k: v for k, v in prior_brief.items() if isinstance(v, (str, list))}
+    prompt = (
+        "You are making ONE small edit to an Instagram post the editor just rejected. "
+        "Here is its current copy as JSON:\n"
+        + json.dumps(editable, ensure_ascii=False, indent=2) + "\n\n"
+        f"The editor wants exactly this, and nothing else:\n\"{feedback}\"\n\n"
+        "Return a JSON object containing ONLY the keys you must change to satisfy that note, "
+        "with their new values. Do NOT include any key you are leaving unchanged. Change as "
+        "few keys as possible (ideally one). Keep every price, number, set/card name and the "
+        "hashtag count exactly as they are.\n" + _CAPTION_RULES
+    )
+    try:
+        patch = claude_json(api_key, prompt, system=_VOICE)
+    except Exception as exc:  # noqa: BLE001
+        log(f"  revise patch failed ({exc}); keeping the post unchanged")
+        return prior_brief
+    if not isinstance(patch, dict):
+        log("  revise returned no usable changes; keeping the post unchanged")
+        return prior_brief
+    # Only accept keys the brief already had — never invent fields, never touch crops.
+    patch = {k: v for k, v in patch.items() if k in prior_brief and not isinstance(prior_brief[k], dict)}
+    if "hashtags" in patch:
+        patch["hashtags"] = _clean_hashtags(patch["hashtags"])
+    if not patch:
+        log("  revise produced no recognised changes; keeping the post unchanged")
+        return prior_brief
+    log("  revise changed ONLY: " + ", ".join(sorted(patch.keys())))
+    return {**prior_brief, **patch}
+
+
+def build_theme_plan(ctx, feedback=None, prior_brief=None):
+    """Art-direct (Claude or fallback) + build the /api/ig slide URLs for the selected
+    theme, re-host them on Blob, write plan.json, and return the flat plan. On a revise
+    (feedback + the prior brief) it PATCHES only what the editor asked, never rebuilds."""
+    theme = ctx["theme"]
+    base = ctx["base"]
+    facts = ctx["facts"]
+    api_key = ctx["api_key"]
+
+    if feedback and prior_brief:
+        brief = patch_brief(api_key, prior_brief, feedback)
     else:
-        sys.exit(f"[pokeev-bot] unknown theme {theme}")
+        brief = _fresh_brief(theme, api_key, facts)
+    slides = _slides_for(theme, base, facts, brief)
 
     hosted = materialize_slides(slides)
     plan = {
@@ -1556,6 +1609,7 @@ def build_theme_plan(ctx, feedback=None):
         "slides": hosted,
         "caption": compose_caption(brief["caption"], brief.get("hashtags")),
         "hashtags": brief.get("hashtags", []),
+        "brief": brief,  # kept so the next revise can surgically patch THIS exact copy
         "keys": ctx["keys"],
         "verify": ctx["verify"],
     }
@@ -1565,35 +1619,6 @@ def build_theme_plan(ctx, feedback=None):
         log("  slide: " + u)
     write_summary(plan, plan["verify"])
     return plan
-
-
-def _grail_apply_feedback(api_key, facts, brief, feedback):
-    """On the revise loop, let Claude rewrite the grail caption/copy from the editor's
-    notes while keeping the verified price and the chosen zoom. No-op without notes/key."""
-    if not (feedback and api_key):
-        if feedback:
-            log("  T3 revise requested but no ANTHROPIC_API_KEY; keeping prior copy")
-        return brief
-    price = fmt_usd(facts["usd"])
-    prompt = (
-        f"Revise the Instagram copy for the grail card \"{facts['name']}\" from {facts['set_name']} "
-        f"(worth {price}). Keep the price exact.\n" + _CAPTION_RULES + "\n\n"
-        "Editor feedback to apply precisely:\n\"" + feedback + "\"\n\n"
-        "Return ONLY a JSON object with keys: \"shockHeadline\" (<=40, | line break ok), "
-        "\"cardHeadline\" (<=40), \"cardBody\" (<=140, | clauses), \"craftBody\" (<=140), "
-        "\"sceneBody\" (<=140), \"oddsBody\" (<=140), \"caption\", \"hashtags\" (24-30). No em-dashes."
-    )
-    try:
-        v = claude_json(api_key, prompt, system=_VOICE)
-    except Exception as exc:  # noqa: BLE001
-        log(f"  T3 revise failed ({exc}); keeping prior copy")
-        return brief
-    for k in ("shockHeadline", "cardHeadline", "cardBody", "craftBody", "sceneBody", "oddsBody", "caption"):
-        if v.get(k):
-            brief[k] = v[k]
-    if v.get("hashtags"):
-        brief["hashtags"] = _clean_hashtags(v["hashtags"])
-    return brief
 
 
 def prepare_rotation():
@@ -1759,7 +1784,7 @@ def do_run():
             log(f"{action} — not posting.")
             return
         log(f"Revise requested: {feedback}")
-        plan = build_theme_plan(ctx, feedback=feedback)
+        plan = build_theme_plan(ctx, feedback=feedback, prior_brief=plan.get("brief"))
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Too many revisions — stopping for today."})
     log("Max revisions reached — not posting.")
 
@@ -1897,7 +1922,7 @@ def do_publish_pending():
         ctx = pending.get("ctx") or {}
         ctx["api_key"] = env("ANTHROPIC_API_KEY")
         try:
-            plan = build_theme_plan(ctx, feedback=notes)
+            plan = build_theme_plan(ctx, feedback=notes, prior_brief=plan.get("brief"))
         except Exception as exc:  # noqa: BLE001
             log(f"revise rebuild failed ({exc}); keeping the original plan")
         tg_send_preview(tg_token, tg_chat, plan)
