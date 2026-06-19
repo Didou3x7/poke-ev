@@ -1,14 +1,23 @@
 name: PokeEV Instagram Bot
 
-# One run does it all: rotate a theme, let Claude art-direct, cross-check every
-# price against live pokemontcg.io, send the preview to Telegram with Approve/
-# Reject buttons, and publish the carousel + story ONLY after you tap Approve.
-# Until TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID secrets exist, it previews only.
+# Two phases per day, both pinned to Paris local time (DST-correct via a zoneinfo
+# gate in the bot): at 12:00 Paris it rotates a theme, art-directs + price-verifies,
+# sends the Telegram preview, and QUEUES it (pending-post.json). You have until 20:00
+# to ✅ approve / reply notes to revise / ❌ reject. At 20:00 Paris it publishes the
+# carousel + story ONLY if approved (opt-in — nothing posts without your ✅).
 
 on:
   schedule:
-    - cron: '0 18 * * *'   # 18:00 UTC = 2pm ET / 11am PT / 7pm London / 8pm Paris
+    # Candidate UTC hours; the Paris-time gate keeps only the right one per season.
+    # 10/11 UTC = 12:00 Paris (CEST/CET); 18/19 UTC = 20:00 Paris (CEST/CET).
+    - cron: '0 10,11,18,19 * * *'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Manual run mode (test the preview or publish phase on demand)'
+        type: choice
+        default: scheduled
+        options: [scheduled, prepare, publish-pending]
 
 permissions:
   contents: write
@@ -32,7 +41,7 @@ jobs:
       - run: pip install -r instagram-bot/requirements.txt
       - run: npm install --no-save @vercel/blob   # tiny Blob uploader for HD card art
         working-directory: instagram-bot
-      - name: Plan → Telegram gate → publish
+      - name: Scheduled — 12:00 Paris preview / 20:00 Paris publish
         working-directory: instagram-bot
         env:
           ANTHROPIC_API_KEY:     ${{ secrets.ANTHROPIC_API_KEY }}
@@ -46,17 +55,19 @@ jobs:
           POKEEV_DATA_DIR:       ${{ github.workspace }}/data
           POKEEV_IMAGE_BASE_URL: https://pokeev.com
           TOP_N_CARDS:           '5'
-          APPROVAL_TIMEOUT:      '2700'   # 45 min window to approve/revise on Telegram
+          REVISE_TIMEOUT:        '1500'   # 25 min at 20:00 to finalize a last-minute revise
           PLAN_PATH:             plan.json
           HISTORY_PATH:          history.json
-        run: python main.py run
+          PENDING_PATH:          pending-post.json
+        run: python main.py ${{ github.event.inputs.mode || 'scheduled' }}
       - name: Record post history
         if: always()
         run: |
           git config user.name "Didou3x7"
           git config user.email "292510557+Didou3x7@users.noreply.github.com"
-          git add instagram-bot/history.json 2>/dev/null || true
+          git add -A instagram-bot/history.json instagram-bot/pending-post.json 2>/dev/null || true
           if ! git diff --staged --quiet; then
-            git commit -m "chore(bot): record IG post history [skip ci]"
+            git commit -m "chore(bot): post history + pending state [skip ci]"
+            git pull --rebase --autostash || true
             git push
           fi

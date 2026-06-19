@@ -1739,14 +1739,191 @@ def do_run():
     log("Max revisions reached — not posting.")
 
 
+# -------------- scheduled 2-phase: noon preview / 20:00 publish ------------ #
+# GitHub Actions can't wait 8h, so the day is split: at 12:00 Paris the bot builds
+# the post + sends the Telegram preview + queues it (pending-post.json); the editor
+# has until 20:00 to ✅ approve / reply with revise notes / 🚫 reject; at 20:00 Paris
+# a second tick publishes ONLY if approved (opt-in — nothing posts without ✅).
+PARIS_TZ = "Europe/Paris"
+
+
+def paris_hour():
+    """Hour in Europe/Paris, DST-correct (so 'noon'/'20:00' track French local time
+    year-round even though GitHub cron is UTC). Falls back to UTC+2 if zoneinfo is
+    somehow unavailable (it ships with the 3.11 runner)."""
+    try:
+        from zoneinfo import ZoneInfo
+
+        return datetime.now(ZoneInfo(PARIS_TZ)).hour
+    except Exception:  # noqa: BLE001
+        return (datetime.now(timezone.utc).hour + 2) % 24
+
+
+def _pending_path():
+    return Path(env("PENDING_PATH", "pending-post.json"))
+
+
+def write_pending(plan, ctx, tg_offset):
+    """Persist today's built+previewed post so the 20:00 tick can publish it. The
+    api_key is never written; the ctx is kept so a 20:00 revise can rebuild."""
+    ctx2 = {k: v for k, v in ctx.items() if k != "api_key"}
+    _pending_path().write_text(
+        json.dumps({"date": plan["date"], "theme": plan["theme"], "tg_offset": tg_offset,
+                    "plan": plan, "ctx": ctx2}, indent=2, ensure_ascii=False),
+        encoding="utf-8")
+    log("stored pending-post.json")
+
+
+def read_pending():
+    try:
+        return json.loads(_pending_path().read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return None
+
+
+def clear_pending():
+    p = _pending_path()
+    if p.exists():
+        p.unlink()
+        log("cleared pending-post.json")
+
+
+def tg_offset_now(token):
+    """update_id+1 of the latest queued update, so the publish tick reads only the
+    decisions the editor sends AFTER today's preview."""
+    try:
+        seen = tg_api(token, "getUpdates", {"timeout": 0})
+        return (seen[-1]["update_id"] + 1) if seen else 0
+    except Exception:  # noqa: BLE001
+        return 0
+
+
+def latest_decision(token, chat_id, offset):
+    """Scan updates since `offset`; return the LAST clear intent as
+    ('approve'|'skip'|'revise'|'none', notes). Acks any button taps."""
+    try:
+        updates = tg_api(token, "getUpdates", {"offset": offset, "timeout": 0})
+    except Exception:  # noqa: BLE001
+        return "none", None
+    decision, notes = "none", None
+    for u in updates:
+        cq = u.get("callback_query")
+        if cq and str(cq["message"]["chat"]["id"]) == str(chat_id):
+            try:
+                tg_api(token, "answerCallbackQuery", {"callback_query_id": cq["id"], "text": "Got it ✓"})
+            except Exception:  # noqa: BLE001
+                pass
+            if cq.get("data") == "approve":
+                decision, notes = "approve", None
+            elif cq.get("data") == "reject":
+                decision, notes = "skip", None
+            continue
+        msg = u.get("message")
+        if msg and str(msg.get("chat", {}).get("id")) == str(chat_id):
+            txt = (msg.get("text") or "").strip()
+            if not txt or txt.startswith("/"):
+                continue
+            low = txt.lower()
+            if low in ("skip", "cancel", "stop", "no", "non"):
+                decision, notes = "skip", None
+            elif low in ("ok", "okay", "approve", "yes", "go", "post", "oui", "✅"):
+                decision, notes = "approve", None
+            else:
+                decision, notes = "revise", txt
+    return decision, notes
+
+
+def do_prepare():
+    """12:00 Paris — build the rotated post, send the Telegram preview, queue it.
+    Nothing posts now; the 20:00 tick publishes it only on an explicit approval."""
+    ctx = prepare_rotation()
+    plan = build_theme_plan(ctx)
+    tg_token = env("TELEGRAM_BOT_TOKEN")
+    tg_chat = env("TELEGRAM_CHAT_ID")
+    if not (tg_token and tg_chat):
+        log("Telegram gate not configured — built the post but cannot preview/queue it.")
+        return
+    offset = tg_offset_now(tg_token)
+    tg_send_preview(tg_token, tg_chat, plan)
+    write_pending(plan, ctx, offset)
+    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+           "text": "🕛 Today's preview is ready. Tap ✅ Approve to post it at 20:00 Paris, reply with "
+                   "notes to revise, or ❌ Reject to skip. Nothing posts without your ✅."})
+
+
+def do_publish_pending():
+    """20:00 Paris — publish today's pending post ONLY if approved (opt-in). A
+    last-mile revise rebuilds + re-previews + waits briefly for the final ✅."""
+    pending = read_pending()
+    today = datetime.now(timezone.utc).date().isoformat()
+    if not pending or pending.get("date") != today:
+        log("no pending post for today — nothing to publish")
+        return
+    tg_token = env("TELEGRAM_BOT_TOKEN")
+    tg_chat = env("TELEGRAM_CHAT_ID")
+    if not (tg_token and tg_chat):
+        log("Telegram not configured — cannot read approval; not posting.")
+        return
+    plan = pending["plan"]
+    decision, notes = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
+
+    if decision == "revise" and notes:
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🔄 Reworking with your notes…"})
+        ctx = pending.get("ctx") or {}
+        ctx["api_key"] = env("ANTHROPIC_API_KEY")
+        try:
+            plan = build_theme_plan(ctx, feedback=notes)
+        except Exception as exc:  # noqa: BLE001
+            log(f"revise rebuild failed ({exc}); keeping the original plan")
+        tg_send_preview(tg_token, tg_chat, plan)
+        action, _ = tg_wait_decision(tg_token, tg_chat, timeout=int(env("REVISE_TIMEOUT", "1500") or "1500"))
+        if action != "approve":
+            tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Not approved — nothing posted today."})
+            clear_pending()
+            return
+        decision = "approve"
+
+    if decision == "approve":
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "📤 Approved — publishing now…"})
+        publish_to_instagram(plan)
+        record_history(plan)
+        clear_pending()
+        return
+    if decision == "skip":
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Skipped — nothing posted today."})
+        clear_pending()
+        return
+    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "⌛️ No ✅ approval by 20:00 — nothing posted today."})
+    clear_pending()
+
+
+def do_scheduled():
+    """One cron entry, routed by Paris local time (the cron fires at every candidate
+    UTC hour; this gate keeps only the right one per DST season)."""
+    h = paris_hour()
+    log(f"scheduled tick — Paris hour {h}")
+    if h == 12:
+        do_prepare()
+    elif h == 20:
+        do_publish_pending()
+    else:
+        log(f"Paris hour {h} is neither 12 nor 20 (off-season UTC candidate) — exiting.")
+
+
 def main():
-    cmd = sys.argv[1] if len(sys.argv) > 1 else "run"
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "scheduled"
     if cmd == "plan":
         build_theme_plan(prepare_rotation())
     elif cmd == "publish":  # manual fallback: post the last plan.json
         publish_to_instagram(json.loads(Path(env("PLAN_PATH", "plan.json")).read_text(encoding="utf-8")))
-    else:
+    elif cmd == "prepare":
+        do_prepare()
+    elif cmd == "publish-pending":
+        do_publish_pending()
+    elif cmd == "run":  # legacy single-shot: build + gate + publish in one go
         do_run()
+    else:  # default (cron) = the Paris-time-routed 2-phase flow
+        do_scheduled()
 
 
 if __name__ == "__main__":
