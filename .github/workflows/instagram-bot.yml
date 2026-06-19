@@ -17,7 +17,7 @@ on:
         description: 'Manual run mode (test the preview or publish phase on demand)'
         type: choice
         default: scheduled
-        options: [scheduled, prepare, publish-pending]
+        options: [scheduled, prepare, publish-pending, run]
 
 permissions:
   contents: write
@@ -55,6 +55,7 @@ jobs:
           POKEEV_DATA_DIR:       ${{ github.workspace }}/data
           POKEEV_IMAGE_BASE_URL: https://pokeev.com
           TOP_N_CARDS:           '5'
+          APPROVAL_TIMEOUT:      '2700'   # one-shot `run` mode: 45 min to approve on Telegram
           REVISE_TIMEOUT:        '1500'   # 25 min at 20:00 to finalize a last-minute revise
           PLAN_PATH:             plan.json
           HISTORY_PATH:          history.json
