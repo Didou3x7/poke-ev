@@ -68,12 +68,15 @@ function imgParam(v: string | null): string | null {
   if (!v) return null;
   try {
     const u = new URL(v);
+    // Dev-only: allow a locally-served (upscaled) asset for IG slide previews.
+    if (process.env.NODE_ENV !== "production" && u.hostname === "localhost") return u.toString();
     const ok =
       u.protocol === "https:" &&
       (u.hostname === "images.pokemontcg.io" ||
         u.hostname === "replicate.delivery" ||
         u.hostname.endsWith(".replicate.delivery") ||
         u.hostname.endsWith(".blob.vercel-storage.com") ||
+        u.hostname === "tcgplayer-cdn.tcgplayer.com" ||
         u.hostname === "assets.tcgdex.net");
     return ok ? u.toString() : null;
   } catch {
@@ -510,9 +513,13 @@ function connectedCta(opts: { setLabel: string; logo: string | null; eyebrow: st
       </div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
-        <div style={{ display: "flex" }}><HoloText size={104}>{opts.h1}</HoloText></div>
-        <div style={{ display: "flex" }}><HoloText size={104}>{opts.h2}</HoloText></div>
-        <div style={{ display: "flex", fontSize: 33, lineHeight: 1.38, color: "#aab2c5", marginTop: 36, maxWidth: 860 }}>{opts.body}</div>
+        <div style={{ display: "flex" }}><HoloText size={opts.h2 ? 104 : opts.h1.length <= 10 ? 100 : opts.h1.length <= 16 ? 84 : opts.h1.length <= 22 ? 72 : 60}>{opts.h1}</HoloText></div>
+        {opts.h2 ? <div style={{ display: "flex" }}><HoloText size={104}>{opts.h2}</HoloText></div> : null}
+        {opts.body.includes("|") ? (
+          <div style={{ display: "flex", marginTop: 36 }}><MultiLine text={opts.body} size={33} color="#aab2c5" lh={1.38} /></div>
+        ) : (
+          <div style={{ display: "flex", fontSize: 33, lineHeight: 1.38, color: "#aab2c5", marginTop: 36, maxWidth: 860 }}>{opts.body}</div>
+        )}
         {opts.verdict ? (
           <div style={{ display: "flex", marginTop: 24 }}>
             <HoloText size={40} ls={-1}>{opts.verdict}</HoloText>
@@ -552,10 +559,22 @@ const RkFootCue = ({ text }: { text: string }) => (
 
 // Body copy as deliberate, pre-split lines (split on "|") so nothing wraps into an
 // orphan — every line is centred and hand-balanced. Satori's auto-wrap can't do this.
+// Inline emphasis: wrap a phrase in *asterisks* to render it in the holo gradient.
 const MultiLine = ({ text, size, color, lh = 1.34 }: { text: string; size: number; color: string; lh?: number }) => (
   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
     {text.split("|").map((ln, i) => (
-      <span key={i} style={{ display: "flex", fontSize: size, lineHeight: lh, color }}>{ln.trim()}</span>
+      <div key={i} style={{ display: "flex", alignItems: "baseline" }}>
+        {ln.trim().split("*").map((seg, j) =>
+          seg === "" ? null : (
+            <span
+              key={j}
+              style={{ display: "flex", whiteSpace: "pre", fontSize: size, lineHeight: lh, ...(j % 2 === 1 ? { backgroundImage: HOLO, backgroundClip: "text", color: "transparent" } : { color }) }}
+            >
+              {seg}
+            </span>
+          ),
+        )}
+      </div>
     ))}
   </div>
 );
@@ -720,12 +739,160 @@ function rkCta(opts: { eyebrow: string; h1: string; h2: string; body: string }) 
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// THEME 3 — "GRAILS". The money/reach pillar, as a single-card story (distinct from
+// T1's multi-card art assembly): one grail per post. Slide 1 is a money SHOCK (this
+// one card outprices a real-world object); the rest answer "but why is it worth that?"
+// — the card, the artist, the art, the odds, the synthesis. No combined total, no
+// assembly. CTA reuses connectedCta (value your own cards).
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Slide 1 — THE SHOCK. The grail big, with a relatable money comparison. The hook
+// that stops the scroll; "but why?" is the loop the story slides pay off.
+function grailShock(opts: { image: string; setLabel: string; logo: string | null; eyebrow: string; headline: string; price: string; priceNote: string; cue: string }) {
+  const lines = opts.headline.split("|").map((s) => s.trim()).filter(Boolean);
+  const longest = Math.max(...lines.map((l) => l.length), 1);
+  const hsize = longest <= 14 ? 84 : longest <= 19 ? 70 : 58;
+  return (
+    <Frame>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Wordmark size={34} />
+        <SetLogo logo={opts.logo} label={opts.setLabel} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <img src={opts.image} width={432} height={602} style={{ display: "flex", borderRadius: 16, objectFit: "contain", boxShadow: "0 34px 84px -22px rgba(0,0,0,0.92)" }} />
+        <div style={{ display: "flex", fontSize: 21, letterSpacing: 6, color: "#7c8499", marginTop: 34 }}>{opts.eyebrow}</div>
+        <div style={{ display: "flex", flexDirection: "column", marginTop: 16, alignItems: "center" }}>
+          {lines.map((ln, i) => (
+            <div key={i} style={{ display: "flex" }}><HoloText size={hsize}>{ln}</HoloText></div>
+          ))}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 28 }}>
+          <span style={{ display: "flex", fontFamily: "Clash", fontSize: 66, letterSpacing: -2, color: "#E8ECF4" }}>{opts.price}</span>
+          <span style={{ display: "flex", fontSize: 22, letterSpacing: 1, color: "#7c8499", marginTop: 8 }}>{opts.priceNote}</span>
+        </div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+        <span style={{ fontFamily: "Clash", fontSize: 26, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{opts.cue}</span>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", fontSize: 24, color: "#5C6477" }}>pokeev.com · @pokeev.tcg</div>
+    </Frame>
+  );
+}
+
+// Slides 2–3 — THE STORY. The card is the hero (big, floated), with an aerated text
+// block beneath: kicker, holo headline (the card / the artist), and a short body.
+// Generous spacing — nothing stacked or cramped.
+function grailStory(opts: { image: string; setLabel: string; logo: string | null; kicker: string; headline: string; body: string; tilt: number }) {
+  const lines = opts.headline.split("|").map((s) => s.trim()).filter(Boolean);
+  const longest = Math.max(...lines.map((l) => l.length), 1);
+  const hsize = longest <= 16 ? 56 : longest <= 24 ? 46 : 38;
+  return (
+    <Frame>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Wordmark size={28} />
+        <SetLogo logo={opts.logo} label={opts.setLabel} />
+      </div>
+      <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <img src={opts.image} width={644} height={898} style={{ display: "flex", borderRadius: 18, objectFit: "contain", transform: `rotate(${opts.tilt}deg)`, boxShadow: "0 40px 100px -24px rgba(0,0,0,0.9)" }} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 20, letterSpacing: 6, color: "#7c8499" }}>{opts.kicker}</div>
+        <div style={{ display: "flex", flexDirection: "column", marginTop: 14, alignItems: "center" }}>
+          {lines.map((ln, i) => (
+            <div key={i} style={{ display: "flex" }}><HoloText size={hsize}>{ln}</HoloText></div>
+          ))}
+        </div>
+        <div style={{ display: "flex", marginTop: 24 }}><MultiLine text={opts.body} size={27} color="#aab2c5" lh={1.45} /></div>
+      </div>
+    </Frame>
+  );
+}
+
+// Slide 4 — THE DETAIL. FULL-BLEED: the zoomed art fills the whole slide (the crop
+// is param-driven zw/zx/zy on an upscaled source), with the wordmark up top and the
+// caption over a bottom scrim. Immersive — the whole frame IS the artwork.
+function grailZoom(opts: { image: string; setLabel: string; logo: string | null; kicker: string; headline: string; body: string; win: number; winH: number; zw: number; zx: number; zy: number; foot: string }) {
+  const lines = opts.headline.split("|").map((s) => s.trim()).filter(Boolean);
+  const longest = Math.max(...lines.map((l) => l.length), 1);
+  const hsize = longest <= 16 ? 62 : longest <= 24 ? 50 : 40;
+  return (
+    <div style={{ display: "flex", width: "100%", height: "100%", position: "relative", background: BG, color: "#E8ECF4", fontFamily: "Satoshi, sans-serif" }}>
+      <img src={opts.image} width={opts.zw} height={Math.round(opts.zw * 1.394)} style={{ display: "flex", position: "absolute", left: opts.zx, top: opts.zy }} />
+      <div style={{ display: "flex", position: "absolute", top: 0, left: 0, width: "100%", height: 300, background: "linear-gradient(to bottom, rgba(11,14,20,0.82), rgba(11,14,20,0))" }} />
+      <div style={{ display: "flex", position: "absolute", bottom: 0, left: 0, width: "100%", height: 660, background: "linear-gradient(to top, rgba(11,14,20,0.98) 32%, rgba(11,14,20,0))" }} />
+      <div style={{ display: "flex", flexDirection: "column", position: "absolute", top: 0, left: 0, width: "100%", height: "100%", padding: 72, justifyContent: "space-between" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Wordmark size={28} />
+          <SetLogo logo={opts.logo} label={opts.setLabel} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+          <div style={{ display: "flex", fontSize: 20, letterSpacing: 6, color: "#9aa3b5" }}>{opts.kicker}</div>
+          <div style={{ display: "flex", flexDirection: "column", marginTop: 14, alignItems: "center" }}>
+            {lines.map((ln, i) => (
+              <div key={i} style={{ display: "flex" }}><HoloText size={hsize}>{ln}</HoloText></div>
+            ))}
+          </div>
+          <div style={{ display: "flex", marginTop: 22 }}><MultiLine text={opts.body} size={27} color="#c6cdda" lh={1.45} /></div>
+          <div style={{ display: "flex", marginTop: 30 }}>
+            <span style={{ fontFamily: "Clash", fontSize: 24, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{opts.foot}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Slide 5 — THE ODDS. The scarcity, made striking: real set booster packs in a row,
+// the number ALONE on one line (huge holo), an aerated caption. No stacked text.
+function grailOdds(opts: { boosters: string[]; setLabel: string; logo: string | null; kicker: string; statA: string; statB: string; statSub: string; body: string; foot: string }) {
+  return (
+    <Frame>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Wordmark size={28} />
+        <SetLogo logo={opts.logo} label={opts.setLabel} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        {opts.kicker ? <div style={{ display: "flex", fontSize: 21, letterSpacing: 6, color: "#7c8499" }}>{opts.kicker}</div> : null}
+        <div style={{ display: "flex", position: "relative", width: 860, height: 568, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
+          {opts.boosters.map((src, i) => {
+            const n = opts.boosters.length || 1;
+            const t = i - (n - 1) / 2;
+            const bw = 286;
+            const bh = Math.round(bw * 1.81);
+            const rot = Math.round(t * 125) / 10;
+            const left = Math.round(430 - bw / 2 + t * 126);
+            const top = Math.round(8 + Math.abs(t) * 30);
+            return (
+              <img key={i} src={src} width={bw} height={bh} style={{ position: "absolute", left, top, display: "flex", objectFit: "contain", transform: `rotate(${rot}deg)`, boxShadow: "0 26px 60px -22px rgba(0,0,0,0.9)" }} />
+            );
+          })}
+        </div>
+        <div style={{ display: "flex", alignItems: "baseline", marginTop: 50 }}>
+          <HoloText size={140} ls={-3}>{opts.statA}</HoloText>
+          <span style={{ display: "flex", fontSize: 50, color: "#5C6477", margin: "0 40px" }}>in</span>
+          <HoloText size={140} ls={-3}>{opts.statB}</HoloText>
+        </div>
+        <div style={{ display: "flex", fontSize: 22, letterSpacing: 5, color: "#8A93A6", marginTop: 26 }}>{opts.statSub}</div>
+        <div style={{ display: "flex", marginTop: 34 }}><MultiLine text={opts.body} size={27} color="#aab2c5" lh={1.45} /></div>
+      </div>
+      <RkFootCue text={opts.foot} />
+    </Frame>
+  );
+}
+
 export async function GET(request: NextRequest) {
   if (!rateLimit(`ig:${clientIp(request)}`, 60, 60_000)) {
     return new Response("Too many requests", { status: 429 });
   }
   const p = request.nextUrl.searchParams;
   const slide = p.get("slide") ?? "cover";
+  // Numeric query param with a default (e.g. the grail-zoom crop offsets).
+  const pnum = (k: string, def: number) => {
+    const r = p.get(k);
+    const n = Number(r);
+    return r && Number.isFinite(n) ? n : def;
+  };
   const base = THEMES[p.get("theme") ?? "grails"] ?? THEMES.grails;
   // Claude (the bot's art director) may override the cover copy per post; fall
   // back to the theme preset. tag flows to the card slides' corner label too.
@@ -819,8 +986,8 @@ export async function GET(request: NextRequest) {
         setLabel,
         logo,
         eyebrow: textParam(p.get("eyebrow"), 30) ?? "BEFORE YOU RIP IT",
-        h1: textParam(p.get("h1"), 18) ?? "Open it,",
-        h2: textParam(p.get("h2"), 18) ?? "or keep it sealed?",
+        h1: textParam(p.get("h1"), 30) ?? "Open it,",
+        h2: textParam(p.get("h2"), 18) ?? "",
         body: textParam(p.get("body"), 200) ?? "pokeev.com runs the live Expected Value on any sealed product, so you know if a set is worth ripping.",
         verdict: textParam(p.get("verdict"), 40),
       });
@@ -901,6 +1068,70 @@ export async function GET(request: NextRequest) {
         h1: textParam(p.get("h1"), 18) ?? "Rip or keep?",
         h2: textParam(p.get("h2"), 18) ?? "Know in seconds.",
         body: textParam(p.get("body"), 200) ?? "pokeev.com runs the live Expected Value on every sealed set, so you never rip blind again.",
+      });
+    }
+  } else if (slide.startsWith("grail")) {
+    const logo = imgParam(p.get("logo"));
+    const setLabel = textParam(p.get("set"), 40) ?? "";
+    if (slide === "grail-shock") {
+      const img = imgParam(p.get("img0"));
+      if (!img) return new Response("not found", { status: 404 });
+      element = grailShock({
+        image: img,
+        setLabel,
+        logo,
+        eyebrow: textParam(p.get("eyebrow"), 40) ?? "ONE POKÉMON CARD",
+        headline: textParam(p.get("headline"), 48) ?? "",
+        price: moneyParam(p.get("price")) ?? "$0",
+        priceNote: textParam(p.get("note"), 30) ?? "for one card",
+        cue: textParam(p.get("cue"), 30) ?? "but why? swipe →",
+      });
+    } else if (slide === "grail-zoom") {
+      const img = imgParam(p.get("img0"));
+      if (!img) return new Response("not found", { status: 404 });
+      element = grailZoom({
+        image: img,
+        setLabel,
+        logo,
+        kicker: textParam(p.get("kicker"), 30) ?? "",
+        headline: textParam(p.get("headline"), 48) ?? "",
+        body: textParam(p.get("body"), 180) ?? "",
+        win: Math.min(920, Math.max(200, pnum("win", 640))),
+        winH: Math.min(900, Math.max(160, pnum("winH", 470))),
+        zw: Math.min(6000, Math.max(400, pnum("zw", 1180))),
+        zx: Math.min(400, Math.max(-7000, pnum("zx", -300))),
+        zy: Math.min(400, Math.max(-7000, pnum("zy", -150))),
+        foot: textParam(p.get("foot"), 30) ?? "swipe →",
+      });
+    } else if (slide === "grail-odds") {
+      const boosters: string[] = [];
+      for (let i = 0; i < 6; i++) {
+        const u = imgParam(p.get(`b${i}`));
+        if (!u) break;
+        boosters.push(u);
+      }
+      element = grailOdds({
+        boosters,
+        setLabel,
+        logo,
+        kicker: textParam(p.get("kicker"), 30) ?? "",
+        statA: textParam(p.get("statA"), 8) ?? "1",
+        statB: textParam(p.get("statB"), 8) ?? "",
+        statSub: textParam(p.get("statSub"), 40) ?? "",
+        body: textParam(p.get("body"), 180) ?? "",
+        foot: textParam(p.get("foot"), 30) ?? "swipe →",
+      });
+    } else {
+      const img = imgParam(p.get("img0"));
+      if (!img) return new Response("not found", { status: 404 });
+      element = grailStory({
+        image: img,
+        setLabel,
+        logo,
+        kicker: textParam(p.get("kicker"), 30) ?? "",
+        headline: textParam(p.get("headline"), 48) ?? "",
+        body: textParam(p.get("body"), 180) ?? "",
+        tilt: Math.min(12, Math.max(-12, pnum("tilt", 0))),
       });
     }
   } else {
