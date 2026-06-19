@@ -6,6 +6,7 @@ import { getAllSets, getEraOfSet, getPullRates } from "./catalog";
 import { fetchFxRate } from "./build-core";
 import { TcgdexProvider, fetchSetCardNames, mapLimit } from "./tcgdex";
 import { fetchPtcgCards, overlayPtcgPrices } from "./pokemontcg";
+import { reconcileCardPrices } from "./reconcile-prices";
 import type { Snapshot, SnapshotSet, SnapshotSetEv } from "./snapshot-types";
 
 /**
@@ -16,7 +17,6 @@ import type { Snapshot, SnapshotSet, SnapshotSetEv } from "./snapshot-types";
  * complete. Shared by the CLI script and the Vercel cron route.
  */
 
-const round2 = (n: number) => Math.round(n * 100) / 100;
 
 function snapshotEv(ev: SetEv): SnapshotSetEv {
   return {
@@ -180,22 +180,16 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
       const useCleanScans = set.releaseDate < "2011-01-01";
       const matched = overlayPtcgPrices(base, ptcgCards, useCleanScans);
       const cards: PricedCard[] = base.map((c) => {
-        let eur = c.prices.eur ?? (c.prices.usd != null ? round2(c.prices.usd / fx.eurUsd) : null);
-        let usd = c.prices.usd ?? (c.prices.eur != null ? round2(c.prices.eur * fx.eurUsd) : null);
-        // Reconcile wild EUR/USD divergence (a Cardmarket/TCGplayer data artifact
-        // — e.g. €140 vs $0.44 on a common): clamp the outlier to the other side.
-        // Genuine chase cards (grails) legitimately diverge up to ~5× by
-        // condition/market, so the bar there is 6×. But a common/uncommon should
-        // track closely across markets, so a >3.5× gap on a low-rarity card is
-        // junk (a €44 basic Energy that is $8) — clamp it tighter so it can't
-        // pollute the EV's common bucket or the "most valuable" list.
-        if (eur != null && usd != null && eur > 0 && usd > 0) {
-          const lowRarity = c.rarity === "common" || c.rarity === "uncommon";
-          const thr = lowRarity ? 3.5 : 6;
-          const ratio = (eur * fx.eurUsd) / usd;
-          if (ratio > thr) eur = round2(usd / fx.eurUsd);
-          else if (ratio < 1 / thr) usd = round2(eur * fx.eurUsd);
-        }
+        // Fill a missing market at FX, repair a stale-frozen Cardmarket EUR from
+        // the fresh USD, then clamp wild EUR/USD divergence (a Cardmarket/TCGplayer
+        // data artifact — e.g. €140 vs $0.44 on a common). See ./reconcile-prices.
+        const lowRarity = c.rarity === "common" || c.rarity === "uncommon";
+        const { eur, usd } = reconcileCardPrices(c.prices.eur ?? null, c.prices.usd ?? null, {
+          eurUsd: fx.eurUsd,
+          lowRarity,
+          eurAsOf: c.eurAsOf,
+          nowMs: startMs,
+        });
         // Gallery subsets pull from a dedicated slot but TCGdex tags them with
         // ordinary rarities (rare/ultra/secret). Their collector numbers are the
         // reliable marker (TG01.., GG01..), so reclassify by prefix to the rarity

@@ -19,6 +19,9 @@ export interface PricedCard {
   rawRarity: string | null;
   prices: MarketPrice;
   image: string | null;
+  /** updatedAt of the overlaid Cardmarket (EUR) quote — transient, used only by
+   *  the build's stale-EUR reconciliation; never written to the snapshot. */
+  eurAsOf?: string | null;
 }
 
 /** One slot of a booster pack as described by a pull-rate file. */

@@ -20,6 +20,8 @@ export interface PtcgCard {
   eur: number | null;
   usd: number | null;
   rarity: string | null;
+  /** updatedAt of the Cardmarket (EUR) quote — for the build's staleness guard. */
+  eurAsOf?: string | null;
 }
 
 interface PtcgApiCard {
@@ -27,8 +29,8 @@ interface PtcgApiCard {
   name: string;
   rarity?: string | null;
   images?: { small?: string; large?: string } | null;
-  tcgplayer?: { prices?: Record<string, { market?: number | null; mid?: number | null; low?: number | null } | null> | null } | null;
-  cardmarket?: { prices?: { trendPrice?: number | null; averageSellPrice?: number | null; avg7?: number | null } | null } | null;
+  tcgplayer?: { updatedAt?: string | null; prices?: Record<string, { market?: number | null; mid?: number | null; low?: number | null } | null> | null } | null;
+  cardmarket?: { updatedAt?: string | null; prices?: { trendPrice?: number | null; averageSellPrice?: number | null; avg7?: number | null } | null } | null;
 }
 
 /** Best TCGPlayer USD market price across printings (holo → reverse → normal → 1st ed). */
@@ -98,6 +100,7 @@ export async function fetchPtcgCards(setIds: string[], fetchImpl: typeof fetch =
           eur: ptcgEur(c),
           usd: ptcgUsd(c),
           rarity: c.rarity ?? null,
+          eurAsOf: c.cardmarket?.updatedAt ?? null,
         });
       }
       if (cards.length < 250) break;
@@ -144,7 +147,10 @@ export function overlayPtcgPrices(cards: PricedCard[], ptcg: PtcgCard[], preferI
     }
     if (!m) continue;
     matched++;
-    if (m.eur != null) c.prices.eur = m.eur;
+    if (m.eur != null) {
+      c.prices.eur = m.eur;
+      c.eurAsOf = m.eurAsOf; // carry the EUR quote's age for the stale-EUR guard
+    }
     if (m.usd != null) c.prices.usd = m.usd;
     // Normally only fill an image TCGdex lacks. For vintage sets (preferImage),
     // pokemontcg.io's clean, straight, full-bleed scans REPLACE TCGdex's old
