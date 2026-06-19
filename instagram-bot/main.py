@@ -722,16 +722,24 @@ def claude_json(api_key, prompt, max_tokens=1100, system=None, vision_image=None
     return json.loads(_strip_json_fence(raw))
 
 
-def _clean_hashtags(tags, lo=20, hi=28):
+def _clean_hashtags(tags, lo=24, hi=30):
     """Normalize, de-dup (case-insensitive), strip em-dashes, cap length. The caller's
-    post-specific tags lead; a deep high-reach core pads the tail so every post ships a
-    full 20-28 layered block even when Claude/fallback under-delivers."""
-    core = ["#pokemon", "#pokemontcg", "#pokemoncards", "#pokemoncollector", "#tcg",
-            "#pokemoncommunity", "#pokemoncardcollection", "#tcgcollector", "#pokemoncollection",
-            "#pokemoninvesting", "#pokemontcgcollector", "#pokemoncardcollector", "#pokemoncardgame",
-            "#tcgcommunity", "#pokemoncollectors", "#pokemonfan", "#pokemontcgcards", "#pokemontcgcommunity",
-            "#tradingcards", "#tradingcardgame", "#pokemonusa", "#tcgplayer", "#pokemonmaster",
-            "#pokemonsealed", "#pullrate", "#cardcollector", "#pokemoninvestment", "#pokemonpulls"]
+    post-specific tags lead; a deep, INTERNATIONAL-reach core pads the tail so every
+    post ships a full 24-30 layered block even when Claude/fallback under-delivers.
+    Core layers: high-volume global, broad collector/TCG, active community, regional."""
+    core = [
+        # high-volume global
+        "#pokemon", "#pokemontcg", "#pokemoncards", "#pokemoncollector", "#tcg",
+        "#pokemoncommunity", "#pokemoncardcollection", "#pokemoncollection",
+        # broad collector / TCG
+        "#tcgcollector", "#pokemoncardgame", "#tradingcards", "#tradingcardgame",
+        "#cardcollector", "#tcgcommunity", "#pokemoncardcollector", "#pokemontcgcollector",
+        # active community / discovery
+        "#pokemonfan", "#pokemontcgcards", "#pokemontcgcommunity", "#pokemoncollectors",
+        "#pokemonpulls", "#pokemonsealed", "#pullrate", "#pokemoninvesting", "#pokemoninvestment",
+        # international / regional reach
+        "#pokemonuk", "#pokemoneurope", "#pokemonusa", "#pokemonjapan", "#pokemoncardsuk",
+        "#pokemontcgeurope", "#tcgplayer", "#pokemonmaster", "#pokemontcgjapan", "#cardgames"]
     seen, out = set(), []
     for t in list(tags or []) + core:
         t = str(t).strip().replace("—", "").replace("–", "")
@@ -763,6 +771,23 @@ _CAPTION_RULES = (
     "The caption is ENGLISH ONLY and flows: hook line, then substance, then an "
     "engagement nudge, then a 'link in bio -> pokeev.com' CTA. Name pokeev.com at "
     "least twice. No hashtags inside the caption. No em-dashes or en-dashes."
+)
+
+# Shared hashtag brief — every post must maximize INTERNATIONAL discoverability.
+_HASHTAG_RULES = (
+    "HASHTAGS — engineer for MAXIMUM INTERNATIONAL REACH. Audience: global "
+    "English-speaking Pokemon TCG collectors and investors (mostly US, UK, EU, plus "
+    "international). Return 24-30 UNIQUE English hashtags, NO fixed block, layered as:\n"
+    "  1) high-VOLUME global core: #pokemon #pokemontcg #pokemoncards #pokemoncollector "
+    "#tcg #pokemoncommunity;\n"
+    "  2) broad collector/TCG tags: #tcgcollector #pokemoncardgame #tradingcards "
+    "#cardcollector #pokemoninvesting;\n"
+    "  3) currently-ACTIVE community/discovery tags collectors browse and search;\n"
+    "  4) INTERNATIONAL/regional reach tags (e.g. #pokemonuk #pokemoneurope #pokemonusa "
+    "#pokemonjapan) so the post surfaces beyond one country;\n"
+    "  5) POST-SPECIFIC tags built from this post: the set, the Pokemon name(s), the card, "
+    "the rarity, and the artist when known.\n"
+    "No banned/spammy/irrelevant tags. No em-dashes. Each tag unique and lowercase."
 )
 
 
@@ -865,17 +890,16 @@ def artdirect_connected(api_key, facts, feedback=None):
         f"Illustrator: {facts['artist']}. Era: {facts['era']}. Set: {facts['setLabel']}.\n"
         f"Cards left-to-right, with verified USD:\n{lines}\n"
         f"Combined panorama value: ${facts['total']}.\n\n"
-        + _CAPTION_RULES + "\n\n"
+        + _CAPTION_RULES + "\n\n" + _HASHTAG_RULES + "\n"
+        "For THIS theme also fold in format tags like #connectingart #pokemonart "
+        "#pokemonillustration alongside the post-specific artist, set, and Pokemon tags.\n\n"
         "Return ONLY a JSON object with keys:\n"
         '  "eyebrow": ALL-CAPS series label, <= 46 chars (e.g. the set + theme).\n'
         '  "headline": a short cover hook, <= 24 chars (e.g. "They drew one sky.").\n'
         '  "revealTitle": <= 34 chars title for the panorama reveal slide.\n'
         '  "caption": the Instagram caption per the rules above. Lead by teaching that these cards '
         'form one illustration, mention the artist, ask an engagement question.\n'
-        '  "hashtags": 20-28 hashtags. Layer high-reach core (#pokemon #pokemontcg #pokemoncards '
-        '#pokemoncollector #tcg #pokemoncommunity) + format tags (#connectingart #pokemonart '
-        '#pokemonillustration) + POST-SPECIFIC tags from the artist name, set, and Pokemon names. '
-        'No em-dashes. Each unique.\n'
+        '  "hashtags": 24-30 hashtags per the HASHTAGS rules above.\n'
     )
     if feedback:
         prompt += f"\n\nEditor feedback to apply precisely, keep all numbers exact:\n\"{feedback}\"\n"
@@ -1058,7 +1082,9 @@ def artdirect_ripkeep(api_key, facts, feedback=None):
         f"The gap is {fmt_usd(facts['gap'])}. LOCKED VERDICT: {verdict}. "
         f"Top chase cards: {chase}.\n"
         "ALWAYS call the product an Elite Trainer Box or ETB. NEVER say a generic 'box'.\n\n"
-        + _CAPTION_RULES + "\n\n"
+        + _CAPTION_RULES + "\n\n" + _HASHTAG_RULES + "\n"
+        "For THIS theme also fold in format tags like #riporkeep #sealedpokemon "
+        "#elitetrainerbox #pokemoninvesting alongside the post-specific set and chase-Pokemon tags.\n\n"
         "Return ONLY a JSON object with keys:\n"
         '  "eyebrow": ALL-CAPS cover label, <= 46 chars (e.g. "THE COLLECTOR\'S DILEMMA").\n'
         f'  "verdictWord": the verdict for the verdict slide. Use exactly "RIP IT" if the verdict is RIP, '
@@ -1066,9 +1092,7 @@ def artdirect_ripkeep(api_key, facts, feedback=None):
         '  "reason": <= 140 chars, two short clauses split by |, citing the EV and sealed numbers.\n'
         '  "caption": the caption per the rules. State the ETB price and the average open value, name the '
         'verdict, ask rip-or-keep.\n'
-        '  "hashtags": 20-28 hashtags layering high-reach core + format tags (#riporkeep #sealedpokemon '
-        '#elitetrainerbox #pokemoninvesting) + post-specific tags from the set name and chase Pokemon. '
-        'No em-dashes.\n'
+        '  "hashtags": 24-30 hashtags per the HASHTAGS rules above.\n'
     )
     if feedback:
         prompt += f"\n\nEditor feedback to apply precisely, keep all numbers exact:\n\"{feedback}\"\n"
@@ -1186,17 +1210,29 @@ def select_grails(snapshot, names, exclude=None):
     return best
 
 
+def _safe_scene_zoom():
+    """SCENE crop: the main subject, centred, moderate zoom. Stays in the pure-art
+    band (center y ~0.30). Distinct from the craft crop below."""
+    return grail_zoom_from_vision(0.50, 0.30, 2.0)
+
+
+def _safe_craft_zoom():
+    """CRAFT/ARTIST crop: a tighter, OFF-CENTRE crop on a different art region (upper
+    band, pushed left) to surface brushwork/texture. Visibly different from the scene
+    crop. Still inside the pure-art band (center y ~0.20, clear of title bar/attack box)."""
+    return grail_zoom_from_vision(0.40, 0.24, 2.4)
+
+
+# Back-compat alias (older callers): defaults to the centred scene crop.
 def _safe_grail_zoom():
-    """Centred art-band crop (avoids title bar top ~13% and attack text below ~53%).
-    Renderer clamps zw/zx/zy; these target the pure-art middle band for a portrait
-    card scaled to a tall window."""
-    return {"zw": 3200, "zx": -1100, "zy": -780}
+    return _safe_scene_zoom()
 
 
 def fallback_grail_brief(facts):
     name = facts["name"]
     price = fmt_usd(facts["usd"])
     set_name = facts["set_name"]
+    artist = facts.get("artist")
     odds_n = facts.get("odds_n")
     odds_line = (f"Rip a sealed booster and|the odds are {odds_n} to 1." if odds_n
                  else "It sits in the rarest tier of the set.")
@@ -1207,10 +1243,16 @@ def fallback_grail_brief(facts):
         "cardKicker": "THE CARD",
         "cardHeadline": name,
         "cardBody": f"{set_name}'s crown jewel.|The card the whole set chases.",
-        "sceneKicker": "THE ART",
-        "sceneHeadline": "Look closer",
-        "sceneBody": "Every detail drawn by hand.|Worth the magnification.",
-        "zoom": _safe_grail_zoom(),
+        # Zoom #1 — THE ARTIST / THE CRAFT (off-centre detail crop).
+        "craftKicker": "THE ARTIST" if artist else "THE CRAFT",
+        "craftHeadline": artist or "Hand-drawn",
+        "craftBody": "Look at the linework up close.|Every detail painted by hand.",
+        "craftZoom": _safe_craft_zoom(),
+        # Zoom #2 — THE SCENE (centred subject crop).
+        "sceneKicker": "THE SCENE",
+        "sceneHeadline": "The subject, up close",
+        "sceneBody": "The character the whole card|is built around.",
+        "sceneZoom": _safe_scene_zoom(),
         "oddsBody": odds_line,
         "caption": (
             f"{name} from {set_name} is worth {price}. For one card.\n\n"
@@ -1221,7 +1263,7 @@ def fallback_grail_brief(facts):
         ),
         "hashtags": _clean_hashtags(
             ["#pokemongrails", "#grailcard", "#pokemonart", "#pokemoninvesting"]
-            + ["#" + w for w in _slug_words(name, set_name, facts.get("rarity"))]
+            + ["#" + w for w in _slug_words(name, set_name, facts.get("rarity"), artist)]
         ),
     }
 
@@ -1249,9 +1291,10 @@ def grail_zoom_from_vision(center_x, center_y, zoom):
 
 
 def slides_grails(base, facts, brief, hd_image=None):
-    """Port of /tmp/render_grail.py: grail-shock, grail-story (THE CARD),
-    grail-zoom (full-bleed HD), grail-odds, connect-cta. Uses hd_image (Blob HD)
-    for the zoom slide when available, else the native hi-res scan."""
+    """Locked 6-slide order (port of /tmp/render_grail.py, extended to two zooms):
+    grail-shock, grail-story (THE CARD), grail-zoom #1 (THE ARTIST/CRAFT — an
+    off-centre detail crop), grail-zoom #2 (THE SCENE — the centred subject),
+    grail-odds, connect-cta. Both zooms use hd_image (Blob HD) when available."""
     base = base.rstrip("/")
     H = f"{base}/api/ig"
     set_name = facts["set_name"]
@@ -1260,7 +1303,6 @@ def slides_grails(base, facts, brief, hd_image=None):
     img = facts["image"]
     zoom_img = hd_image or img
     price = fmt_usd(facts["usd"])
-    z = brief.get("zoom") or _safe_grail_zoom()
     artist = facts.get("artist")
 
     shock = (f"{H}?slide=grail-shock&set={q(set_name)}{logop}&img0={q(img)}"
@@ -1272,12 +1314,23 @@ def slides_grails(base, facts, brief, hd_image=None):
             f"&kicker={q(brief.get('cardKicker') or 'THE CARD')}&headline={q(brief.get('cardHeadline') or facts['name'])}"
             f"&body={q(brief.get('cardBody') or '')}")
 
-    scene_kicker = brief.get("sceneKicker") or ("THE ARTIST" if artist else "THE ART")
-    scene_headline = brief.get("sceneHeadline") or (artist or "Look closer")
-    zoom = (f"{H}?slide=grail-zoom&set={q(set_name)}{logop}&img0={q(zoom_img)}"
-            f"&kicker={q(scene_kicker)}&headline={q(scene_headline)}"
-            f"&body={q(brief.get('sceneBody') or '')}"
-            f"&zw={z['zw']}&zx={z['zx']}&zy={z['zy']}&foot={q('and how rare? →')}")
+    # Zoom #1 — THE ARTIST / THE CRAFT (off-centre art-detail crop).
+    cz = brief.get("craftZoom") or _safe_craft_zoom()
+    craft_kicker = brief.get("craftKicker") or ("THE ARTIST" if artist else "THE CRAFT")
+    craft_headline = brief.get("craftHeadline") or (artist or "Hand-drawn")
+    zoom_craft = (f"{H}?slide=grail-zoom&set={q(set_name)}{logop}&img0={q(zoom_img)}"
+                  f"&kicker={q(craft_kicker)}&headline={q(craft_headline)}"
+                  f"&body={q(brief.get('craftBody') or '')}"
+                  f"&zw={cz['zw']}&zx={cz['zx']}&zy={cz['zy']}&foot={q('but what is it? →')}")
+
+    # Zoom #2 — THE SCENE (centred subject crop, a DIFFERENT region than #1).
+    sz = brief.get("sceneZoom") or _safe_scene_zoom()
+    scene_kicker = brief.get("sceneKicker") or "THE SCENE"
+    scene_headline = brief.get("sceneHeadline") or "The subject, up close"
+    zoom_scene = (f"{H}?slide=grail-zoom&set={q(set_name)}{logop}&img0={q(zoom_img)}"
+                  f"&kicker={q(scene_kicker)}&headline={q(scene_headline)}"
+                  f"&body={q(brief.get('sceneBody') or '')}"
+                  f"&zw={sz['zw']}&zx={sz['zx']}&zy={sz['zy']}&foot={q('and how rare? →')}")
 
     odds_n = facts.get("odds_n")
     booster = facts.get("booster")
@@ -1294,7 +1347,7 @@ def slides_grails(base, facts, brief, hd_image=None):
     body = "pokeev.com runs the live Expected Value.|Know if any set is worth ripping."
     cta = (f"{H}?slide=connect-cta&eyebrow={q('SO, WORTH CHASING IT?')}"
            f"&h1={q('Rip it, or keep it?')}&body={q(body)}")
-    return [shock, card, zoom, odds, cta]
+    return [shock, card, zoom_craft, zoom_scene, odds, cta]
 
 
 # --------------------- T3 live enrichment (network) ----------------------- #
@@ -1312,9 +1365,11 @@ def grail_artist(card_id):
 
 
 def grail_vision_research(api_key, facts):
-    """Claude vision: identify the subject + hidden details, return a zoom crop
-    (normalized center+zoom -> zw/zx/zy), story insights, and a VERIFIED cheaper
-    money comparison. Falls back to the centred art-band crop on any failure."""
+    """Claude vision: identify the subject + hidden details and return TWO distinct
+    crops with copy — a CRAFT crop (off-centre detail/brushwork/secondary element) and
+    a SCENE crop (the main subject, centred) — plus a VERIFIED cheaper money comparison.
+    Both crops are converted via the full-bleed centering. Falls back to the two safe
+    crops on any failure."""
     if not api_key:
         return None
     try:
@@ -1331,14 +1386,26 @@ def grail_vision_research(api_key, facts):
         f"This is the Pokemon TCG card \"{facts['name']}\" from {facts['set_name']}, worth {price}. "
         "Study the ARTWORK. The card is portrait (height/width ~1.394). The top ~13% is the title "
         "bar and below ~53% are attack-text boxes; the pure illustration sits in the middle band.\n"
+        "I will render TWO close-up zoom slides on the art, so I need TWO DISTINCT crops of "
+        "DIFFERENT regions (they must not overlap much):\n"
+        "  CRAFT crop = an interesting fine detail, brushwork/texture, or a secondary element "
+        "(off-centre is good, more zoomed-in).\n"
+        "  SCENE crop = the main subject/character, framed and centred (less zoomed-in).\n"
+        "Both crop centers MUST stay inside the pure-art band (vertical 0.13..0.53) to avoid the "
+        "title bar and attack-text boxes.\n"
         "Return ONLY a JSON object with keys:\n"
         '  "subject": one short line naming what is depicted (the Pokemon, the scene).\n'
         '  "hidden": one short line on a hidden detail or another Pokemon in the art, or "" if none.\n'
-        '  "zoomCenterX": 0..1 horizontal center of the single most interesting art detail.\n'
-        '  "zoomCenterY": 0.13..0.53 vertical center, MUST stay inside the pure-art band.\n'
-        '  "zoomFactor": 1.5..4 how tight to crop on that detail.\n'
-        '  "sceneHeadline": <= 40 char title for a zoom slide about the scene.\n'
-        '  "sceneBody": <= 140 chars, two clauses split by |, about the art/scene.\n'
+        '  "craftCenterX": 0..1 horizontal center of the CRAFT detail.\n'
+        '  "craftCenterY": 0.13..0.53 vertical center of the CRAFT detail.\n'
+        '  "craftFactor": 2.2..4 how tight to crop the CRAFT detail (tighter than the scene).\n'
+        '  "craftHeadline": <= 40 char title for the CRAFT/ARTIST zoom slide.\n'
+        '  "craftBody": <= 140 chars, two clauses split by |, about the craft/detail.\n'
+        '  "sceneCenterX": 0..1 horizontal center of the main SUBJECT.\n'
+        '  "sceneCenterY": 0.13..0.53 vertical center of the main SUBJECT.\n'
+        '  "sceneFactor": 1.6..2.6 how tight to crop the SCENE (wider than the craft).\n'
+        '  "sceneHeadline": <= 40 char title for the SCENE zoom slide.\n'
+        '  "sceneBody": <= 140 chars, two clauses split by |, about the subject/scene.\n'
         f'  "compare": a single real-world thing that costs CLEARLY LESS than {price} (so the card is '
         'the more expensive side), as a short phrase, e.g. "a Nintendo Switch". Must be verifiably cheaper. '
         'Use null if unsure.\n'
@@ -1349,7 +1416,8 @@ def grail_vision_research(api_key, facts):
     except Exception as exc:  # noqa: BLE001
         log(f"  T3 vision research failed ({exc})")
         return None
-    v["zoom"] = grail_zoom_from_vision(v.get("zoomCenterX", 0.5), v.get("zoomCenterY", 0.33), v.get("zoomFactor", 2.2))
+    v["craftZoom"] = grail_zoom_from_vision(v.get("craftCenterX", 0.34), v.get("craftCenterY", 0.20), v.get("craftFactor", 3.0))
+    v["sceneZoom"] = grail_zoom_from_vision(v.get("sceneCenterX", 0.50), v.get("sceneCenterY", 0.30), v.get("sceneFactor", 2.0))
     return v
 
 
@@ -1427,26 +1495,33 @@ def build_theme_plan(ctx, feedback=None):
         brief = artdirect_ripkeep(api_key, facts, feedback=feedback)
         slides = slides_ripkeep(base, facts, brief)
     elif theme == "grails":
+        brief = fallback_grail_brief(facts)
         if facts.get("vision"):  # fold vision research into the deterministic base
-            brief = fallback_grail_brief(facts)
             v = facts["vision"]
-            brief["zoom"] = v.get("zoom") or brief["zoom"]
+            # Zoom #1 — THE ARTIST / THE CRAFT (illustrator name leads when known).
+            if v.get("craftZoom"):
+                brief["craftZoom"] = v["craftZoom"]
+            if v.get("craftBody"):
+                brief["craftBody"] = v["craftBody"]
+            if facts.get("artist"):
+                brief["craftKicker"] = "THE ARTIST"
+                brief["craftHeadline"] = facts["artist"]
+            elif v.get("craftHeadline"):
+                brief["craftKicker"] = "THE CRAFT"
+                brief["craftHeadline"] = v["craftHeadline"]
+            # Zoom #2 — THE SCENE (the centred subject).
+            if v.get("sceneZoom"):
+                brief["sceneZoom"] = v["sceneZoom"]
             if v.get("sceneHeadline"):
                 brief["sceneHeadline"] = v["sceneHeadline"]
             if v.get("sceneBody"):
                 brief["sceneBody"] = v["sceneBody"]
-            if facts.get("artist"):
-                brief["sceneKicker"] = "THE ARTIST"
-                brief["sceneHeadline"] = facts["artist"]
             if v.get("compare"):
                 brief["shockHeadline"] = f"Worth more than|{v['compare']}"
-            brief = _grail_apply_feedback(api_key, facts, brief, feedback)
-        else:
-            brief = fallback_grail_brief(facts)
-            if facts.get("artist"):
-                brief["sceneKicker"] = "THE ARTIST"
-                brief["sceneHeadline"] = facts["artist"]
-            brief = _grail_apply_feedback(api_key, facts, brief, feedback)
+        elif facts.get("artist"):
+            brief["craftKicker"] = "THE ARTIST"
+            brief["craftHeadline"] = facts["artist"]
+        brief = _grail_apply_feedback(api_key, facts, brief, feedback)
         slides = slides_grails(base, facts, brief, hd_image=facts.get("hd_image"))
     else:
         sys.exit(f"[pokeev-bot] unknown theme {theme}")
@@ -1482,15 +1557,15 @@ def _grail_apply_feedback(api_key, facts, brief, feedback):
         f"(worth {price}). Keep the price exact.\n" + _CAPTION_RULES + "\n\n"
         "Editor feedback to apply precisely:\n\"" + feedback + "\"\n\n"
         "Return ONLY a JSON object with keys: \"shockHeadline\" (<=40, | line break ok), "
-        "\"cardHeadline\" (<=40), \"cardBody\" (<=140, | clauses), \"sceneBody\" (<=140), "
-        "\"oddsBody\" (<=140), \"caption\", \"hashtags\" (20-28). No em-dashes."
+        "\"cardHeadline\" (<=40), \"cardBody\" (<=140, | clauses), \"craftBody\" (<=140), "
+        "\"sceneBody\" (<=140), \"oddsBody\" (<=140), \"caption\", \"hashtags\" (24-30). No em-dashes."
     )
     try:
         v = claude_json(api_key, prompt, system=_VOICE)
     except Exception as exc:  # noqa: BLE001
         log(f"  T3 revise failed ({exc}); keeping prior copy")
         return brief
-    for k in ("shockHeadline", "cardHeadline", "cardBody", "sceneBody", "oddsBody", "caption"):
+    for k in ("shockHeadline", "cardHeadline", "cardBody", "craftBody", "sceneBody", "oddsBody", "caption"):
         if v.get(k):
             brief[k] = v[k]
     if v.get("hashtags"):
