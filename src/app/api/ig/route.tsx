@@ -24,7 +24,7 @@ export const revalidate = 3600;
 const SIZE = { width: 1080, height: 1350 };
 const BG = "#0B0E14";
 const HOLO = "linear-gradient(116deg, #22D3EE 0%, #8B5CF6 50%, #E94BD0 100%)";
-const GLOW = "radial-gradient(circle at 50% 38%, rgba(139,92,246,0.34), rgba(34,211,238,0.10) 36%, rgba(11,14,20,0) 64%)";
+const GLOW = "radial-gradient(circle at 50% 50%, rgba(139,92,246,0.34), rgba(34,211,238,0.10) 36%, rgba(11,14,20,0) 64%)";
 
 const THEMES: Record<string, { tag: string; title: string; sub: string }> = {
   grails: { tag: "GRAIL WATCH", title: "TOP 5 GRAILS", sub: "The priciest Pokémon chase cards on the market right now." },
@@ -528,6 +528,198 @@ function connectedCta(opts: { setLabel: string; logo: string | null; eyebrow: st
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// THEME 2 — "RIP OR KEEP". The product/conversion pillar: take ONE sealed set,
+// weigh the Expected Value of ripping it against the sealed price, and deliver the
+// verdict (RIP iff EV > sealed price — the locked site rule). One open loop (a
+// blurred gap on the cover) closes at the verdict; the CTA sends people to run the
+// same math on any set. Premium, never the word "box" — broad "sealed set".
+// ─────────────────────────────────────────────────────────────────────────────
+
+const RkHeader = ({ logo, label, size = 28 }: { logo: string | null; label: string; size?: number }) => (
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <Wordmark size={size} />
+    <SetLogo logo={logo} label={label} />
+  </div>
+);
+
+// A quiet holo cue centred at the foot of the build-up slides — keeps the swipe alive.
+const RkFootCue = ({ text }: { text: string }) => (
+  <div style={{ display: "flex", justifyContent: "center" }}>
+    <span style={{ fontFamily: "Clash", fontSize: 24, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{text}</span>
+  </div>
+);
+
+// Body copy as deliberate, pre-split lines (split on "|") so nothing wraps into an
+// orphan — every line is centred and hand-balanced. Satori's auto-wrap can't do this.
+const MultiLine = ({ text, size, color, lh = 1.34 }: { text: string; size: number; color: string; lh?: number }) => (
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+    {text.split("|").map((ln, i) => (
+      <span key={i} style={{ display: "flex", fontSize: size, lineHeight: lh, color }}>{ln.trim()}</span>
+    ))}
+  </div>
+);
+
+// Slide 1 — the hook. The SET LOGO is the hero, big and centred (collectors recognise
+// it instantly); a clean top (just the wordmark, like the CONNECTED cover); the dilemma
+// headline plus a blurred "one side wins by $X" loop make people swipe for the math.
+function rkCover(opts: { logo: string | null; setLabel: string; eyebrow: string; delta: string; cue: string }) {
+  return (
+    <Frame>
+      <div style={{ display: "flex" }}>
+        <Wordmark size={34} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        {opts.logo ? (
+          <img src={opts.logo} width={660} height={252} style={{ display: "flex", objectFit: "contain" }} />
+        ) : (
+          <span style={{ display: "flex", fontFamily: "Clash", fontSize: 80, letterSpacing: -2 }}>{opts.setLabel}</span>
+        )}
+        <div style={{ display: "flex", fontSize: 21, letterSpacing: 5, color: "#7c8499", marginTop: 48 }}>{opts.eyebrow}</div>
+        <div style={{ display: "flex", flexDirection: "column", marginTop: 20, alignItems: "center" }}>
+          <div style={{ display: "flex" }}><HoloText size={92}>Rip it,</HoloText></div>
+          <div style={{ display: "flex" }}><HoloText size={92}>or keep it?</HoloText></div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", marginTop: 34 }}>
+          <span style={{ display: "flex", fontSize: 21, letterSpacing: 3, color: "#7c8499", marginRight: 18 }}>ONE SIDE WINS BY</span>
+          <BlurNumber value={opts.delta} size={64} />
+        </div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+        <span style={{ fontFamily: "Clash", fontSize: 26, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{opts.cue}</span>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", fontSize: 24, color: "#5C6477" }}>pokeev.com · @pokeev.tcg</div>
+    </Frame>
+  );
+}
+
+// Slide 2 — the temptation. The set's best pulls lined up with their market values:
+// this is what ripping is chasing. Builds the desire the cold math then tests.
+function rkTemptation(opts: { images: string[]; values: (string | null)[]; setLabel: string; logo: string | null; line: string }) {
+  const n = Math.min(opts.images.length, 3) || 1;
+  const w = n >= 3 ? 290 : 340;
+  const h = Math.round(w * 1.392);
+  return (
+    <Frame>
+      <RkHeader logo={opts.logo} label={opts.setLabel} />
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 23, letterSpacing: 5, color: "#7c8499" }}>IF YOU RIP IT</div>
+        <div style={{ display: "flex", marginTop: 12 }}><HoloText size={62}>you&apos;re chasing these</HoloText></div>
+        <div style={{ display: "flex", alignItems: "flex-end", marginTop: 50 }}>
+          {opts.images.slice(0, 3).map((src, i) => (
+            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 12px" }}>
+              <img src={src} width={w} height={h} style={{ display: "flex", borderRadius: 12, objectFit: "contain", boxShadow: "0 24px 60px -22px rgba(0,0,0,0.85)" }} />
+              <span style={{ display: "flex", fontFamily: "Clash", fontSize: 30, marginTop: 18, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{opts.values[i] ?? "—"}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", marginTop: 42 }}><MultiLine text={opts.line} size={27} color="#aab2c5" /></div>
+      </div>
+      <RkFootCue text="but what does it cost? →" />
+    </Frame>
+  );
+}
+
+// Slides 3 & 4 — the two cold numbers, one per slide: what a sealed set costs, then
+// what ripping averages back (the Expected Value). Same frame, mounting tension.
+function rkStat(opts: { setLabel: string; logo: string | null; kicker: string; label: string; value: string; sub: string; foot: string }) {
+  return (
+    <Frame>
+      <RkHeader logo={opts.logo} label={opts.setLabel} />
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 22, letterSpacing: 5, color: "#7c8499" }}>{opts.kicker}</div>
+        <div style={{ display: "flex", marginTop: 18 }}><MultiLine text={opts.label} size={30} color="#aab2c5" lh={1.3} /></div>
+        <div style={{ display: "flex", marginTop: 26 }}><HoloText size={184} ls={-4}>{opts.value}</HoloText></div>
+        <div style={{ display: "flex", marginTop: 36 }}><MultiLine text={opts.sub} size={27} color="#8A93A6" /></div>
+      </div>
+      <RkFootCue text={opts.foot} />
+    </Frame>
+  );
+}
+
+// Slide 5 — the face-off. Sealed price vs Expected Value side by side, with the gap
+// called out in the winning colour. Maximum-tension frame; verdict is one swipe away.
+function rkVersus(opts: { setLabel: string; logo: string | null; product: string; sealed: string; ev: string; gap: string; gapLabel: string; ripFavored: boolean }) {
+  const accent = opts.ripFavored ? "#22D3EE" : "#E94BD0";
+  return (
+    <Frame>
+      <RkHeader logo={opts.logo} label={opts.setLabel} />
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 23, letterSpacing: 5, color: "#7c8499" }}>THE FACE-OFF</div>
+        {opts.product ? <div style={{ display: "flex", fontSize: 25, color: "#aab2c5", marginTop: 12 }}>{opts.product}</div> : null}
+        <div style={{ display: "flex", alignItems: "center", marginTop: 50 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 376 }}>
+            <span style={{ display: "flex", fontSize: 21, letterSpacing: 3, color: "#7c8499" }}>SEALED, IT COSTS</span>
+            <span style={{ display: "flex", fontFamily: "Clash", fontSize: 94, letterSpacing: -3, color: "#E8ECF4", marginTop: 16 }}>{opts.sealed}</span>
+          </div>
+          <span style={{ display: "flex", fontFamily: "Clash", fontSize: 40, color: "#5C6477" }}>vs</span>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 376 }}>
+            <span style={{ display: "flex", fontSize: 21, letterSpacing: 3, color: "#7c8499" }}>RIPPED, IT AVERAGES</span>
+            <div style={{ display: "flex", marginTop: 16 }}><HoloText size={94} ls={-3}>{opts.ev}</HoloText></div>
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", marginTop: 58 }}>
+          <span style={{ display: "flex", fontSize: 23, letterSpacing: 3, color: "#7c8499", marginRight: 16 }}>{opts.gapLabel}</span>
+          <span style={{ display: "flex", fontFamily: "Clash", fontSize: 66, letterSpacing: -2, color: accent }}>{opts.gap}</span>
+        </div>
+      </div>
+      <RkFootCue text="the verdict →" />
+    </Frame>
+  );
+}
+
+// Slide 6 — the payoff. The single-word verdict (RIP IT / KEEP IT SEALED) with the
+// one-line reason and the rule that drove it. The loop opened on slide 1 closes here.
+function rkVerdict(opts: { setLabel: string; logo: string | null; verdict: string; reason: string; sealed: string; ev: string; ripFavored: boolean }) {
+  const cmp = opts.ripFavored ? ">" : "<";
+  // "RIP IT" fits one big line; "KEEP IT SEALED" is passed as "KEEP IT|SEALED" and
+  // stacks — size by the longest segment so neither verdict overflows the frame.
+  const vlines = opts.verdict.split("|").map((s) => s.trim()).filter(Boolean);
+  const vlongest = Math.max(...vlines.map((l) => l.length), 1);
+  const vsize = vlongest <= 8 ? 130 : vlongest <= 12 ? 108 : 92;
+  return (
+    <Frame>
+      <RkHeader logo={opts.logo} label={opts.setLabel} size={30} />
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 24, letterSpacing: 6, color: "#7c8499", marginBottom: 24 }}>THE VERDICT</div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {vlines.map((ln, i) => (
+            <div key={i} style={{ display: "flex" }}><HoloText size={vsize} ls={-3}>{ln}</HoloText></div>
+          ))}
+        </div>
+        <div style={{ display: "flex", marginTop: 40 }}><MultiLine text={opts.reason} size={31} color="#aab2c5" lh={1.4} /></div>
+        <div style={{ display: "flex", alignItems: "center", marginTop: 42, padding: "18px 34px", borderRadius: 18, border: "1px solid #232a36" }}>
+          <span style={{ display: "flex", fontFamily: "Clash", fontSize: 34, color: "#E8ECF4" }}>EV {opts.ev}</span>
+          <span style={{ display: "flex", fontFamily: "Clash", fontSize: 42, margin: "0 20px", backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{cmp}</span>
+          <span style={{ display: "flex", fontFamily: "Clash", fontSize: 34, color: "#9aa3b5" }}>Sealed {opts.sealed}</span>
+        </div>
+      </div>
+      <RkFootCue text="one more →" />
+    </Frame>
+  );
+}
+
+// Slide 7 — the conversion. The verdict you just saw was one set; the site runs the
+// exact same math, live, on any sealed set. Straight to the link in bio.
+function rkCta(opts: { eyebrow: string; h1: string; h2: string; body: string }) {
+  return (
+    <Frame>
+      <div style={{ display: "flex" }}><Wordmark size={34} /></div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
+        <div style={{ display: "flex" }}><HoloText size={100}>{opts.h1}</HoloText></div>
+        <div style={{ display: "flex" }}><HoloText size={100}>{opts.h2}</HoloText></div>
+        <div style={{ display: "flex", marginTop: 36 }}><MultiLine text={opts.body} size={33} color="#aab2c5" lh={1.38} /></div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ display: "flex", height: 10, width: 200, borderRadius: 10, backgroundImage: HOLO }} />
+        <div style={{ display: "flex", fontFamily: "Clash", fontSize: 46, marginTop: 26 }}>→ link in bio</div>
+        <div style={{ display: "flex", fontSize: 24, letterSpacing: 4, color: "#5C6477", marginTop: 10 }}>@pokeev.tcg</div>
+      </div>
+    </Frame>
+  );
+}
+
 export async function GET(request: NextRequest) {
   if (!rateLimit(`ig:${clientIp(request)}`, 60, 60_000)) {
     return new Response("Too many requests", { status: 429 });
@@ -619,7 +811,7 @@ export async function GET(request: NextRequest) {
         eyebrow: textParam(p.get("eyebrow"), 48) ?? "",
         headline: textParam(p.get("headline"), 26) ?? "One illustration.",
         total: moneyParam(p.get("title")) ?? "$0",
-        cue: textParam(p.get("cue"), 30) ?? "WHOLE PICTURE INSIDE →",
+        cue: textParam(p.get("cue"), 30) ?? "swipe →",
         images: imgs,
       });
     } else if (slide === "connect-cta") {
@@ -648,6 +840,68 @@ export async function GET(request: NextRequest) {
       // a single card, whole and centred on its own slide
       if (!imgs.length) return new Response("not found", { status: 404 });
       element = connectedCard({ image: imgs[0], name: textParam(p.get("name"), 40) ?? "", value: moneyParam(p.get("val")), setLabel, logo, series: textParam(p.get("series"), 48) ?? "", tally: textParam(p.get("tally"), 40) });
+    }
+  } else if (slide.startsWith("rk-")) {
+    const logo = imgParam(p.get("logo"));
+    const setLabel = textParam(p.get("set"), 40) ?? "";
+    const ripFavored = p.get("rip") === "1";
+    if (slide === "rk-cover") {
+      element = rkCover({
+        logo,
+        setLabel,
+        eyebrow: textParam(p.get("eyebrow"), 48) ?? "",
+        delta: moneyParam(p.get("delta")) ?? "$0",
+        cue: textParam(p.get("cue"), 30) ?? "swipe →",
+      });
+    } else if (slide === "rk-tempt") {
+      const imgs: string[] = [];
+      const values: (string | null)[] = [];
+      for (let i = 0; i < 3; i++) {
+        const u = imgParam(p.get(`img${i}`));
+        if (!u) break;
+        imgs.push(u);
+        values.push(moneyParam(p.get(`v${i}`)));
+      }
+      if (!imgs.length) return new Response("not found", { status: 404 });
+      element = rkTemptation({ images: imgs, values, setLabel, logo, line: textParam(p.get("line"), 130) ?? "" });
+    } else if (slide === "rk-stat") {
+      element = rkStat({
+        setLabel,
+        logo,
+        kicker: textParam(p.get("kicker"), 30) ?? "",
+        label: textParam(p.get("label"), 72) ?? "",
+        value: moneyParam(p.get("value")) ?? "$0",
+        sub: textParam(p.get("sub"), 130) ?? "",
+        foot: textParam(p.get("foot"), 30) ?? "keep going →",
+      });
+    } else if (slide === "rk-versus") {
+      element = rkVersus({
+        setLabel,
+        logo,
+        product: textParam(p.get("product"), 48) ?? "",
+        sealed: moneyParam(p.get("sealed")) ?? "$0",
+        ev: moneyParam(p.get("ev")) ?? "$0",
+        gap: moneyParam(p.get("gap")) ?? "$0",
+        gapLabel: textParam(p.get("gapLabel"), 40) ?? "THE GAP",
+        ripFavored,
+      });
+    } else if (slide === "rk-verdict") {
+      element = rkVerdict({
+        setLabel,
+        logo,
+        verdict: textParam(p.get("verdict"), 20) ?? "RIP IT",
+        reason: textParam(p.get("reason"), 150) ?? "",
+        sealed: moneyParam(p.get("sealed")) ?? "$0",
+        ev: moneyParam(p.get("ev")) ?? "$0",
+        ripFavored,
+      });
+    } else {
+      element = rkCta({
+        eyebrow: textParam(p.get("eyebrow"), 30) ?? "NOW DO IT FOR ANY SET",
+        h1: textParam(p.get("h1"), 18) ?? "Rip or keep?",
+        h2: textParam(p.get("h2"), 18) ?? "Know in seconds.",
+        body: textParam(p.get("body"), 200) ?? "pokeev.com runs the live Expected Value on every sealed set, so you never rip blind again.",
+      });
     }
   } else {
     const mask = Math.max(0, Math.min(3, Number(p.get("mask")) || 0));
