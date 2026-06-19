@@ -70,14 +70,18 @@ def resolve_card(c):
         cand = [d for d in cand if first.lower() in (d.get("name") or "").lower()] or cand
         card = cand[0]
         imgs = card.get("images") or {}
+        st = card.get("set") or {}
+        stimgs = st.get("images") or {}
         return {
             "ptcgId": card.get("id"),
             "image": imgs.get("large") or imgs.get("small"),
             "usd": price_usd(card),
             "eur": price_eur(card),
             "resolvedName": card.get("name"),
+            "setId": st.get("id"),
+            "setLabel": st.get("name"),
+            "setLogo": stimgs.get("logo"),
         }
-        time.sleep(0.2)
     return None
 
 

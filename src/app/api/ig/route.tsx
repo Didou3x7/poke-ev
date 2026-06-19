@@ -344,6 +344,190 @@ function recapSlide(rows: { rank: number; name: string; setName: string; price: 
   );
 }
 
+// ----------------------- CONNECTED theme ----------------------- //
+// Cards whose artworks join into one picture. Each card gets its OWN slide, shown
+// whole and centred (premium, no gadgets); the second-to-last slide assembles them
+// side-by-side to reveal the full illustration; the last slide is the CTA.
+
+const SetLogo = ({ logo, label }: { logo: string | null; label: string }) =>
+  logo ? (
+    <img src={logo} width={210} height={56} style={{ display: "flex", objectFit: "contain" }} />
+  ) : (
+    <span style={{ display: "flex", fontSize: 18, letterSpacing: 4, color: "#8A93A6" }}>{label.toUpperCase()}</span>
+  );
+
+// Satori has no blur filter, so we fake it: the figure is ghosted by stacking faint
+// offset copies and pair it with a holo "?" — the worth is a secret the reveal unlocks.
+const BlurNumber = ({ value, size }: { value: string; size: number }) => (
+  <div style={{ display: "flex", alignItems: "center", alignSelf: "flex-start" }}>
+    <div style={{ display: "flex", position: "relative" }}>
+      <span style={{ display: "flex", fontFamily: "Clash", fontSize: size, letterSpacing: -2, color: "rgba(0,0,0,0)" }}>{value}</span>
+      {[[-18, -6], [-12, 5], [-6, -4], [0, 3], [6, -5], [12, 4], [18, -3]].map(([x, y], i) => (
+        <span key={i} style={{ position: "absolute", left: x, top: y, display: "flex", fontFamily: "Clash", fontSize: size, letterSpacing: -2, color: "rgba(150,160,190,0.16)" }}>{value}</span>
+      ))}
+    </div>
+    <span style={{ display: "flex", fontFamily: "Clash", fontSize: Math.round(size * 1.04), marginLeft: 26, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>?</span>
+  </div>
+);
+
+// The scroll-stopper: the cards spread as a fan, so at a glance the post reads as
+// premium connected Pokémon cards (not just text). They overlap/rotate, so the
+// assembled illustration is still a surprise saved for the reveal.
+const CardFan = ({ images }: { images: string[] }) => {
+  const n = images.length || 1;
+  const cw = 340;
+  const ch = Math.round(cw * 1.394);
+  return (
+    <div style={{ display: "flex", position: "relative", width: 820, height: ch + 96, alignItems: "center", justifyContent: "center" }}>
+      {images.map((src, i) => {
+        const t = i - (n - 1) / 2;
+        const rot = Math.round(t * 110) / 10;
+        const left = Math.round(410 - cw / 2 + t * 148);
+        const top = Math.round(46 + Math.abs(t) * 24);
+        return (
+          <img key={i} src={src} width={cw} height={ch}
+            style={{ position: "absolute", left, top, display: "flex", borderRadius: 16, objectFit: "contain", transform: `rotate(${rot}deg)`, boxShadow: "0 28px 70px -22px rgba(0,0,0,0.9)" }} />
+        );
+      })}
+    </div>
+  );
+};
+
+// HOOK cover: the card fan (visual hook) + an emotional line + the combined total kept
+// secret (blurred + a question mark). Minimal text, two loops the reveal closes.
+function connectCoverSlide(opts: { eyebrow: string; headline: string; total: string; cue: string; images: string[] }) {
+  const { size, lines } = titleLayout(opts.headline);
+  return (
+    <Frame>
+      <div style={{ display: "flex" }}>
+        <Wordmark />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <CardFan images={opts.images} />
+        <div style={{ display: "flex", fontSize: 21, letterSpacing: 5, color: "#7c8499", marginTop: 52 }}>{opts.eyebrow}</div>
+        <div style={{ display: "flex", flexDirection: "column", marginTop: 22, alignItems: "center" }}>
+          {lines.map((ln, i) => (
+            <div key={i} style={{ display: "flex" }}><HoloText size={Math.min(size, 92)}>{ln}</HoloText></div>
+          ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", marginTop: 40 }}>
+          <span style={{ display: "flex", fontSize: 21, letterSpacing: 3, color: "#7c8499", marginRight: 18 }}>WORTH</span>
+          <BlurNumber value={opts.total} size={72} />
+        </div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+        <span style={{ fontFamily: "Clash", fontSize: 26, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{opts.cue}</span>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", fontSize: 24, color: "#5C6477" }}>pokeev.com · @pokeev.tcg</div>
+    </Frame>
+  );
+}
+
+// One card, whole and centred on its own slide. Premium float on the dark-holo
+// background; the series label hints these belong to one illustration (swipe to see it).
+function connectedCard(opts: { image: string; name: string; value: string | null; setLabel: string; logo: string | null; series: string; tally: string | null }) {
+  const nameSize = opts.name.length <= 16 ? 52 : opts.name.length <= 24 ? 42 : 34;
+  return (
+    <Frame>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Wordmark size={28} />
+        <SetLogo logo={opts.logo} label={opts.setLabel} />
+      </div>
+      <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <img src={opts.image} width={612} height={853} style={{ display: "flex", borderRadius: 20, objectFit: "contain", boxShadow: "0 36px 90px -24px rgba(0,0,0,0.85)" }} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {opts.series ? <span style={{ display: "flex", fontSize: 19, letterSpacing: 4, color: "#7c8499", marginBottom: 10 }}>{opts.series.toUpperCase()}</span> : null}
+            <span style={{ display: "flex", fontFamily: "Clash", fontSize: nameSize, letterSpacing: -1 }}>{opts.name}</span>
+            <span style={{ display: "flex", fontSize: 20, letterSpacing: 3, color: "#7c8499", marginTop: 4 }}>{opts.setLabel.toUpperCase()}</span>
+          </div>
+          {opts.value ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+              <span style={{ display: "flex", fontSize: 18, letterSpacing: 3, color: "#7c8499" }}>MARKET</span>
+              <HoloText size={60} ls={-2}>{opts.value}</HoloText>
+            </div>
+          ) : null}
+        </div>
+        {opts.tally ? <div style={{ display: "flex", marginTop: 16, fontSize: 22, letterSpacing: 1, color: "#7c8499" }}>{opts.tally}</div> : null}
+      </div>
+    </Frame>
+  );
+}
+
+// The payoff: every card aligned to fit, the complete illustration, each card's market
+// value beneath it. The most screenshot-worthy frame ("save this").
+function connectedReveal(opts: { images: string[]; values: (string | null)[]; title: string; setLabel: string; logo: string | null; total: string | null; bridge: string | null; footerLeft: string }) {
+  const N = opts.images.length || 1;
+  const w = Math.floor(1010 / N);
+  const h = Math.round(w * 1.392);
+  return (
+    <Frame>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Wordmark size={30} />
+        <SetLogo logo={opts.logo} label={opts.setLabel} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 23, letterSpacing: 5, color: "#7c8499" }}>THE FULL ILLUSTRATION</div>
+        <div style={{ display: "flex", marginTop: 10 }}><HoloText size={64}>{opts.title}</HoloText></div>
+        <div style={{ display: "flex", alignItems: "center", marginTop: 40 }}>
+          {opts.images.map((src, i) => (
+            <img key={i} src={src} width={w} height={h} style={{ display: "flex", objectFit: "cover" }} />
+          ))}
+        </div>
+        <div style={{ display: "flex", alignItems: "flex-start", marginTop: 20 }}>
+          {opts.values.map((v, i) => (
+            <div key={i} style={{ display: "flex", width: w, justifyContent: "center" }}>
+              <span style={{ display: "flex", fontFamily: "Clash", fontSize: 26, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{v ?? "—"}</span>
+            </div>
+          ))}
+        </div>
+        {opts.total ? (
+          <div style={{ display: "flex", alignItems: "baseline", marginTop: 30 }}>
+            <span style={{ display: "flex", fontSize: 22, letterSpacing: 4, color: "#7c8499", marginRight: 14 }}>FULL SET TOGETHER</span>
+            <HoloText size={56} ls={-2}>{opts.total}</HoloText>
+          </div>
+        ) : null}
+        {opts.bridge ? (
+          <div style={{ display: "flex", fontSize: 27, lineHeight: 1.34, color: "#aab2c5", marginTop: 26, maxWidth: 900 }}>{opts.bridge}</div>
+        ) : null}
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 22, color: "#5C6477" }}>
+        <span style={{ display: "flex" }}>{opts.footerLeft}</span>
+        <span style={{ display: "flex", fontFamily: "Clash", fontSize: 26, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>save this →</span>
+      </div>
+    </Frame>
+  );
+}
+
+function connectedCta(opts: { setLabel: string; logo: string | null; eyebrow: string; h1: string; h2: string; body: string; verdict: string | null }) {
+  return (
+    <Frame>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Wordmark size={34} />
+        <SetLogo logo={opts.logo} label={opts.setLabel} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
+        <div style={{ display: "flex" }}><HoloText size={104}>{opts.h1}</HoloText></div>
+        <div style={{ display: "flex" }}><HoloText size={104}>{opts.h2}</HoloText></div>
+        <div style={{ display: "flex", fontSize: 33, lineHeight: 1.38, color: "#aab2c5", marginTop: 36, maxWidth: 860 }}>{opts.body}</div>
+        {opts.verdict ? (
+          <div style={{ display: "flex", marginTop: 24 }}>
+            <HoloText size={40} ls={-1}>{opts.verdict}</HoloText>
+          </div>
+        ) : null}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ display: "flex", height: 10, width: 200, borderRadius: 10, backgroundImage: HOLO }} />
+        <div style={{ display: "flex", fontFamily: "Clash", fontSize: 46, marginTop: 26 }}>→ link in bio</div>
+        <div style={{ display: "flex", fontSize: 24, letterSpacing: 4, color: "#5C6477", marginTop: 10 }}>@pokeev.tcg</div>
+      </div>
+    </Frame>
+  );
+}
+
 export async function GET(request: NextRequest) {
   if (!rateLimit(`ig:${clientIp(request)}`, 60, 60_000)) {
     return new Response("Too many requests", { status: 429 });
@@ -418,6 +602,53 @@ export async function GET(request: NextRequest) {
       step,
       total,
     });
+  } else if (slide === "connect" || slide === "connect-cta" || slide === "connect-reveal" || slide === "connect-cover") {
+    const imgs: string[] = [];
+    const values: (string | null)[] = [];
+    for (let i = 0; i < 10; i++) {
+      const u = imgParam(p.get(`img${i}`));
+      if (!u) break;
+      imgs.push(u);
+      values.push(moneyParam(p.get(`v${i}`)));
+    }
+    const logo = imgParam(p.get("logo"));
+    const setLabel = textParam(p.get("set"), 40) ?? "";
+    if (slide === "connect-cover") {
+      if (!imgs.length) return new Response("not found", { status: 404 });
+      element = connectCoverSlide({
+        eyebrow: textParam(p.get("eyebrow"), 48) ?? "",
+        headline: textParam(p.get("headline"), 26) ?? "One illustration.",
+        total: moneyParam(p.get("title")) ?? "$0",
+        cue: textParam(p.get("cue"), 30) ?? "WHOLE PICTURE INSIDE →",
+        images: imgs,
+      });
+    } else if (slide === "connect-cta") {
+      element = connectedCta({
+        setLabel,
+        logo,
+        eyebrow: textParam(p.get("eyebrow"), 30) ?? "BEFORE YOU RIP IT",
+        h1: textParam(p.get("h1"), 18) ?? "Open it,",
+        h2: textParam(p.get("h2"), 18) ?? "or keep it sealed?",
+        body: textParam(p.get("body"), 200) ?? "pokeev.com runs the live Expected Value on any sealed product, so you know if a set is worth ripping.",
+        verdict: textParam(p.get("verdict"), 40),
+      });
+    } else if (slide === "connect-reveal") {
+      if (!imgs.length) return new Response("not found", { status: 404 });
+      element = connectedReveal({
+        images: imgs,
+        values,
+        title: textParam(p.get("title"), 40) ?? "",
+        setLabel,
+        logo,
+        total: moneyParam(p.get("total")),
+        bridge: textParam(p.get("bridge"), 130),
+        footerLeft: textParam(p.get("footerLeft"), 60) ?? "pokeev.com · @pokeev.tcg",
+      });
+    } else {
+      // a single card, whole and centred on its own slide
+      if (!imgs.length) return new Response("not found", { status: 404 });
+      element = connectedCard({ image: imgs[0], name: textParam(p.get("name"), 40) ?? "", value: moneyParam(p.get("val")), setLabel, logo, series: textParam(p.get("series"), 48) ?? "", tally: textParam(p.get("tally"), 40) });
+    }
   } else {
     const mask = Math.max(0, Math.min(3, Number(p.get("mask")) || 0));
     element = coverSlide(theme, mask, step, total);

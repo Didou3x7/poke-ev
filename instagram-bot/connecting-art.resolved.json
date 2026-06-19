@@ -16,7 +16,10 @@
           "image": "https://images.pokemontcg.io/sv4pt5/31_hires.png",
           "usd": 0.2,
           "eur": 0.05,
-          "resolvedName": "Mime Jr."
+          "resolvedName": "Mime Jr.",
+          "setId": "sv4pt5",
+          "setLabel": "Paldean Fates",
+          "setLogo": "https://images.pokemontcg.io/sv4pt5/logo.png"
         },
         {
           "name": "Combee",
@@ -26,7 +29,10 @@
           "image": "https://images.pokemontcg.io/sv3/8_hires.png",
           "usd": 0.2,
           "eur": 0.03,
-          "resolvedName": "Combee"
+          "resolvedName": "Combee",
+          "setId": "sv3",
+          "setLabel": "Obsidian Flames",
+          "setLogo": "https://images.pokemontcg.io/sv3/logo.png"
         },
         {
           "name": "Swablu",
@@ -36,7 +42,10 @@
           "image": "https://images.pokemontcg.io/sv4/152_hires.png",
           "usd": 0.17,
           "eur": 0.03,
-          "resolvedName": "Swablu"
+          "resolvedName": "Swablu",
+          "setId": "sv4",
+          "setLabel": "Paradox Rift",
+          "setLogo": "https://images.pokemontcg.io/sv4/logo.png"
         },
         {
           "name": "Magikarp",
@@ -46,7 +55,10 @@
           "image": "https://images.pokemontcg.io/sv2/42_hires.png",
           "usd": 0.28,
           "eur": 0.04,
-          "resolvedName": "Magikarp"
+          "resolvedName": "Magikarp",
+          "setId": "sv2",
+          "setLabel": "Paldea Evolved",
+          "setLogo": "https://images.pokemontcg.io/sv2/logo.png"
         },
         {
           "name": "Palossand",
@@ -56,7 +68,10 @@
           "image": "https://images.pokemontcg.io/sv2/96_hires.png",
           "usd": 0.2,
           "eur": 0.04,
-          "resolvedName": "Palossand"
+          "resolvedName": "Palossand",
+          "setId": "sv2",
+          "setLabel": "Paldea Evolved",
+          "setLogo": "https://images.pokemontcg.io/sv2/logo.png"
         },
         {
           "name": "Gligar",
@@ -66,7 +81,10 @@
           "image": "https://images.pokemontcg.io/sv4/91_hires.png",
           "usd": 0.17,
           "eur": 0.03,
-          "resolvedName": "Gligar"
+          "resolvedName": "Gligar",
+          "setId": "sv4",
+          "setLabel": "Paradox Rift",
+          "setLogo": "https://images.pokemontcg.io/sv4/logo.png"
         },
         {
           "name": "Lechonk",
@@ -76,7 +94,10 @@
           "image": "https://images.pokemontcg.io/sv3/180_hires.png",
           "usd": 0.35,
           "eur": 0.07,
-          "resolvedName": "Lechonk"
+          "resolvedName": "Lechonk",
+          "setId": "sv3",
+          "setLabel": "Obsidian Flames",
+          "setLogo": "https://images.pokemontcg.io/sv3/logo.png"
         },
         {
           "name": "Skwovet",
@@ -86,7 +107,10 @@
           "image": "https://images.pokemontcg.io/sv1/151_hires.png",
           "usd": 0.23,
           "eur": 0.06,
-          "resolvedName": "Skwovet"
+          "resolvedName": "Skwovet",
+          "setId": "sv1",
+          "setLabel": "Scarlet & Violet",
+          "setLogo": "https://images.pokemontcg.io/sv1/logo.png"
         },
         {
           "name": "Horsea",
@@ -96,7 +120,10 @@
           "image": "https://images.pokemontcg.io/sv4/30_hires.png",
           "usd": 0.21,
           "eur": 0.04,
-          "resolvedName": "Horsea"
+          "resolvedName": "Horsea",
+          "setId": "sv4",
+          "setLabel": "Paradox Rift",
+          "setLogo": "https://images.pokemontcg.io/sv4/logo.png"
         }
       ],
       "resolved": true
@@ -116,7 +143,10 @@
           "image": "https://images.pokemontcg.io/sv8/105_hires.png",
           "usd": 0.21,
           "eur": 0.05,
-          "resolvedName": "Vibrava"
+          "resolvedName": "Vibrava",
+          "setId": "sv8",
+          "setLabel": "Surging Sparks",
+          "setLogo": "https://images.pokemontcg.io/sv8/logo.png"
         },
         {
           "name": "Togetic",
@@ -126,7 +156,10 @@
           "image": "https://images.pokemontcg.io/sv8/71_hires.png",
           "usd": 0.18,
           "eur": 0.04,
-          "resolvedName": "Togetic"
+          "resolvedName": "Togetic",
+          "setId": "sv8",
+          "setLabel": "Surging Sparks",
+          "setLogo": "https://images.pokemontcg.io/sv8/logo.png"
         },
         {
           "name": "Wattrel",
@@ -136,7 +169,10 @@
           "image": "https://images.pokemontcg.io/sv6/75_hires.png",
           "usd": 0.19,
           "eur": 0.03,
-          "resolvedName": "Wattrel"
+          "resolvedName": "Wattrel",
+          "setId": "sv6",
+          "setLabel": "Twilight Masquerade",
+          "setLogo": "https://images.pokemontcg.io/sv6/logo.png"
         },
         {
           "name": "Torkoal",
@@ -146,7 +182,10 @@
           "image": "https://images.pokemontcg.io/sv6/30_hires.png",
           "usd": 0.2,
           "eur": 0.06,
-          "resolvedName": "Torkoal"
+          "resolvedName": "Torkoal",
+          "setId": "sv6",
+          "setLabel": "Twilight Masquerade",
+          "setLogo": "https://images.pokemontcg.io/sv6/logo.png"
         },
         {
           "name": "Passimian",
@@ -156,7 +195,10 @@
           "image": "https://images.pokemontcg.io/sv8/111_hires.png",
           "usd": 0.31,
           "eur": 0.04,
-          "resolvedName": "Passimian"
+          "resolvedName": "Passimian",
+          "setId": "sv8",
+          "setLabel": "Surging Sparks",
+          "setLogo": "https://images.pokemontcg.io/sv8/logo.png"
         },
         {
           "name": "Spheal",
@@ -166,7 +208,10 @@
           "image": "https://images.pokemontcg.io/sv8/43_hires.png",
           "usd": 0.23,
           "eur": 0.04,
-          "resolvedName": "Spheal"
+          "resolvedName": "Spheal",
+          "setId": "sv8",
+          "setLabel": "Surging Sparks",
+          "setLogo": "https://images.pokemontcg.io/sv8/logo.png"
         },
         {
           "name": "Golbat",
@@ -176,7 +221,10 @@
           "image": "https://images.pokemontcg.io/sv6pt5/28_hires.png",
           "usd": 0.18,
           "eur": 0.04,
-          "resolvedName": "Golbat"
+          "resolvedName": "Golbat",
+          "setId": "sv6pt5",
+          "setLabel": "Shrouded Fable",
+          "setLogo": "https://images.pokemontcg.io/sv6pt5/logo.png"
         },
         {
           "name": "Dudunsparce",
@@ -186,7 +234,10 @@
           "image": "https://images.pokemontcg.io/sv5/129_hires.png",
           "usd": 0.58,
           "eur": 0.23,
-          "resolvedName": "Dudunsparce"
+          "resolvedName": "Dudunsparce",
+          "setId": "sv5",
+          "setLabel": "Temporal Forces",
+          "setLogo": "https://images.pokemontcg.io/sv5/logo.png"
         },
         {
           "name": "Slowpoke",
@@ -196,7 +247,10 @@
           "image": "https://images.pokemontcg.io/sv7/57_hires.png",
           "usd": 3.1,
           "eur": 0.08,
-          "resolvedName": "Slowpoke"
+          "resolvedName": "Slowpoke",
+          "setId": "sv7",
+          "setLabel": "Stellar Crown",
+          "setLogo": "https://images.pokemontcg.io/sv7/logo.png"
         }
       ],
       "resolved": true
@@ -216,7 +270,10 @@
           "image": "https://images.pokemontcg.io/sv10/156_hires.png",
           "usd": 0.24,
           "eur": 0.04,
-          "resolvedName": "Taillow"
+          "resolvedName": "Taillow",
+          "setId": "sv10",
+          "setLabel": "Destined Rivals",
+          "setLogo": "https://images.pokemontcg.io/sv10/logo.png"
         },
         {
           "name": "Buizel",
@@ -226,7 +283,10 @@
           "image": "https://images.pokemontcg.io/sv10/57_hires.png",
           "usd": 0.23,
           "eur": 0.05,
-          "resolvedName": "Buizel"
+          "resolvedName": "Buizel",
+          "setId": "sv10",
+          "setLabel": "Destined Rivals",
+          "setLogo": "https://images.pokemontcg.io/sv10/logo.png"
         },
         {
           "name": "Mankey",
@@ -236,7 +296,10 @@
           "image": "https://images.pokemontcg.io/sv10/90_hires.png",
           "usd": 0.25,
           "eur": 0.04,
-          "resolvedName": "Mankey"
+          "resolvedName": "Mankey",
+          "setId": "sv10",
+          "setLabel": "Destined Rivals",
+          "setLogo": "https://images.pokemontcg.io/sv10/logo.png"
         },
         {
           "name": "Lotad",
@@ -246,7 +309,10 @@
           "image": "https://images.pokemontcg.io/sv9/35_hires.png",
           "usd": 0.28,
           "eur": 0.05,
-          "resolvedName": "Lotad"
+          "resolvedName": "Lotad",
+          "setId": "sv9",
+          "setLabel": "Journey Together",
+          "setLogo": "https://images.pokemontcg.io/sv9/logo.png"
         },
         {
           "name": "Paras",
@@ -256,7 +322,10 @@
           "image": "https://images.pokemontcg.io/sv9/4_hires.png",
           "usd": 0.19,
           "eur": 0.04,
-          "resolvedName": "Paras"
+          "resolvedName": "Paras",
+          "setId": "sv9",
+          "setLabel": "Journey Together",
+          "setLogo": "https://images.pokemontcg.io/sv9/logo.png"
         },
         {
           "name": "Ponyta",
@@ -266,7 +335,10 @@
           "image": "https://images.pokemontcg.io/sv10/29_hires.png",
           "usd": 0.28,
           "eur": 0.04,
-          "resolvedName": "Ponyta"
+          "resolvedName": "Ponyta",
+          "setId": "sv10",
+          "setLabel": "Destined Rivals",
+          "setLogo": "https://images.pokemontcg.io/sv10/logo.png"
         }
       ],
       "resolved": true
@@ -286,7 +358,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG67_hires.png",
           "usd": 143.71,
           "eur": 102.82,
-          "resolvedName": "Origin Forme Palkia VSTAR"
+          "resolvedName": "Origin Forme Palkia VSTAR",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Arceus VSTAR",
@@ -296,7 +371,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG70_hires.png",
           "usd": 243.84,
           "eur": 122.83,
-          "resolvedName": "Arceus VSTAR"
+          "resolvedName": "Arceus VSTAR",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Origin Forme Dialga VSTAR",
@@ -306,7 +384,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG68_hires.png",
           "usd": 147.71,
           "eur": 78.08,
-          "resolvedName": "Origin Forme Dialga VSTAR"
+          "resolvedName": "Origin Forme Dialga VSTAR",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Giratina VSTAR",
@@ -316,7 +397,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG69_hires.png",
           "usd": 432.11,
           "eur": 182.91,
-          "resolvedName": "Giratina VSTAR"
+          "resolvedName": "Giratina VSTAR",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         }
       ],
       "resolved": true
@@ -336,7 +420,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG26_hires.png",
           "usd": 13.44,
           "eur": 9.59,
-          "resolvedName": "Riolu"
+          "resolvedName": "Riolu",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Swablu",
@@ -346,7 +433,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG27_hires.png",
           "usd": 7.9,
           "eur": 5.72,
-          "resolvedName": "Swablu"
+          "resolvedName": "Swablu",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Duskull",
@@ -356,7 +446,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG28_hires.png",
           "usd": 5.42,
           "eur": 4.43,
-          "resolvedName": "Duskull"
+          "resolvedName": "Duskull",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Bidoof",
@@ -366,7 +459,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG29_hires.png",
           "usd": 8.16,
           "eur": 5.59,
-          "resolvedName": "Bidoof"
+          "resolvedName": "Bidoof",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Pikachu",
@@ -376,7 +472,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG30_hires.png",
           "usd": 55.48,
           "eur": 45.48,
-          "resolvedName": "Pikachu"
+          "resolvedName": "Pikachu",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Turtwig",
@@ -386,7 +485,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG31_hires.png",
           "usd": 13.6,
           "eur": 6.47,
-          "resolvedName": "Turtwig"
+          "resolvedName": "Turtwig",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Paras",
@@ -396,7 +498,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG32_hires.png",
           "usd": 9.34,
           "eur": 6.28,
-          "resolvedName": "Paras"
+          "resolvedName": "Paras",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Poochyena",
@@ -406,7 +511,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG33_hires.png",
           "usd": 7.03,
           "eur": 3.85,
-          "resolvedName": "Poochyena"
+          "resolvedName": "Poochyena",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         },
         {
           "name": "Mareep",
@@ -416,7 +524,10 @@
           "image": "https://images.pokemontcg.io/swsh12pt5gg/GG34_hires.png",
           "usd": 11.93,
           "eur": 5.15,
-          "resolvedName": "Mareep"
+          "resolvedName": "Mareep",
+          "setId": "swsh12pt5gg",
+          "setLabel": "Crown Zenith Galarian Gallery",
+          "setLogo": "https://images.pokemontcg.io/swsh12pt5gg/logo.png"
         }
       ],
       "resolved": true
@@ -436,7 +547,10 @@
           "image": "https://images.pokemontcg.io/neo2/20_hires.png",
           "usd": 88.2,
           "eur": 21.54,
-          "resolvedName": "Espeon"
+          "resolvedName": "Espeon",
+          "setId": "neo2",
+          "setLabel": "Neo Discovery",
+          "setLogo": "https://images.pokemontcg.io/neo2/logo.png"
         },
         {
           "name": "Eevee",
@@ -446,7 +560,10 @@
           "image": "https://images.pokemontcg.io/neo2/38_hires.png",
           "usd": 19.44,
           "eur": 2.53,
-          "resolvedName": "Eevee"
+          "resolvedName": "Eevee",
+          "setId": "neo2",
+          "setLabel": "Neo Discovery",
+          "setLogo": "https://images.pokemontcg.io/neo2/logo.png"
         },
         {
           "name": "Umbreon",
@@ -456,7 +573,10 @@
           "image": "https://images.pokemontcg.io/neo2/32_hires.png",
           "usd": 72.71,
           "eur": 64.02,
-          "resolvedName": "Umbreon"
+          "resolvedName": "Umbreon",
+          "setId": "neo2",
+          "setLabel": "Neo Discovery",
+          "setLogo": "https://images.pokemontcg.io/neo2/logo.png"
         }
       ],
       "resolved": true
@@ -476,7 +596,10 @@
           "image": "https://images.pokemontcg.io/neo3/17_hires.png",
           "usd": 55.29,
           "eur": 2.19,
-          "resolvedName": "Entei"
+          "resolvedName": "Entei",
+          "setId": "neo3",
+          "setLabel": "Neo Revelation",
+          "setLogo": "https://images.pokemontcg.io/neo3/logo.png"
         },
         {
           "name": "Suicune",
@@ -486,7 +609,10 @@
           "image": "https://images.pokemontcg.io/neo3/27_hires.png",
           "usd": 48.38,
           "eur": 0.02,
-          "resolvedName": "Suicune"
+          "resolvedName": "Suicune",
+          "setId": "neo3",
+          "setLabel": "Neo Revelation",
+          "setLogo": "https://images.pokemontcg.io/neo3/logo.png"
         },
         {
           "name": "Raikou",
@@ -496,7 +622,10 @@
           "image": "https://images.pokemontcg.io/neo3/22_hires.png",
           "usd": 51.85,
           "eur": 10.91,
-          "resolvedName": "Raikou"
+          "resolvedName": "Raikou",
+          "setId": "neo3",
+          "setLabel": "Neo Revelation",
+          "setLogo": "https://images.pokemontcg.io/neo3/logo.png"
         }
       ],
       "resolved": true
@@ -516,7 +645,10 @@
           "image": "https://images.pokemontcg.io/si1/1_hires.png",
           "usd": 456.34,
           "eur": 423.28,
-          "resolvedName": "Mew"
+          "resolvedName": "Mew",
+          "setId": "si1",
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png"
         },
         {
           "name": "Pidgeot",
@@ -526,7 +658,10 @@
           "image": "https://images.pokemontcg.io/si1/2_hires.png",
           "usd": 40.73,
           "eur": 28.31,
-          "resolvedName": "Pidgeot"
+          "resolvedName": "Pidgeot",
+          "setId": "si1",
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png"
         },
         {
           "name": "Onix",
@@ -536,7 +671,10 @@
           "image": "https://images.pokemontcg.io/si1/3_hires.png",
           "usd": 48.16,
           "eur": 37.04,
-          "resolvedName": "Onix"
+          "resolvedName": "Onix",
+          "setId": "si1",
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png"
         }
       ],
       "resolved": true
@@ -556,7 +694,10 @@
           "image": "https://images.pokemontcg.io/si1/10_hires.png",
           "usd": 42.89,
           "eur": 37.49,
-          "resolvedName": "Tentacruel"
+          "resolvedName": "Tentacruel",
+          "setId": "si1",
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png"
         },
         {
           "name": "Marill",
@@ -566,7 +707,10 @@
           "image": "https://images.pokemontcg.io/si1/11_hires.png",
           "usd": 128.25,
           "eur": 94.24,
-          "resolvedName": "Marill"
+          "resolvedName": "Marill",
+          "setId": "si1",
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png"
         },
         {
           "name": "Lapras",
@@ -576,7 +720,10 @@
           "image": "https://images.pokemontcg.io/si1/12_hires.png",
           "usd": 61.34,
           "eur": 75.28,
-          "resolvedName": "Lapras"
+          "resolvedName": "Lapras",
+          "setId": "si1",
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png"
         }
       ],
       "resolved": true
@@ -596,7 +743,10 @@
           "image": "https://images.pokemontcg.io/me1/133_hires.png",
           "usd": 24.63,
           "eur": null,
-          "resolvedName": "Bulbasaur"
+          "resolvedName": "Bulbasaur",
+          "setId": "me1",
+          "setLabel": "Mega Evolution",
+          "setLogo": "https://images.pokemontcg.io/me1/logo.png"
         },
         {
           "name": "Ivysaur",
@@ -606,7 +756,10 @@
           "image": "https://images.pokemontcg.io/me1/134_hires.png",
           "usd": 24.64,
           "eur": null,
-          "resolvedName": "Ivysaur"
+          "resolvedName": "Ivysaur",
+          "setId": "me1",
+          "setLabel": "Mega Evolution",
+          "setLogo": "https://images.pokemontcg.io/me1/logo.png"
         },
         {
           "name": "Mega Venusaur ex",
@@ -616,7 +769,10 @@
           "image": "https://images.pokemontcg.io/me1/177_hires.png",
           "usd": 188.8,
           "eur": null,
-          "resolvedName": "Mega Venusaur ex"
+          "resolvedName": "Mega Venusaur ex",
+          "setId": "me1",
+          "setLabel": "Mega Evolution",
+          "setLogo": "https://images.pokemontcg.io/me1/logo.png"
         }
       ],
       "resolved": true
@@ -636,7 +792,10 @@
           "image": "https://images.pokemontcg.io/dp5/78_hires.png",
           "usd": 5.7,
           "eur": 0.64,
-          "resolvedName": "Turtwig"
+          "resolvedName": "Turtwig",
+          "setId": "dp5",
+          "setLabel": "Majestic Dawn",
+          "setLogo": "https://images.pokemontcg.io/dp5/logo.png"
         },
         {
           "name": "Chimchar",
@@ -646,7 +805,10 @@
           "image": "https://images.pokemontcg.io/dp5/57_hires.png",
           "usd": 6.2,
           "eur": 0.41,
-          "resolvedName": "Chimchar"
+          "resolvedName": "Chimchar",
+          "setId": "dp5",
+          "setLabel": "Majestic Dawn",
+          "setLogo": "https://images.pokemontcg.io/dp5/logo.png"
         },
         {
           "name": "Piplup",
@@ -656,7 +818,10 @@
           "image": "https://images.pokemontcg.io/dp5/72_hires.png",
           "usd": 42.49,
           "eur": 1.06,
-          "resolvedName": "Piplup"
+          "resolvedName": "Piplup",
+          "setId": "dp5",
+          "setLabel": "Majestic Dawn",
+          "setLogo": "https://images.pokemontcg.io/dp5/logo.png"
         }
       ],
       "resolved": true
@@ -676,7 +841,10 @@
           "image": "https://images.pokemontcg.io/cel25/1_hires.png",
           "usd": 0.23,
           "eur": 0.14,
-          "resolvedName": "Ho-Oh"
+          "resolvedName": "Ho-Oh",
+          "setId": "cel25",
+          "setLabel": "Celebrations",
+          "setLogo": "https://images.pokemontcg.io/cel25/logo.png"
         },
         {
           "name": "Lugia",
@@ -686,7 +854,10 @@
           "image": "https://images.pokemontcg.io/cel25/22_hires.png",
           "usd": 0.93,
           "eur": 0.35,
-          "resolvedName": "Lugia"
+          "resolvedName": "Lugia",
+          "setId": "cel25",
+          "setLabel": "Celebrations",
+          "setLogo": "https://images.pokemontcg.io/cel25/logo.png"
         }
       ],
       "resolved": true
@@ -706,7 +877,10 @@
           "image": "https://images.pokemontcg.io/cel25/2_hires.png",
           "usd": 0.29,
           "eur": 0.15,
-          "resolvedName": "Reshiram"
+          "resolvedName": "Reshiram",
+          "setId": "cel25",
+          "setLabel": "Celebrations",
+          "setLogo": "https://images.pokemontcg.io/cel25/logo.png"
         },
         {
           "name": "Zekrom",
@@ -716,7 +890,10 @@
           "image": "https://images.pokemontcg.io/cel25/10_hires.png",
           "usd": 0.57,
           "eur": 0.16,
-          "resolvedName": "Zekrom"
+          "resolvedName": "Zekrom",
+          "setId": "cel25",
+          "setLabel": "Celebrations",
+          "setLogo": "https://images.pokemontcg.io/cel25/logo.png"
         }
       ],
       "resolved": true
@@ -736,7 +913,10 @@
           "image": "https://images.pokemontcg.io/swsh5/86_hires.png",
           "usd": 1.72,
           "eur": 1.66,
-          "resolvedName": "Single Strike Urshifu VMAX"
+          "resolvedName": "Single Strike Urshifu VMAX",
+          "setId": "swsh5",
+          "setLabel": "Battle Styles",
+          "setLogo": "https://images.pokemontcg.io/swsh5/logo.png"
         },
         {
           "name": "Rapid Strike Urshifu VMAX",
@@ -746,7 +926,10 @@
           "image": "https://images.pokemontcg.io/swsh5/88_hires.png",
           "usd": 1.59,
           "eur": 1.36,
-          "resolvedName": "Rapid Strike Urshifu VMAX"
+          "resolvedName": "Rapid Strike Urshifu VMAX",
+          "setId": "swsh5",
+          "setLabel": "Battle Styles",
+          "setLogo": "https://images.pokemontcg.io/swsh5/logo.png"
         }
       ],
       "resolved": true
@@ -766,7 +949,10 @@
           "image": "https://images.pokemontcg.io/sv4/252_hires.png",
           "usd": 40.24,
           "eur": 24.49,
-          "resolvedName": "Gholdengo ex"
+          "resolvedName": "Gholdengo ex",
+          "setId": "sv4",
+          "setLabel": "Paradox Rift",
+          "setLogo": "https://images.pokemontcg.io/sv4/logo.png"
         },
         {
           "name": "Gimmighoul",
@@ -776,7 +962,10 @@
           "image": "https://images.pokemontcg.io/sv4/198_hires.png",
           "usd": 15.73,
           "eur": 8.08,
-          "resolvedName": "Gimmighoul"
+          "resolvedName": "Gimmighoul",
+          "setId": "sv4",
+          "setLabel": "Paradox Rift",
+          "setLogo": "https://images.pokemontcg.io/sv4/logo.png"
         }
       ],
       "resolved": true
@@ -796,7 +985,10 @@
           "image": "https://images.pokemontcg.io/sv8/203_hires.png",
           "usd": 38.75,
           "eur": 23.28,
-          "resolvedName": "Latios"
+          "resolvedName": "Latios",
+          "setId": "sv8",
+          "setLabel": "Surging Sparks",
+          "setLogo": "https://images.pokemontcg.io/sv8/logo.png"
         },
         {
           "name": "Latias ex",
@@ -806,7 +998,10 @@
           "image": "https://images.pokemontcg.io/sv8/239_hires.png",
           "usd": 193.17,
           "eur": 135.63,
-          "resolvedName": "Latias ex"
+          "resolvedName": "Latias ex",
+          "setId": "sv8",
+          "setLabel": "Surging Sparks",
+          "setLogo": "https://images.pokemontcg.io/sv8/logo.png"
         }
       ],
       "resolved": true
