@@ -422,7 +422,9 @@ def materialize_slides(urls):
 
 # ------------------------------- graph api -------------------------------- #
 def graph_base():
-    return f"https://graph.facebook.com/{env('META_GRAPH_VERSION', 'v21.0')}"
+    # Instagram API with Instagram Login (graph.instagram.com) — our @pokeev.tcg
+    # access token is an IG-login token (starts with IGAA), not a FB Page token.
+    return f"https://graph.instagram.com/{env('META_GRAPH_VERSION', 'v21.0')}"
 
 
 def graph_post(path, params):
@@ -474,9 +476,15 @@ def plan_slides(plan):
             + [plan["cta"]])
 
 
+def ig_user_id(token):
+    """The IG-scoped user id for the publishing endpoints, read from the token
+    (graph.instagram.com/me) so it always matches the access token in use."""
+    return str(graph_get("me", {"fields": "user_id", "access_token": token})["user_id"])
+
+
 def publish_to_instagram(plan):
-    ig = env("INSTAGRAM_BUSINESS_ID", required=True)
     token = env("META_ACCESS_TOKEN", required=True)
+    ig = env("INSTAGRAM_BUSINESS_ID") or ig_user_id(token)
     children = []
     slides = plan_slides(plan)[:10]
     for url in slides:
@@ -490,12 +498,17 @@ def publish_to_instagram(plan):
     media_id = publish_media(ig, token, parent)
     log(f"✓ carousel published: {media_id}")
     if plan.get("hashtags"):
-        graph_post(f"{media_id}/comments", {"message": " ".join(plan["hashtags"]), "access_token": token})
-        log("✓ hashtags posted as first comment")
-    story_img = slides[0]  # slides[0] is the cover/story image for every theme
-    scid = container(ig, token, image_url=story_img, media_type="STORIES")
-    wait_finished(scid, token)
-    log(f"✓ story published: {publish_media(ig, token, scid)}")
+        try:  # never lose a published post over the first-comment hashtags
+            graph_post(f"{media_id}/comments", {"message": " ".join(plan["hashtags"]), "access_token": token})
+            log("✓ hashtags posted as first comment")
+        except Exception as exc:  # noqa: BLE001
+            log(f"  hashtag comment failed ({exc}); leaving them off the post")
+    try:  # the carousel is already live; the story is a bonus, never fatal
+        scid = container(ig, token, image_url=slides[0], media_type="STORIES")
+        wait_finished(scid, token)
+        log(f"✓ story published: {publish_media(ig, token, scid)}")
+    except Exception as exc:  # noqa: BLE001
+        log(f"  story failed ({exc}); carousel still posted")
     return media_id
 
 
