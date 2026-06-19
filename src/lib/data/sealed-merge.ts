@@ -54,6 +54,29 @@ const SEALED_PACK_ANCHOR_USD: Record<string, number> = {
   "ex-delta-species": 90,
 };
 
+/**
+ * Cross-sourced TRUE single-booster-pack USD for vintage sets where TCGplayer's
+ * "market" is a thin-ask outlier far above real sold prices (illiquid old sealed
+ * trades off a handful of high listings). Values are the CONSERVATIVE low end of
+ * PriceCharting loose + eBay-sold ranges, adversarially reviewed (only medium+
+ * confidence and >25% over the live quote). This REPLACES the booster quote (flagged
+ * estimated, so the UI shows "≈") and re-bases the derived box/ETB estimates.
+ * Refresh as the vintage sealed market moves. See pokeev-sealed-prices.
+ */
+const SEALED_PACK_OVERRIDE_USD: Record<string, number> = {
+  "legendary-collection": 2000, // was $6000 (PriceCharting/eBay $2000-3200)
+  "expedition-base-set": 500, // was $4800 (~5× over true)
+  "ex-deoxys": 1200, // was $2500
+  "ex-legend-maker": 900, // was $2000
+  "ex-team-magma-vs-team-aqua": 600, // was $1600
+  "ex-crystal-guardians": 350, // was $1300 (thin-ask outlier)
+  "neo-revelation": 300, // was $1000 (Unlimited; eBay-sold ~$380)
+  "ex-power-keepers": 420, // was $915
+  "ex-ruby-sapphire": 270, // was $800
+  "base-set": 430, // was $745 (Revised/Unlimited pack)
+  "plasma-storm": 120, // was $393 (BW-era; TCGplayer market badly inflated)
+};
+
 const ESTIMATE_NAME: Record<ProductKind, string> = {
   booster: "Booster pack (est.)",
   display: "Booster box (est.)",
@@ -175,6 +198,22 @@ export async function mergeSealedPrices(opts: {
       } catch (e) {
         log(`sealed: ✗ ${id} failed: ${(e as Error).message}`);
         continue;
+      }
+    }
+
+    // Cross-sourced booster override for vintage sets whose TCGplayer "market" is a
+    // thin-ask outlier: replace the pack quote with the researched true value (flagged
+    // estimated), and re-base the derived box/ETB on it. Applied to the live `real`
+    // BEFORE deriveMissing so the box estimate tracks the corrected pack rate.
+    const ovrUsd = SEALED_PACK_OVERRIDE_USD[id];
+    if (ovrUsd != null) {
+      const ovrEur = eurPerUsd != null ? round2(ovrUsd * eurPerUsd) : null;
+      const hasBooster = real.some((p) => p.kind === "booster");
+      real = real.map((p) =>
+        p.kind === "booster" ? { ...p, usd: ovrUsd, eur: ovrEur, estimated: true } : p,
+      );
+      if (!hasBooster) {
+        real.push({ kind: "booster", name: ESTIMATE_NAME.booster, eur: ovrEur, usd: ovrUsd, image: null, estimated: true });
       }
     }
 
