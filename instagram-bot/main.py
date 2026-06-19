@@ -500,13 +500,40 @@ def publish_to_instagram(plan):
     # Hashtags are folded into the caption (compose_caption) so they publish atomically
     # with the carousel — no fragile second /comments call that the Instagram-Login
     # token may not be scoped for.
+    story_ok = False
     try:  # the carousel is already live; the story is a bonus, never fatal
         scid = container(ig, token, image_url=slides[0], media_type="STORIES")
         wait_finished(scid, token)
         log(f"✓ story published: {publish_media(ig, token, scid)}")
+        story_ok = True
     except Exception as exc:  # noqa: BLE001
         log(f"  story failed ({exc}); carousel still posted")
+    notify_published(plan, media_id, token, story_ok)
     return media_id
+
+
+def notify_published(plan, media_id, token, story_ok):
+    """Confirm on Telegram that the post is LIVE, with a tap-through link when the
+    permalink is available. Best-effort: a failed notification never affects the post."""
+    tg_token = env("TELEGRAM_BOT_TOKEN")
+    tg_chat = env("TELEGRAM_CHAT_ID")
+    if not (tg_token and tg_chat):
+        return
+    link = ""
+    try:  # permalink is a valid field on your own IG media (graph.instagram.com)
+        permalink = graph_get(str(media_id), {"fields": "permalink", "access_token": token}).get("permalink")
+        if permalink:
+            link = "\n" + permalink
+    except Exception as exc:  # noqa: BLE001
+        log(f"  permalink lookup failed ({exc}); confirming without a link")
+    ntags = len(plan.get("hashtags") or [])
+    story = "carousel + story" if story_ok else "carousel (story skipped)"
+    text = (f"✅ Published to @pokeev.tcg — {plan['theme'].upper()} ({plan['date']})\n"
+            f"{len(plan_slides(plan))} slides, {ntags} hashtags, {story}.{link}")
+    try:
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": text})
+    except Exception as exc:  # noqa: BLE001
+        log(f"  publish-confirm message failed ({exc})")
 
 
 # -------------------------------- summary --------------------------------- #
