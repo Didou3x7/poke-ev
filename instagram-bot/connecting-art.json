@@ -1,0 +1,214 @@
+{
+  "_comment": "Curated database of Pokémon TCG 'combined illustration' groups — cards whose artworks join into ONE continuous picture (panorama). Source: Bulbapedia 'Combined illustration (TCG)'. Cards are listed LEFT-TO-RIGHT in panorama order. resolve_connecting_art.py enriches each card with ptcgId/image/usd/eur into connecting-art.resolved.json (committed so CI needs no live lookups).",
+  "groups": [
+    {
+      "id": "connecting-world-small-creatures",
+      "theme": "Connecting World — one habitat, nine cards",
+      "artist": "HYOGONOSUKE",
+      "era": "Scarlet & Violet",
+      "featured": true,
+      "cards": [
+        { "name": "Mime Jr.", "setName": "Paldean Fates", "number": "31" },
+        { "name": "Combee", "setName": "Obsidian Flames", "number": "8" },
+        { "name": "Swablu", "setName": "Paradox Rift", "number": "152" },
+        { "name": "Magikarp", "setName": "Paldea Evolved", "number": "42" },
+        { "name": "Palossand", "setName": "Paldea Evolved", "number": "96" },
+        { "name": "Gligar", "setName": "Paradox Rift", "number": "91" },
+        { "name": "Lechonk", "setName": "Obsidian Flames", "number": "180" },
+        { "name": "Skwovet", "setName": "Scarlet & Violet", "number": "151" },
+        { "name": "Horsea", "setName": "Paradox Rift", "number": "30" }
+      ]
+    },
+    {
+      "id": "connecting-world-everyones-habitat",
+      "theme": "Connecting World — Everyone's Habitat",
+      "artist": "Teeziro",
+      "era": "Scarlet & Violet",
+      "featured": true,
+      "cards": [
+        { "name": "Vibrava", "setName": "Surging Sparks", "number": "105" },
+        { "name": "Togetic", "setName": "Surging Sparks", "number": "71" },
+        { "name": "Wattrel", "setName": "Twilight Masquerade", "number": "75" },
+        { "name": "Torkoal", "setName": "Twilight Masquerade", "number": "30" },
+        { "name": "Passimian", "setName": "Surging Sparks", "number": "111" },
+        { "name": "Spheal", "setName": "Surging Sparks", "number": "43" },
+        { "name": "Golbat", "setName": "Shrouded Fable", "number": "28" },
+        { "name": "Dudunsparce", "setName": "Temporal Forces", "number": "129" },
+        { "name": "Slowpoke", "setName": "Stellar Crown", "number": "57" }
+      ]
+    },
+    {
+      "id": "secret-stairway",
+      "theme": "Secret Stairway",
+      "artist": "Ayako Ozaki",
+      "era": "Scarlet & Violet",
+      "featured": true,
+      "cards": [
+        { "name": "Taillow", "setName": "Destined Rivals", "number": "156" },
+        { "name": "Buizel", "setName": "Destined Rivals", "number": "57" },
+        { "name": "Mankey", "setName": "Destined Rivals", "number": "90" },
+        { "name": "Lotad", "setName": "Journey Together", "number": "35" },
+        { "name": "Paras", "setName": "Journey Together", "number": "4" },
+        { "name": "Ponyta", "setName": "Destined Rivals", "number": "29" }
+      ]
+    },
+    {
+      "id": "crown-zenith-sinnoh-legends",
+      "theme": "Sinnoh legends — the creation trio + Arceus",
+      "artist": "AKIRA EGAWA",
+      "era": "Sword & Shield",
+      "featured": true,
+      "cards": [
+        { "name": "Origin Forme Palkia VSTAR", "setName": "Crown Zenith Galarian Gallery", "number": "GG67" },
+        { "name": "Arceus VSTAR", "setName": "Crown Zenith Galarian Gallery", "number": "GG70" },
+        { "name": "Origin Forme Dialga VSTAR", "setName": "Crown Zenith Galarian Gallery", "number": "GG68" },
+        { "name": "Giratina VSTAR", "setName": "Crown Zenith Galarian Gallery", "number": "GG69" }
+      ]
+    },
+    {
+      "id": "crown-zenith-galar-meadow",
+      "theme": "A meadow of Galar — nine little ones",
+      "artist": "Kouki Saitou",
+      "era": "Sword & Shield",
+      "featured": true,
+      "cards": [
+        { "name": "Riolu", "setName": "Crown Zenith Galarian Gallery", "number": "GG26" },
+        { "name": "Swablu", "setName": "Crown Zenith Galarian Gallery", "number": "GG27" },
+        { "name": "Duskull", "setName": "Crown Zenith Galarian Gallery", "number": "GG28" },
+        { "name": "Bidoof", "setName": "Crown Zenith Galarian Gallery", "number": "GG29" },
+        { "name": "Pikachu", "setName": "Crown Zenith Galarian Gallery", "number": "GG30" },
+        { "name": "Turtwig", "setName": "Crown Zenith Galarian Gallery", "number": "GG31" },
+        { "name": "Paras", "setName": "Crown Zenith Galarian Gallery", "number": "GG32" },
+        { "name": "Poochyena", "setName": "Crown Zenith Galarian Gallery", "number": "GG33" },
+        { "name": "Mareep", "setName": "Crown Zenith Galarian Gallery", "number": "GG34" }
+      ]
+    },
+    {
+      "id": "neo-discovery-eeveelutions",
+      "theme": "Espeon, Eevee & Umbreon — day to night",
+      "artist": "Naoyo Kimura",
+      "era": "Neo",
+      "featured": true,
+      "cards": [
+        { "name": "Espeon", "setName": "Neo Discovery", "number": "20" },
+        { "name": "Eevee", "setName": "Neo Discovery", "number": "38" },
+        { "name": "Umbreon", "setName": "Neo Discovery", "number": "32" }
+      ]
+    },
+    {
+      "id": "neo-revelation-legendary-beasts",
+      "theme": "The legendary beasts — Entei, Suicune, Raikou",
+      "artist": "Naoyo Kimura",
+      "era": "Neo",
+      "featured": true,
+      "cards": [
+        { "name": "Entei", "setName": "Neo Revelation", "number": "17" },
+        { "name": "Suicune", "setName": "Neo Revelation", "number": "27" },
+        { "name": "Raikou", "setName": "Neo Revelation", "number": "22" }
+      ]
+    },
+    {
+      "id": "southern-islands-kanto",
+      "theme": "Southern Islands — Mew, Pidgeot & Onix",
+      "artist": "Keiko Fukuyama",
+      "era": "Southern Islands",
+      "featured": true,
+      "cards": [
+        { "name": "Mew", "setName": "Southern Islands", "number": "1" },
+        { "name": "Pidgeot", "setName": "Southern Islands", "number": "2" },
+        { "name": "Onix", "setName": "Southern Islands", "number": "3" }
+      ]
+    },
+    {
+      "id": "southern-islands-water",
+      "theme": "Southern Islands — Tentacruel, Marill & Lapras",
+      "artist": "Naoyo Kimura",
+      "era": "Southern Islands",
+      "featured": true,
+      "cards": [
+        { "name": "Tentacruel", "setName": "Southern Islands", "number": "10" },
+        { "name": "Marill", "setName": "Southern Islands", "number": "11" },
+        { "name": "Lapras", "setName": "Southern Islands", "number": "12" }
+      ]
+    },
+    {
+      "id": "mega-venusaur-line",
+      "theme": "Bulbasaur to Mega Venusaur ex",
+      "artist": "mashu",
+      "era": "Mega Evolution",
+      "featured": true,
+      "cards": [
+        { "name": "Bulbasaur", "setName": "Mega Evolution", "number": "133" },
+        { "name": "Ivysaur", "setName": "Mega Evolution", "number": "134" },
+        { "name": "Mega Venusaur ex", "setName": "Mega Evolution", "number": "177" }
+      ]
+    },
+    {
+      "id": "majestic-dawn-sinnoh-starters",
+      "theme": "Sinnoh starters — Turtwig, Chimchar & Piplup",
+      "artist": "Naoyo Kimura",
+      "era": "Diamond & Pearl",
+      "featured": true,
+      "cards": [
+        { "name": "Turtwig", "setName": "Majestic Dawn", "number": "78" },
+        { "name": "Chimchar", "setName": "Majestic Dawn", "number": "57" },
+        { "name": "Piplup", "setName": "Majestic Dawn", "number": "72" }
+      ]
+    },
+    {
+      "id": "celebrations-hooh-lugia",
+      "theme": "Ho-Oh & Lugia — Johto's guardians",
+      "artist": "Kouki Saitou",
+      "era": "Celebrations",
+      "featured": true,
+      "cards": [
+        { "name": "Ho-Oh", "setName": "Celebrations", "number": "1" },
+        { "name": "Lugia", "setName": "Celebrations", "number": "22" }
+      ]
+    },
+    {
+      "id": "celebrations-reshiram-zekrom",
+      "theme": "Reshiram & Zekrom — truth and ideals",
+      "artist": "Aya Kusube",
+      "era": "Celebrations",
+      "featured": true,
+      "cards": [
+        { "name": "Reshiram", "setName": "Celebrations", "number": "2" },
+        { "name": "Zekrom", "setName": "Celebrations", "number": "10" }
+      ]
+    },
+    {
+      "id": "battle-styles-urshifu",
+      "theme": "Single Strike vs Rapid Strike Urshifu VMAX",
+      "artist": "PLANETA Tsuji",
+      "era": "Sword & Shield",
+      "featured": true,
+      "cards": [
+        { "name": "Single Strike Urshifu VMAX", "setName": "Battle Styles", "number": "86" },
+        { "name": "Rapid Strike Urshifu VMAX", "setName": "Battle Styles", "number": "88" }
+      ]
+    },
+    {
+      "id": "paradox-rift-gholdengo",
+      "theme": "Gimmighoul becomes Gholdengo",
+      "artist": "Akira Komayama",
+      "era": "Scarlet & Violet",
+      "featured": true,
+      "cards": [
+        { "name": "Gholdengo ex", "setName": "Paradox Rift", "number": "252" },
+        { "name": "Gimmighoul", "setName": "Paradox Rift", "number": "198" }
+      ]
+    },
+    {
+      "id": "surging-sparks-latios-latias",
+      "theme": "Latios & Latias — the eon duo",
+      "artist": "OKACHEKE",
+      "era": "Scarlet & Violet",
+      "featured": true,
+      "cards": [
+        { "name": "Latios", "setName": "Surging Sparks", "number": "203" },
+        { "name": "Latias ex", "setName": "Surging Sparks", "number": "239" }
+      ]
+    }
+  ]
+}
