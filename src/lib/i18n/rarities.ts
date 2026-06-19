@@ -33,6 +33,8 @@ const labels: Record<RarityId, { fr: string; en: string }> = {
   "lv-x": { fr: "Niveau X", en: "Level X" },
   "prime": { fr: "Prime", en: "Prime" },
   "legend": { fr: "LÉGENDE", en: "LEGEND" },
+  "shining": { fr: "Shining", en: "Shining" },
+  "shiny-holo-rare": { fr: "Shiny (secrète)", en: "Shiny (secret)" },
 };
 
 export function rarityLabel(id: RarityId, locale: Locale): string {

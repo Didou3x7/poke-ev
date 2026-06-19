@@ -40,10 +40,11 @@
       "name": "rare",
       "count": 1,
       "distribution": {
-        "rare": 0.589,
+        "rare": 0.5668,
         "rare-holo": 0.3,
         "lv-x": 0.097,
-        "secret-rare": 0.014
+        "secret-rare": 0.014,
+        "shiny-holo-rare": 0.0222
       }
     }
   ],

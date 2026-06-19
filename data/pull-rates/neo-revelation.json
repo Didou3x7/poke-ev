@@ -29,7 +29,8 @@
       "count": 1,
       "distribution": {
         "rare": 0.667,
-        "rare-holo": 0.333
+        "rare-holo": 0.291,
+        "shining": 0.042
       }
     }
   ],

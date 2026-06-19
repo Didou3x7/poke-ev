@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { computeSetEv } from "../ev/engine";
+import { reclassifyVintageShiny } from "../ev/rarity";
 import type { PricedCard, SetEv } from "../ev/types";
 import { getAllSets, getEraOfSet, getPullRates } from "./catalog";
 import { fetchFxRate } from "./build-core";
@@ -198,6 +199,12 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
         let rarity = c.rarity;
         if (/^TG/i.test(num)) rarity = "trainer-gallery";
         else if (/^GG/i.test(num)) rarity = "galarian-gallery";
+        // Vintage secret shinies mislabeled "Rare" (Neo "Shining <name>", DP "SH##").
+        else rarity = reclassifyVintageShiny(rarity, c.name, num);
+        // Dragon Vault's Kyurem #21/20 is the set's secret chase, but both sources tag
+        // it "common"; pin it to secret-rare so it leaves the common pool and its
+        // dedicated secret slot (data/pull-rates/dragon-vault.json) can reference it.
+        if (set.id === "dragon-vault" && num === "21") rarity = "secret-rare";
         return { ...c, rarity, prices: { eur, usd } };
       });
       const fr = config ? computeSetEv(cards, config, "fr", { topCardsCount: 12 }) : null;

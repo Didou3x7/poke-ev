@@ -42,6 +42,12 @@ export const RARITY_IDS = [
   "lv-x", // DP-era Level X ("Rare Holo LV.X")
   "prime", // HGSS-era Prime ("Rare PRIME")
   "legend", // HGSS-era LEGEND (two-card)
+  // Vintage secret SHINY chases that BOTH price sources mislabel as plain "Rare"
+  // (so they can only be detected by name/number, see reclassifyVintageHits): the
+  // Neo-era "Shining Pokémon" and the DP/Platinum-era "SH##" Shiny secrets. They are
+  // rare INSERTS, not rare-slot pulls — bucketing them as "rare" wildly inflates EV.
+  "shining", // Neo Genesis-Destiny "Shining <name>"
+  "shiny-holo-rare", // Diamond&Pearl/Platinum "SH##" Shiny secret
 ] as const;
 
 export type RarityId = (typeof RARITY_IDS)[number];
@@ -88,6 +94,12 @@ const RAW_TO_ID: Record<string, RarityId> = {
   "rare holo lv.x": "lv-x",
   "rare prime": "prime",
   "legend": "legend",
+  // Vintage secret shinies — only set if a source ever labels them (both currently
+  // say plain "Rare"; reclassifyVintageHits is the real detector).
+  "shining": "shining",
+  "shining rare": "shining",
+  "shiny holo rare": "shiny-holo-rare",
+  "shiny rare holo": "shiny-holo-rare",
   "rare holo vmax": "rare-holo-vmax",
   "rare holo vstar": "rare-holo-vstar",
   // TCGdex word order (Holo Rare V / VMAX / VSTAR)
@@ -132,4 +144,33 @@ export function normalizeRarity(raw: string | null | undefined): RarityId | null
   const key = raw.toLowerCase().replace(/\s+/g, " ").trim();
   if (RARITY_SET.has(key)) return key as RarityId;
   return RAW_TO_ID[key] ?? null;
+}
+
+const SHINING_NAME = /^shining\s/i;
+const SH_NUMBER = /^sh\d+$/i;
+
+/**
+ * Reclassify the vintage secret SHINY chases that BOTH price sources mislabel as
+ * plain "Rare": the Neo-era "Shining <name>" cards and the Diamond&Pearl/Platinum
+ * "SH##" Shiny secrets. They are rare INSERTS (a few per booster box), NOT rare-slot
+ * pulls, so leaving them in the "rare" pool inflates a set's EV many-fold (e.g. a
+ * $4000 Shining Charizard treated as a ~1-in-1.5-pack rare).
+ *
+ * Scoped HARD to cards whose current rarity is exactly "rare", so the modern,
+ * legitimately ultra-rare "Shining" GX cards (Shining Legends, tagged ultra-rare)
+ * and the lv-x "SH" cards (Stormfront) are left untouched. Returns the corrected id.
+ */
+export function reclassifyVintageShiny(
+  rarity: RarityId | null,
+  name: string,
+  number: string | null | undefined,
+): RarityId | null {
+  // "SH##" is the unambiguous DP/Platinum Shiny-secret numbering (SH1-SH12 only) —
+  // reclassify regardless of the source rarity, which TCGdex tags inconsistently
+  // (lv-x in Stormfront, plain rare in Platinum/Arceus/Supreme Victors).
+  if ((rarity === "rare" || rarity === "lv-x") && SH_NUMBER.test(number ?? "")) return "shiny-holo-rare";
+  // "Shining <name>" is the Neo shining ONLY while a source still calls it a plain
+  // rare; the modern Shining Legends GX cards are already ultra-rare and must stay.
+  if (rarity === "rare" && SHINING_NAME.test(name)) return "shining";
+  return rarity;
 }

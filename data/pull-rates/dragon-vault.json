@@ -16,45 +16,45 @@
       "name": "holo-1",
       "count": 1,
       "distribution": {
-        "rare-holo": 0.857,
+        "rare-holo": 0.897,
         "rare": 0.095,
-        "common": 0.048
+        "secret-rare": 0.008
       }
     },
     {
       "name": "holo-2",
       "count": 1,
       "distribution": {
-        "rare-holo": 0.857,
+        "rare-holo": 0.897,
         "rare": 0.095,
-        "common": 0.048
+        "secret-rare": 0.008
       }
     },
     {
       "name": "holo-3",
       "count": 1,
       "distribution": {
-        "rare-holo": 0.857,
+        "rare-holo": 0.897,
         "rare": 0.095,
-        "common": 0.048
+        "secret-rare": 0.008
       }
     },
     {
       "name": "holo-4",
       "count": 1,
       "distribution": {
-        "rare-holo": 0.857,
+        "rare-holo": 0.897,
         "rare": 0.095,
-        "common": 0.048
+        "secret-rare": 0.008
       }
     },
     {
       "name": "holo-5",
       "count": 1,
       "distribution": {
-        "rare-holo": 0.857,
+        "rare-holo": 0.897,
         "rare": 0.095,
-        "common": 0.048
+        "secret-rare": 0.008
       }
     }
   ],
