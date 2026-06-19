@@ -500,21 +500,20 @@ def publish_to_instagram(plan):
     # Hashtags are folded into the caption (compose_caption) so they publish atomically
     # with the carousel — no fragile second /comments call that the Instagram-Login
     # token may not be scoped for.
-    story_ok = False
-    try:  # the carousel is already live; the story is a bonus, never fatal
-        scid = container(ig, token, image_url=slides[0], media_type="STORIES")
-        wait_finished(scid, token)
-        log(f"✓ story published: {publish_media(ig, token, scid)}")
-        story_ok = True
-    except Exception as exc:  # noqa: BLE001
-        log(f"  story failed ({exc}); carousel still posted")
-    notify_published(plan, media_id, token, story_ok)
+    #
+    # NO auto-Story. The API can only push a *static* image as a story — Instagram blocks
+    # links, post-share stickers and every interactive element for all third-party/API
+    # publishing — so the only auto-story possible is a flat reframe of a slide, which
+    # looks bad. The proper "Share -> Add to story" with a tappable post sticker is
+    # app-only; the editor does it in one tap from the permalink in the confirmation.
+    notify_published(plan, media_id, token)
     return media_id
 
 
-def notify_published(plan, media_id, token, story_ok):
-    """Confirm on Telegram that the post is LIVE, with a tap-through link when the
-    permalink is available. Best-effort: a failed notification never affects the post."""
+def notify_published(plan, media_id, token):
+    """Confirm on Telegram that the post is LIVE, with a tap-through permalink + a nudge
+    to add it to the story in-app. Best-effort: a failed notification never affects the
+    post."""
     tg_token = env("TELEGRAM_BOT_TOKEN")
     tg_chat = env("TELEGRAM_CHAT_ID")
     if not (tg_token and tg_chat):
@@ -527,9 +526,10 @@ def notify_published(plan, media_id, token, story_ok):
     except Exception as exc:  # noqa: BLE001
         log(f"  permalink lookup failed ({exc}); confirming without a link")
     ntags = len(plan.get("hashtags") or [])
-    story = "carousel + story" if story_ok else "carousel (story skipped)"
     text = (f"✅ Published to @pokeev.tcg — {plan['theme'].upper()} ({plan['date']})\n"
-            f"{len(plan_slides(plan))} slides, {ntags} hashtags, {story}.{link}")
+            f"{len(plan_slides(plan))} slides, {ntags} hashtags.{link}\n\n"
+            "🔁 To add it to your story with a tappable post sticker, open the post and "
+            "tap Share -> Add to story (app-only; the API can't do this).")
     try:
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": text})
     except Exception as exc:  # noqa: BLE001
