@@ -40,6 +40,11 @@ THEMES = {
     "ev": {"tag": "BEST EV", "rank_by": "ev"},
 }
 
+# The 3-theme rotation: connected art (T1) → rip-or-keep (T2) → grail spotlight (T3).
+# do_run picks the NEXT theme after whatever ran last (see pick_rotation_theme).
+ROTATION = ["connected", "ripkeep", "grails"]
+PORTRAIT_RATIO = 1.394  # card height / width — used to size grail-zoom crops
+
 
 def env(name, default=None, required=False):
     v = os.environ.get(name, default)
@@ -458,13 +463,22 @@ def publish_media(ig, token, cid):
     return graph_post(f"{ig}/media_publish", {"creation_id": cid, "access_token": token})["id"]
 
 
+def plan_slides(plan):
+    """Ordered carousel URLs. Prefers the new flat `slides` list (slides[0] = cover/
+    story image); falls back to the legacy cover/cards/recap/cta keys so the old
+    Vault-Countdown plans still publish unchanged."""
+    if plan.get("slides"):
+        return list(plan["slides"])
+    return ([plan["cover"], *plan.get("cards", [])]
+            + ([plan["recap"]] if plan.get("recap") else [])
+            + [plan["cta"]])
+
+
 def publish_to_instagram(plan):
     ig = env("INSTAGRAM_BUSINESS_ID", required=True)
     token = env("META_ACCESS_TOKEN", required=True)
     children = []
-    slides = ([plan["cover"], *plan["cards"]]
-              + ([plan["recap"]] if plan.get("recap") else [])
-              + [plan["cta"]])
+    slides = plan_slides(plan)[:10]
     for url in slides:
         cid = container(ig, token, image_url=url, is_carousel_item="true")
         log(f"  item {cid}")
@@ -478,7 +492,8 @@ def publish_to_instagram(plan):
     if plan.get("hashtags"):
         graph_post(f"{media_id}/comments", {"message": " ".join(plan["hashtags"]), "access_token": token})
         log("✓ hashtags posted as first comment")
-    scid = container(ig, token, image_url=plan["cover"], media_type="STORIES")
+    story_img = slides[0]  # slides[0] is the cover/story image for every theme
+    scid = container(ig, token, image_url=story_img, media_type="STORIES")
     wait_finished(scid, token)
     log(f"✓ story published: {publish_media(ig, token, scid)}")
     return media_id
@@ -491,12 +506,22 @@ def write_summary(plan, verify):
         return
     out = [f"## 📸 PokeEV IG preview — {plan['theme'].upper()} ({plan['date']})", ""]
     out.append("### Slides")
-    labelled = [("Cover", plan["cover"]), *[(f"Card {i+1}", u) for i, u in enumerate(plan["cards"])]]
-    if plan.get("recap"):
-        labelled.append(("Recap", plan["recap"]))
-    labelled.append(("CTA", plan["cta"]))
+    slides = plan_slides(plan)
+    if plan.get("slides"):
+        labelled = [(f"Slide {i+1}", u) for i, u in enumerate(slides)]
+    else:
+        labelled = [("Cover", plan["cover"]), *[(f"Card {i+1}", u) for i, u in enumerate(plan.get("cards", []))]]
+        if plan.get("recap"):
+            labelled.append(("Recap", plan["recap"]))
+        labelled.append(("CTA", plan["cta"]))
     for label, url in labelled:
         out.append(f"**{label}**\n\n![{label}]({url})\n")
+    if not verify:
+        out.append("\n### Caption\n\n```\n" + plan["caption"] + "\n```")
+        out.append("\n### First comment (hashtags)\n\n```\n" + " ".join(plan["hashtags"]) + "\n```")
+        Path(path).write_text("\n".join(out), encoding="utf-8")
+        log("wrote GitHub step summary preview")
+        return
     out.append("### Price cross-check")
     out.append("| Card | Snapshot $ | TCGplayer live $ | Cardmarket live € | Agreement |")
     out.append("|---|---|---|---|---|")
@@ -511,20 +536,61 @@ def write_summary(plan, verify):
 
 
 # --------------------------------- main ----------------------------------- #
-def load_history(path: Path):
+def _history_entries(path: Path):
     try:
         items = json.loads(path.read_text(encoding="utf-8"))
     except (ValueError, OSError):
-        return set()
+        return []
+    return items if isinstance(items, list) else []
+
+
+def load_history(path: Path):
+    """Legacy set-level dedup (Vault Countdown): set ids posted within DEDUP_DAYS."""
     cutoff = date.today().toordinal() - DEDUP_DAYS
     recent = set()
-    for e in items:
+    for e in _history_entries(path):
         try:
             if datetime.fromisoformat(e["date"]).date().toordinal() >= cutoff:
                 recent.update(e.get("sets", []))
         except Exception:
             continue
     return recent
+
+
+def recent_keys(path: Path, theme: str, days=DEDUP_DAYS):
+    """Per-theme dedup keys (T1 group id · T2 set id · T3 card id) used within the
+    last `days`. Reads the new `keys`+`theme` fields and gracefully ignores legacy
+    rows that only have `sets`."""
+    cutoff = date.today().toordinal() - days
+    used = set()
+    for e in _history_entries(path):
+        try:
+            if datetime.fromisoformat(e["date"]).date().toordinal() < cutoff:
+                continue
+        except Exception:
+            continue
+        if e.get("theme") == theme:
+            used.update(e.get("keys", []))
+    return used
+
+
+def last_theme(path: Path):
+    """The most recently posted ROTATION theme, or None if history has none."""
+    for e in reversed(_history_entries(path)):
+        if e.get("theme") in ROTATION:
+            return e["theme"]
+    return None
+
+
+def pick_rotation_theme(path: Path, override=None):
+    """Advance the T1→T2→T3 wheel from whatever ran last. An explicit override
+    (env POKEEV_THEME / CLI arg) wins when it names a valid rotation theme."""
+    if override in ROTATION:
+        return override
+    prev = last_theme(path)
+    if prev not in ROTATION:
+        return ROTATION[0]
+    return ROTATION[(ROTATION.index(prev) + 1) % len(ROTATION)]
 
 
 def prepare_items():
@@ -611,13 +677,868 @@ def do_plan():
     return assemble_plan(ctx, brief)
 
 
+# =========================================================================== #
+#  3-THEME ROTATION PIPELINE  (connected → ripkeep → grails)
+#  Each theme mirrors the prepare→brief→assemble split with three pure-ish
+#  functions: select_<t> (pick data, no network), artdirect_<t> (Claude copy,
+#  with a deterministic fallback_<t>), slides_<t> (build the /api/ig URLs).
+# =========================================================================== #
+
+# ------------------------------ shared data ------------------------------- #
+def load_snapshot(data_dir: Path):
+    snap = json.loads((data_dir / "snapshot" / "snapshot.json").read_text(encoding="utf-8"))
+    if snap.get("demo"):
+        sys.exit("[pokeev-bot] snapshot is demo data — refusing to plan")
+    return snap
+
+
+def set_display_name(names, sid, fallback):
+    meta = names.get(sid) or {}
+    return meta.get("en") or fallback or sid
+
+
+def _strip_json_fence(raw):
+    raw = raw.strip()
+    raw = re.sub(r"^```(?:json)?|```$", "", raw, flags=re.MULTILINE).strip()
+    return raw
+
+
+def claude_json(api_key, prompt, max_tokens=1100, system=None, vision_image=None):
+    """One-shot Claude call returning a parsed JSON object. `vision_image` is a
+    (media_type, base64) tuple to attach an image block. Raises on bad JSON."""
+    from anthropic import Anthropic
+
+    client = Anthropic(api_key=api_key)
+    content = []
+    if vision_image is not None:
+        media_type, b64 = vision_image
+        content.append({"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64}})
+    content.append({"type": "text", "text": prompt})
+    kwargs = {"model": CLAUDE_MODEL, "max_tokens": max_tokens, "messages": [{"role": "user", "content": content}]}
+    if system:
+        kwargs["system"] = system
+    msg = client.messages.create(**kwargs)
+    raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+    return json.loads(_strip_json_fence(raw))
+
+
+def _clean_hashtags(tags, lo=20, hi=28):
+    """Normalize, de-dup (case-insensitive), strip em-dashes, cap length. The caller's
+    post-specific tags lead; a deep high-reach core pads the tail so every post ships a
+    full 20-28 layered block even when Claude/fallback under-delivers."""
+    core = ["#pokemon", "#pokemontcg", "#pokemoncards", "#pokemoncollector", "#tcg",
+            "#pokemoncommunity", "#pokemoncardcollection", "#tcgcollector", "#pokemoncollection",
+            "#pokemoninvesting", "#pokemontcgcollector", "#pokemoncardcollector", "#pokemoncardgame",
+            "#tcgcommunity", "#pokemoncollectors", "#pokemonfan", "#pokemontcgcards", "#pokemontcgcommunity",
+            "#tradingcards", "#tradingcardgame", "#pokemonusa", "#tcgplayer", "#pokemonmaster",
+            "#pokemonsealed", "#pullrate", "#cardcollector", "#pokemoninvestment", "#pokemonpulls"]
+    seen, out = set(), []
+    for t in list(tags or []) + core:
+        t = str(t).strip().replace("—", "").replace("–", "")
+        if not t:
+            continue
+        t = "#" + re.sub(r"[^0-9a-zA-Z]", "", t.lstrip("#"))
+        if len(t) <= 1:
+            continue
+        k = t.lower()
+        if k in seen:
+            continue
+        seen.add(k)
+        out.append(t)
+        if len(out) >= hi:
+            break
+    return out
+
+
+_VOICE = (
+    "You are the art director + copywriter for @pokeev.tcg, a PREMIUM Pokémon TCG "
+    "Expected-Value tool (pokeev.com). Audience: serious US collectors & investors. "
+    "VOICE GUARDRAIL — collectors read hype as amateur. NEVER use: insane, brutal, "
+    "unhinged, wild, crazy, mind-blowing, 'brace'. Confident insider, never cringe. "
+    "Few emojis. NEVER use em-dashes or en-dashes anywhere (use periods or commas). "
+    "The verified numbers carry the weight; restraint is the brand. English only."
+)
+
+_CAPTION_RULES = (
+    "The caption is ENGLISH ONLY and flows: hook line, then substance, then an "
+    "engagement nudge, then a 'link in bio -> pokeev.com' CTA. Name pokeev.com at "
+    "least twice. No hashtags inside the caption. No em-dashes or en-dashes."
+)
+
+
+def _no_dash(s):
+    """Strip em/en-dashes from any data-derived copy (source data uses them; the
+    brand voice forbids them). Collapses to a clean separator."""
+    if not s:
+        return s
+    return re.sub(r"\s*[—–]\s*", " · ", str(s)).strip()
+
+
+def _slug_words(*xs):
+    """Lowercase alnum tokens for dynamic hashtags, e.g. 'Latias ex' -> 'latiasex'."""
+    out = []
+    for x in xs:
+        if not x:
+            continue
+        w = re.sub(r"[^0-9a-z]", "", str(x).lower())
+        if w:
+            out.append(w)
+    return out
+
+
+# =============================== T1 · CONNECTED ============================ #
+def select_connected(snapshot, names, groups_path: Path, exclude=None, min_cards=2, max_cards=7):
+    """Pick a resolved combined-illustration group with 2..7 cards (cover + N +
+    reveal + cta <= 10 slides), not recently used, ranked by total USD desc."""
+    exclude = exclude or set()
+    doc = json.loads(groups_path.read_text(encoding="utf-8"))
+    candidates = []
+    for g in doc.get("groups", []):
+        if not g.get("resolved"):
+            continue
+        gid = g.get("id")
+        if not gid or gid in exclude:
+            continue
+        cards = [c for c in g.get("cards", []) if c.get("image")]
+        if not (min_cards <= len(cards) <= max_cards):
+            continue
+        total = sum(int(round(c.get("usd") or 0)) for c in cards)
+        candidates.append((total, g, cards))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda t: t[0], reverse=True)
+    total, g, cards = candidates[0]
+    items = []
+    for c in cards:
+        items.append({
+            "name": c.get("resolvedName") or c.get("name") or "?",
+            "image": c.get("image"),
+            "usd": int(round(c.get("usd") or 0)),
+            "setLabel": c.get("setLabel") or c.get("setName") or "",
+            "setLogo": c.get("setLogo"),
+            "ptcgId": c.get("ptcgId"),
+            "number": c.get("number"),
+        })
+    return {
+        "key": g["id"],
+        "group_id": g["id"],
+        "theme_line": g.get("theme", ""),
+        "artist": g.get("artist", ""),
+        "era": g.get("era", ""),
+        "setLabel": items[0]["setLabel"],
+        "setLogo": items[0]["setLogo"],
+        "items": items,
+        "total": total,  # integer; equals the sum of displayed per-card values
+    }
+
+
+def fallback_connected(facts):
+    n = len(facts["items"])
+    set_lbl = facts["setLabel"]
+    artist = facts["artist"] or "one illustrator"
+    reveal_title = re.split(r"[—–]", facts["theme_line"])[-1].strip() or set_lbl
+    return {
+        "eyebrow": _no_dash(facts["theme_line"] or set_lbl).upper()[:48],
+        "headline": "They drew one scene.",
+        "revealTitle": _no_dash(reveal_title)[:36],
+        "caption": (
+            f"{n} separate cards. One continuous illustration.\n\n"
+            f"Line them up and {artist}'s artwork becomes a single panorama, scattered across the set.\n\n"
+            f"Which piece is your favorite? Tell us below.\n\n"
+            "pokeev.com prices every card live, so you always know what a set is really worth.\n"
+            "link in bio -> pokeev.com"
+        ),
+        "hashtags": _clean_hashtags(
+            ["#pokemonart", "#connectingart", "#pokemonillustration", "#cardart"]
+            + ["#" + w for w in _slug_words(artist, set_lbl)]
+        ),
+    }
+
+
+def artdirect_connected(api_key, facts, feedback=None):
+    if not api_key:
+        return fallback_connected(facts)
+    lines = "\n".join(f"  {i+1}. {it['name']} ({it['setLabel']}) ${it['usd']}" for i, it in enumerate(facts["items"]))
+    prompt = (
+        f"Today's carousel is THEME 1 (CONNECTING ART): {len(facts['items'])} different cards whose "
+        f"artworks join into ONE continuous illustration. Group: \"{facts['theme_line']}\". "
+        f"Illustrator: {facts['artist']}. Era: {facts['era']}. Set: {facts['setLabel']}.\n"
+        f"Cards left-to-right, with verified USD:\n{lines}\n"
+        f"Combined panorama value: ${facts['total']}.\n\n"
+        + _CAPTION_RULES + "\n\n"
+        "Return ONLY a JSON object with keys:\n"
+        '  "eyebrow": ALL-CAPS series label, <= 46 chars (e.g. the set + theme).\n'
+        '  "headline": a short cover hook, <= 24 chars (e.g. "They drew one sky.").\n'
+        '  "revealTitle": <= 34 chars title for the panorama reveal slide.\n'
+        '  "caption": the Instagram caption per the rules above. Lead by teaching that these cards '
+        'form one illustration, mention the artist, ask an engagement question.\n'
+        '  "hashtags": 20-28 hashtags. Layer high-reach core (#pokemon #pokemontcg #pokemoncards '
+        '#pokemoncollector #tcg #pokemoncommunity) + format tags (#connectingart #pokemonart '
+        '#pokemonillustration) + POST-SPECIFIC tags from the artist name, set, and Pokemon names. '
+        'No em-dashes. Each unique.\n'
+    )
+    if feedback:
+        prompt += f"\n\nEditor feedback to apply precisely, keep all numbers exact:\n\"{feedback}\"\n"
+    try:
+        brief = claude_json(api_key, prompt, system=_VOICE)
+    except Exception as exc:  # noqa: BLE001
+        log(f"  T1 art-direction failed ({exc}); using fallback")
+        return fallback_connected(facts)
+    brief["hashtags"] = _clean_hashtags(brief.get("hashtags"))
+    brief.setdefault("eyebrow", _no_dash(facts["theme_line"] or facts["setLabel"]).upper()[:48])
+    brief.setdefault("headline", "They drew one scene.")
+    brief.setdefault("revealTitle", _no_dash(facts["setLabel"])[:36])
+    # Belt-and-braces: never let a data-derived em-dash leak into the cover/reveal copy.
+    for k in ("eyebrow", "headline", "revealTitle"):
+        if brief.get(k):
+            brief[k] = _no_dash(brief[k])
+    return brief
+
+
+def slides_connected(base, facts, brief):
+    """Port of /tmp/render_connect.py: connect-cover, one connect per card,
+    connect-reveal, connect-cta. img/v params are 0-indexed (img0..)."""
+    base = base.rstrip("/")
+    H = f"{base}/api/ig"
+    items = facts["items"]
+    total_str = fmt_usd(facts["total"])
+    set_lbl = facts["setLabel"]
+    logo = facts["setLogo"]
+    imgparams = "".join(f"&img{i}={q(it['image'])}" for i, it in enumerate(items))
+    valparams = "".join(f"&v{i}={q(fmt_usd(it['usd']))}" for i, it in enumerate(items))
+
+    cover = (f"{H}?slide=connect-cover"
+             f"&eyebrow={q(brief['eyebrow'])}&headline={q(brief['headline'])}"
+             f"&title={q(total_str)}&cue={q('swipe →')}{imgparams}")
+
+    cards = []
+    n = len(items)
+    running = 0
+    for i, it in enumerate(items, 1):
+        running += it["usd"]
+        series = f"CONNECTED · PIECE {i} OF {n}"
+        if i == n - 1:
+            series += " · ONE PIECE LEFT"
+        if i == n:
+            tally = f"the last piece · {total_str} complete"
+        else:
+            tally = f"{fmt_usd(running)} of {total_str} shown"
+        u = (f"{H}?slide=connect&img0={q(it['image'])}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
+             f"&series={q(series)}&tally={q(tally)}&set={q(set_lbl)}")
+        if logo:
+            u += f"&logo={q(logo)}"
+        cards.append(u)
+
+    reveal = (f"{H}?slide=connect-reveal&title={q(brief['revealTitle'])}&set={q(set_lbl)}"
+              + (f"&logo={q(logo)}" if logo else "")
+              + f"{imgparams}{valparams}&total={q(total_str)}"
+              f"&footerLeft={q('every value priced live on pokeev.com')}")
+
+    body = "pokeev.com runs the live Expected Value on any sealed product, so you know if a set is worth ripping."
+    cta = (f"{H}?slide=connect-cta&set={q(set_lbl)}"
+           + (f"&logo={q(logo)}" if logo else "")
+           + f"&eyebrow={q('BEFORE YOU RIP IT')}&h1={q('Open it,')}&h2={q('or keep it sealed?')}"
+           f"&body={q(body)}")
+    return [cover, *cards, reveal, cta]
+
+
+# =============================== T2 · RIPKEEP ============================== #
+def _real_etb(sealed):
+    """Real (non-estimated) ETB sealed entries. Prefers the plain set ETB over store
+    exclusives (Pokemon Center etc., which are price outliers); among those, cheapest."""
+    etbs = [s for s in (sealed or []) if s.get("kind") == "etb" and s.get("usd") and not s.get("estimated")]
+    if not etbs:
+        return None
+    plain = [s for s in etbs if "pokemon center" not in (s.get("name") or "").lower()
+             and "exclusive" not in (s.get("name") or "").lower()]
+    pool = plain or etbs
+    return min(pool, key=lambda s: s["usd"])
+
+
+def _etb_packs(data_dir: Path, sid: str, default=10):
+    pr_path = data_dir / "pull-rates" / f"{sid}.json"
+    try:
+        pr = json.loads(pr_path.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return default
+    packs = ((pr.get("products") or {}).get("etb") or {}).get("packs")
+    return int(packs) if packs else default
+
+
+RK_SEALED_MAX = 600  # ETBs priced above this are vintage outliers — the rip/keep call
+RK_SEALED_MIN = 25   # is then trivially "KEEP" and makes a dull, repetitive post.
+
+
+def select_ripkeep(snapshot, names, data_dir: Path, exclude=None):
+    """Pick an EV-enabled set (ev.en.packEv>0) with a REAL etb sealed price in a
+    believable band, not recently used. Ranked by the CLOSEST call (smallest relative
+    gap) so the post is a genuine rip-or-keep cliffhanger, not an obvious blowout."""
+    exclude = exclude or set()
+    rows = []
+    for sid, s in snapshot.get("sets", {}).items():
+        if sid in exclude:
+            continue
+        ev = (s.get("ev") or {}).get(LOCALE) or {}
+        pack_ev = ev.get("packEv") or 0
+        if pack_ev <= 0:
+            continue
+        etb = _real_etb(s.get("sealed"))
+        if not etb:
+            continue
+        sealed = etb["usd"]
+        if not (RK_SEALED_MIN <= sealed <= RK_SEALED_MAX):
+            continue
+        packs = _etb_packs(data_dir, sid)
+        open_ev = packs * pack_ev
+        cards = [c for c in s.get("cards", []) if c.get("image") and (c.get("usd") or 0) > 0]
+        if not cards:
+            continue
+        top3 = sorted(cards, key=lambda c: c.get("usd") or 0, reverse=True)[:3]
+        gap = abs(sealed - open_ev)
+        rel_gap = gap / sealed if sealed else 1.0
+        rows.append({
+            "key": sid,
+            "set_id": sid,
+            "set_name": set_display_name(names, sid, s.get("episodeId")),
+            "logo": s.get("logo"),
+            "pack_ev": pack_ev,
+            "packs": packs,
+            "open_ev": round(open_ev),
+            "sealed": round(sealed),
+            "etb_name": etb.get("name", ""),
+            "gap": round(gap),
+            "rel_gap": rel_gap,
+            "verdict_rip": open_ev > sealed,  # LOCKED rule: RIP iff openEv > sealed
+            "chase": [{"name": c["name"], "image": _hires(c["image"]), "usd": round(c["usd"]),
+                       "rarity": c.get("rarity")} for c in top3],
+        })
+    if not rows:
+        return None
+    rows.sort(key=lambda r: r["rel_gap"])  # closest decision first
+    return rows[0]
+
+
+def fallback_ripkeep(facts):
+    rip = facts["verdict_rip"]
+    set_name = facts["set_name"]
+    sealed, ev, gap = fmt_usd(facts["sealed"]), fmt_usd(facts["open_ev"]), fmt_usd(facts["gap"])
+    if rip:
+        hook = f"A sealed {set_name} ETB costs {sealed}. On average it pulls back {ev}."
+        sub = "The math says open it."
+    else:
+        hook = f"A sealed {set_name} ETB costs {sealed}. Rip it and you average just {ev}."
+        sub = "The math says keep it sealed."
+    return {
+        "eyebrow": "THE COLLECTOR'S DILEMMA",
+        "verdictWord": "RIP IT" if rip else "KEEP IT|SEALED",
+        "reason": (f"Ripping averages {ev}.|Sealed it sits at {sealed}. {'Open it.' if rip else 'Keep it.'}"),
+        "caption": (
+            f"{hook}\n\n{sub}\n\n"
+            f"That gap is {gap}. Rip or keep is never a vibe, it is a number.\n\n"
+            "Would you crack it or keep it sealed? Tell us below.\n\n"
+            "pokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\n"
+            "link in bio -> pokeev.com"
+        ),
+        "hashtags": _clean_hashtags(
+            ["#pokemonsealed", "#riporkeep", "#elitetrainerbox", "#pokemoninvesting", "#sealedpokemon"]
+            + ["#" + w for w in _slug_words(set_name)]
+        ),
+    }
+
+
+def artdirect_ripkeep(api_key, facts, feedback=None):
+    if not api_key:
+        return fallback_ripkeep(facts)
+    chase = ", ".join(f"{c['name']} {fmt_usd(c['usd'])}" for c in facts["chase"])
+    verdict = "RIP (open EV beats the sealed price)" if facts["verdict_rip"] else "KEEP (sealed price beats open EV)"
+    prompt = (
+        f"Today's carousel is THEME 2 (RIP OR KEEP) for the set \"{facts['set_name']}\".\n"
+        f"A sealed Elite Trainer Box (ETB) costs {fmt_usd(facts['sealed'])}. It holds {facts['packs']} packs; "
+        f"booster EV is ${facts['pack_ev']:.2f}, so opening it averages {fmt_usd(facts['open_ev'])}. "
+        f"The gap is {fmt_usd(facts['gap'])}. LOCKED VERDICT: {verdict}. "
+        f"Top chase cards: {chase}.\n"
+        "ALWAYS call the product an Elite Trainer Box or ETB. NEVER say a generic 'box'.\n\n"
+        + _CAPTION_RULES + "\n\n"
+        "Return ONLY a JSON object with keys:\n"
+        '  "eyebrow": ALL-CAPS cover label, <= 46 chars (e.g. "THE COLLECTOR\'S DILEMMA").\n'
+        f'  "verdictWord": the verdict for the verdict slide. Use exactly "RIP IT" if the verdict is RIP, '
+        'else "KEEP IT|SEALED" (the | is a line break).\n'
+        '  "reason": <= 140 chars, two short clauses split by |, citing the EV and sealed numbers.\n'
+        '  "caption": the caption per the rules. State the ETB price and the average open value, name the '
+        'verdict, ask rip-or-keep.\n'
+        '  "hashtags": 20-28 hashtags layering high-reach core + format tags (#riporkeep #sealedpokemon '
+        '#elitetrainerbox #pokemoninvesting) + post-specific tags from the set name and chase Pokemon. '
+        'No em-dashes.\n'
+    )
+    if feedback:
+        prompt += f"\n\nEditor feedback to apply precisely, keep all numbers exact:\n\"{feedback}\"\n"
+    try:
+        brief = claude_json(api_key, prompt, system=_VOICE)
+    except Exception as exc:  # noqa: BLE001
+        log(f"  T2 art-direction failed ({exc}); using fallback")
+        return fallback_ripkeep(facts)
+    brief["hashtags"] = _clean_hashtags(brief.get("hashtags"))
+    brief.setdefault("eyebrow", "THE COLLECTOR'S DILEMMA")
+    brief.setdefault("verdictWord", "RIP IT" if facts["verdict_rip"] else "KEEP IT|SEALED")
+    brief.setdefault("reason", f"Ripping averages {fmt_usd(facts['open_ev'])}.|Sealed it sits at {fmt_usd(facts['sealed'])}.")
+    return brief
+
+
+def slides_ripkeep(base, facts, brief):
+    """Port of /tmp/render_rk.py: rk-cover, rk-tempt, two rk-stat, rk-versus,
+    rk-verdict, rk-cta. Product label always 'Elite Trainer Box'."""
+    base = base.rstrip("/")
+    H = f"{base}/api/ig"
+    set_name = facts["set_name"]
+    logo = facts["logo"]
+    rip = facts["verdict_rip"]
+    sealed, ev, gap = fmt_usd(facts["sealed"]), fmt_usd(facts["open_ev"]), fmt_usd(facts["gap"])
+    delta = fmt_usd(facts["gap"])
+    product = f"{set_name} · Elite Trainer Box"
+    logop = f"&logo={q(logo)}" if logo else ""
+
+    cover = (f"{H}?slide=rk-cover&set={q(set_name)}{logop}"
+             f"&eyebrow={q(brief['eyebrow'])}&delta={q(delta)}&cue={q('swipe →')}")
+
+    tline = "The chase pulls are worth a small fortune.|The catch: you have to actually hit one."
+    tempt = f"{H}?slide=rk-tempt&set={q(set_name)}{logop}"
+    for i, c in enumerate(facts["chase"]):
+        tempt += f"&img{i}={q(c['image'])}&v{i}={q(fmt_usd(c['usd']))}"
+    tempt += f"&line={q(tline)}"
+
+    stat_sealed = (f"{H}?slide=rk-stat&set={q(set_name)}{logop}"
+                   f"&kicker={q('THE SEALED PRICE')}"
+                   f"&label={q(f'A sealed {set_name}|Elite Trainer Box costs')}&value={q(sealed)}"
+                   f"&sub={q('Live market price,|refreshed daily on pokeev.com.')}&foot={q('now rip it open… →')}")
+
+    ev_sub = f"{facts['packs']} packs, every card inside|priced live on pokeev.com."
+    stat_ev = (f"{H}?slide=rk-stat&set={q(set_name)}{logop}"
+               f"&kicker={q('THE EXPECTED VALUE')}"
+               f"&label={q('Rip that same Elite Trainer Box,|on average it pulls back')}&value={q(ev)}"
+               f"&sub={q(ev_sub)}"
+               f"&foot={q('so… rip or keep? →')}")
+
+    gap_label = "RIPPING WINS BY" if rip else "KEEPING WINS BY"
+    versus = (f"{H}?slide=rk-versus&set={q(set_name)}{logop}&rip={'1' if rip else '0'}&product={q(product)}"
+              f"&sealed={q(sealed)}&ev={q(ev)}&gap={q(gap)}&gapLabel={q(gap_label)}")
+
+    verdict = (f"{H}?slide=rk-verdict&set={q(set_name)}{logop}&rip={'1' if rip else '0'}"
+               f"&verdict={q(brief['verdictWord'])}&reason={q(brief['reason'])}"
+               f"&sealed={q(sealed)}&ev={q(ev)}")
+
+    body = "pokeev.com runs the live Expected Value|on every sealed set, so you never rip blind."
+    cta = (f"{H}?slide=rk-cta&eyebrow={q('NOW DO IT FOR ANY SET')}"
+           f"&h1={q('Rip or keep?')}&h2={q('Know in seconds.')}&body={q(body)}")
+    return [cover, tempt, stat_sealed, stat_ev, versus, verdict, cta]
+
+
+# ================================ T3 · GRAILS ============================= #
+def _odds_for_card(snapshot_set, rarity):
+    """1-in-N from rarityBreakdown: N = round(cardsInSet / expectedPerPack)."""
+    ev = (snapshot_set.get("ev") or {}).get(LOCALE) or {}
+    for rb in ev.get("rarityBreakdown") or []:
+        if rb.get("rarity") == rarity:
+            per = rb.get("expectedPerPack") or 0
+            cis = rb.get("cardsInSet") or 0
+            if per > 0 and cis > 0:
+                return max(1, round(cis / per))
+    return None
+
+
+def _booster_image(snapshot_set):
+    for s in snapshot_set.get("sealed") or []:
+        if s.get("kind") == "booster" and s.get("image"):
+            return s["image"]
+    return None
+
+
+def select_grails(snapshot, names, exclude=None):
+    """Pick the single highest-USD chase card of an EV-enabled set, not recently
+    used (dedup on card id). Returns facts incl. odds + booster image for slides."""
+    exclude = exclude or set()
+    best = None
+    for sid, s in snapshot.get("sets", {}).items():
+        ev = (s.get("ev") or {}).get(LOCALE) or {}
+        if (ev.get("packEv") or 0) <= 0:
+            continue
+        cards = [c for c in s.get("cards", []) if c.get("image") and (c.get("usd") or 0) > 0]
+        if not cards:
+            continue
+        chase = max(cards, key=lambda c: c.get("usd") or 0)
+        if chase.get("id") in exclude:
+            continue
+        if best is None or (chase.get("usd") or 0) > best["_usd"]:
+            odds = _odds_for_card(s, chase.get("rarity"))
+            best = {
+                "_usd": chase.get("usd") or 0,
+                "key": chase.get("id"),
+                "card_id": chase.get("id"),
+                "set_id": sid,
+                "set_name": set_display_name(names, sid, s.get("episodeId")),
+                "logo": s.get("logo"),
+                "name": chase.get("name"),
+                "rarity": chase.get("rarity"),
+                "image": _hires(chase.get("image")),
+                "usd": round(chase.get("usd") or 0),
+                "odds_n": odds,
+                "booster": _booster_image(s),
+            }
+    return best
+
+
+def _safe_grail_zoom():
+    """Centred art-band crop (avoids title bar top ~13% and attack text below ~53%).
+    Renderer clamps zw/zx/zy; these target the pure-art middle band for a portrait
+    card scaled to a tall window."""
+    return {"zw": 3200, "zx": -1100, "zy": -780}
+
+
+def fallback_grail_brief(facts):
+    name = facts["name"]
+    price = fmt_usd(facts["usd"])
+    set_name = facts["set_name"]
+    odds_n = facts.get("odds_n")
+    odds_line = (f"Rip a sealed booster and|the odds are {odds_n} to 1." if odds_n
+                 else "It sits in the rarest tier of the set.")
+    return {
+        "shockHeadline": "Worth more than|most people guess",
+        "priceNote": "for a single card",
+        "compare": None,  # no verified money comparison without vision
+        "cardKicker": "THE CARD",
+        "cardHeadline": name,
+        "cardBody": f"{set_name}'s crown jewel.|The card the whole set chases.",
+        "sceneKicker": "THE ART",
+        "sceneHeadline": "Look closer",
+        "sceneBody": "Every detail drawn by hand.|Worth the magnification.",
+        "zoom": _safe_grail_zoom(),
+        "oddsBody": odds_line,
+        "caption": (
+            f"{name} from {set_name} is worth {price}. For one card.\n\n"
+            f"It is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\n"
+            "Would you keep it or sell it? Tell us below.\n\n"
+            "pokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\n"
+            "link in bio -> pokeev.com"
+        ),
+        "hashtags": _clean_hashtags(
+            ["#pokemongrails", "#grailcard", "#pokemonart", "#pokemoninvesting"]
+            + ["#" + w for w in _slug_words(name, set_name, facts.get("rarity"))]
+        ),
+    }
+
+
+def grail_zoom_from_vision(center_x, center_y, zoom):
+    """Convert a normalized crop (center 0..1, zoom>=1) to grail-zoom zw/zx/zy.
+    Stays in the pure-art band (avoid title bar top 13%, attack text below 53%)."""
+    try:
+        cx = min(1.0, max(0.0, float(center_x)))
+        cy = min(0.53, max(0.13, float(center_y)))  # clamp into the art band
+        z = min(6.0, max(1.4, float(zoom)))
+    except (TypeError, ValueError):
+        return _safe_grail_zoom()
+    base_w = 1180  # renderer's default crop width
+    zw = int(round(base_w * z))
+    zh = int(round(zw * PORTRAIT_RATIO))
+    # grail-zoom is FULL-BLEED (1080×1350): place the focal point upper-centre,
+    # clear of the bottom text scrim (horizontal centre 540, focal y ~480).
+    zx = int(round(540 - cx * zw))
+    zy = int(round(480 - cy * zh))
+    zw = min(6000, max(400, zw))
+    zx = min(400, max(-7000, zx))
+    zy = min(400, max(-7000, zy))
+    return {"zw": zw, "zx": zx, "zy": zy}
+
+
+def slides_grails(base, facts, brief, hd_image=None):
+    """Port of /tmp/render_grail.py: grail-shock, grail-story (THE CARD),
+    grail-zoom (full-bleed HD), grail-odds, connect-cta. Uses hd_image (Blob HD)
+    for the zoom slide when available, else the native hi-res scan."""
+    base = base.rstrip("/")
+    H = f"{base}/api/ig"
+    set_name = facts["set_name"]
+    logo = facts["logo"]
+    logop = f"&logo={q(logo)}" if logo else ""
+    img = facts["image"]
+    zoom_img = hd_image or img
+    price = fmt_usd(facts["usd"])
+    z = brief.get("zoom") or _safe_grail_zoom()
+    artist = facts.get("artist")
+
+    shock = (f"{H}?slide=grail-shock&set={q(set_name)}{logop}&img0={q(img)}"
+             f"&eyebrow={q('ONE POKÉMON CARD')}&headline={q(brief['shockHeadline'])}"
+             f"&price={q(price)}&note={q(brief.get('priceNote') or 'for a single card')}"
+             f"&cue={q('but why? swipe →')}")
+
+    card = (f"{H}?slide=grail-story&set={q(set_name)}{logop}&img0={q(img)}&tilt=-3"
+            f"&kicker={q(brief.get('cardKicker') or 'THE CARD')}&headline={q(brief.get('cardHeadline') or facts['name'])}"
+            f"&body={q(brief.get('cardBody') or '')}")
+
+    scene_kicker = brief.get("sceneKicker") or ("THE ARTIST" if artist else "THE ART")
+    scene_headline = brief.get("sceneHeadline") or (artist or "Look closer")
+    zoom = (f"{H}?slide=grail-zoom&set={q(set_name)}{logop}&img0={q(zoom_img)}"
+            f"&kicker={q(scene_kicker)}&headline={q(scene_headline)}"
+            f"&body={q(brief.get('sceneBody') or '')}"
+            f"&zw={z['zw']}&zx={z['zx']}&zy={z['zy']}&foot={q('and how rare? →')}")
+
+    odds_n = facts.get("odds_n")
+    booster = facts.get("booster")
+    odds = f"{H}?slide=grail-odds&set={q(set_name)}{logop}"
+    if booster:
+        odds += "".join(f"&b{i}={q(booster)}" for i in range(5))
+    if odds_n:
+        odds += f"&statA={q('1')}&statB={q(f'{odds_n:,}')}&statSub={q('PACKS TO PULL THIS CARD')}"
+    else:
+        odds += f"&statA={q('1')}&statB={q('???')}&statSub={q('THE RAREST TIER IN THE SET')}"
+    odds += (f"&kicker={q('THE ODDS')}&body={q(brief.get('oddsBody') or '')}"
+             f"&foot={q('so… is it worth it? →')}")
+
+    body = "pokeev.com runs the live Expected Value.|Know if any set is worth ripping."
+    cta = (f"{H}?slide=connect-cta&eyebrow={q('SO, WORTH CHASING IT?')}"
+           f"&h1={q('Rip it, or keep it?')}&body={q(body)}")
+    return [shock, card, zoom, odds, cta]
+
+
+# --------------------- T3 live enrichment (network) ----------------------- #
+def grail_artist(card_id):
+    """Illustrator from pokemontcg.io /cards/<id>; None if the id isn't resolvable
+    (modern tcgdex-only scans have no pokemontcg id)."""
+    m = re.match(r"^[a-z0-9]+-[A-Za-z0-9]+$", card_id or "")
+    if not m or "." in (card_id or ""):
+        return None
+    try:
+        data = (_ptcg_get(f"{PTCG_API}/cards/{card_id}") or {}).get("data") or {}
+        return ((data.get("artist") or "").strip()) or None
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def grail_vision_research(api_key, facts):
+    """Claude vision: identify the subject + hidden details, return a zoom crop
+    (normalized center+zoom -> zw/zx/zy), story insights, and a VERIFIED cheaper
+    money comparison. Falls back to the centred art-band crop on any failure."""
+    if not api_key:
+        return None
+    try:
+        import base64
+
+        raw = _download_bytes(facts["image"], timeout=60, tries=3)
+        media_type = "image/png"
+        b64 = base64.b64encode(raw).decode("ascii")
+    except Exception as exc:  # noqa: BLE001
+        log(f"  T3 vision image fetch failed ({exc})")
+        return None
+    price = fmt_usd(facts["usd"])
+    prompt = (
+        f"This is the Pokemon TCG card \"{facts['name']}\" from {facts['set_name']}, worth {price}. "
+        "Study the ARTWORK. The card is portrait (height/width ~1.394). The top ~13% is the title "
+        "bar and below ~53% are attack-text boxes; the pure illustration sits in the middle band.\n"
+        "Return ONLY a JSON object with keys:\n"
+        '  "subject": one short line naming what is depicted (the Pokemon, the scene).\n'
+        '  "hidden": one short line on a hidden detail or another Pokemon in the art, or "" if none.\n'
+        '  "zoomCenterX": 0..1 horizontal center of the single most interesting art detail.\n'
+        '  "zoomCenterY": 0.13..0.53 vertical center, MUST stay inside the pure-art band.\n'
+        '  "zoomFactor": 1.5..4 how tight to crop on that detail.\n'
+        '  "sceneHeadline": <= 40 char title for a zoom slide about the scene.\n'
+        '  "sceneBody": <= 140 chars, two clauses split by |, about the art/scene.\n'
+        f'  "compare": a single real-world thing that costs CLEARLY LESS than {price} (so the card is '
+        'the more expensive side), as a short phrase, e.g. "a Nintendo Switch". Must be verifiably cheaper. '
+        'Use null if unsure.\n'
+        "No em-dashes anywhere."
+    )
+    try:
+        v = claude_json(api_key, prompt, system=_VOICE, vision_image=(media_type, b64))
+    except Exception as exc:  # noqa: BLE001
+        log(f"  T3 vision research failed ({exc})")
+        return None
+    v["zoom"] = grail_zoom_from_vision(v.get("zoomCenterX", 0.5), v.get("zoomCenterY", 0.33), v.get("zoomFactor", 2.2))
+    return v
+
+
+# ----------------------- theme orchestration ------------------------------ #
+def _verify_record_for(name, snap_usd, snap_eur, image):
+    """Run verify_price on an ad-hoc card-shaped dict and return a display record
+    (same shape tg_send_preview/write_summary expect)."""
+    rec = verify_price({"chase_usd": snap_usd, "chase_eur": snap_eur, "chase_image": image})
+    rec["name"] = name
+    return rec
+
+
+def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
+    """The once-per-run heavy work for a rotation theme: select content (dedup-aware),
+    cross-check displayed prices, AI-upscale where used, and run T3 vision/artist
+    research. Returns a context dict consumed by build_theme_plan."""
+    groups_path = data_dir / "connecting-art.resolved.json"
+    if not groups_path.exists():
+        groups_path = Path(__file__).parent / "connecting-art.resolved.json"
+
+    if theme == "connected":
+        facts = select_connected(snapshot, names, groups_path, exclude=exclude)
+        if not facts:
+            return None
+        verify = []
+        for it in facts["items"]:  # cross-check each displayed per-card value
+            rec = _verify_record_for(it["name"], it["usd"], None, it["image"])
+            if rec.get("display_usd"):
+                it["usd"] = int(round(rec["display_usd"]))
+            verify.append(rec)
+        facts["total"] = sum(it["usd"] for it in facts["items"])  # keep total == sum of shown
+        return {"theme": theme, "base": base, "facts": facts, "verify": verify,
+                "keys": [facts["key"]], "api_key": api_key}
+
+    if theme == "ripkeep":
+        facts = select_ripkeep(snapshot, names, data_dir, exclude=exclude)
+        if not facts:
+            return None
+        verify = [_verify_record_for(c["name"], c["usd"], None, c["image"]) for c in facts["chase"]]
+        for c, rec in zip(facts["chase"], verify):
+            if rec.get("display_usd"):
+                c["usd"] = int(round(rec["display_usd"]))
+        return {"theme": theme, "base": base, "facts": facts, "verify": verify,
+                "keys": [facts["key"]], "api_key": api_key}
+
+    if theme == "grails":
+        facts = select_grails(snapshot, names, exclude=exclude)
+        if not facts:
+            return None
+        rec = _verify_record_for(facts["name"], facts["usd"], None, facts["image"])
+        if rec.get("display_usd"):
+            facts["usd"] = int(round(rec["display_usd"]))
+        facts["artist"] = grail_artist(facts["card_id"])
+        facts["hd_image"] = upscale_card(facts["image"])  # HD source for grail-zoom
+        log(f"  grail upscale {facts['name']}: {'HD ✓' if facts['hd_image'] else 'native (no token/failed)'}")
+        facts["vision"] = grail_vision_research(api_key, facts)
+        return {"theme": theme, "base": base, "facts": facts, "verify": [rec],
+                "keys": [facts["key"]], "api_key": api_key}
+
+    return None
+
+
+def build_theme_plan(ctx, feedback=None):
+    """Art-direct (Claude or fallback) + build the /api/ig slide URLs for the
+    selected theme, re-host them on Blob, write plan.json, and return the flat plan."""
+    theme = ctx["theme"]
+    base = ctx["base"]
+    facts = ctx["facts"]
+    api_key = ctx["api_key"]
+
+    if theme == "connected":
+        brief = artdirect_connected(api_key, facts, feedback=feedback)
+        slides = slides_connected(base, facts, brief)
+    elif theme == "ripkeep":
+        brief = artdirect_ripkeep(api_key, facts, feedback=feedback)
+        slides = slides_ripkeep(base, facts, brief)
+    elif theme == "grails":
+        if facts.get("vision"):  # fold vision research into the deterministic base
+            brief = fallback_grail_brief(facts)
+            v = facts["vision"]
+            brief["zoom"] = v.get("zoom") or brief["zoom"]
+            if v.get("sceneHeadline"):
+                brief["sceneHeadline"] = v["sceneHeadline"]
+            if v.get("sceneBody"):
+                brief["sceneBody"] = v["sceneBody"]
+            if facts.get("artist"):
+                brief["sceneKicker"] = "THE ARTIST"
+                brief["sceneHeadline"] = facts["artist"]
+            if v.get("compare"):
+                brief["shockHeadline"] = f"Worth more than|{v['compare']}"
+            brief = _grail_apply_feedback(api_key, facts, brief, feedback)
+        else:
+            brief = fallback_grail_brief(facts)
+            if facts.get("artist"):
+                brief["sceneKicker"] = "THE ARTIST"
+                brief["sceneHeadline"] = facts["artist"]
+            brief = _grail_apply_feedback(api_key, facts, brief, feedback)
+        slides = slides_grails(base, facts, brief, hd_image=facts.get("hd_image"))
+    else:
+        sys.exit(f"[pokeev-bot] unknown theme {theme}")
+
+    hosted = materialize_slides(slides)
+    plan = {
+        "date": datetime.now(timezone.utc).date().isoformat(),
+        "theme": theme,
+        "slides": hosted,
+        "caption": brief["caption"],
+        "hashtags": brief["hashtags"],
+        "keys": ctx["keys"],
+        "verify": ctx["verify"],
+    }
+    Path(env("PLAN_PATH", "plan.json")).write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
+    log("CAPTION:\n" + plan["caption"])
+    for u in hosted:
+        log("  slide: " + u)
+    write_summary(plan, plan["verify"])
+    return plan
+
+
+def _grail_apply_feedback(api_key, facts, brief, feedback):
+    """On the revise loop, let Claude rewrite the grail caption/copy from the editor's
+    notes while keeping the verified price and the chosen zoom. No-op without notes/key."""
+    if not (feedback and api_key):
+        if feedback:
+            log("  T3 revise requested but no ANTHROPIC_API_KEY; keeping prior copy")
+        return brief
+    price = fmt_usd(facts["usd"])
+    prompt = (
+        f"Revise the Instagram copy for the grail card \"{facts['name']}\" from {facts['set_name']} "
+        f"(worth {price}). Keep the price exact.\n" + _CAPTION_RULES + "\n\n"
+        "Editor feedback to apply precisely:\n\"" + feedback + "\"\n\n"
+        "Return ONLY a JSON object with keys: \"shockHeadline\" (<=40, | line break ok), "
+        "\"cardHeadline\" (<=40), \"cardBody\" (<=140, | clauses), \"sceneBody\" (<=140), "
+        "\"oddsBody\" (<=140), \"caption\", \"hashtags\" (20-28). No em-dashes."
+    )
+    try:
+        v = claude_json(api_key, prompt, system=_VOICE)
+    except Exception as exc:  # noqa: BLE001
+        log(f"  T3 revise failed ({exc}); keeping prior copy")
+        return brief
+    for k in ("shockHeadline", "cardHeadline", "cardBody", "sceneBody", "oddsBody", "caption"):
+        if v.get(k):
+            brief[k] = v[k]
+    if v.get("hashtags"):
+        brief["hashtags"] = _clean_hashtags(v["hashtags"])
+    return brief
+
+
+def prepare_rotation():
+    """Pick today's rotated theme, load shared data, and run the heavy selection +
+    verification once. Returns the theme context (or exits if nothing to post)."""
+    data_dir = Path(env("POKEEV_DATA_DIR", "data"))
+    base = env("POKEEV_IMAGE_BASE_URL", "https://pokeev.com")
+    history_path = Path(env("HISTORY_PATH", "history.json"))
+    api_key = env("ANTHROPIC_API_KEY")
+
+    theme = pick_rotation_theme(history_path, override=env("POKEEV_THEME"))
+    log(f"rotation theme: {theme}")
+    snapshot = load_snapshot(data_dir)
+    names = load_set_names(data_dir)
+    exclude = recent_keys(history_path, theme)
+
+    ctx = prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key)
+    if ctx is None:  # fall through the wheel if this theme has nothing fresh
+        for alt in ROTATION:
+            if alt == theme:
+                continue
+            log(f"  no fresh content for {theme}; trying {alt}")
+            ctx = prepare_theme(alt, data_dir, base, names, snapshot,
+                                recent_keys(history_path, alt), api_key)
+            if ctx is not None:
+                break
+    if ctx is None:
+        sys.exit("[pokeev-bot] nothing to post after dedup across all themes")
+    return ctx
+
+
 def record_history(plan):
     history_path = Path(env("HISTORY_PATH", "history.json"))
-    try:
-        hist = json.loads(history_path.read_text(encoding="utf-8"))
-    except (ValueError, OSError):
-        hist = []
-    hist.append({"date": plan["date"], "theme": plan["theme"], "sets": plan["sets"]})
+    hist = _history_entries(history_path)
+    entry = {"date": plan["date"], "theme": plan["theme"]}
+    if plan.get("keys"):
+        entry["keys"] = plan["keys"]
+    # Keep the legacy `sets` field (still consumed by load_history) when present.
+    if plan.get("sets"):
+        entry["sets"] = plan["sets"]
+    elif plan.get("keys"):
+        entry["sets"] = plan["keys"]
+    hist.append(entry)
     history_path.write_text(json.dumps(hist[-200:], indent=2), encoding="utf-8")
     log("updated history.json")
 
@@ -641,9 +1562,7 @@ def tg_send_preview(token, chat_id, plan):
     # Upload the actual image bytes (multipart attach://) instead of handing Telegram
     # the slide URLs — Telegram's ~5s media-fetch timeout can't render an HD slide in
     # time, but the bot can download it patiently and push the bytes.
-    urls = ([plan["cover"], *plan["cards"]]
-            + ([plan["recap"]] if plan.get("recap") else [])
-            + [plan["cta"]])[:10]
+    urls = plan_slides(plan)[:10]
     media, files = [], {}
     for i, u in enumerate(urls):
         name = f"p{i}"
@@ -710,14 +1629,13 @@ def tg_wait_decision(token, chat_id, timeout=1200):
 
 # --------------------------------- main ----------------------------------- #
 def do_run():
-    """Plan → Telegram gate with a revise loop → publish. The heavy work (sets,
-    price cross-check, upscale) runs once; only the creative brief + slides are
-    regenerated when the editor asks for changes."""
-    ctx = prepare_items()
+    """Rotation (T1→T2→T3) → Telegram gate with a revise loop → publish. The heavy
+    work (select, price cross-check, upscale, T3 vision) runs once; only the creative
+    brief + slides are regenerated when the editor asks for changes."""
+    ctx = prepare_rotation()
     tg_token = env("TELEGRAM_BOT_TOKEN")
     tg_chat = env("TELEGRAM_CHAT_ID")
-    brief = make_brief(ctx["theme_key"], ctx["tag"], ctx["items"])
-    plan = assemble_plan(ctx, brief)
+    plan = build_theme_plan(ctx)
 
     if not (tg_token and tg_chat):
         log("Telegram gate not configured (TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID) — preview only, NOT posting.")
@@ -741,8 +1659,7 @@ def do_run():
             log(f"{action} — not posting.")
             return
         log(f"Revise requested: {feedback}")
-        brief = make_brief(ctx["theme_key"], ctx["tag"], ctx["items"], feedback=feedback)
-        plan = assemble_plan(ctx, brief)
+        plan = build_theme_plan(ctx, feedback=feedback)
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Too many revisions — stopping for today."})
     log("Max revisions reached — not posting.")
 
@@ -750,7 +1667,7 @@ def do_run():
 def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else "run"
     if cmd == "plan":
-        do_plan()
+        build_theme_plan(prepare_rotation())
     elif cmd == "publish":  # manual fallback: post the last plan.json
         publish_to_instagram(json.loads(Path(env("PLAN_PATH", "plan.json")).read_text(encoding="utf-8")))
     else:
