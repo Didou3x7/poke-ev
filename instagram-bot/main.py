@@ -1928,9 +1928,12 @@ def do_prepare():
                    "notes to revise, or ❌ Reject to skip. Nothing posts without your ✅."})
 
 
-def do_publish_pending():
-    """20:00 Paris — publish today's pending post ONLY if approved (opt-in). A
-    last-mile revise rebuilds + re-previews + waits briefly for the final ✅."""
+def do_publish_pending(final=True):
+    """Evening — publish today's pending post ONLY if approved (opt-in). A last-mile
+    revise rebuilds + re-previews + waits briefly for the final ✅. `final=False` (an
+    early evening tick) leaves the pending post in place when there's no decision yet,
+    so a later tick can still catch your approval; only the last tick of the window
+    gives up and clears."""
     pending = read_pending()
     today = datetime.now(timezone.utc).date().isoformat()
     if not pending or pending.get("date") != today:
@@ -1970,21 +1973,41 @@ def do_publish_pending():
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Skipped — nothing posted today."})
         clear_pending()
         return
-    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "⌛️ No ✅ approval by 20:00 — nothing posted today."})
-    clear_pending()
+    # No decision yet. Only give up + clear on the LAST evening tick; otherwise keep the
+    # pending post so a later tick (or a late approval) can still publish it.
+    if final:
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "⌛️ No ✅ approval today — nothing posted."})
+        clear_pending()
+    else:
+        log("no ✅ approval yet — keeping the pending post for a later evening tick")
 
 
 def do_scheduled():
-    """One cron entry, routed by Paris local time (the cron fires at every candidate
-    UTC hour; this gate keeps only the right one per DST season)."""
+    """Routed by Paris local time, but DELAY-TOLERANT. GitHub Actions fires scheduled
+    crons late and sometimes skips them, so an exact-hour gate (h==12) would miss the
+    noon preview whenever a run drifts past the hour. Instead we use WINDOWS + idempotency:
+      - PREPARE once in the late-morning→afternoon window (11:00-17:59 Paris) if today
+        isn't prepared yet (guarded by pending-post.json's date), so any run that fires
+        in the window sends the preview exactly once.
+      - PUBLISH in the evening window (19:00-23:59 Paris); do_publish_pending is a no-op
+        without an approval and keeps the pending post until the last tick (>=22:00),
+        so a late approval is still caught.
+    The cron lists several UTC candidates per window so a skipped/delayed firing is
+    covered by the next one."""
     h = paris_hour()
-    log(f"scheduled tick — Paris hour {h}")
-    if h == 12:
-        do_prepare()
-    elif h == 20:
-        do_publish_pending()
+    today = datetime.now(timezone.utc).date().isoformat()
+    pending = read_pending()
+    prepared_today = bool(pending and pending.get("date") == today)
+    log(f"scheduled tick — Paris hour {h}, prepared_today={prepared_today}")
+    if 11 <= h < 18:
+        if prepared_today:
+            log("already prepared today — nothing to do this tick")
+        else:
+            do_prepare()
+    elif 19 <= h < 24:
+        do_publish_pending(final=h >= 22)
     else:
-        log(f"Paris hour {h} is neither 12 nor 20 (off-season UTC candidate) — exiting.")
+        log(f"Paris hour {h} outside the prepare (11-17) / publish (19-23) windows — exiting.")
 
 
 def main():
