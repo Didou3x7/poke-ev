@@ -332,6 +332,16 @@ def q(s):
     return quote(str(s), safe="")
 
 
+def _png(url):
+    """Satori (the /api/ig OG renderer) CANNOT draw WebP, and TCGdex serves card art +
+    set logos as .webp by default — so a modern set's chase cards and logo rendered
+    BLANK on T2/T3 slides. TCGdex serves the identical asset as .png, so swap the
+    extension. pokemontcg.io scans and Blob-hosted upscales are already PNG (untouched)."""
+    if url and "assets.tcgdex.net" in url and url.endswith(".webp"):
+        return url[:-len(".webp")] + ".png"
+    return url
+
+
 def _auto_teaser(ordered, pos, top_usd):
     """Data-true forward hook from the card at `pos` (cheapest-first) to the next,
     pricier card — re-arms the open loop on every swipe. #2 cliffhangs, #1 pays off."""
@@ -962,8 +972,8 @@ def slides_connected(base, facts, brief):
     items = facts["items"]
     total_str = fmt_usd(facts["total"])
     set_lbl = facts["setLabel"]
-    logo = facts["setLogo"]
-    imgparams = "".join(f"&img{i}={q(it['image'])}" for i, it in enumerate(items))
+    logo = _png(facts["setLogo"])
+    imgparams = "".join(f"&img{i}={q(_png(it['image']))}" for i, it in enumerate(items))
     valparams = "".join(f"&v{i}={q(fmt_usd(it['usd']))}" for i, it in enumerate(items))
 
     cover = (f"{H}?slide=connect-cover"
@@ -982,7 +992,7 @@ def slides_connected(base, facts, brief):
             tally = f"the last piece · {total_str} complete"
         else:
             tally = f"{fmt_usd(running)} of {total_str} shown"
-        u = (f"{H}?slide=connect&img0={q(it['image'])}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
+        u = (f"{H}?slide=connect&img0={q(_png(it['image']))}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
              f"&series={q(series)}&tally={q(tally)}&set={q(set_lbl)}")
         if logo:
             u += f"&logo={q(logo)}"
@@ -1147,7 +1157,7 @@ def slides_ripkeep(base, facts, brief):
     base = base.rstrip("/")
     H = f"{base}/api/ig"
     set_name = facts["set_name"]
-    logo = facts["logo"]
+    logo = _png(facts["logo"])
     rip = facts["verdict_rip"]
     sealed, ev, gap = fmt_usd(facts["sealed"]), fmt_usd(facts["open_ev"]), fmt_usd(facts["gap"])
     delta = fmt_usd(facts["gap"])
@@ -1160,7 +1170,7 @@ def slides_ripkeep(base, facts, brief):
     tline = "The chase pulls are worth a small fortune.|The catch: you have to actually hit one."
     tempt = f"{H}?slide=rk-tempt&set={q(set_name)}{logop}"
     for i, c in enumerate(facts["chase"]):
-        tempt += f"&img{i}={q(c['image'])}&v{i}={q(fmt_usd(c['usd']))}"
+        tempt += f"&img{i}={q(_png(c['image']))}&v{i}={q(fmt_usd(c['usd']))}"
     tempt += f"&line={q(tline)}"
 
     stat_sealed = (f"{H}?slide=rk-stat&set={q(set_name)}{logop}"
@@ -1331,10 +1341,10 @@ def slides_grails(base, facts, brief, hd_image=None):
     base = base.rstrip("/")
     H = f"{base}/api/ig"
     set_name = facts["set_name"]
-    logo = facts["logo"]
+    logo = _png(facts["logo"])
     logop = f"&logo={q(logo)}" if logo else ""
-    img = facts["image"]
-    zoom_img = hd_image or img
+    img = _png(facts["image"])
+    zoom_img = hd_image or img  # hd_image is a Blob PNG upscale; img is now PNG too
     price = fmt_usd(facts["usd"])
     artist = facts.get("artist")
 
