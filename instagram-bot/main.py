@@ -1986,28 +1986,29 @@ def do_scheduled():
     """Routed by Paris local time, but DELAY-TOLERANT. GitHub Actions fires scheduled
     crons late and sometimes skips them, so an exact-hour gate (h==12) would miss the
     noon preview whenever a run drifts past the hour. Instead we use WINDOWS + idempotency:
-      - PREPARE once in the late-morning→afternoon window (11:00-17:59 Paris) if today
-        isn't prepared yet (guarded by pending-post.json's date), so any run that fires
-        in the window sends the preview exactly once.
-      - PUBLISH in the evening window (19:00-23:59 Paris); do_publish_pending is a no-op
-        without an approval and keeps the pending post until the last tick (>=22:00),
-        so a late approval is still caught.
-    The cron lists several UTC candidates per window so a skipped/delayed firing is
-    covered by the next one."""
+      - PREPARE once in the MORNING window (08:00-12:59 Paris) if today isn't prepared
+        yet (guarded by pending-post.json's date), so the editor gets the preview in the
+        morning (by ~13:00) with the whole day to review — sent exactly once.
+      - PUBLISH only in the EVENING from 20:00 (20:00-23:59 Paris). The window starts at
+        20:00 so an approval given earlier in the day is NEVER posted before 20:00; the
+        first evening tick (≈20:00) with an approval posts. do_publish_pending no-ops
+        without an approval and keeps the pending post until the last tick (>=23:00).
+    The cron lists several UTC candidates per window (both DST seasons) so a skipped or
+    delayed GitHub firing is covered by the next one."""
     h = paris_hour()
     today = datetime.now(timezone.utc).date().isoformat()
     pending = read_pending()
     prepared_today = bool(pending and pending.get("date") == today)
     log(f"scheduled tick — Paris hour {h}, prepared_today={prepared_today}")
-    if 11 <= h < 18:
+    if 8 <= h < 13:
         if prepared_today:
             log("already prepared today — nothing to do this tick")
         else:
             do_prepare()
-    elif 19 <= h < 24:
-        do_publish_pending(final=h >= 22)
+    elif 20 <= h < 24:
+        do_publish_pending(final=h >= 23)
     else:
-        log(f"Paris hour {h} outside the prepare (11-17) / publish (19-23) windows — exiting.")
+        log(f"Paris hour {h} outside the prepare (08-12) / publish (20-23) windows — exiting.")
 
 
 def main():

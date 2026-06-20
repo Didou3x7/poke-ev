@@ -9,12 +9,13 @@ name: PokeEV Instagram Bot
 on:
   schedule:
     # Several UTC candidates per window; the Paris-time WINDOW gate (delay-tolerant)
-    # routes them. GitHub fires scheduled crons late / skips them, so redundancy matters:
-    # 10/11/13 UTC all land in the 11-17 Paris PREPARE window (both DST seasons) — the
-    # first to fire sends the noon preview, the rest no-op (idempotent via pending-post.json).
-    # 18/19/21 UTC land in the 19-23 Paris PUBLISH window — the first with an approval
-    # posts; the pending post is kept until the last (22:00+) tick.
-    - cron: '0 10,11,13,18,19,21 * * *'
+    # routes them. GitHub fires scheduled crons late / skips them, so redundancy matters.
+    # PREPARE (08:00-12:59 Paris, MORNING preview): 7/8/9/10 UTC land at 08:00-12:00 Paris
+    #   in BOTH DST seasons — the first to fire previews, the rest no-op (idempotent).
+    # PUBLISH (from 20:00 Paris, never earlier): 18/19/20/21 UTC. Summer 18 UTC = 20:00,
+    #   winter 18 UTC = 19:00 (exits, < 20:00); winter 19 UTC = 20:00. So the first
+    #   publish tick is exactly 20:00 Paris in both seasons, backups hourly to 23:00.
+    - cron: '0 7,8,9,10,18,19,20,21 * * *'
   workflow_dispatch:
     inputs:
       mode:
