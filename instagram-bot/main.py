@@ -2045,7 +2045,17 @@ def do_publish_pending(final=True):
 
     if decision == "approve":
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "📤 Approved — publishing now…"})
-        publish_to_instagram(plan)
+        try:
+            publish_to_instagram(plan)
+        except Exception as exc:  # noqa: BLE001
+            # Never fail SILENTLY: tell the editor + KEEP the pending post (no clear) so a
+            # later tick or manual retry can publish it once the issue is fixed.
+            short = str(exc)[:280]
+            tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+                   "text": "⚠️ Couldn't publish — Instagram refused the post:\n" + short +
+                           "\n\nYour approval is KEPT. If this says 'API access blocked' (code 200), "
+                           "set the Meta app back to Development mode, then I'll retry."})
+            raise
         record_history(plan)
         clear_pending()
         return
