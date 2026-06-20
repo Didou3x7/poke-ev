@@ -1083,6 +1083,15 @@ def select_ripkeep(snapshot, names, data_dir: Path, exclude=None):
         })
     if not rows:
         return None
+    # Owner override (POKEEV_RK_SET / workflow_dispatch `set`): pin a specific set when
+    # curating, instead of the automatic closest-call pick.
+    force = os.environ.get("POKEEV_RK_SET")
+    if force:
+        forced = [r for r in rows if r["set_id"] == force]
+        if forced:
+            log(f"ripkeep: pinned to {force} via POKEEV_RK_SET")
+            return forced[0]
+        log(f"ripkeep: POKEEV_RK_SET={force} is not a usable candidate — auto-picking")
     rows.sort(key=lambda r: r["rel_gap"])  # closest decision first
     return rows[0]
 
