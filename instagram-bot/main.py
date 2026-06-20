@@ -455,6 +455,19 @@ def graph_get(path, params):
     return r.json()
 
 
+def token_ok(token):
+    """Cheap probe: is the IG access token currently valid? Used to WARN the editor at
+    preview time (morning) that tonight's 20:00 publish would fail unless it's refreshed,
+    instead of surfacing a dead token only at publish time."""
+    if not token:
+        return False
+    try:
+        graph_get("me", {"fields": "user_id", "access_token": token})
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def wait_finished(cid, token, tries=20, delay=3):
     for _ in range(tries):
         st = graph_get(cid, {"fields": "status_code", "access_token": token}).get("status_code")
@@ -842,11 +855,37 @@ def voice():
     )
 
 
+# Replies that are NOT creative instructions — questions, status checks, acks. The bot
+# must never "learn" these as standing copy rules (it once saved "Did you publish?").
+_NOT_A_NOTE = {
+    "did you publish", "did it post", "did it work", "is it posted", "is it live",
+    "any news", "whats up", "what's up", "hello", "hi", "hey", "yo",
+    "published", "posted", "done", "thanks", "thank you", "merci", "nice", "good", "great",
+    "cool", "perfect", "parfait", "ok thanks", "and", "well", "so", "test", "ping",
+}
+
+
+def _is_creative_note(text):
+    """True ONLY for replies that read like an editing instruction — not a question, a
+    status-check or chatter. This is the guard that keeps the learning loop clean and
+    stops casual messages from being misread as a 'revise'."""
+    low = " ".join((text or "").split()).lower()
+    if len(low) < 6:
+        return False
+    if low.rstrip().endswith("?"):       # a question, not a directive ("did you publish?")
+        return False
+    if low.rstrip("?!. ") in _NOT_A_NOTE:
+        return False
+    return True
+
+
 def append_style_note(feedback):
     """Persist an owner revise note as a STANDING preference so every FUTURE post
-    applies it too — this is how the bot learns from feedback. De-duped; best-effort."""
+    applies it too — this is how the bot learns from feedback. De-duped; best-effort.
+    Ignores non-instructions (questions/chatter) so the memory never gets polluted."""
     note = " ".join((feedback or "").split())
-    if len(note) < 4:
+    if not _is_creative_note(note):
+        log("  reply is not a creative instruction — not learning it")
         return
     existing = load_style_notes()
     if note.lower() in existing.lower():
@@ -1763,6 +1802,16 @@ def record_history(plan):
     log("updated history.json")
 
 
+def already_posted_today(theme):
+    """True if history already logged an entry for (today UTC, theme) — the durable
+    idempotency key that stops a re-triggered evening tick (or a manual run after a
+    successful auto-publish) from posting the same carousel twice."""
+    history_path = Path(env("HISTORY_PATH", "history.json"))
+    today = datetime.now(timezone.utc).date().isoformat()
+    return any(e.get("date") == today and e.get("theme") == theme
+               for e in _history_entries(history_path))
+
+
 # ------------------------------- telegram gate ---------------------------- #
 def tg_api(token, method, payload):
     import requests
@@ -1772,6 +1821,35 @@ def tg_api(token, method, payload):
     if not data.get("ok"):
         raise RuntimeError(f"telegram {method}: {data}")
     return data["result"]
+
+
+_ERR_NOTIFIED = False
+
+
+def notify_error(text):
+    """Best-effort Telegram alert for an unexpected failure, so the bot NEVER fails
+    silently. Sets a flag so the top-level scheduled handler doesn't double-alert."""
+    global _ERR_NOTIFIED
+    _ERR_NOTIFIED = True
+    tg_token, tg_chat = env("TELEGRAM_BOT_TOKEN"), env("TELEGRAM_CHAT_ID")
+    if not (tg_token and tg_chat):
+        return
+    try:
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": text[:3500]})
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def _publish_error_hint(err):
+    """Turn a raw Graph error into a plain next-step for the editor (token vs app block)."""
+    e = (err or "").lower()
+    if '"code":200' in e or "access blocked" in e:
+        return ("This is code 200 (API ACCESS BLOCKED) = the Meta app is blocking publishing. "
+                "Set the Meta app back to Development mode (or grant Advanced Access), then I retry.")
+    if '"code":190' in e or "expired" in e or "invalid oauth" in e:
+        return ("This is code 190 (TOKEN INVALID/EXPIRED) = regenerate a long-lived Instagram token "
+                "and update the META_ACCESS_TOKEN GitHub secret.")
+    return "Check the run logs. Your approval is KEPT, so a retry will publish once it's resolved."
 
 
 def tg_send_preview(token, chat_id, plan, buttons=True):
@@ -1964,6 +2042,17 @@ def clear_pending():
         log("cleared pending-post.json")
 
 
+def mark_pending_acked(pending, decision):
+    """Durably persist a decision into pending-post.json so an approval SURVIVES a
+    Telegram-queue change or a failed publish + retry — the root cause of the lost post:
+    a transient/altered read returned non-approve and the approved post was dropped."""
+    pending["acked"] = decision
+    try:
+        _pending_path().write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
+    except OSError as exc:  # noqa: BLE001
+        log(f"  could not persist acked decision ({exc})")
+
+
 def tg_offset_now(token):
     """update_id+1 of the latest queued update, so the publish tick reads only the
     decisions the editor sends AFTER today's preview."""
@@ -2002,8 +2091,13 @@ def latest_decision(token, chat_id, offset):
             low = txt.lower()
             if low in ("skip", "cancel", "stop", "no", "non"):
                 decision, notes = "skip", None
-            elif low in ("ok", "okay", "approve", "yes", "go", "post", "oui", "✅"):
+            elif low in ("ok", "okay", "approve", "yes", "go", "post", "oui", "ok thanks", "✅"):
                 decision, notes = "approve", None
+            elif not _is_creative_note(txt):
+                # A question / status-check / chatter ("did you publish?") is NOT a decision.
+                # Keep whatever was decided before it (e.g. an earlier "ok" stays an approve)
+                # so a casual message can never silently drop an approved post.
+                continue
             else:
                 decision, notes = "revise", txt
     return decision, notes
@@ -2022,12 +2116,19 @@ def do_prepare():
     offset = tg_offset_now(tg_token)
     tg_send_preview(tg_token, tg_chat, plan, buttons=False)
     write_pending(plan, ctx, offset)
+    # Early warning: probe the IG token NOW (morning) so a dead/expired token is flagged
+    # with hours to fix it, instead of only surfacing as a failed publish at 20:00.
+    warn = ""
+    if not token_ok(env("META_ACCESS_TOKEN")):
+        warn = ("\n\n⚠️ Heads-up: the Instagram token looks INVALID right now, so tonight's "
+                "20:00 publish would fail. Regenerate the token / set the Meta app to "
+                "Development mode before 20:00.")
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
            "text": "🕛 Today's preview is ready. Just REPLY to this chat (no buttons):\n"
                    "• reply \"ok\" to approve — I post the carousel at 20:00 Paris\n"
                    "• reply with any changes to revise it (I learn them for next time)\n"
                    "• reply \"skip\" to cancel today\n"
-                   "Nothing posts without your ok."})
+                   "Nothing posts without your ok." + warn})
 
 
 def do_publish_pending(final=True):
@@ -2047,7 +2148,21 @@ def do_publish_pending(final=True):
         log("Telegram not configured — cannot read approval; not posting.")
         return
     plan = pending["plan"]
-    decision, notes = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
+    live, notes = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
+    acked = pending.get("acked")
+    # DURABLE APPROVAL. Once you've approved (recorded as `acked` by the afternoon ack, or
+    # seen live as "ok"), the post is GO. A casual message sent AFTER your OK must NEVER
+    # silently drop an approved post (the exact lost-post root cause: a later "did you
+    # publish?" was read as a revise and the approved carousel was abandoned). Only an
+    # explicit "skip" cancels an already-approved post.
+    if live == "skip":
+        decision = "skip"
+    elif live == "revise" and notes and acked != "approve":
+        decision = "revise"
+    elif live == "approve" or acked == "approve":
+        decision = "approve"
+    else:
+        decision = "none"
 
     if decision == "revise" and notes:
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🔄 Reworking with your notes…"})
@@ -2067,6 +2182,18 @@ def do_publish_pending(final=True):
         decision = "approve"
 
     if decision == "approve":
+        # Idempotency: never post twice. If history already logged today's theme (a
+        # re-triggered tick, or a manual run after a successful auto-publish), stop here.
+        if already_posted_today(plan["theme"]):
+            log("already posted today — not publishing again")
+            tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+                   "text": "✅ Today's carousel is already published — nothing more to do."})
+            clear_pending()
+            return
+        # Persist the approval DURABLY before publishing, so if the publish fails (e.g. the
+        # Meta app is blocked) the kept pending carries the approval and the next tick /
+        # manual retry republishes WITHOUT needing you to approve again.
+        mark_pending_acked(pending, "approve")
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "📤 Approved — publishing now…"})
         try:
             publish_to_instagram(plan)
@@ -2074,10 +2201,9 @@ def do_publish_pending(final=True):
             # Never fail SILENTLY: tell the editor + KEEP the pending post (no clear) so a
             # later tick or manual retry can publish it once the issue is fixed.
             short = str(exc)[:280]
-            tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-                   "text": "⚠️ Couldn't publish — Instagram refused the post:\n" + short +
-                           "\n\nYour approval is KEPT. If this says 'API access blocked' (code 200), "
-                           "set the Meta app back to Development mode, then I'll retry."})
+            notify_error("⚠️ Couldn't publish — Instagram refused the post:\n" + short +
+                         "\n\n" + _publish_error_hint(short) +
+                         "\n\nYour approval is KEPT — I retry automatically on the next tick.")
             raise
         record_history(plan)
         clear_pending()
@@ -2143,17 +2269,25 @@ def do_scheduled():
     pending = read_pending()
     prepared_today = bool(pending and pending.get("date") == today)
     log(f"scheduled tick — Paris hour {h}, prepared_today={prepared_today}")
-    if 8 <= h < 13:
-        if prepared_today:
-            log("already prepared today — nothing to do this tick")
+    try:
+        if 8 <= h < 13:
+            if prepared_today:
+                log("already prepared today — nothing to do this tick")
+            else:
+                do_prepare()
+        elif 13 <= h < 20:
+            do_ack()  # confirm the editor's reply (no-op until there's a new decision)
+        elif 20 <= h < 24:
+            do_publish_pending(final=h >= 23)
         else:
-            do_prepare()
-    elif 13 <= h < 20:
-        do_ack()  # confirm the editor's reply (no-op until there's a new decision)
-    elif 20 <= h < 24:
-        do_publish_pending(final=h >= 23)
-    else:
-        log(f"Paris hour {h} outside the prepare (08-12) / ack (13-19) / publish (20-23) windows — exiting.")
+            log(f"Paris hour {h} outside the prepare (08-12) / ack (13-19) / publish (20-23) windows — exiting.")
+    except Exception as exc:  # noqa: BLE001 — the bot must NEVER fail silently
+        # do_publish_pending already sends a tailored publish-failure alert (and sets the
+        # flag); for any OTHER crash, tell the editor here so a broken tick is never silent.
+        if not _ERR_NOTIFIED:
+            notify_error(f"⚠️ Bot tick crashed (Paris {h}h): {str(exc)[:300]}\n"
+                         "Check the GitHub Action logs. I'll try again on the next scheduled tick.")
+        raise
 
 
 def main():

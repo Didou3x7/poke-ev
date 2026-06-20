@@ -1,10 +1,11 @@
 name: PokeEV Instagram Bot
 
 # Two phases per day, both pinned to Paris local time (DST-correct via a zoneinfo
-# gate in the bot): at 12:00 Paris it rotates a theme, art-directs + price-verifies,
-# sends the Telegram preview, and QUEUES it (pending-post.json). You have until 20:00
-# to ✅ approve / reply notes to revise / ❌ reject. At 20:00 Paris it publishes the
-# carousel + story ONLY if approved (opt-in — nothing posts without your ✅).
+# gate in the bot): in the MORNING (08:00-12:59 Paris) it rotates a theme, art-directs +
+# price-verifies, sends the Telegram preview, and QUEUES it (pending-post.json). You have
+# until 20:00 to reply "ok" to approve / reply notes to revise / "skip" to reject. At
+# 20:00 Paris it publishes the CAROUSEL ONLY (never a story) and ONLY if approved
+# (opt-in — nothing posts without your ok).
 
 on:
   schedule:
@@ -14,10 +15,12 @@ on:
     #   in BOTH DST seasons — the first to fire previews, the rest no-op (idempotent).
     # ACK (13:00-19:59 Paris): 12/14/16 UTC confirm the editor's reply ("Got your OK,
     #   posting at 20:00") so the async preview isn't a silent void; never publishes.
-    # PUBLISH (from 20:00 Paris, never earlier): 18/19/20/21 UTC. Summer 18 UTC = 20:00,
+    # PUBLISH (from 20:00 Paris, never earlier): 18/19/20/21/22 UTC. Summer 18 UTC = 20:00,
     #   winter 18 UTC = 19:00 (lands in the ack window, < 20:00); winter 19 UTC = 20:00.
-    #   So the first publish tick is exactly 20:00 Paris in both seasons, backups to 23:00.
-    - cron: '0 7,8,9,10,12,14,16,18,19,20,21 * * *'
+    #   So the first publish tick is exactly 20:00 Paris in both seasons. The 22 UTC tick is
+    #   the FINAL one (winter = 23:00 Paris, the give-up/clear tick; summer 22 UTC = 00:00,
+    #   harmless no-op) so the "no approval" housekeeping fires year-round.
+    - cron: '0 7,8,9,10,12,14,16,18,19,20,21,22 * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -52,7 +55,7 @@ jobs:
       - run: pip install -r instagram-bot/requirements.txt
       - run: npm install --no-save @vercel/blob   # tiny Blob uploader for HD card art
         working-directory: instagram-bot
-      - name: Scheduled — 12:00 Paris preview / 20:00 Paris publish
+      - name: Scheduled — morning Paris preview / 20:00 Paris publish (carousel only)
         working-directory: instagram-bot
         env:
           ANTHROPIC_API_KEY:     ${{ secrets.ANTHROPIC_API_KEY }}
