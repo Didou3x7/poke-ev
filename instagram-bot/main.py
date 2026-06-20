@@ -2062,6 +2062,36 @@ def do_publish_pending(final=True):
         log("no ✅ approval yet — keeping the pending post for a later evening tick")
 
 
+def do_ack():
+    """Afternoon — CONFIRM receipt of the editor's decision on today's pending preview.
+    The morning preview has no live process, so a 'ok' reply otherwise got no feedback
+    until 20:00 (owner: 'le bot me renvoit rien, ca a marché?'). This closes the loop and
+    states the publish time. Idempotent — each NEW decision is confirmed exactly once,
+    tracked by pending['acked']; it never publishes (that's the 20:00 tick's job)."""
+    pending = read_pending()
+    today = datetime.now(timezone.utc).date().isoformat()
+    if not pending or pending.get("date") != today:
+        return
+    tg_token = env("TELEGRAM_BOT_TOKEN")
+    tg_chat = env("TELEGRAM_CHAT_ID")
+    if not (tg_token and tg_chat):
+        return
+    decision, _ = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
+    if decision == "none" or pending.get("acked") == decision:
+        return
+    msg = {
+        "approve": "✅ Got your OK — the carousel will be published at 20:00 Paris tonight.",
+        "revise": "🔄 Got your changes — I'll rework + re-preview, then publish at 20:00 Paris.",
+        "skip": "🚫 Skipped — nothing will be posted today.",
+    }.get(decision)
+    if not msg:
+        return
+    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": msg})
+    pending["acked"] = decision
+    _pending_path().write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
+    log(f"acked decision: {decision}")
+
+
 def do_scheduled():
     """Routed by Paris local time, but DELAY-TOLERANT. GitHub Actions fires scheduled
     crons late and sometimes skips them, so an exact-hour gate (h==12) would miss the
@@ -2085,10 +2115,12 @@ def do_scheduled():
             log("already prepared today — nothing to do this tick")
         else:
             do_prepare()
+    elif 13 <= h < 20:
+        do_ack()  # confirm the editor's reply (no-op until there's a new decision)
     elif 20 <= h < 24:
         do_publish_pending(final=h >= 23)
     else:
-        log(f"Paris hour {h} outside the prepare (08-12) / publish (20-23) windows — exiting.")
+        log(f"Paris hour {h} outside the prepare (08-12) / ack (13-19) / publish (20-23) windows — exiting.")
 
 
 def main():
@@ -2099,6 +2131,8 @@ def main():
         publish_to_instagram(json.loads(Path(env("PLAN_PATH", "plan.json")).read_text(encoding="utf-8")))
     elif cmd == "prepare":
         do_prepare()
+    elif cmd == "ack":  # confirm a received decision on today's pending preview
+        do_ack()
     elif cmd == "publish-pending":
         do_publish_pending()
     elif cmd == "run":  # legacy single-shot: build + gate + publish in one go

@@ -12,17 +12,19 @@ on:
     # routes them. GitHub fires scheduled crons late / skips them, so redundancy matters.
     # PREPARE (08:00-12:59 Paris, MORNING preview): 7/8/9/10 UTC land at 08:00-12:00 Paris
     #   in BOTH DST seasons — the first to fire previews, the rest no-op (idempotent).
+    # ACK (13:00-19:59 Paris): 12/14/16 UTC confirm the editor's reply ("Got your OK,
+    #   posting at 20:00") so the async preview isn't a silent void; never publishes.
     # PUBLISH (from 20:00 Paris, never earlier): 18/19/20/21 UTC. Summer 18 UTC = 20:00,
-    #   winter 18 UTC = 19:00 (exits, < 20:00); winter 19 UTC = 20:00. So the first
-    #   publish tick is exactly 20:00 Paris in both seasons, backups hourly to 23:00.
-    - cron: '0 7,8,9,10,18,19,20,21 * * *'
+    #   winter 18 UTC = 19:00 (lands in the ack window, < 20:00); winter 19 UTC = 20:00.
+    #   So the first publish tick is exactly 20:00 Paris in both seasons, backups to 23:00.
+    - cron: '0 7,8,9,10,12,14,16,18,19,20,21 * * *'
   workflow_dispatch:
     inputs:
       mode:
         description: 'Manual run mode (test the preview or publish phase on demand)'
         type: choice
         default: scheduled
-        options: [scheduled, prepare, publish-pending, run]
+        options: [scheduled, prepare, ack, publish-pending, run]
       set:
         description: 'Force a specific set for the RIP OR KEEP (T2) post, e.g. brilliant-stars (blank = auto)'
         type: string
