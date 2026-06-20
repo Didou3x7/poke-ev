@@ -354,7 +354,7 @@ function recapSlide(rows: { rank: number; name: string; setName: string; price: 
 
 const SetLogo = ({ logo, label }: { logo: string | null; label: string }) =>
   logo ? (
-    <img src={logo} width={210} height={56} style={{ display: "flex", objectFit: "contain" }} />
+    <img src={logo} width={280} height={75} style={{ display: "flex", objectFit: "contain" }} />
   ) : (
     <span style={{ display: "flex", fontSize: 18, letterSpacing: 4, color: "#8A93A6" }}>{label.toUpperCase()}</span>
   );
@@ -590,7 +590,7 @@ function rkCover(opts: { logo: string | null; setLabel: string; eyebrow: string;
       </div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         {opts.logo ? (
-          <img src={opts.logo} width={660} height={252} style={{ display: "flex", objectFit: "contain" }} />
+          <img src={opts.logo} width={860} height={328} style={{ display: "flex", objectFit: "contain" }} />
         ) : (
           <span style={{ display: "flex", fontFamily: "Clash", fontSize: 80, letterSpacing: -2 }}>{opts.setLabel}</span>
         )}
@@ -616,7 +616,7 @@ function rkCover(opts: { logo: string | null; setLabel: string; eyebrow: string;
 // this is what ripping is chasing. Builds the desire the cold math then tests.
 function rkTemptation(opts: { images: string[]; values: (string | null)[]; setLabel: string; logo: string | null; line: string }) {
   const n = Math.min(opts.images.length, 3) || 1;
-  const w = n >= 3 ? 290 : 340;
+  const w = n >= 3 ? 330 : 380;
   const h = Math.round(w * 1.392);
   return (
     <Frame>
@@ -626,7 +626,7 @@ function rkTemptation(opts: { images: string[]; values: (string | null)[]; setLa
         <div style={{ display: "flex", marginTop: 12 }}><HoloText size={62}>you&apos;re chasing these</HoloText></div>
         <div style={{ display: "flex", alignItems: "flex-end", marginTop: 50 }}>
           {opts.images.slice(0, 3).map((src, i) => (
-            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 12px" }}>
+            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 8px" }}>
               <img src={src} width={w} height={h} style={{ display: "flex", borderRadius: 12, objectFit: "contain", boxShadow: "0 24px 60px -22px rgba(0,0,0,0.85)" }} />
               <span style={{ display: "flex", fontFamily: "Clash", fontSize: 30, marginTop: 18, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{opts.values[i] ?? "—"}</span>
             </div>
