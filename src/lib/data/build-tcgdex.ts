@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { computeSetEv } from "../ev/engine";
+import { BASIC_ENERGY, computeSetEv } from "../ev/engine";
 import { reclassifyVintageShiny, type RarityId } from "../ev/rarity";
 import type { PricedCard, SetEv } from "../ev/types";
 
@@ -197,12 +197,19 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
       // Modern sets keep TCGdex (already clean AND carrying French prints).
       const useCleanScans = set.releaseDate < "2011-01-01";
       const matched = overlayPtcgPrices(base, ptcgCards, useCleanScans);
+      // Collector numbers pokemontcg.io independently PRICES (zero-pad aware). Used to
+      // tell a genuinely valuable holo basic energy (HGSS/Call of Legends — ptcg
+      // prices it) from a bulk one whose high value is a TCGdex variant-mix artifact
+      // (e.g. SM Base Metal Energy #171 = $13.93 with no ptcg quote — see below).
+      const ptcgPricedNums = new Set(
+        ptcgCards.filter((p) => p.usd != null && p.number).map((p) => p.number.replace(/^0+(?=\d)/, "")),
+      );
       const cards: PricedCard[] = base.map((c) => {
         // Fill a missing market at FX, repair a stale-frozen Cardmarket EUR from
         // the fresh USD, then clamp wild EUR/USD divergence (a Cardmarket/TCGplayer
         // data artifact — e.g. €140 vs $0.44 on a common). See ./reconcile-prices.
         const lowRarity = c.rarity === "common" || c.rarity === "uncommon";
-        const { eur, usd } = reconcileCardPrices(c.prices.eur ?? null, c.prices.usd ?? null, {
+        let { eur, usd } = reconcileCardPrices(c.prices.eur ?? null, c.prices.usd ?? null, {
           eurUsd: fx.eurUsd,
           lowRarity,
           // Pre-2004 WotC/e-Card: Cardmarket EUR blends 1st-ed/shadowless printings.
@@ -210,6 +217,22 @@ export async function buildTcgdexSnapshot(options: TcgdexBuildOptions = {}): Pro
           eurAsOf: c.eurAsOf,
           nowMs: startMs,
         });
+        // A basic energy is a bulk common; a high price almost always comes from TCGdex
+        // mixing the bulk card with the set's pricey holo/secret energy of the SAME name.
+        // Trust a high value ONLY when pokemontcg.io independently prices THAT card
+        // (real holo energies — HGSS, Call of Legends); otherwise drop the unverifiable
+        // artifact (e.g. SM Base Metal Energy #171 showed $13.93 with no ptcg quote and
+        // above its own set's secret-rare Metal Energy).
+        if (
+          lowRarity &&
+          usd != null &&
+          usd >= 5 &&
+          BASIC_ENERGY.test(c.name.trim()) &&
+          !ptcgPricedNums.has((c.number != null ? String(c.number) : "").replace(/^0+(?=\d)/, ""))
+        ) {
+          eur = null;
+          usd = null;
+        }
         // Gallery subsets pull from a dedicated slot but TCGdex tags them with
         // ordinary rarities (rare/ultra/secret). Their collector numbers are the
         // reliable marker (TG01.., GG01..), so reclassify by prefix to the rarity

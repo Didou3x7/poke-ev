@@ -60,7 +60,7 @@ function canonicalRarity(rarity: RarityId, referenced: Set<RarityId>): RarityId 
   return rarity;
 }
 
-const BASIC_ENERGY = /^(grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy) energy$/i;
+export const BASIC_ENERGY = /^(grass|fire|water|lightning|psychic|fighting|darkness|metal|fairy) energy$/i;
 const MISPRICED_ENERGY_USD = 5;
 
 /**
