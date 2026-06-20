@@ -24,7 +24,7 @@ on:
         description: 'Manual run mode (test the preview or publish phase on demand)'
         type: choice
         default: scheduled
-        options: [scheduled, prepare, ack, publish-pending, run]
+        options: [scheduled, prepare, ack, publish-pending, run, diagnose]
       set:
         description: 'Force a specific set for the RIP OR KEEP (T2) post, e.g. brilliant-stars (blank = auto)'
         type: string

@@ -1855,6 +1855,29 @@ def tg_wait_decision(token, chat_id, timeout=1200):
 
 
 # --------------------------------- main ----------------------------------- #
+def do_diagnose():
+    """Probe the Instagram access token so we can tell a TOKEN problem (regenerate it)
+    from an APP-side block. publish already returns code 200 'API access blocked', which
+    is an app permission/mode issue, NOT token validity — this confirms which."""
+    token = env("META_ACCESS_TOKEN", required=True)
+    out = []
+    try:
+        me = graph_get("me", {"fields": "user_id,username", "access_token": token})
+        out.append(f"✓ token VALID — @{me.get('username', '?')} (user_id {me.get('user_id')}). The token is NOT the problem.")
+    except Exception as e:  # noqa: BLE001
+        out.append(f"✗ token INVALID/expired — regenerate a long-lived token. ({str(e)[:160]})")
+    msg = ("🔧 IG diagnostic:\n" + "\n".join(out) +
+           "\nPublishing returns code 200 'API access blocked' = the Meta APP is blocking "
+           "the publish action (set it to Development mode, or grant Advanced Access).")
+    log(msg)
+    tg_token, tg_chat = env("TELEGRAM_BOT_TOKEN"), env("TELEGRAM_CHAT_ID")
+    if tg_token and tg_chat:
+        try:
+            tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": msg})
+        except Exception:  # noqa: BLE001
+            pass
+
+
 def do_run():
     """Rotation (T1→T2→T3) → Telegram gate with a revise loop → publish. The heavy
     work (select, price cross-check, upscale, T3 vision) runs once; only the creative
@@ -2143,6 +2166,8 @@ def main():
         do_prepare()
     elif cmd == "ack":  # confirm a received decision on today's pending preview
         do_ack()
+    elif cmd == "diagnose":  # probe the IG token vs app-side block
+        do_diagnose()
     elif cmd == "publish-pending":
         do_publish_pending()
     elif cmd == "run":  # legacy single-shot: build + gate + publish in one go
