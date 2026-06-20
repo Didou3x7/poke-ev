@@ -39,6 +39,11 @@ jobs:
 
       - name: Discover new sets + refresh prices (scheduled runs only)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          # Raises the pokemontcg.io rate limit so the full 128-set price overlay
+          # completes reliably each day (without it the build still works but throttles;
+          # the build is sticky, keeping prior good data for any rate-limited set).
+          POKEMONTCG_API_KEY: ${{ secrets.POKEMONTCG_API_KEY }}
         run: |
           npm run discover || echo "discover step soft-failed — continuing with price refresh"
           # Fail-safe: if discovery wrote anything the schema rejects, revert the
