@@ -10,8 +10,8 @@ Two phases around a manual GitHub approval gate:
                            caption, build the /api/ig slide URLs, and write
                            plan.json + a rich GitHub step-summary preview.
 
-  python main.py publish    Read plan.json and publish the carousel + story +
-                           first comment via the Meta Graph API, then append the
+  python main.py publish    Read plan.json and publish the carousel (no story) via
+                           the Instagram API, then append the
                            posted sets to history.json. Runs only after approval.
 
 Env: ANTHROPIC_API_KEY, META_ACCESS_TOKEN, INSTAGRAM_BUSINESS_ID, POKEMONTCG_API_KEY
@@ -814,6 +814,51 @@ _VOICE = (
     "The verified numbers carry the weight; restraint is the brand. English only."
 )
 
+
+def _style_notes_path():
+    return Path(env("STYLE_NOTES_PATH", "style-notes.md"))
+
+
+def load_style_notes():
+    """The owner's accumulated, locked creative corrections (one per line). Injected
+    into every art-direction prompt so the bot keeps applying past feedback — it
+    improves post-by-post toward 'approve on the first try'."""
+    try:
+        return _style_notes_path().read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def voice():
+    """_VOICE + the owner's standing preferences (the learned-feedback memory)."""
+    notes = load_style_notes()
+    if not notes:
+        return _VOICE
+    return (
+        _VOICE
+        + "\n\nSTANDING OWNER PREFERENCES — these are corrections from past posts; "
+        + "apply EVERY one without exception:\n"
+        + notes
+    )
+
+
+def append_style_note(feedback):
+    """Persist an owner revise note as a STANDING preference so every FUTURE post
+    applies it too — this is how the bot learns from feedback. De-duped; best-effort."""
+    note = " ".join((feedback or "").split())
+    if len(note) < 4:
+        return
+    existing = load_style_notes()
+    if note.lower() in existing.lower():
+        return
+    try:
+        with _style_notes_path().open("a", encoding="utf-8") as f:
+            f.write(f"- {note}\n")
+        log("learned: appended owner feedback to style-notes.md")
+    except OSError as exc:  # noqa: BLE001
+        log(f"  could not persist style note ({exc})")
+
+
 _CAPTION_RULES = (
     "The caption is ENGLISH ONLY and flows: hook line, then substance, then an "
     "engagement nudge, then a 'link in bio -> pokeev.com' CTA. Name pokeev.com at "
@@ -949,7 +994,7 @@ def artdirect_connected(api_key, facts):
         '  "hashtags": 24-30 hashtags per the HASHTAGS rules above.\n'
     )
     try:
-        brief = claude_json(api_key, prompt, system=_VOICE)
+        brief = claude_json(api_key, prompt, system=voice())
     except Exception as exc:  # noqa: BLE001
         log(f"  T1 art-direction failed ({exc}); using fallback")
         return fallback_connected(facts)
@@ -1140,7 +1185,9 @@ def artdirect_ripkeep(api_key, facts):
         "For THIS theme also fold in format tags like #riporkeep #sealedpokemon "
         "#elitetrainerbox #pokemoninvesting alongside the post-specific set and chase-Pokemon tags.\n\n"
         "Return ONLY a JSON object with keys:\n"
-        '  "eyebrow": ALL-CAPS cover label, <= 46 chars (e.g. "THE COLLECTOR\'S DILEMMA").\n'
+        '  "eyebrow": ALL-CAPS cover label, <= 46 chars = the SET + product, e.g. '
+        '"BRILLIANT STARS · ELITE TRAINER BOX". Do NOT include "rip or keep" / "rip it" / '
+        '"keep it" — the cover\'s big title ALREADY says that, so repeating it is a duplicate.\n'
         f'  "verdictWord": the verdict for the verdict slide. Use exactly "RIP IT" if the verdict is RIP, '
         'else "KEEP IT|SEALED" (the | is a line break).\n'
         '  "reason": <= 140 chars, two short clauses split by |, citing the EV and sealed numbers.\n'
@@ -1149,12 +1196,16 @@ def artdirect_ripkeep(api_key, facts):
         '  "hashtags": 24-30 hashtags per the HASHTAGS rules above.\n'
     )
     try:
-        brief = claude_json(api_key, prompt, system=_VOICE)
+        brief = claude_json(api_key, prompt, system=voice())
     except Exception as exc:  # noqa: BLE001
         log(f"  T2 art-direction failed ({exc}); using fallback")
         return fallback_ripkeep(facts)
     brief["hashtags"] = _clean_hashtags(brief.get("hashtags"))
     brief.setdefault("eyebrow", "THE COLLECTOR'S DILEMMA")
+    # Safety: the cover's big headline already reads "Rip it, or keep it?", so never let
+    # the eyebrow duplicate it (owner feedback) — fall back to the set + product label.
+    if re.search(r"rip\s*(it\s*)?or\s*keep|keep\s*it\s*sealed", brief.get("eyebrow", ""), re.I):
+        brief["eyebrow"] = f"{facts['set_name'].upper()} · ELITE TRAINER BOX"[:46]
     brief.setdefault("verdictWord", "RIP IT" if facts["verdict_rip"] else "KEEP IT|SEALED")
     brief.setdefault("reason", f"Ripping averages {fmt_usd(facts['open_ev'])}.|Sealed it sits at {fmt_usd(facts['sealed'])}.")
     return brief
@@ -1464,7 +1515,7 @@ def grail_vision_research(api_key, facts):
         "No em-dashes anywhere."
     )
     try:
-        v = claude_json(api_key, prompt, system=_VOICE, vision_image=(media_type, b64))
+        v = claude_json(api_key, prompt, system=voice(), vision_image=(media_type, b64))
     except Exception as exc:  # noqa: BLE001
         log(f"  T3 vision research failed ({exc})")
         return None
@@ -1615,7 +1666,7 @@ def patch_brief(api_key, prior_brief, feedback):
         "hashtag count exactly as they are.\n" + _CAPTION_RULES
     )
     try:
-        patch = claude_json(api_key, prompt, system=_VOICE)
+        patch = claude_json(api_key, prompt, system=voice())
     except Exception as exc:  # noqa: BLE001
         log(f"  revise patch failed ({exc}); keeping the post unchanged")
         return prior_brief
@@ -1752,7 +1803,7 @@ def tg_send_preview(token, chat_id, plan):
     ntags = len(plan.get("hashtags") or [])
     text = (f"🎴 PokeEV post — {plan['theme'].upper()} ({plan['date']})\n\n"
             f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION ({ntags} hashtags folded in):\n"
-            f"{plan['caption']}\n\nPublish this carousel + story?")
+            f"{plan['caption']}\n\nPublish this carousel?")
     kb = {"inline_keyboard": [[{"text": "✅ Approve", "callback_data": "approve"},
                                {"text": "❌ Reject", "callback_data": "reject"}]]}
     tg_api(token, "sendMessage", {"chat_id": chat_id, "text": text[:4000], "reply_markup": kb})
@@ -1830,6 +1881,7 @@ def do_run():
             log(f"{action} — not posting.")
             return
         log(f"Revise requested: {feedback}")
+        append_style_note(feedback)  # learn: apply this correction to all future posts
         plan = build_theme_plan(ctx, feedback=feedback, prior_brief=plan.get("brief"))
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Too many revisions — stopping for today."})
     log("Max revisions reached — not posting.")
@@ -1968,6 +2020,7 @@ def do_publish_pending(final=True):
 
     if decision == "revise" and notes:
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🔄 Reworking with your notes…"})
+        append_style_note(notes)  # learn: apply this correction to all future posts
         ctx = pending.get("ctx") or {}
         ctx["api_key"] = env("ANTHROPIC_API_KEY")
         try:

@@ -83,6 +83,7 @@ jobs:
           # the push past any race with a concurrent commit.
           git add instagram-bot/pending-post.json 2>/dev/null || true
           git add instagram-bot/history.json 2>/dev/null || true
+          git add instagram-bot/style-notes.md 2>/dev/null || true
           if ! git diff --staged --quiet; then
             git commit -m "chore(bot): post history + pending state [skip ci]"
             for i in 1 2 3 4 5; do
