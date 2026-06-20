@@ -6,3 +6,4 @@ New owner feedback is appended here automatically so the bot keeps improving tow
 in code; this file is the COPY/art-direction memory.)
 
 - The cover eyebrow must be the SET + product only, e.g. "BRILLIANT STARS · ELITE TRAINER BOX". NEVER put "rip or keep" / "rip it" / "keep it" in the eyebrow — the cover's big title already says that, so repeating it is a duplicate.
+- Did you publish?
