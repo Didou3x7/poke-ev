@@ -2,5 +2,15 @@
   {
     "date": "2026-06-19",
     "theme": "connected"
+  },
+  {
+    "date": "2026-06-20",
+    "theme": "ripkeep",
+    "keys": [
+      "brilliant-stars"
+    ],
+    "sets": [
+      "brilliant-stars"
+    ]
   }
 ]
