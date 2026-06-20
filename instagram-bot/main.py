@@ -1774,7 +1774,7 @@ def tg_api(token, method, payload):
     return data["result"]
 
 
-def tg_send_preview(token, chat_id, plan):
+def tg_send_preview(token, chat_id, plan, buttons=True):
     import json as _json
 
     import requests
@@ -1804,9 +1804,14 @@ def tg_send_preview(token, chat_id, plan):
     text = (f"🎴 PokeEV post — {plan['theme'].upper()} ({plan['date']})\n\n"
             f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION ({ntags} hashtags folded in):\n"
             f"{plan['caption']}\n\nPublish this carousel?")
-    kb = {"inline_keyboard": [[{"text": "✅ Approve", "callback_data": "approve"},
-                               {"text": "❌ Reject", "callback_data": "reject"}]]}
-    tg_api(token, "sendMessage", {"chat_id": chat_id, "text": text[:4000], "reply_markup": kb})
+    payload = {"chat_id": chat_id, "text": text[:4000]}
+    # Inline buttons ONLY when a live process is waiting to ack the tap (do_run). In the
+    # async 2-phase flow the prepare run has already exited, so a button would spin
+    # forever with no response — there we drive everything by TEXT reply instead.
+    if buttons:
+        payload["reply_markup"] = {"inline_keyboard": [[{"text": "✅ Approve", "callback_data": "approve"},
+                                                        {"text": "❌ Reject", "callback_data": "reject"}]]}
+    tg_api(token, "sendMessage", payload)
 
 
 def tg_wait_decision(token, chat_id, timeout=1200):
@@ -1992,11 +1997,14 @@ def do_prepare():
         log("Telegram gate not configured — built the post but cannot preview/queue it.")
         return
     offset = tg_offset_now(tg_token)
-    tg_send_preview(tg_token, tg_chat, plan)
+    tg_send_preview(tg_token, tg_chat, plan, buttons=False)
     write_pending(plan, ctx, offset)
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-           "text": "🕛 Today's preview is ready. Tap ✅ Approve to post it at 20:00 Paris, reply with "
-                   "notes to revise, or ❌ Reject to skip. Nothing posts without your ✅."})
+           "text": "🕛 Today's preview is ready. Just REPLY to this chat (no buttons):\n"
+                   "• reply \"ok\" to approve — I post the carousel at 20:00 Paris\n"
+                   "• reply with any changes to revise it (I learn them for next time)\n"
+                   "• reply \"skip\" to cancel today\n"
+                   "Nothing posts without your ok."})
 
 
 def do_publish_pending(final=True):
