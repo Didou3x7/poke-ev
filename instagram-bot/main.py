@@ -962,11 +962,12 @@ def _no_dash(s):
     return re.sub(r"\s*[—–]\s*", " · ", str(s)).strip()
 
 
-def _wrap_clauses(text, width=36):
+def _wrap_clauses(text, width=50):
     """Re-flow body copy so NO single line overflows the slide. The renderer draws each
-    '|'-separated clause on its own line with no auto-wrap, so a long clause was clipped
-    off both edges (seen on the grail SCENE slide). Greedy-wrap each clause to <=width
-    chars, preserving any intentional '|' breaks the art-director already chose."""
+    '|'-separated clause on its own line with no auto-wrap. width=50 because at body size 27
+    a ~50-char line still fits the panel — so a normal clause stays WHOLE on one line (each
+    phrase starts AND ends on the same line, owner's rule); only a genuinely long clause is
+    greedy-wrapped. Preserves the art-director's intentional '|' breaks."""
     if not text:
         return text
     out = []
@@ -1521,7 +1522,7 @@ def fallback_grail_brief(facts):
     set_name = facts["set_name"]
     artist = facts.get("artist")
     odds_n = facts.get("odds_n")
-    odds_line = (f"Rip a sealed booster and|the odds are {odds_n} to 1." if odds_n
+    odds_line = (f"Rip a sealed booster.|The odds are {odds_n} to 1." if odds_n
                  else "It sits in the rarest tier of the set.")
     return {
         "shockHeadline": "Worth more than|most people guess",
