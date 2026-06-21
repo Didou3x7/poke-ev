@@ -1423,15 +1423,21 @@ def _safe_grail_zoom():
     return _safe_scene_zoom()
 
 
-def _crop_dict(cx, cy, factor, fy=475):
-    """Full-bleed grail-zoom placement: put card-fraction (cx,cy) at screen (540, fy), then
-    clamp the offset so the rendered card ALWAYS fully covers the 1080x1350 frame (no gaps)."""
-    zw = int(round(1180 * max(1.3, min(6.0, factor))))
+def _band_crop(cx, band_top, band_bottom, fmin=1.35, fmax=3.6):
+    """Frame the VERTICAL card band [band_top, band_bottom] (card fractions) to fill the
+    1080x1350 slide, centered horizontally on cx, full-bleed (no gaps). Because the band
+    bottom is clamped to <= 0.53 (the top of the attack-text boxes), the zoom can NEVER show
+    the card's printed text — no more text bleed — while keeping the subject's head in view."""
+    band_top = max(0.04, min(0.46, band_top))
+    band_bottom = max(band_top + 0.14, min(0.53, band_bottom))
+    band_h = band_bottom - band_top
+    factor = max(fmin, min(fmax, (1350.0 / band_h) / (1180 * PORTRAIT_RATIO)))
+    zw = int(round(1180 * factor))
     zh = int(round(zw * PORTRAIT_RATIO))
     zx = int(round(540 - cx * zw))
-    zy = int(round(fy - cy * zh))
-    zx = max(-(zw - 1080), min(0, zx))   # keep card covering 0..1080 horizontally
-    zy = max(-(zh - 1350), min(0, zy))   # keep card covering 0..1350 vertically
+    zy = int(round(-band_top * zh))               # put band_top at screen y=0
+    zx = max(-(zw - 1080), min(0, zx))            # keep card covering 0..1080 horizontally
+    zy = max(-(zh - 1350), min(0, zy))            # keep card covering 0..1350 vertically
     return {"zw": zw, "zx": zx, "zy": zy}
 
 
@@ -1472,11 +1478,11 @@ def compute_grail_crops(image_url):
                     log(f"  grail subject: cx={cx:.2f} top={top:.2f} w={sw:.2f} h={sh:.2f}")
     except Exception as exc:  # noqa: BLE001 — never fail a post over crop detection
         log(f"  grail crop detection failed ({exc}); using deterministic crop")
-    # SCENE — subject prominent; focal a bit ABOVE its centre so the head is never cut.
-    scene_factor = max(1.5, min(2.2, 0.62 * 1080 / (1180 * sw)))
-    scene = _crop_dict(cx, top + 0.42 * sh, scene_factor, fy=480)
-    # CRAFT — tighter on the upper detail band (face / head).
-    craft = _crop_dict(cx, top + 0.15 * sh, min(4.0, scene_factor * 1.7), fy=470)
+    # SCENE — frame the subject's full vertical extent inside the art band (head to body),
+    # bottom clamped above the text boxes so nothing printed bleeds in.
+    scene = _band_crop(cx, top - 0.03, top + sh + 0.03)
+    # CRAFT — tight on the upper detail (face / head ~ top half of the subject).
+    craft = _band_crop(cx, max(0.05, top - 0.01), top + sh * 0.52)
     return {"scene": scene, "craft": craft}
 
 
