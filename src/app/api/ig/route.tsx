@@ -795,9 +795,12 @@ function grailShock(opts: { image: string; setLabel: string; logo: string | null
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <img src={opts.image} width={432} height={602} style={{ display: "flex", borderRadius: 16, objectFit: "contain", boxShadow: "0 34px 84px -22px rgba(0,0,0,0.92)" }} />
         <div style={{ display: "flex", fontSize: 21, letterSpacing: 6, color: "#7c8499", marginTop: 34 }}>{opts.eyebrow}</div>
-        <div style={{ display: "flex", flexDirection: "column", marginTop: 16, alignItems: "center" }}>
+        {/* Shock headline: the holo lineHeight is 1.0, so stacked lines touched vertically and
+            the -2 tracking jammed the words — owner couldn't read it. Give the lines real
+            vertical breathing room (gap) and neutral word tracking, scoped to THIS slide. */}
+        <div style={{ display: "flex", flexDirection: "column", marginTop: 18, gap: 14, alignItems: "center" }}>
           {lines.map((ln, i) => (
-            <div key={i} style={{ display: "flex" }}><HoloText size={hsize}>{ln}</HoloText></div>
+            <div key={i} style={{ display: "flex" }}><HoloText size={hsize} ls={0}>{ln}</HoloText></div>
           ))}
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 28 }}>
