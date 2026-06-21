@@ -8,8 +8,8 @@
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46857615d2be49895495cbf0e8131a11.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7fac0fdf95915dbb9be88cc745f57886.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/704541349ba30a4f65031e167fde9608.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5880b071b449e902e010aae9cfbd728f.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/2d03b48db1f5d0cd0914c4227ee3a1a6.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/e3195552fa4c831f05a650c328780a11.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7bd92286a2ac321813651002ab61b24b.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -55,15 +55,15 @@
       "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A bright starburst in the upper-left|radiates through the holographic foil.|Multicolored flecks scatter across|the dark background.",
+      "craftBody": "A concentrated white starburst blooms in the upper-left background | colored light flecks radiate outward across the dark cosmic field.",
       "craftZoom": {
         "zw": 4097,
         "zx": -1229,
         "zy": -839
       },
       "sceneKicker": "THE SCENE",
-      "sceneHeadline": "One card. One Mewtwo.",
-      "sceneBody": "The Star rarity Mewtwo hovers|against a deep cosmic field.|Limit one per deck, zero on the shelf.",
+      "sceneHeadline": "MEWTWO STAR IN FULL FORM",
+      "sceneBody": "Masakazu Fukuda renders Mewtwo suspended in a deep-space field | the holo treatment amplifies every scattered light point around the figure.",
       "sceneZoom": {
         "zw": 2690,
         "zx": -621,
@@ -141,29 +141,29 @@
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/37967e8f7bd2c3c4f702db3c264ba3cf.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a star-field galaxy, arms extended",
+        "subject": "Mewtwo Star floating in a star-field, arms outstretched",
         "hidden": "",
         "sceneCenterX": 0.5,
-        "sceneCenterY": 0.33,
+        "sceneCenterY": 0.3,
         "sceneFactor": 1.9,
-        "sceneHeadline": "One card. One Mewtwo.",
-        "sceneBody": "The Star rarity Mewtwo hovers against a deep cosmic field. | Limit one per deck, zero on the shelf.",
-        "craftCenterX": 0.38,
+        "sceneHeadline": "MEWTWO STAR IN FULL FORM",
+        "sceneBody": "Masakazu Fukuda renders Mewtwo suspended in a deep-space field | the holo treatment amplifies every scattered light point around the figure.",
+        "craftCenterX": 0.28,
         "craftCenterY": 0.22,
-        "craftFactor": 3.5,
-        "craftHeadline": "The burst of cosmic light",
-        "craftBody": "A bright starburst in the upper-left quadrant radiates through the holographic foil. | Multicolored flecks scatter across the dark background like scattered rare pulls.",
-        "compare": "a high-end home espresso machine",
-        "compareUsd": 1200,
+        "craftFactor": 3.6,
+        "craftHeadline": "THE STARBURST NEBULA DETAIL",
+        "craftBody": "A concentrated white starburst blooms in the upper-left background | colored light flecks radiate outward across the dark cosmic field.",
+        "compare": "a high-end DSLR camera kit",
+        "compareUsd": 3500,
         "craftZoom": {
-          "zw": 4130,
-          "zx": -1029,
-          "zy": -787
+          "zw": 4248,
+          "zx": -649,
+          "zy": -823
         },
         "sceneZoom": {
           "zw": 2242,
           "zx": -581,
-          "zy": -551
+          "zy": -458
         }
       },
       "crops": {
