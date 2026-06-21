@@ -1434,17 +1434,23 @@ def _safe_grail_zoom():
 
 def _band_crop(cx, band_top, band_bottom, fmin=1.35, fmax=3.6):
     """Frame the VERTICAL card band [band_top, band_bottom] (card fractions) to fill the
-    1080x1350 slide, centered horizontally on cx, full-bleed (no gaps). Because the band
-    bottom is clamped to <= 0.53 (the top of the attack-text boxes), the zoom can NEVER show
-    the card's printed text — no more text bleed — while keeping the subject's head in view."""
-    band_top = max(0.04, min(0.46, band_top))
-    band_bottom = max(band_top + 0.14, min(0.53, band_bottom))
+    1080x1350 slide, centered horizontally on cx, full-bleed (no gaps). The band is clamped to
+    the PURE-ART window [0.10, 0.46] — clear of the title/HP bar at the top AND well clear of the
+    attack/rules text boxes lower down — so the zoom shows ONLY artwork, never the card's printed
+    text (owner: showing the card's bottom text on the SCENE zoom is ugly)."""
+    band_top = max(0.10, min(0.30, band_top))
+    # min() is the OUTER clamp so 0.46 is a HARD cap — the band can never reach the text boxes,
+    # even when the min-height floor (band_top + 0.14) would otherwise push it lower.
+    band_bottom = min(0.46, max(band_top + 0.14, band_bottom))
     band_h = band_bottom - band_top
     factor = max(fmin, min(fmax, (1350.0 / band_h) / (1180 * PORTRAIT_RATIO)))
     zw = int(round(1180 * factor))
     zh = int(round(zw * PORTRAIT_RATIO))
     zx = int(round(540 - cx * zw))
-    zy = int(round(-band_top * zh))               # put band_top at screen y=0
+    # Anchor the band BOTTOM at the screen bottom (not the top): this GUARANTEES the visible
+    # bottom edge == band_bottom (<= 0.46) no matter how the zoom factor is clamped. If the
+    # factor caps out, the view simply extends UPWARD into more artwork (never down into text).
+    zy = int(round(1350 - band_bottom * zh))
     zx = max(-(zw - 1080), min(0, zx))            # keep card covering 0..1080 horizontally
     zy = max(-(zh - 1350), min(0, zy))            # keep card covering 0..1350 vertically
     return {"zw": zw, "zx": zx, "zy": zy}
@@ -1466,7 +1472,7 @@ def compute_grail_crops(image_url):
         arr = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
         if arr is not None:
             H, W = arr.shape[:2]
-            y0, y1 = int(H * 0.12), int(H * 0.56)  # the pure-art band
+            y0, y1 = int(H * 0.11), int(H * 0.49)  # the pure-art window (exclude title + text boxes)
             band = arr[y0:y1, :]
             try:
                 sal = cv2.saliency.StaticSaliencyFineGrained_create()
