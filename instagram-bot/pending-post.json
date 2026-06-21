@@ -8,8 +8,8 @@
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46857615d2be49895495cbf0e8131a11.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7fac0fdf95915dbb9be88cc745f57886.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/50e6613295559219589a8aef1c4a4e3d.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/b45ecabe6c16a7d91ea8948d7e54b4ed.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/95c6e5ee3a288fcfc88242b3641562c8.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/6bcc806317cd6036ae83cc3a5fb127b2.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7bd92286a2ac321813651002ab61b24b.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -55,7 +55,7 @@
       "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A dense white starburst anchors the upper left of the art, radiating light into surrounding colored star clusters | the holographic foil amplifies every point of light in this region",
+      "craftBody": "Bright multicolored star points burst from a dark background. The holo treatment shifts each speck under different lighting angles.",
       "craftZoom": {
         "zw": 3459,
         "zx": -498,
@@ -63,7 +63,7 @@
       },
       "sceneKicker": "THE SCENE",
       "sceneHeadline": "Mewtwo adrift in deep space",
-      "sceneBody": "Mewtwo hovers weightless against a dense starfield of scattered color | its pale lavender form glows softly against the dark cosmic background",
+      "sceneBody": "Mewtwo hovers weightless against a dense starfield. Its silver-blue form radiates quiet dominance in the cosmic void.",
       "sceneZoom": {
         "zw": 2690,
         "zx": -621,
@@ -141,20 +141,20 @@
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/37967e8f7bd2c3c4f702db3c264ba3cf.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a star-filled cosmic void",
+        "subject": "Mewtwo Star floating in a starfield, arms outstretched",
         "hidden": "",
         "sceneCenterX": 0.5,
-        "sceneCenterY": 0.34,
+        "sceneCenterY": 0.33,
         "sceneFactor": 1.9,
         "sceneHeadline": "Mewtwo adrift in deep space",
-        "sceneBody": "Mewtwo hovers weightless against a dense starfield of scattered color | its pale lavender form glows softly against the dark cosmic background",
+        "sceneBody": "Mewtwo hovers weightless against a dense starfield of scattered light | its silver-blue form radiates quiet dominance in the cosmic void",
         "craftCenterX": 0.3,
         "craftCenterY": 0.22,
         "craftFactor": 3.4,
-        "craftHeadline": "Starburst cluster in the void",
-        "craftBody": "A dense white starburst anchors the upper left of the art, radiating light into surrounding colored star clusters | the holographic foil amplifies every point of light in this region",
-        "compare": "a high-end DSLR camera kit",
-        "compareUsd": 3500,
+        "craftHeadline": "Starburst nebula cluster, upper left",
+        "craftBody": "A tight cluster of bright multicolored star points bursts from the dark background | the holo treatment makes each speck shift and scatter under different lighting angles",
+        "compare": "a high-end home espresso machine",
+        "compareUsd": 1200,
         "craftZoom": {
           "zw": 4012,
           "zx": -664,
@@ -163,7 +163,7 @@
         "sceneZoom": {
           "zw": 2242,
           "zx": -581,
-          "zy": -582
+          "zy": -551
         }
       },
       "crops": {
