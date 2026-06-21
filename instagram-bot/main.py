@@ -785,6 +785,28 @@ def claude_json(api_key, prompt, max_tokens=1100, system=None, vision_image=None
     return json.loads(_strip_json_fence(raw))
 
 
+def claude_vision_review(api_key, prompt, image_bytes_list, system=None, max_tokens=900):
+    """Send several rendered slide PNGs + a prompt to Claude and return parsed JSON.
+    Used by the pre-preview VISUAL self-review. Raises on bad JSON (callers guard)."""
+    import base64
+
+    from anthropic import Anthropic
+
+    client = Anthropic(api_key=api_key)
+    content = []
+    for i, raw in enumerate(image_bytes_list, 1):
+        content.append({"type": "text", "text": f"Slide {i}:"})
+        content.append({"type": "image", "source": {"type": "base64", "media_type": "image/png",
+                                                    "data": base64.b64encode(raw).decode("ascii")}})
+    content.append({"type": "text", "text": prompt})
+    kwargs = {"model": CLAUDE_MODEL, "max_tokens": max_tokens, "messages": [{"role": "user", "content": content}]}
+    if system:
+        kwargs["system"] = system
+    msg = client.messages.create(**kwargs)
+    raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+    return json.loads(_strip_json_fence(raw))
+
+
 def _clean_hashtags(tags, lo=24, hi=30):
     """Normalize, de-dup (case-insensitive), strip em-dashes, cap length. The caller's
     post-specific tags lead; a deep, INTERNATIONAL-reach core pads the tail so every
@@ -1753,6 +1775,98 @@ def patch_brief(api_key, prior_brief, feedback):
     return {**prior_brief, **patch}
 
 
+_QA_CHECKLIST = (
+    "QUALITY CHECKLIST — the post FAILS (fix it) if ANY is true:\n"
+    "- Uses a banned hype word: insane, brutal, unhinged, wild, crazy, mind-blowing, 'brace'.\n"
+    "- Contains an em-dash or en-dash anywhere (use periods / commas / ·).\n"
+    "- A money comparison to a car/vehicle, house/apartment, rent, mortgage or salary, OR to "
+    "anything not CLEARLY cheaper than the card's price.\n"
+    "- The cover eyebrow repeats the slide's big title (e.g. duplicates 'rip or keep').\n"
+    "- Any price, set name, card name or count that does NOT match the VERIFIED FACTS.\n"
+    "- A single '|' clause in body copy so long it would not fit one line (keep each clause "
+    "short, under ~36 characters).\n"
+    "- Copy that contradicts ANY standing owner preference.\n"
+    "- Caption is not English, drops the 'link in bio -> pokeev.com' CTA, or never names pokeev.com.\n"
+)
+
+
+def self_review_brief(api_key, theme, facts, brief):
+    """PRE-PREVIEW copy QA. Before the owner ever sees the post, the bot re-reads its OWN
+    copy against the standing owner preferences (voice/style-notes) + a quality checklist
+    and fixes any violation — so each post needs fewer manual revises (toward 'approve on
+    the first try'). Copy-only (layout is enforced in code). Never raises; returns the brief
+    unchanged on any error or when it already passes."""
+    if not api_key:
+        return brief
+    editable = {k: v for k, v in brief.items() if isinstance(v, (str, list))}
+    facts_view = {k: v for k, v in facts.items()
+                  if isinstance(v, (str, int, float)) and not str(k).startswith("_")}
+    prompt = (
+        "You are the EDITOR-IN-CHIEF doing the FINAL QA pass on a finished Instagram post "
+        "BEFORE it is shown to the owner. Catch anything the owner would ask to change and fix "
+        f"it now. Theme: {theme}.\n\n"
+        "POST COPY (JSON):\n" + json.dumps(editable, ensure_ascii=False, indent=2) + "\n\n"
+        "VERIFIED FACTS — every number/name in the copy must match these EXACTLY:\n"
+        + json.dumps(facts_view, ensure_ascii=False) + "\n\n"
+        + _QA_CHECKLIST + "\n"
+        "Return ONLY a JSON object: the keys you must CHANGE to fix EVERY issue, with their "
+        "corrected values (same keys/shape as the input copy). Return {} if it already passes. "
+        "Change as few keys as possible; never alter a correct price/number/name. No em-dashes."
+    )
+    try:
+        patch = claude_json(api_key, prompt, system=voice())
+    except Exception as exc:  # noqa: BLE001 — QA must never break a post
+        log(f"  self-review (copy) skipped ({exc})")
+        return brief
+    if not isinstance(patch, dict) or not patch:
+        log("  self-review (copy): post already clean ✓")
+        return brief
+    patch = {k: v for k, v in patch.items() if k in brief and not isinstance(brief[k], dict)}
+    if "hashtags" in patch:
+        patch["hashtags"] = _clean_hashtags(patch["hashtags"])
+    if not patch:
+        return brief
+    log("  self-review (copy) auto-fixed: " + ", ".join(sorted(patch.keys())))
+    return {**brief, **patch}
+
+
+def self_review_visual(api_key, plan):
+    """PRE-PREVIEW visual QA. Look at the RENDERED slides and report visible defects the
+    owner would reject (clipped/overflowing text, a big blank area, a card/logo that didn't
+    load, bad overlap, an off-brand/wrong number). Returns short '[slide N] problem' strings
+    — copy defects are auto-fixed upstream; visual ones need a code fix, so we surface them
+    to the owner + the logs. Best-effort: returns [] on any failure, never breaks the post."""
+    if not api_key:
+        return []
+    try:
+        imgs = [_download_bytes(u, timeout=90, tries=2) for u in plan_slides(plan)[:10]]
+    except Exception as exc:  # noqa: BLE001
+        log(f"  self-review (visual): couldn't fetch slides ({exc})")
+        return []
+    prompt = (
+        "You are doing strict VISUAL QA on a finished Instagram carousel (the slides above, in "
+        "order). Report ONLY real, visible defects a careful art director would REJECT:\n"
+        "- text cut off or overflowing the frame edges\n"
+        "- a large empty/blank area, or a missing image (blank box where art should be)\n"
+        "- a card/logo that clearly did not load\n"
+        "- text overlapping badly or unreadable\n"
+        "- a price/word that looks wrong or off-brand\n"
+        "Do NOT flag intentional minimalism, dark backgrounds or normal spacing. "
+        'Return ONLY JSON: {"issues":[{"slide":N,"problem":"short description"}]} '
+        "(empty list if every slide is clean)."
+    )
+    try:
+        out = claude_vision_review(api_key, prompt, imgs, system=voice())
+        issues = out.get("issues", []) if isinstance(out, dict) else []
+    except Exception as exc:  # noqa: BLE001
+        log(f"  self-review (visual) skipped ({exc})")
+        return []
+    warns = [f"slide {i.get('slide', '?')}: {i.get('problem', '?')}"
+             for i in issues if isinstance(i, dict) and i.get("problem")]
+    log("  self-review (visual): " + (" | ".join(warns) if warns else "all slides clean ✓"))
+    return warns
+
+
 def build_theme_plan(ctx, feedback=None, prior_brief=None):
     """Art-direct (Claude or fallback) + build the /api/ig slide URLs for the selected
     theme, re-host them on Blob, write plan.json, and return the flat plan. On a revise
@@ -1762,10 +1876,12 @@ def build_theme_plan(ctx, feedback=None, prior_brief=None):
     facts = ctx["facts"]
     api_key = ctx["api_key"]
 
-    if feedback and prior_brief:
-        brief = patch_brief(api_key, prior_brief, feedback)
-    else:
+    fresh = not (feedback and prior_brief)
+    if fresh:
         brief = _fresh_brief(theme, api_key, facts)
+        brief = self_review_brief(api_key, theme, facts, brief)  # PRE-PREVIEW copy QA (auto-fix)
+    else:
+        brief = patch_brief(api_key, prior_brief, feedback)
     slides = _slides_for(theme, base, facts, brief)
 
     hosted = materialize_slides(slides)
@@ -1779,6 +1895,10 @@ def build_theme_plan(ctx, feedback=None, prior_brief=None):
         "keys": ctx["keys"],
         "verify": ctx["verify"],
     }
+    # PRE-PREVIEW visual QA (fresh build only): flag any visible defect so the owner gets a
+    # heads-up and I can code-fix it (copy defects were already auto-fixed above).
+    if fresh:
+        plan["qa_warnings"] = self_review_visual(api_key, plan)
     Path(env("PLAN_PATH", "plan.json")).write_text(json.dumps(plan, indent=2, ensure_ascii=False), encoding="utf-8")
     log("CAPTION:\n" + plan["caption"])
     for u in hosted:
@@ -2003,6 +2123,10 @@ def do_run():
         tg_send_preview(tg_token, tg_chat, plan)
         return
 
+    qwarn = plan.get("qa_warnings") or []
+    if qwarn:
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "🔎 Auto-reviewed before sending — flagged to fix:\n" + "\n".join(f"• {w}" for w in qwarn)})
     timeout = int(env("APPROVAL_TIMEOUT", "1200") or "1200")
     max_revisions = int(env("MAX_REVISIONS", "6") or "6")
     for _ in range(max_revisions + 1):
@@ -2153,12 +2277,17 @@ def do_prepare():
         warn = ("\n\n⚠️ Heads-up: the Instagram token looks INVALID right now, so tonight's "
                 "20:00 publish would fail. Regenerate the token / set the Meta app to "
                 "Development mode before 20:00.")
+    # Surface the pre-preview auto-review: the copy was already self-corrected; any visual
+    # defect the vision pass flagged is shown so you know I'll code-fix it.
+    qwarn = plan.get("qa_warnings") or []
+    qa = ("\n\n🔎 Auto-reviewed before sending — flagged to fix:\n"
+          + "\n".join(f"• {w}" for w in qwarn)) if qwarn else "\n\n🔎 Auto-reviewed before sending — looks clean."
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
            "text": "🕛 Today's preview is ready. Just REPLY to this chat (no buttons):\n"
                    "• reply \"ok\" to approve — I post the carousel at 20:00 Paris\n"
                    "• reply with any changes to revise it (I learn them for next time)\n"
                    "• reply \"skip\" to cancel today\n"
-                   "Nothing posts without your ok." + warn})
+                   "Nothing posts without your ok." + qa + warn})
 
 
 def do_publish_pending(final=True):
