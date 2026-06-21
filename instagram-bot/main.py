@@ -1364,10 +1364,19 @@ def _odds_for_card(snapshot_set, rarity):
     return None
 
 
+def _tcg_hires(url):
+    """TCGplayer CDN serves a tiny `_200w` thumbnail by default; strip the size suffix to
+    request the FULL-resolution product image (a much better source for the booster upscale).
+    For old sets the original may itself be small, but for newer products this is far bigger."""
+    if url and "tcgplayer-cdn.tcgplayer.com" in url:
+        return re.sub(r"_(?:\d+w|in_\d+x\d+)\.(jpg|png|webp)$", r".\1", url)
+    return url
+
+
 def _booster_image(snapshot_set):
     for s in snapshot_set.get("sealed") or []:
         if s.get("kind") == "booster" and s.get("image"):
-            return s["image"]
+            return _tcg_hires(s["image"])
     return None
 
 
