@@ -1423,6 +1423,63 @@ def _safe_grail_zoom():
     return _safe_scene_zoom()
 
 
+def _crop_dict(cx, cy, factor, fy=475):
+    """Full-bleed grail-zoom placement: put card-fraction (cx,cy) at screen (540, fy), then
+    clamp the offset so the rendered card ALWAYS fully covers the 1080x1350 frame (no gaps)."""
+    zw = int(round(1180 * max(1.3, min(6.0, factor))))
+    zh = int(round(zw * PORTRAIT_RATIO))
+    zx = int(round(540 - cx * zw))
+    zy = int(round(fy - cy * zh))
+    zx = max(-(zw - 1080), min(0, zx))   # keep card covering 0..1080 horizontally
+    zy = max(-(zh - 1350), min(0, zy))   # keep card covering 0..1350 vertically
+    return {"zw": zw, "zx": zx, "zy": zy}
+
+
+def compute_grail_crops(image_url):
+    """REAL framing — no LLM coordinate guessing (that kept cutting the subject). Detect the
+    card's subject with OpenCV saliency (largest salient blob in the ART band, below the title
+    bar / above the attack-text boxes), then frame two crops that CENTER it and never cut the
+    head: SCENE = subject prominent (focal biased above centre), CRAFT = tight on the upper
+    detail (face/head). Deterministic head-biased fallback if saliency is weak/unavailable."""
+    cx, top, sh, sw = 0.5, 0.15, 0.34, 0.60  # default subject box (card fractions)
+    try:
+        import cv2
+        import numpy as np
+        import requests
+
+        data = requests.get(_hires(image_url), timeout=30).content
+        arr = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+        if arr is not None:
+            H, W = arr.shape[:2]
+            y0, y1 = int(H * 0.12), int(H * 0.56)  # the pure-art band
+            band = arr[y0:y1, :]
+            try:
+                sal = cv2.saliency.StaticSaliencyFineGrained_create()
+                ok, smap = sal.computeSaliency(band)
+            except Exception:  # noqa: BLE001 — saliency module missing
+                ok, smap = False, None
+            if ok and smap is not None:
+                smap = cv2.GaussianBlur((smap * 255).astype(np.uint8), (0, 0), 7)
+                _, thr = cv2.threshold(smap, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+                cnts, _ = cv2.findContours(thr, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                big = [c for c in cnts if cv2.contourArea(c) > 0.03 * band.shape[0] * band.shape[1]]
+                if big:
+                    x, y, w, h = cv2.boundingRect(max(big, key=cv2.contourArea))
+                    cx = (x + w / 2) / W
+                    top = (y0 + y) / H
+                    sh = max(0.12, h / H)
+                    sw = max(0.18, w / W)
+                    log(f"  grail subject: cx={cx:.2f} top={top:.2f} w={sw:.2f} h={sh:.2f}")
+    except Exception as exc:  # noqa: BLE001 — never fail a post over crop detection
+        log(f"  grail crop detection failed ({exc}); using deterministic crop")
+    # SCENE — subject prominent; focal a bit ABOVE its centre so the head is never cut.
+    scene_factor = max(1.5, min(2.2, 0.62 * 1080 / (1180 * sw)))
+    scene = _crop_dict(cx, top + 0.42 * sh, scene_factor, fy=480)
+    # CRAFT — tighter on the upper detail band (face / head).
+    craft = _crop_dict(cx, top + 0.15 * sh, min(4.0, scene_factor * 1.7), fy=470)
+    return {"scene": scene, "craft": craft}
+
+
 def fallback_grail_brief(facts):
     name = facts["name"]
     price = fmt_usd(facts["usd"])
@@ -1677,6 +1734,7 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
         facts["hd_image"] = upscale_card(facts["image"])  # HD source for grail-zoom
         log(f"  grail upscale {facts['name']}: {'HD ✓' if facts['hd_image'] else 'native (no token/failed)'}")
         facts["vision"] = grail_vision_research(api_key, facts)
+        facts["crops"] = compute_grail_crops(facts["image"])  # saliency-based framing
         return {"theme": theme, "base": base, "facts": facts, "verify": [rec],
                 "keys": [facts["key"]], "api_key": api_key}
 
@@ -1733,6 +1791,12 @@ def _fresh_brief(theme, api_key, facts):
         elif facts.get("artist"):
             brief["craftKicker"] = "THE ARTIST"
             brief["craftHeadline"] = facts["artist"]
+        # Deterministic saliency crops (from the actual image) OVERRIDE the LLM's guessed
+        # coordinates — they center the subject and never cut the head.
+        crops = facts.get("crops")
+        if crops:
+            brief["craftZoom"] = crops["craft"]
+            brief["sceneZoom"] = crops["scene"]
         return brief
     sys.exit(f"[pokeev-bot] unknown theme {theme}")
 
@@ -1803,6 +1867,8 @@ _QA_CHECKLIST = (
     "- Any price, set name, card name or count that does NOT match the VERIFIED FACTS.\n"
     "- A single '|' clause in body copy so long it would not fit one line (keep each clause "
     "short, under ~36 characters).\n"
+    "- Any body (cardBody, craftBody, sceneBody, oddsBody) longer than ~115 characters total — "
+    "keep them punchy; a slide is a visual, not an essay (overlong bodies get cut off).\n"
     "- Copy that contradicts ANY standing owner preference.\n"
     "- Caption is not English, drops the 'link in bio -> pokeev.com' CTA, or never names pokeev.com.\n"
 )

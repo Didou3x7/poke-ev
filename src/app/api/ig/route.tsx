@@ -354,7 +354,7 @@ function recapSlide(rows: { rank: number; name: string; setName: string; price: 
 
 const SetLogo = ({ logo, label }: { logo: string | null; label: string }) =>
   logo ? (
-    <img src={logo} width={280} height={75} style={{ display: "flex", objectFit: "contain", objectPosition: "right top" }} />
+    <img src={logo} width={280} height={75} style={{ display: "flex", objectFit: "contain", objectPosition: "right center" }} />
   ) : (
     <span style={{ display: "flex", fontSize: 18, letterSpacing: 4, color: "#8A93A6" }}>{label.toUpperCase()}</span>
   );
@@ -1097,7 +1097,7 @@ export async function GET(request: NextRequest) {
         logo,
         kicker: textParam(p.get("kicker"), 30) ?? "",
         headline: textParam(p.get("headline"), 48) ?? "",
-        body: textParam(p.get("body"), 180) ?? "",
+        body: textParam(p.get("body"), 260) ?? "",
         win: Math.min(920, Math.max(200, pnum("win", 640))),
         winH: Math.min(900, Math.max(160, pnum("winH", 470))),
         zw: Math.min(6000, Math.max(400, pnum("zw", 1180))),
@@ -1120,7 +1120,7 @@ export async function GET(request: NextRequest) {
         statA: textParam(p.get("statA"), 8) ?? "1",
         statB: textParam(p.get("statB"), 8) ?? "",
         statSub: textParam(p.get("statSub"), 40) ?? "",
-        body: textParam(p.get("body"), 180) ?? "",
+        body: textParam(p.get("body"), 260) ?? "",
         foot: textParam(p.get("foot"), 30) ?? "swipe →",
       });
     } else {
@@ -1132,7 +1132,7 @@ export async function GET(request: NextRequest) {
         logo,
         kicker: textParam(p.get("kicker"), 30) ?? "",
         headline: textParam(p.get("headline"), 48) ?? "",
-        body: textParam(p.get("body"), 180) ?? "",
+        body: textParam(p.get("body"), 260) ?? "",
         tilt: Math.min(12, Math.max(-12, pnum("tilt", 0))),
       });
     }
