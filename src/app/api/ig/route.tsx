@@ -115,13 +115,15 @@ const Frame = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-// LOCKED: the PokéEV wordmark is the SAME size on EVERY slide (owner requirement). The
-// per-slide `size` prop is intentionally ignored so no slide can drift. Paired with the
-// fixed-height SetLogo (top-right) + the shared padding:72 headers, both logos are identical
-// in size AND position across all slides/themes.
+// LOCKED: in HEADERS the PokéEV wordmark is the SAME size on EVERY slide (owner requirement).
+// The per-slide `size` prop is intentionally ignored so no header can drift. Paired with the
+// fixed-height SetLogo (top-right) + the shared padding:72 headers, both logos are identical in
+// size AND position across all slides/themes. EXCEPTION: `hero` (the closing CTA's lone, centered
+// wordmark) renders it 3x bigger as a brand sign-off — that's not a header, so it doesn't break
+// the header-consistency rule.
 const WORDMARK_SIZE = 34;
-const Wordmark = (_props: { size?: number }) => (
-  <div style={{ display: "flex", alignItems: "baseline", fontFamily: "Clash", fontSize: WORDMARK_SIZE, letterSpacing: -1 }}>
+const Wordmark = ({ hero }: { size?: number; hero?: boolean }) => (
+  <div style={{ display: "flex", alignItems: "baseline", fontFamily: "Clash", fontSize: hero ? WORDMARK_SIZE * 3 : WORDMARK_SIZE, letterSpacing: hero ? -3 : -1 }}>
     <span style={{ color: "#E8ECF4" }}>Poké</span>
     <span style={{ backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>EV</span>
   </div>
@@ -518,9 +520,10 @@ function connectedCta(opts: { setLabel: string; logo: string | null; eyebrow: st
           <SetLogo logo={opts.logo} label={opts.setLabel} />
         </div>
       ) : (
-        // Closing slide with no set logo: center the lone PokéEV wordmark at the top (premium).
+        // Closing slide with no set logo: center the lone PokéEV wordmark, 3x bigger, as a
+        // premium brand sign-off.
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <Wordmark size={34} />
+          <Wordmark hero />
         </div>
       )}
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
@@ -735,7 +738,7 @@ function rkVerdict(opts: { setLabel: string; logo: string | null; verdict: strin
 function rkCta(opts: { eyebrow: string; h1: string; h2: string; body: string }) {
   return (
     <Frame>
-      <div style={{ display: "flex", justifyContent: "center" }}><Wordmark size={34} /></div>
+      <div style={{ display: "flex", justifyContent: "center" }}><Wordmark hero /></div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
         <div style={{ display: "flex" }}><HoloText size={100}>{opts.h1}</HoloText></div>
