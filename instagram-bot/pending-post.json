@@ -6,10 +6,10 @@
     "date": "2026-06-21",
     "theme": "grails",
     "slides": [
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5a78b5576a47b7b5699c815e2427aae3.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/f925b9f25d5792f090b9329e29732e52.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/85cf831237dd910462a7b11d0d872884.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5fde620e59d9f9ce74c41bb4d3745185.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/fd6c2b327197a22fd71e0ed2851ce2a2.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/abc43c1bedd23f08bf6752b80b50a8e8.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/4471f08a56bd51439159dd78627f82e7.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/38a8285071b8491be623a2fbaaadcc47.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/90088381a01aa5a1860267577bac59e6.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -47,27 +47,27 @@
       "#pokemonsealed"
     ],
     "brief": {
-      "shockHeadline": "Worth more than|a luxury watch",
+      "shockHeadline": "Worth more than|most people guess",
       "priceNote": "for a single card",
       "compare": null,
       "cardKicker": "THE CARD",
       "cardHeadline": "Mewtwo Star",
-      "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
+      "cardBody": "EX Holon Phantoms crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "Mewtwo's pale pink eyes catch the starfield light with an unsettling calm. Masakazu Fukuda painted them to face the viewer directly, no matter the angle.",
+      "craftBody": "Masakazu Fukuda packed the upper-left quadrant with dense multicolored star clusters on a near-black field.|The holo treatment makes each pinpoint shift in the light, which is part of what collectors are actually paying for.",
       "craftZoom": {
         "zw": 4248,
-        "zx": -1669,
+        "zx": -734,
         "zy": -823
       },
       "sceneKicker": "THE SCENE",
-      "sceneHeadline": "MEWTWO STAR IN THE COSMOS",
-      "sceneBody": "The gold-star holo Mewtwo hovers weightless against a galaxy backdrop. One of only a handful of copies graded PSA 10 in existence.",
+      "sceneHeadline": "Mewtwo Star. One Per Deck.",
+      "sceneBody": "Mewtwo hovers mid-frame against a deep-space background of scattered light clusters.|The gold star stamp beside its name confirms the rarity that drives a $7,100 price tag.",
       "sceneZoom": {
         "zw": 2242,
         "zx": -581,
-        "zy": -582
+        "zy": -520
       },
       "oddsBody": "Rip a sealed booster and|the odds are 214 to 1.",
       "caption": "Mewtwo Star from EX Holon Phantoms is worth $7,100. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com",
@@ -120,8 +120,7 @@
       }
     ],
     "qa_warnings": [
-      "slide 1: Cover headline compares card price to 'a luxury watch' which could easily cost more than $7,100 (e.g. Rolex, Patek Philippe), violating the standing rule that comparisons must be to something clearly cheaper than the card",
-      "slide 3: Artist description claims Fukuda painted Mewtwo's eyes 'to face the viewer directly, no matter the angle' — this is an unverifiable creative claim that reads as fabricated fact, which is off-brand for a data-credibility tool"
+      "slide 3: Body copy is cut off mid-sentence, ending with 'which is part' — the sentence is incomplete and the rest of the text is missing from the frame"
     ]
   },
   "ctx": {
@@ -144,28 +143,28 @@
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "vision": {
         "subject": "Mewtwo Star floating in a cosmic starfield, arms outstretched",
-        "hidden": "Faint nebula clusters and starburst glints scattered across the deep-space background",
+        "hidden": "",
         "sceneCenterX": 0.5,
-        "sceneCenterY": 0.34,
+        "sceneCenterY": 0.32,
         "sceneFactor": 1.9,
-        "sceneHeadline": "MEWTWO STAR IN THE COSMOS",
-        "sceneBody": "The gold-star holo Mewtwo hovers weightless against a galaxy backdrop | one of only a handful of copies graded PSA 10 in existence.",
-        "craftCenterX": 0.52,
+        "sceneHeadline": "Mewtwo Star. One Per Deck.",
+        "sceneBody": "Mewtwo hovers mid-frame against a deep-space background of scattered light clusters. | The gold star stamp beside its name confirms the rarity that drives a $7,100 price tag.",
+        "craftCenterX": 0.3,
         "craftCenterY": 0.22,
         "craftFactor": 3.6,
-        "craftHeadline": "THE EYES OF A LEGEND",
-        "craftBody": "Mewtwo's pale pink eyes catch the starfield light with an unsettling calm | Masakazu Fukuda painted them to face the viewer directly, no matter the angle.",
-        "compare": "a luxury mechanical watch",
-        "compareUsd": 2500,
+        "craftHeadline": "Cosmic Starfield Detail",
+        "craftBody": "Masakazu Fukuda packed the upper-left quadrant with dense multicolored star clusters on a near-black field. | The holo treatment makes each pinpoint shift in the light, which is part of what collectors are actually paying for.",
+        "compare": "a Rolex Oyster Perpetual",
+        "compareUsd": 6000,
         "craftZoom": {
           "zw": 4248,
-          "zx": -1669,
+          "zx": -734,
           "zy": -823
         },
         "sceneZoom": {
           "zw": 2242,
           "zx": -581,
-          "zy": -582
+          "zy": -520
         }
       }
     },
