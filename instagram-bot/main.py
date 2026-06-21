@@ -1809,13 +1809,17 @@ def self_review_brief(api_key, theme, facts, brief):
         "VERIFIED FACTS — every number/name in the copy must match these EXACTLY:\n"
         + json.dumps(facts_view, ensure_ascii=False) + "\n\n"
         + _QA_CHECKLIST + "\n"
-        "Return ONLY a JSON object: the keys you must CHANGE to fix EVERY issue, with their "
-        "corrected values (same keys/shape as the input copy). Return {} if it already passes. "
+        "Output MUST be raw JSON and NOTHING else — no prose, no code fence. Give an object with "
+        "ONLY the keys you must CHANGE to fix EVERY issue, corrected values, same keys/shape as the "
+        "input copy. If the post already passes, output exactly: {}\n"
         "Change as few keys as possible; never alter a correct price/number/name. No em-dashes."
     )
     try:
         patch = claude_json(api_key, prompt, system=voice())
-    except Exception as exc:  # noqa: BLE001 — QA must never break a post
+    except ValueError:  # not JSON (the reviewer answered prose/empty) = nothing to change
+        log("  self-review (copy): post already clean ✓")
+        return brief
+    except Exception as exc:  # noqa: BLE001 — real API error; QA must never break a post
         log(f"  self-review (copy) skipped ({exc})")
         return brief
     if not isinstance(patch, dict) or not patch:

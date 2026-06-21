@@ -826,7 +826,7 @@ function grailZoom(opts: { image: string; setLabel: string; logo: string | null;
           <Wordmark size={28} />
           <SetLogo logo={opts.logo} label={opts.setLabel} />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", background: "rgba(8,11,17,0.62)", borderRadius: 32, padding: "28px 46px" }}>
           <div style={{ display: "flex", fontSize: 20, letterSpacing: 6, color: "#9aa3b5" }}>{opts.kicker}</div>
           <div style={{ display: "flex", flexDirection: "column", marginTop: 14, alignItems: "center" }}>
             {lines.map((ln, i) => (
