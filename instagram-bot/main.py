@@ -1591,7 +1591,7 @@ def slides_grails(base, facts, brief, hd_image=None):
                   f"&zw={sz['zw']}&zx={sz['zx']}&zy={sz['zy']}&foot={q('and how rare? →')}")
 
     odds_n = facts.get("odds_n")
-    booster = _png(facts.get("booster"))  # tcgdex serves .webp; Satori needs .png
+    booster = _png(facts.get("booster_hd") or facts.get("booster"))  # AI-upscaled if available; .webp→.png
     odds = f"{H}?slide=grail-odds&set={q(set_name)}{logop}"
     if booster:
         odds += "".join(f"&b{i}={q(booster)}" for i in range(5))
@@ -1739,6 +1739,9 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
         facts["artist"] = grail_artist(facts["card_id"])
         facts["hd_image"] = upscale_card(facts["image"])  # HD source for grail-zoom
         log(f"  grail upscale {facts['name']}: {'HD ✓' if facts['hd_image'] else 'native (no token/failed)'}")
+        if facts.get("booster"):  # AI-upscale the booster pack too (THE ODDS slide art)
+            facts["booster_hd"] = upscale_card(facts["booster"])
+            log(f"  booster upscale: {'HD ✓' if facts.get('booster_hd') else 'native (no token/failed)'}")
         facts["vision"] = grail_vision_research(api_key, facts)
         facts["crops"] = compute_grail_crops(facts["image"])  # saliency-based framing
         return {"theme": theme, "base": base, "facts": facts, "verify": [rec],
