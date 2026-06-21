@@ -1493,11 +1493,12 @@ def compute_grail_crops(image_url):
                     log(f"  grail subject: cx={cx:.2f} top={top:.2f} w={sw:.2f} h={sh:.2f}")
     except Exception as exc:  # noqa: BLE001 — never fail a post over crop detection
         log(f"  grail crop detection failed ({exc}); using deterministic crop")
-    # SCENE — frame the subject's full vertical extent inside the art band (head to body),
-    # bottom clamped above the text boxes so nothing printed bleeds in.
-    scene = _band_crop(cx, top - 0.03, top + sh + 0.03)
-    # CRAFT — tight on the upper detail (face / head ~ top half of the subject).
-    craft = _band_crop(cx, max(0.05, top - 0.01), top + sh * 0.52)
+    # SCENE — show MORE of the art (zoomed out a touch, owner: "le zoom est un peu trop gros"):
+    # extend the band up toward the top of the art window so the subject breathes. Bottom still
+    # hard-capped above the text boxes.
+    scene = _band_crop(cx, top - 0.08, top + sh + 0.05)
+    # CRAFT — the upper detail (face / head), also a touch wider than before.
+    craft = _band_crop(cx, max(0.08, top - 0.03), top + sh * 0.66)
     return {"scene": scene, "craft": craft}
 
 
