@@ -8,8 +8,8 @@
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46857615d2be49895495cbf0e8131a11.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7fac0fdf95915dbb9be88cc745f57886.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/2511656c01835df6606791a23b6e0831.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/c1a8bc93ca24354cc71546f63ca85069.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/78ca636fe204f8a518efc4321b8e1ee1.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/3bf4d600125d7f74345ad1bb1ca24a66.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7bd92286a2ac321813651002ab61b24b.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -55,19 +55,19 @@
       "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A bright white nebula bloom sits in the upper-left corner, surrounded by scattered red, blue, and green star flecks. | The holographic foil treatment makes these light points shift with every tilt.",
+      "craftBody": "A nebula-like burst of white and multicolor light anchors the upper-left. The holo treatment makes star points shift with the card's angle.",
       "craftZoom": {
         "zw": 4248,
-        "zx": -1329,
-        "zy": -982
+        "zx": -1294,
+        "zy": -661
       },
       "sceneKicker": "THE SCENE",
       "sceneHeadline": "Mewtwo Star, Full Presence",
-      "sceneBody": "Mewtwo hovers centered in a deep-space field, body luminous against scattered colored light. | The gold star symbol marks it as a 1-per-deck rarity.",
+      "sceneBody": "Mewtwo hovers against a deep-space backdrop. The gold star symbol above its name marks its 1-per-deck rarity.",
       "sceneZoom": {
-        "zw": 2520,
-        "zx": -569,
-        "zy": -512
+        "zw": 3094,
+        "zx": -796,
+        "zy": -634
       },
       "oddsBody": "Rip a sealed booster and|the odds are 214 to 1.",
       "caption": "Mewtwo Star from EX Holon Phantoms is worth $7,100. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com",
@@ -141,41 +141,41 @@
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/37967e8f7bd2c3c4f702db3c264ba3cf.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a cosmic starfield, arms outstretched",
+        "subject": "Mewtwo Star floating in a cosmic starfield, arms extended",
         "hidden": "",
         "sceneCenterX": 0.5,
-        "sceneCenterY": 0.33,
+        "sceneCenterY": 0.34,
         "sceneFactor": 1.9,
         "sceneHeadline": "Mewtwo Star, Full Presence",
-        "sceneBody": "Mewtwo hovers centered in a deep-space field, body luminous against scattered colored light. | The gold star symbol marks it as a 1-per-deck rarity.",
-        "craftCenterX": 0.28,
+        "sceneBody": "Mewtwo hovers against a deep-space backdrop of scattered light | the gold star symbol above its name marks its 1-per-deck rarity.",
+        "craftCenterX": 0.38,
         "craftCenterY": 0.22,
-        "craftFactor": 3.4,
-        "craftHeadline": "Cosmic Burst, Upper Left",
-        "craftBody": "A bright white nebula bloom sits in the upper-left corner, surrounded by scattered red, blue, and green star flecks. | The holographic foil treatment makes these light points shift with every tilt.",
-        "compare": "a premium mechanical watch",
-        "compareUsd": 1800,
+        "craftFactor": 3.6,
+        "craftHeadline": "The Cosmic Burst Detail",
+        "craftBody": "A bright nebula-like burst of white and multicolor light anchors the upper-left of the art | the holo treatment makes these scattered star points shift with the card's angle.",
+        "compare": "a high-end home espresso machine",
+        "compareUsd": 1200,
         "craftZoom": {
-          "zw": 4012,
-          "zx": -583,
-          "zy": -750
+          "zw": 4248,
+          "zx": -1074,
+          "zy": -823
         },
         "sceneZoom": {
           "zw": 2242,
           "zx": -581,
-          "zy": -551
+          "zy": -582
         }
       },
       "crops": {
         "scene": {
-          "zw": 2520,
-          "zx": -569,
-          "zy": -512
+          "zw": 3094,
+          "zx": -796,
+          "zy": -634
         },
         "craft": {
           "zw": 4248,
-          "zx": -1329,
-          "zy": -982
+          "zx": -1294,
+          "zy": -661
         }
       }
     },
