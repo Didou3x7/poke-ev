@@ -115,8 +115,13 @@ const Frame = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const Wordmark = ({ size = 34 }: { size?: number }) => (
-  <div style={{ display: "flex", alignItems: "baseline", fontFamily: "Clash", fontSize: size, letterSpacing: -1 }}>
+// LOCKED: the PokéEV wordmark is the SAME size on EVERY slide (owner requirement). The
+// per-slide `size` prop is intentionally ignored so no slide can drift. Paired with the
+// fixed-height SetLogo (top-right) + the shared padding:72 headers, both logos are identical
+// in size AND position across all slides/themes.
+const WORDMARK_SIZE = 34;
+const Wordmark = (_props: { size?: number }) => (
+  <div style={{ display: "flex", alignItems: "baseline", fontFamily: "Clash", fontSize: WORDMARK_SIZE, letterSpacing: -1 }}>
     <span style={{ color: "#E8ECF4" }}>Poké</span>
     <span style={{ backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>EV</span>
   </div>
