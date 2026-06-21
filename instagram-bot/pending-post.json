@@ -7,9 +7,9 @@
     "theme": "grails",
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46857615d2be49895495cbf0e8131a11.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/e60eb40fa961d8c2b3b5ff18779f4101.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/22f3ef2cb3c656b13cea71a56fa35291.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/9d3d255066e3f6db7ee1f51b7638378d.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7fac0fdf95915dbb9be88cc745f57886.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/378e633ca33a383f0672529a423a0d2b.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/a924047518624421f4e5ae6f1f0bb1c8.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7bd92286a2ac321813651002ab61b24b.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -52,18 +52,18 @@
       "compare": null,
       "cardKicker": "THE CARD",
       "cardHeadline": "Mewtwo Star",
-      "cardBody": "EX Holon Phantoms crown jewel.|The card the whole set chases.",
+      "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A bright white light bloom anchors the upper-left corner, with scattered red, blue, and gold star points.|The holographic foil amplifies each color fleck as the card moves.",
+      "craftBody": "A dense white starburst erupts upper-left.|Colored light points radiate through deep space.",
       "craftZoom": {
-        "zw": 3459,
-        "zx": -498,
-        "zy": -482
+        "zw": 3026,
+        "zx": -368,
+        "zy": -422
       },
       "sceneKicker": "THE SCENE",
       "sceneHeadline": "Mewtwo adrift in deep space",
-      "sceneBody": "Shiny Mewtwo hovers weightless against a dense field of colored stars.|Its pale blue-grey body glows softly against a dark cosmic backdrop.",
+      "sceneBody": "The silver-blue legendary hovers weightless|against a star-filled cosmos.|Its tail coils loosely, body calm in the dark.",
       "sceneZoom": {
         "zw": 2690,
         "zx": -621,
@@ -141,24 +141,24 @@
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/37967e8f7bd2c3c4f702db3c264ba3cf.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a cosmic starfield",
+        "subject": "Mewtwo Star floating in a glittering cosmic void",
         "hidden": "",
         "sceneCenterX": 0.5,
         "sceneCenterY": 0.33,
         "sceneFactor": 1.9,
         "sceneHeadline": "Mewtwo adrift in deep space",
-        "sceneBody": "The rare Shiny Mewtwo hovers weightless against a dense field of colored stars | its pale blue-grey body glows softly against the dark cosmic backdrop",
+        "sceneBody": "The silver-blue legendary hovers weightless against a star-filled cosmos | its tail coils loosely beneath it, body open and calm amid the darkness",
         "craftCenterX": 0.3,
-        "craftCenterY": 0.22,
-        "craftFactor": 3.4,
-        "craftHeadline": "Starburst cluster, upper left",
-        "craftBody": "A bright white light bloom anchors the upper-left corner, surrounded by scattered red, blue, and gold star points | the holographic foil beneath amplifies each color fleck as the card moves",
+        "craftCenterY": 0.26,
+        "craftFactor": 3.6,
+        "craftHeadline": "Starburst flare in the cosmos",
+        "craftBody": "A dense white starburst erupts in the upper-left quadrant of the illustration | scattered colored light points radiate outward through the deep-space background",
         "compare": "a high-end home espresso machine",
         "compareUsd": 1200,
         "craftZoom": {
-          "zw": 4012,
-          "zx": -664,
-          "zy": -750
+          "zw": 4248,
+          "zx": -734,
+          "zy": -1060
         },
         "sceneZoom": {
           "zw": 2242,
