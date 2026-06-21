@@ -886,17 +886,14 @@ function grailOdds(opts: { boosters: string[]; setLabel: string; logo: string | 
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         {opts.kicker ? <div style={{ display: "flex", fontSize: 21, letterSpacing: 6, color: "#7c8499" }}>{opts.kicker}</div> : null}
         {opts.boosters.length > 0 ? (
-        <div style={{ display: "flex", position: "relative", width: 860, height: 568, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
-          {opts.boosters.map((src, i) => {
-            const n = opts.boosters.length || 1;
-            const t = i - (n - 1) / 2;
-            const bw = 286;
-            const bh = Math.round(bw * 1.81);
-            const rot = Math.round(t * 125) / 10;
-            const left = Math.round(430 - bw / 2 + t * 126);
-            const top = Math.round(8 + Math.abs(t) * 30);
+        // PREMIUM flat lineup: 3 upright packs, evenly spaced, soft subtle shadow. NO rotation /
+        // fan / heavy drop-shadow (that read as a cheap 3D fan).
+        <div style={{ display: "flex", width: 940, height: 560, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
+          {opts.boosters.slice(0, 3).map((src, i) => {
+            const bw = 280;
+            const bh = Math.round(bw * 1.86);
             return (
-              <img key={i} src={src} width={bw} height={bh} style={{ position: "absolute", left, top, display: "flex", objectFit: "contain", transform: `rotate(${rot}deg)`, boxShadow: "0 26px 60px -22px rgba(0,0,0,0.9)" }} />
+              <img key={i} src={src} width={bw} height={bh} style={{ display: "flex", objectFit: "contain", margin: "0 14px", boxShadow: "0 20px 46px -26px rgba(0,0,0,0.55)" }} />
             );
           })}
         </div>
