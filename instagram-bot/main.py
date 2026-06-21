@@ -963,36 +963,59 @@ def _no_dash(s):
 
 
 def _wrap_clauses(text, width=56):
-    """Re-flow body copy so NO single line overflows the slide. The renderer draws each
-    '|'-separated clause on its own line with no auto-wrap. width=56 because at body size 27
-    the caption panel fits ~62 chars — so a normal phrase stays WHOLE on one line (each
-    phrase starts AND ends on the same line, owner's rule); only a genuinely long clause is
-    wrapped. Widow guard: never leave a lone last word — rebalance so the final line keeps
-    >=2 words. Preserves the art-director's intentional '|' breaks."""
+    """Re-flow body copy so each SENTENCE reads cleanly on the slide. The renderer draws
+    every '|'-separated piece on its own line with no auto-wrap, so this function decides
+    the line breaks. Owner's rule: a phrase must start AND end on the same line — no word
+    left orphaned on a line by itself.
+
+    Strategy:
+      1. Split on the art-director's explicit '|' breaks, THEN on sentence boundaries, so a
+         line never straddles two sentences and a period never leads a line ("starfield."
+         dangling at the front of a line was the ugly case).
+      2. A sentence that fits in `width` stays whole on one line.
+      3. A longer sentence is BALANCED (not greedy): we keep the minimum line count but
+         even out the lines, which also guarantees no lone trailing word ("cosmos" alone)."""
     if not text:
         return text
-    out = []
-    for clause in str(text).split("|"):
-        words = clause.split()
-        if not words:
-            continue
-        lines = []
-        line = ""
+
+    def _greedy(words, maxw):
+        lines, line = [], ""
         for w in words:
-            if line and len(line) + 1 + len(w) > width:
+            if line and len(line) + 1 + len(w) > maxw:
                 lines.append(line)
                 line = w
             else:
                 line = f"{line} {w}".strip()
         if line:
             lines.append(line)
-        # widow guard: a lone word on the final line reads as an orphan — pull the
-        # previous line's last word down so the tail line keeps at least two words.
-        if len(lines) >= 2 and len(lines[-1].split()) == 1 and len(lines[-2].split()) >= 2:
-            prev = lines[-2].split()
-            lines[-2] = " ".join(prev[:-1])
-            lines[-1] = f"{prev[-1]} {lines[-1]}"
-        out.extend(lines)
+        return lines
+
+    def _balanced(words):
+        if not words:
+            return []
+        full = _greedy(words, width)
+        if len(full) <= 1:
+            return full
+        # shrink the working width as far as possible while keeping the same line count:
+        # this pulls words leftward so the lines even out and the last line is never a widow.
+        longest = max(len(w) for w in words)
+        lo, hi, best = longest, width, full
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            cand = _greedy(words, mid)
+            if len(cand) <= len(full):
+                best = cand
+                hi = mid - 1
+            else:
+                lo = mid + 1
+        return best
+
+    out = []
+    for part in str(text).split("|"):
+        for sentence in re.split(r"(?<=[.!?])\s+", part.strip()):
+            sentence = sentence.strip()
+            if sentence:
+                out.extend(_balanced(sentence.split()))
     return "|".join(out)
 
 
