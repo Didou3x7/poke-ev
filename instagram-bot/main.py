@@ -1694,8 +1694,12 @@ def grail_vision_research(api_key, facts):
         '  "sceneCenterX": 0..1 horizontal center of the SUBJECT focal point.\n'
         '  "sceneCenterY": 0.13..0.53 vertical center of the SUBJECT focal point.\n'
         '  "sceneFactor": 1.6..2.4 zoom for the SCENE.\n'
-        '  "sceneHeadline": <= 40 char title for the SCENE slide (must match the crop shown).\n'
-        '  "sceneBody": <= 120 chars, two clauses split by |, about the subject/scene shown.\n'
+        '  "sceneHeadline": <= 40 char title that plainly DESCRIBES what is depicted in the scene '
+        '(the Pokemon + its setting), e.g. "Mewtwo adrift in deep space". It must be self-'
+        'explanatory — NEVER a gameplay/deck rule or an obscure TCG fact that needs explaining '
+        '(e.g. NOT "one allowed per deck").\n'
+        '  "sceneBody": <= 120 chars, two clauses split by |, plainly describing the subject/scene '
+        'shown (what it is, the mood/setting). No gameplay rules, no jargon that needs explaining.\n'
         '  "craftCenterX": 0..1 horizontal center of the CRAFT detail.\n'
         '  "craftCenterY": 0.13..0.53 vertical center of the CRAFT detail.\n'
         '  "craftFactor": 2.6..4.2 zoom for the CRAFT detail (tighter than the scene).\n'
@@ -1914,6 +1918,9 @@ _QA_CHECKLIST = (
     "you cannot be certain it is cheaper, set shockHeadline to exactly: Worth more than|most people guess\n"
     "- Any FABRICATED or unverifiable claim about the art/card (e.g. eyes that 'follow you at any "
     "angle', a made-up PSA-10 population, invented lore). Describe ONLY what is visibly true.\n"
+    "- Any headline/line that is CONFUSING or needs TCG-rules knowledge to understand, or reads as "
+    "an obscure fact out of context (e.g. 'one allowed per deck'). Every line must be self-"
+    "explanatory to a casual viewer; the SCENE title must plainly describe what the art shows.\n"
     "- The cover eyebrow repeats the slide's big title (e.g. duplicates 'rip or keep').\n"
     "- Any price, set name, card name or count that does NOT match the VERIFIED FACTS.\n"
     "- A single '|' clause in body copy so long it would not fit one line (keep each clause "
