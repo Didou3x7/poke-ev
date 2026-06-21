@@ -1558,8 +1558,10 @@ def slides_grails(base, facts, brief, hd_image=None):
     set_name = facts["set_name"]
     logo = _png(facts["logo"])
     logop = f"&logo={q(logo)}" if logo else ""
-    img = _png(facts["image"])
-    zoom_img = hd_image or img  # hd_image is a Blob PNG upscale; img is now PNG too
+    # Use the AI-upscaled (x8) card EVERYWHERE it's shown (shock + story + zooms), not just
+    # the zooms — so the full card is razor-sharp on every grail slide, not only the crops.
+    img = _png(hd_image or facts["image"])
+    zoom_img = hd_image or img
     price = fmt_usd(facts["usd"])
     artist = facts.get("artist")
 
