@@ -7,10 +7,10 @@
     "theme": "grails",
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46857615d2be49895495cbf0e8131a11.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7fac0fdf95915dbb9be88cc745f57886.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/378e633ca33a383f0672529a423a0d2b.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/a924047518624421f4e5ae6f1f0bb1c8.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7bd92286a2ac321813651002ab61b24b.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/d241f53a116e24abe21935f437c50a8d.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/d6cb8d154ae1b1f12c6bd06f420f132a.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/d80e53e818cbc23689fdb3b8b3840d80.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/cc695be9f9172bcbb69a7e82b2db943f.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
     "caption": "Mewtwo Star from EX Holon Phantoms is worth $7,100. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #mewtwostar #exholonphantoms #goldstar #masakazufukuda #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pokemonsealed",
@@ -52,24 +52,24 @@
       "compare": null,
       "cardKicker": "THE CARD",
       "cardHeadline": "Mewtwo Star",
-      "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
+      "cardBody": "EX Holon Phantoms crown jewel. The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A dense white starburst erupts upper-left.|Colored light points radiate through deep space.",
+      "craftBody": "Multicolored light dots radiate outward | holographic foil shifts each point as the card moves",
       "craftZoom": {
-        "zw": 3026,
-        "zx": -368,
-        "zy": -422
+        "zw": 3124,
+        "zx": -397,
+        "zy": -436
       },
       "sceneKicker": "THE SCENE",
       "sceneHeadline": "Mewtwo adrift in deep space",
-      "sceneBody": "The silver-blue legendary hovers weightless|against a star-filled cosmos.|Its tail coils loosely, body calm in the dark.",
+      "sceneBody": "Mewtwo hovers against a star-scattered black cosmos | its pale blue-grey form glows softly",
       "sceneZoom": {
         "zw": 2690,
         "zx": -621,
         "zy": -375
       },
-      "oddsBody": "Rip a sealed booster and|the odds are 214 to 1.",
+      "oddsBody": "Rip a sealed booster.|The odds are 214 to 1.",
       "caption": "Mewtwo Star from EX Holon Phantoms is worth $7,100. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com",
       "hashtags": [
         "#pokemongrails",
@@ -147,18 +147,18 @@
         "sceneCenterY": 0.33,
         "sceneFactor": 1.9,
         "sceneHeadline": "Mewtwo adrift in deep space",
-        "sceneBody": "The silver-blue legendary hovers weightless against a star-filled cosmos | its tail coils loosely beneath it, body open and calm amid the darkness",
+        "sceneBody": "Mewtwo Star hovers weightless against a star-scattered black cosmos | its pale blue-grey form glows softly against the scattered light",
         "craftCenterX": 0.3,
-        "craftCenterY": 0.26,
-        "craftFactor": 3.6,
-        "craftHeadline": "Starburst flare in the cosmos",
-        "craftBody": "A dense white starburst erupts in the upper-left quadrant of the illustration | scattered colored light points radiate outward through the deep-space background",
+        "craftCenterY": 0.25,
+        "craftFactor": 3.4,
+        "craftHeadline": "Starburst nebula cluster, upper left",
+        "craftBody": "A dense burst of multicolored light dots radiates outward in the upper-left field | the holographic foil makes each point shift color as the card moves",
         "compare": "a high-end home espresso machine",
         "compareUsd": 1200,
         "craftZoom": {
-          "zw": 4248,
-          "zx": -734,
-          "zy": -1060
+          "zw": 4012,
+          "zx": -664,
+          "zy": -918
         },
         "sceneZoom": {
           "zw": 2242,
