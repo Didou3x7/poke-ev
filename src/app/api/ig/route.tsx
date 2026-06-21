@@ -836,7 +836,7 @@ function grailStory(opts: { image: string; setLabel: string; logo: string | null
         <div style={{ display: "flex", fontSize: 20, letterSpacing: 6, color: "#7c8499" }}>{opts.kicker}</div>
         <div style={{ display: "flex", flexDirection: "column", marginTop: 14, alignItems: "center" }}>
           {lines.map((ln, i) => (
-            <div key={i} style={{ display: "flex" }}><HoloText size={hsize}>{ln}</HoloText></div>
+            <div key={i} style={{ display: "flex" }}><HoloText size={hsize} ls={0}>{ln}</HoloText></div>
           ))}
         </div>
         <div style={{ display: "flex", marginTop: 24 }}><MultiLine text={opts.body} size={27} color="#aab2c5" lh={1.45} /></div>
@@ -868,7 +868,7 @@ function grailZoom(opts: { image: string; setLabel: string; logo: string | null;
           <div style={{ display: "flex", fontSize: 20, letterSpacing: 6, color: "#9aa3b5" }}>{opts.kicker}</div>
           <div style={{ display: "flex", flexDirection: "column", marginTop: 14, alignItems: "center" }}>
             {lines.map((ln, i) => (
-              <div key={i} style={{ display: "flex" }}><HoloText size={hsize}>{ln}</HoloText></div>
+              <div key={i} style={{ display: "flex" }}><HoloText size={hsize} ls={0}>{ln}</HoloText></div>
             ))}
           </div>
           <div style={{ display: "flex", marginTop: 22 }}><MultiLine text={opts.body} size={27} color="#c6cdda" lh={1.45} /></div>
