@@ -215,9 +215,9 @@ def _download_bytes(url, timeout=90, tries=3):
 
 
 def upscale_card(image_url):
-    """Free AI super-resolution (OpenCV LapSRN x4): the 600px scan → ~2400px,
-    hosted on Vercel Blob so /api/ig can render it razor-sharp. Returns the HD
-    url, or None (graceful) without BLOB_READ_WRITE_TOKEN or on failure."""
+    """Free AI super-resolution (OpenCV LapSRN x8): the ~734px scan → 8x then capped to
+    4096px wide, hosted on Vercel Blob so /api/ig renders the full-bleed zoom razor-sharp.
+    Returns the HD url, or None (graceful) without BLOB_READ_WRITE_TOKEN or on failure."""
     if not os.environ.get("BLOB_READ_WRITE_TOKEN") or not image_url:
         return None
     here = Path(__file__).parent
@@ -236,9 +236,16 @@ def upscale_card(image_url):
         if arr is None:
             return None
         sr = cv2.dnn_superres.DnnSuperResImpl_create()
-        sr.readModel(str(here / "models" / "LapSRN_x4.pb"))
-        sr.setModel("lapsrn", 4)
+        sr.readModel(str(here / "models" / "LapSRN_x8.pb"))
+        sr.setModel("lapsrn", 8)
         out = sr.upsample(arr)
+        # 8x of a ~734px scan is ~5872px wide. Downscale the WIDTH to <= 4096 (renderer-safe;
+        # still ~40% more zoom resolution than the old 4x) while keeping the 8x supersampled
+        # crispness for the full-bleed grail zoom.
+        MAXW = 4096
+        h, w = out.shape[:2]
+        if w > MAXW:
+            out = cv2.resize(out, (MAXW, int(round(h * MAXW / w))), interpolation=cv2.INTER_AREA)
         fd, tmp = tempfile.mkstemp(suffix=".png")
         os.close(fd)
         cv2.imwrite(tmp, out)
@@ -1529,7 +1536,8 @@ def slides_grails(base, facts, brief, hd_image=None):
         odds += f"&statA={q('1')}&statB={q(f'{odds_n:,}')}&statSub={q('PACKS TO PULL THIS CARD')}"
     else:
         odds += f"&statA={q('1')}&statB={q('???')}&statSub={q('THE RAREST TIER IN THE SET')}"
-    odds += (f"&kicker={q('THE ODDS')}&body={q(_wrap_clauses(brief.get('oddsBody') or ''))}"
+    # No "THE ODDS" kicker (owner) — the statSub ("PACKS TO PULL THIS CARD") already labels it.
+    odds += (f"&body={q(_wrap_clauses(brief.get('oddsBody') or ''))}"
              f"&foot={q('so… is it worth it? →')}")
 
     body = "pokeev.com runs the live Expected Value.|Know if any set is worth ripping."
@@ -1574,26 +1582,31 @@ def grail_vision_research(api_key, facts):
         f"This is the Pokemon TCG card \"{facts['name']}\" from {facts['set_name']}, worth {price}. "
         "Study the ARTWORK. The card is portrait (height/width ~1.394). The top ~13% is the title "
         "bar and below ~53% are attack-text boxes; the pure illustration sits in the middle band.\n"
-        "I will render TWO close-up zoom slides on the art, so I need TWO DISTINCT crops of "
-        "DIFFERENT regions (they must not overlap much):\n"
-        "  CRAFT crop = an interesting fine detail, brushwork/texture, or a secondary element "
-        "(off-centre is good, more zoomed-in).\n"
-        "  SCENE crop = the main subject/character, framed and centred (less zoomed-in).\n"
-        "Both crop centers MUST stay inside the pure-art band (vertical 0.13..0.53) to avoid the "
-        "title bar and attack-text boxes.\n"
+        "I will render TWO full-bleed close-up zoom slides on this art, so give me TWO well-"
+        "COMPOSED crops of DIFFERENT regions. Coordinates are fractions of the FULL card image "
+        "(x: 0=left, 1=right; y: 0=top, 1=bottom). Keep BOTH centers in the art band y 0.13..0.53 "
+        "(above the title bar, above the attack-text boxes). factor = zoom tightness: ~1.6 shows "
+        "most of the art, ~4 is a very tight close-up.\n"
+        "  SCENE crop = the MAIN subject. Center EXACTLY on its visual focal point (for a creature: "
+        "its head / face / eyes). Frame so the subject sits centered with a little breathing room and "
+        "nothing key is cut off. Wider crop (factor 1.6..2.4).\n"
+        "  CRAFT crop = ONE specific, visually-rich DETAIL (an eye, an energy/flame effect, a "
+        "background element, texture/brushwork) in a DIFFERENT spot than the scene center. Center "
+        "TIGHTLY on that exact detail (factor 2.6..4.2). Your craftHeadline + craftBody MUST describe "
+        "THIS exact detail, so the caption matches what is shown.\n"
         "Return ONLY a JSON object with keys:\n"
         '  "subject": one short line naming what is depicted (the Pokemon, the scene).\n'
         '  "hidden": one short line on a hidden detail or another Pokemon in the art, or "" if none.\n'
+        '  "sceneCenterX": 0..1 horizontal center of the SUBJECT focal point.\n'
+        '  "sceneCenterY": 0.13..0.53 vertical center of the SUBJECT focal point.\n'
+        '  "sceneFactor": 1.6..2.4 zoom for the SCENE.\n'
+        '  "sceneHeadline": <= 40 char title for the SCENE slide (must match the crop shown).\n'
+        '  "sceneBody": <= 120 chars, two clauses split by |, about the subject/scene shown.\n'
         '  "craftCenterX": 0..1 horizontal center of the CRAFT detail.\n'
         '  "craftCenterY": 0.13..0.53 vertical center of the CRAFT detail.\n'
-        '  "craftFactor": 2.2..4 how tight to crop the CRAFT detail (tighter than the scene).\n'
-        '  "craftHeadline": <= 40 char title for the CRAFT/ARTIST zoom slide.\n'
-        '  "craftBody": <= 140 chars, two clauses split by |, about the craft/detail.\n'
-        '  "sceneCenterX": 0..1 horizontal center of the main SUBJECT.\n'
-        '  "sceneCenterY": 0.13..0.53 vertical center of the main SUBJECT.\n'
-        '  "sceneFactor": 1.6..2.6 how tight to crop the SCENE (wider than the craft).\n'
-        '  "sceneHeadline": <= 40 char title for the SCENE zoom slide.\n'
-        '  "sceneBody": <= 140 chars, two clauses split by |, about the subject/scene.\n'
+        '  "craftFactor": 2.6..4.2 zoom for the CRAFT detail (tighter than the scene).\n'
+        '  "craftHeadline": <= 40 char title naming the CRAFT detail shown.\n'
+        '  "craftBody": <= 120 chars, two clauses split by |, about that exact detail.\n'
         f'  "compare": a single tasteful CONSUMER GOOD you are CERTAIN costs well under {price}, as a short '
         'phrase (e.g. "a high-end gaming PC", "a designer handbag"). NEVER a car/vehicle, a house/apartment, '
         f'rent, a mortgage or a salary, and NEVER anything that could cost MORE than {price}. Use null if unsure.\n'
@@ -1606,7 +1619,7 @@ def grail_vision_research(api_key, facts):
     except Exception as exc:  # noqa: BLE001
         log(f"  T3 vision research failed ({exc})")
         return None
-    v["craftZoom"] = grail_zoom_from_vision(v.get("craftCenterX", 0.34), v.get("craftCenterY", 0.20), v.get("craftFactor", 3.0))
+    v["craftZoom"] = grail_zoom_from_vision(v.get("craftCenterX", 0.40), v.get("craftCenterY", 0.24), v.get("craftFactor", 3.2))
     v["sceneZoom"] = grail_zoom_from_vision(v.get("sceneCenterX", 0.50), v.get("sceneCenterY", 0.30), v.get("sceneFactor", 2.0))
     return v
 
