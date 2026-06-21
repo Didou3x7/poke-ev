@@ -22,7 +22,7 @@ on:
         description: 'Manual run mode (test the preview or publish phase on demand)'
         type: choice
         default: scheduled
-        options: [scheduled, prepare, poll, ack, publish-pending, run, diagnose]
+        options: [scheduled, prepare, poll, ack, publish-pending, run, diagnose, set-webhook, setup-webhook]
       set:
         description: 'Force a specific set for the RIP OR KEEP (T2) post, e.g. brilliant-stars (blank = auto)'
         type: string
@@ -37,6 +37,7 @@ concurrency:
 
 jobs:
   run:
+    if: github.event.inputs.mode != 'setup-webhook'
     runs-on: ubuntu-latest
     timeout-minutes: 60   # room for the Telegram approve/revise loop
     steps:
@@ -61,6 +62,7 @@ jobs:
           META_GRAPH_VERSION:    v21.0
           TELEGRAM_BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:      ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
           POKEEV_RK_SET:         ${{ github.event.inputs.set }}
           POKEEV_DATA_DIR:       ${{ github.workspace }}/data
           POKEEV_IMAGE_BASE_URL: https://pokeev.com
@@ -91,3 +93,56 @@ jobs:
               echo "push attempt $i raced — retrying"; sleep 5
             done
           fi
+
+  # One-off setup (run manually with mode=setup-webhook): copy the bot's GitHub secrets into
+  # the Vercel project env so the /api/tg webhook can read them, redeploy so they take effect,
+  # then register the Telegram webhook. After this, taps are handled INSTANTLY on Telegram.
+  setup-webhook:
+    if: github.event.inputs.mode == 'setup-webhook'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r instagram-bot/requirements.txt
+      - name: Copy secrets into Vercel env + redeploy
+        env:
+          VERCEL_TOKEN:            ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID:           ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID:       ${{ secrets.VERCEL_PROJECT_ID }}
+          TELEGRAM_BOT_TOKEN:      ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:        ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
+          META_ACCESS_TOKEN:       ${{ secrets.META_ACCESS_TOKEN }}
+          INSTAGRAM_BUSINESS_ID:   ${{ secrets.INSTAGRAM_BUSINESS_ID }}
+          BLOB_READ_WRITE_TOKEN:   ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          META_GRAPH_VERSION:      v21.0
+        run: |
+          npm i -g vercel@54.14.0
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          setenv() {
+            local name="$1"; local val="${!name}"
+            if [ -z "$val" ]; then echo "skip $name (empty)"; return; fi
+            vercel env rm "$name" production --yes --token="$VERCEL_TOKEN" >/dev/null 2>&1 || true
+            printf '%s' "$val" | vercel env add "$name" production --token="$VERCEL_TOKEN" >/dev/null
+            echo "set $name in Vercel env"
+          }
+          setenv TELEGRAM_BOT_TOKEN
+          setenv TELEGRAM_CHAT_ID
+          setenv TELEGRAM_WEBHOOK_SECRET
+          setenv META_ACCESS_TOKEN
+          setenv INSTAGRAM_BUSINESS_ID
+          setenv BLOB_READ_WRITE_TOKEN
+          setenv META_GRAPH_VERSION
+          echo "redeploying so the new runtime env vars are picked up..."
+          vercel build --prod --token="$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --archive=tgz --token="$VERCEL_TOKEN"
+      - name: Register Telegram webhook
+        working-directory: instagram-bot
+        env:
+          TELEGRAM_BOT_TOKEN:      ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
+          POKEEV_IMAGE_BASE_URL:   https://pokeev.com
+        run: python main.py set-webhook

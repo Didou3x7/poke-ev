@@ -2399,12 +2399,116 @@ def mark_pending_acked(pending, decision):
 
 def tg_offset_now(token):
     """update_id+1 of the latest queued update, so the publish tick reads only the
-    decisions the editor sends AFTER today's preview."""
+    decisions the editor sends AFTER today's preview. UNUSED under the webhook flow
+    (getUpdates is disabled once a webhook is set) — kept for the legacy `run` path."""
     try:
         seen = tg_api(token, "getUpdates", {"timeout": 0})
         return (seen[-1]["update_id"] + 1) if seen else 0
     except Exception:  # noqa: BLE001
         return 0
+
+
+# ---- shared approval state on Vercel Blob (mirror of src/lib/ig/state.ts) ------------- #
+# The Telegram WEBHOOK records the editor's decision the INSTANT they tap a button and the
+# bot reads it here. This replaces getUpdates polling (a webhook disables getUpdates), and
+# fixes the old bug where re-rendering a preview reset the update offset and dropped a tap.
+_BLOB_STATE_PATH = "ig-state/state.json"
+_BLOB_PLAN_PATH = "ig-state/plan.json"
+
+
+def _blob_state_node(args):
+    import subprocess
+
+    here = Path(__file__).parent
+    return subprocess.run(["node", str(here / "blob_state.mjs"), *args],
+                          capture_output=True, text=True, timeout=60, cwd=str(here))
+
+
+def set_webhook():
+    """Register the Telegram webhook so taps are pushed to /api/tg instantly (this disables
+    getUpdates — the bot now reads decisions from Blob, not polling). Idempotent."""
+    token = env("TELEGRAM_BOT_TOKEN", required=True)
+    secret = env("TELEGRAM_WEBHOOK_SECRET", required=True)
+    base = env("POKEEV_IMAGE_BASE_URL", "https://pokeev.com").rstrip("/")
+    url = f"{base}/api/tg"
+    res = tg_api(token, "setWebhook", {
+        "url": url,
+        "secret_token": secret,
+        "allowed_updates": ["callback_query", "message"],
+        "drop_pending_updates": True,
+    })
+    info = tg_api(token, "getWebhookInfo", {})
+    log(f"setWebhook -> {res}; now url={info.get('url')} pending={info.get('pending_update_count')}")
+    return info
+
+
+def blob_state_read():
+    """Today's shared approval state dict (written by the webhook), or None."""
+    try:
+        r = _blob_state_node(["get", _BLOB_STATE_PATH])
+        txt = (r.stdout or "").strip()
+        return json.loads(txt) if txt else None
+    except Exception as exc:  # noqa: BLE001
+        log(f"  blob state read failed ({exc})")
+        return None
+
+
+def _blob_put_json(pathname, obj):
+    import tempfile
+
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as f:
+            json.dump(obj, f, ensure_ascii=False)
+            tmp = f.name
+        r = _blob_state_node(["put", pathname, tmp])
+        if r.returncode != 0:
+            log(f"  blob put {pathname} failed: {(r.stderr or '')[:200]}")
+            return None
+        return (r.stdout or "").strip() or None
+    except Exception as exc:  # noqa: BLE001
+        log(f"  blob put {pathname} error ({exc})")
+        return None
+    finally:
+        if tmp:
+            Path(tmp).unlink(missing_ok=True)
+
+
+def blob_state_write(state):
+    return _blob_put_json(_BLOB_STATE_PATH, state)
+
+
+def blob_plan_write(plan):
+    """Publish-minimal plan so the webhook can publish directly in the evening."""
+    return _blob_put_json(_BLOB_PLAN_PATH, {
+        "date": plan["date"], "theme": plan["theme"],
+        "slides": plan_slides(plan), "caption": plan["caption"],
+    })
+
+
+def blob_state_fresh(prev):
+    today = datetime.now(timezone.utc).date().isoformat()
+    if prev and prev.get("date") == today:
+        return dict(prev)
+    return {"date": today, "decision": "none", "note": None, "seq": 0,
+            "published": False, "awaiting_revise": False,
+            "ts": datetime.now(timezone.utc).isoformat()}
+
+
+def reconcile_published(pending):
+    """If the WEBHOOK already published today's carousel (Blob state.published == True),
+    do the repo-side bookkeeping the webhook can't: record history (so theme rotation stays
+    correct) and clear the pending post. Idempotent. Returns True if it reconciled."""
+    if not pending:
+        return False
+    st = blob_state_read()
+    if not (st and st.get("published") and st.get("date") == pending.get("date")):
+        return False
+    if not already_posted_today(pending.get("theme", "")):
+        record_history(pending["plan"])
+        log("reconciled: webhook published — recorded history")
+    clear_pending()
+    return True
 
 
 def latest_decision(token, chat_id, offset):
@@ -2460,9 +2564,12 @@ def do_prepare():
     if not (tg_token and tg_chat):
         log("Telegram gate not configured — built the post but cannot preview/queue it.")
         return
-    offset = tg_offset_now(tg_token)
     tg_send_preview(tg_token, tg_chat, plan, buttons=True)
-    write_pending(plan, ctx, offset)
+    write_pending(plan, ctx, 0)
+    # Webhook flow: publish the plan + a fresh "none" decision to Blob. The webhook reads
+    # the plan to publish in the evening and writes the editor's decision back here.
+    blob_plan_write(plan)
+    blob_state_write(blob_state_fresh(None))
     # Early warning: probe the IG token NOW (morning) so a dead/expired token is flagged
     # with hours to fix it, instead of only surfacing as a failed publish at 20:00.
     warn = ""
@@ -2476,19 +2583,55 @@ def do_prepare():
     qa = ("\n\n🔎 Auto-reviewed before sending — flagged to fix:\n"
           + "\n".join(f"• {w}" for w in qwarn)) if qwarn else "\n\n🔎 Auto-reviewed before sending — looks clean."
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-           "text": "🕛 Today's preview is ready. Just tap a button below the preview:\n"
-                   "• ✅ Approve — I post the carousel at 20:00 Paris\n"
+           "text": "🕛 Today's preview is ready. Tap a button — it responds INSTANTLY now, "
+                   "everything is handled here in Telegram:\n"
+                   "• ✅ Approve — posts the carousel at 20:00 Paris (or right away if it's already evening)\n"
                    "• ✏️ Revise — I ask what to change, then rework it (and learn it for next time)\n"
                    "• 🚫 Skip — nothing today\n"
                    "(You can also just reply ok / skip / your changes.) Nothing posts without your ok." + qa + warn})
 
 
+def _maybe_rework(pending, st, tg_token, tg_chat):
+    """If Blob state carries a NEW revise note (seq beyond the last one we handled), rework
+    the post, re-preview WITH buttons, refresh the Blob plan, and reset the decision to none
+    so the editor re-approves the new version. Returns True if it reworked (caller stops)."""
+    if not (st and st.get("decision") == "revise" and st.get("note")):
+        return False
+    if st.get("seq", 0) <= pending.get("handled_seq", 0):
+        return False
+    note = st["note"]
+    append_style_note(note)  # learn: apply this correction to all future posts
+    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🔄 Reworking with your notes…"})
+    ctx = pending.get("ctx") or {}
+    ctx["api_key"] = env("ANTHROPIC_API_KEY")
+    plan = pending["plan"]
+    try:
+        plan = build_theme_plan(ctx, feedback=note, prior_brief=plan.get("brief"))
+    except Exception as exc:  # noqa: BLE001
+        log(f"revise rebuild failed ({exc}); keeping the previous plan")
+    try:
+        tg_send_preview(tg_token, tg_chat, plan, buttons=True)
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "🔄 Reworked — review the new version above and tap ✅ Approve "
+                       "(or ✏️ Revise again / 🚫 Skip)."})
+    except Exception as exc:  # noqa: BLE001
+        log(f"re-preview send failed ({exc})")
+    pending["plan"] = plan
+    pending["handled_seq"] = st.get("seq", 0)
+    pending.pop("acked", None)
+    _save_pending(pending)
+    blob_plan_write(plan)
+    blob_state_write({**st, "decision": "none", "note": None, "awaiting_revise": False,
+                      "published": False, "ts": datetime.now(timezone.utc).isoformat()})
+    log("reworked + re-previewed from blob revise note")
+    return True
+
+
 def do_publish_pending(final=True):
-    """Evening — publish today's pending post ONLY if approved (opt-in). A last-mile
-    revise rebuilds + re-previews + waits briefly for the final ✅. `final=False` (an
-    early evening tick) leaves the pending post in place when there's no decision yet,
-    so a later tick can still catch your approval; only the last tick of the window
-    gives up and clears."""
+    """Evening — publish today's pending post ONLY if approved. The decision is read from
+    shared Blob state (written instantly by the Telegram webhook), not getUpdates. A late
+    revise reworks + re-previews. `final=False` keeps the pending post for a later tick;
+    only the last tick of the window gives up and clears."""
     pending = read_pending()
     today = datetime.now(timezone.utc).date().isoformat()
     if not pending or pending.get("date") != today:
@@ -2499,53 +2642,23 @@ def do_publish_pending(final=True):
     if not (tg_token and tg_chat):
         log("Telegram not configured — cannot read approval; not posting.")
         return
+    # The webhook may have already published directly (evening approve) — just do the
+    # repo bookkeeping (history for rotation) and stop.
+    if reconcile_published(pending):
+        return
+    st = blob_state_read() or blob_state_fresh(None)
+    if _maybe_rework(pending, st, tg_token, tg_chat):
+        return
+    decision = st.get("decision", "none")
     plan = pending["plan"]
-    live, notes = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
-    acked = pending.get("acked")
-    # DURABLE APPROVAL. Once you've approved (recorded as `acked` by the afternoon ack, or
-    # seen live as "ok"), the post is GO. A casual message sent AFTER your OK must NEVER
-    # silently drop an approved post (the exact lost-post root cause: a later "did you
-    # publish?" was read as a revise and the approved carousel was abandoned). Only an
-    # explicit "skip" cancels an already-approved post.
-    if live == "skip":
-        decision = "skip"
-    elif live == "revise" and notes and acked != "approve":
-        decision = "revise"
-    elif live == "approve" or acked == "approve":
-        decision = "approve"
-    else:
-        decision = "none"
-
-    if decision == "revise" and notes:
-        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🔄 Reworking with your notes…"})
-        append_style_note(notes)  # learn: apply this correction to all future posts
-        ctx = pending.get("ctx") or {}
-        ctx["api_key"] = env("ANTHROPIC_API_KEY")
-        try:
-            plan = build_theme_plan(ctx, feedback=notes, prior_brief=plan.get("brief"))
-        except Exception as exc:  # noqa: BLE001
-            log(f"revise rebuild failed ({exc}); keeping the original plan")
-        tg_send_preview(tg_token, tg_chat, plan)
-        action, _ = tg_wait_decision(tg_token, tg_chat, timeout=int(env("REVISE_TIMEOUT", "1500") or "1500"))
-        if action != "approve":
-            tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Not approved — nothing posted today."})
-            clear_pending()
-            return
-        decision = "approve"
 
     if decision == "approve":
-        # Idempotency: never post twice. If history already logged today's theme (a
-        # re-triggered tick, or a manual run after a successful auto-publish), stop here.
-        if already_posted_today(plan["theme"]):
+        # Idempotency: never post twice (webhook may have published; or a re-triggered tick).
+        if st.get("published") or already_posted_today(plan["theme"]):
             log("already posted today — not publishing again")
-            tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-                   "text": "✅ Today's carousel is already published — nothing more to do."})
+            blob_state_write({**st, "published": True, "ts": datetime.now(timezone.utc).isoformat()})
             clear_pending()
             return
-        # Persist the approval DURABLY before publishing, so if the publish fails (e.g. the
-        # Meta app is blocked) the kept pending carries the approval and the next tick /
-        # manual retry republishes WITHOUT needing you to approve again.
-        mark_pending_acked(pending, "approve")
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "📤 Approved — publishing now…"})
         try:
             publish_to_instagram(plan)
@@ -2557,12 +2670,14 @@ def do_publish_pending(final=True):
                          "\n\n" + _publish_error_hint(short) +
                          "\n\nYour approval is KEPT — I retry automatically on the next tick.")
             raise
+        blob_state_write({**st, "published": True, "ts": datetime.now(timezone.utc).isoformat()})
         record_history(plan)
         clear_pending()
         return
     if decision == "skip":
-        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🚫 Skipped — nothing posted today."})
+        # The webhook already confirmed the skip to the editor — just clear quietly.
         clear_pending()
+        log("skip recorded by webhook — cleared pending")
         return
     # No decision yet. Only give up + clear on the LAST evening tick; otherwise keep the
     # pending post so a later tick (or a late approval) can still publish it.
@@ -2578,13 +2693,10 @@ def _save_pending(pending):
 
 
 def do_poll():
-    """Through the day — handle the editor's button taps / text replies on today's pending
-    preview, and confirm so nothing is a silent void. Runs often (the repo is public, so
-    frequent ticks are free) → buttons feel responsive. Never publishes (20:00 does that).
-      ✅ Approve / "ok"  -> mark approved, confirm "posting at 20:00".
-      🚫 Skip / "skip"   -> don't post today, clear the pending.
-      ✏️ Revise (button) -> ask what to change.
-      <text changes>     -> LEARN it, rework + re-preview (with buttons) so you re-approve."""
+    """Through the day — the WEBHOOK already handled the editor's tap instantly (feedback +
+    Blob state). This tick does the heavy Python work the webhook can't: if a revise note
+    was recorded, rework + re-preview. Approve is published by the 20:00 evening tick; skip
+    just clears the pending. Never publishes here."""
     pending = read_pending()
     today = datetime.now(timezone.utc).date().isoformat()
     if not pending or pending.get("date") != today:
@@ -2593,62 +2705,17 @@ def do_poll():
     tg_chat = env("TELEGRAM_CHAT_ID")
     if not (tg_token and tg_chat):
         return
-    decision, notes = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
-
-    if decision == "approve":
-        if pending.get("acked") == "approve":
-            return
-        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-               "text": "✅ Approved — I'll publish the carousel at 20:00 Paris tonight."})
-        pending["acked"] = "approve"
-        _save_pending(pending)
-        log("poll: approved")
+    if reconcile_published(pending):  # webhook published already (rare in daytime) — bookkeep
         return
-
-    if decision == "skip":
-        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-               "text": "🚫 Skipped — nothing will be posted today."})
+    st = blob_state_read()
+    if not st or st.get("date") != today:
+        return
+    if _maybe_rework(pending, st, tg_token, tg_chat):
+        return
+    if st.get("decision") == "skip":
+        # The webhook already confirmed the skip — clear quietly so the evening does nothing.
         clear_pending()
-        log("poll: skipped")
-        return
-
-    if decision == "revise" and notes:
-        # The editor said WHAT to change → learn it, rework, and re-preview WITH buttons so
-        # they can approve the new version. Advance the offset so we read only fresh taps.
-        append_style_note(notes)
-        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🔄 Reworking with your notes…"})
-        ctx = pending.get("ctx") or {}
-        ctx["api_key"] = env("ANTHROPIC_API_KEY")
-        plan = pending["plan"]
-        try:
-            plan = build_theme_plan(ctx, feedback=notes, prior_brief=plan.get("brief"))
-        except Exception as exc:  # noqa: BLE001
-            log(f"poll revise rebuild failed ({exc}); keeping the previous plan")
-        try:
-            tg_send_preview(tg_token, tg_chat, plan, buttons=True)
-        except Exception as exc:  # noqa: BLE001
-            log(f"poll re-preview send failed ({exc})")
-        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-               "text": "🔄 Reworked — review the new version above and tap ✅ Approve (or ✏️ Revise again / 🚫 Skip)."})
-        pending["plan"] = plan
-        pending["tg_offset"] = tg_offset_now(tg_token)
-        pending.pop("acked", None)
-        pending.pop("asked_notes", None)
-        _save_pending(pending)
-        log("poll: reworked + re-previewed")
-        return
-
-    if decision == "revise":  # button tapped, no notes yet → ask once
-        if pending.get("asked_notes"):
-            return
-        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-               "text": "✏️ What should I change? Reply with your notes and I'll rework it "
-                       "(or tap ✅ Approve / 🚫 Skip)."})
-        pending["asked_notes"] = True
-        _save_pending(pending)
-        log("poll: asked for revise notes")
-        return
-    # decision == "none" → nothing new; stay quiet.
+        log("poll: skip recorded by webhook — cleared pending")
 
 
 def do_scheduled():
@@ -2667,6 +2734,10 @@ def do_scheduled():
     h = paris_hour()
     today = datetime.now(timezone.utc).date().isoformat()
     pending = read_pending()
+    # If the webhook published directly (any hour), reconcile the repo bookkeeping first so
+    # theme rotation stays correct and we don't act on a stale pending.
+    if pending and reconcile_published(pending):
+        pending = None
     prepared_today = bool(pending and pending.get("date") == today)
     log(f"scheduled tick — Paris hour {h}, prepared_today={prepared_today}")
     try:
@@ -2704,6 +2775,8 @@ def main():
         do_diagnose()
     elif cmd == "publish-pending":
         do_publish_pending()
+    elif cmd == "set-webhook":  # register the Telegram webhook (instant button handling)
+        set_webhook()
     elif cmd == "run":  # legacy single-shot: build + gate + publish in one go
         do_run()
     else:  # default (cron) = the Paris-time-routed 2-phase flow
