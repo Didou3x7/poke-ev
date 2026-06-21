@@ -1603,23 +1603,23 @@ def slides_grails(base, facts, brief, hd_image=None):
             f"&kicker={q(brief.get('cardKicker') or 'THE CARD')}&headline={q(brief.get('cardHeadline') or facts['name'])}"
             f"&body={q(_wrap_clauses(brief.get('cardBody') or ''))}")
 
-    # Zoom #1 (slide 3) — THE SCENE: the subject, centred (saliency crop).
+    # Zoom #1 — THE ARTIST / THE CRAFT (off-centre art-detail crop).
+    cz = brief.get("craftZoom") or _safe_craft_zoom()
+    craft_kicker = brief.get("craftKicker") or ("THE ARTIST" if artist else "THE CRAFT")
+    craft_headline = brief.get("craftHeadline") or (artist or "Hand-drawn")
+    zoom_craft = (f"{H}?slide=grail-zoom&set={q(set_name)}{logop}&img0={q(zoom_img)}"
+                  f"&kicker={q(craft_kicker)}&headline={q(craft_headline)}"
+                  f"&body={q(_wrap_clauses(brief.get('craftBody') or ''))}"
+                  f"&zw={cz['zw']}&zx={cz['zx']}&zy={cz['zy']}&foot={q('but what is it? →')}")
+
+    # Zoom #2 — THE SCENE (centred subject crop, a DIFFERENT region than #1).
     sz = brief.get("sceneZoom") or _safe_scene_zoom()
+    scene_kicker = brief.get("sceneKicker") or "THE SCENE"
     scene_headline = brief.get("sceneHeadline") or "The subject, up close"
     zoom_scene = (f"{H}?slide=grail-zoom&set={q(set_name)}{logop}&img0={q(zoom_img)}"
-                  f"&kicker={q('THE SCENE')}&headline={q(scene_headline)}"
+                  f"&kicker={q(scene_kicker)}&headline={q(scene_headline)}"
                   f"&body={q(_wrap_clauses(brief.get('sceneBody') or ''))}"
-                  f"&zw={sz['zw']}&zx={sz['zx']}&zy={sz['zy']}&foot={q('see the full art →')}")
-
-    # Zoom #2 (slide 4) — THE FULL ARTWORK: the WHOLE illustration edge-to-edge (wide mode:
-    # card fit to full width, title bar + text boxes hidden by opaque bands). A much wider view
-    # of the same scene (owner: "dezoom encore pour voir beaucoup plus de la scène").
-    wide_headline = artist or "The full scene"
-    wide_body = (f"The whole scene {artist} painted, in one frame."
-                 if artist else "The whole illustration, in one frame.")
-    zoom_wide = (f"{H}?slide=grail-zoom&wide=1&set={q(set_name)}{logop}&img0={q(zoom_img)}"
-                 f"&kicker={q('THE FULL ARTWORK')}&headline={q(wide_headline)}"
-                 f"&body={q(_wrap_clauses(wide_body))}&foot={q('and how rare? →')}")
+                  f"&zw={sz['zw']}&zx={sz['zx']}&zy={sz['zy']}&foot={q('and how rare? →')}")
 
     odds_n = facts.get("odds_n")
     booster = _png(facts.get("booster_hd") or facts.get("booster"))  # AI-upscaled if available; .webp→.png
@@ -1637,7 +1637,7 @@ def slides_grails(base, facts, brief, hd_image=None):
     body = "pokeev.com runs the live Expected Value.|Know if any set is worth ripping."
     cta = (f"{H}?slide=connect-cta&eyebrow={q('SO, WORTH CHASING IT?')}"
            f"&h1={q('Rip it, or keep it?')}&body={q(body)}")
-    return [shock, card, zoom_scene, zoom_wide, odds, cta]
+    return [shock, card, zoom_craft, zoom_scene, odds, cta]
 
 
 # --------------------- T3 live enrichment (network) ----------------------- #

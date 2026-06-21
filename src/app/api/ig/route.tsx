@@ -845,44 +845,10 @@ function grailStory(opts: { image: string; setLabel: string; logo: string | null
 // Slide 4 — THE DETAIL. FULL-BLEED: the zoomed art fills the whole slide (the crop
 // is param-driven zw/zx/zy on an upscaled source), with the wordmark up top and the
 // caption over a bottom scrim. Immersive — the whole frame IS the artwork.
-function grailZoom(opts: { image: string; setLabel: string; logo: string | null; kicker: string; headline: string; body: string; win: number; winH: number; zw: number; zx: number; zy: number; foot: string; wide?: boolean }) {
+function grailZoom(opts: { image: string; setLabel: string; logo: string | null; kicker: string; headline: string; body: string; win: number; winH: number; zw: number; zx: number; zy: number; foot: string }) {
   const lines = opts.headline.split("|").map((s) => s.trim()).filter(Boolean);
   const longest = Math.max(...lines.map((l) => l.length), 1);
   const hsize = longest <= 16 ? 62 : longest <= 24 ? 50 : 40;
-  if (opts.wide) {
-    // WIDE mode: the FULL-WIDTH illustration as a strip up top (you see the whole scene
-    // edge-to-edge), with opaque bands hiding the card's title bar (top) + attack/rules text
-    // (bottom). Caption sits in the bottom band. The illo is wider than tall, hence the bands.
-    const iw = 1080;
-    const ih = Math.round(iw * 1.394);   // full card height at full width
-    const imgTop = 10;                    // art window (~0.10..0.47 of card) lands ~screen 160..717
-    const artBottom = imgTop + Math.round(0.47 * ih);
-    return (
-      <div style={{ display: "flex", width: "100%", height: "100%", position: "relative", background: BG, color: "#E8ECF4", fontFamily: "Satoshi, sans-serif" }}>
-        <img src={opts.image} width={iw} height={ih} style={{ display: "flex", position: "absolute", left: 0, top: imgTop }} />
-        <div style={{ display: "flex", position: "absolute", top: 0, left: 0, width: "100%", height: Math.round(0.10 * ih) + imgTop, background: BG }} />
-        <div style={{ display: "flex", position: "absolute", top: artBottom, left: 0, width: "100%", height: 1350 - artBottom, background: BG }} />
-        <div style={{ display: "flex", position: "absolute", top: artBottom - 90, left: 0, width: "100%", height: 90, background: "linear-gradient(to top, rgba(11,14,20,1), rgba(11,14,20,0))" }} />
-        <div style={{ display: "flex", position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: GLOW }} />
-        <div style={{ display: "flex", flexDirection: "column", position: "absolute", top: 0, left: 0, width: "100%", height: "100%", padding: 72, justifyContent: "space-between" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <Wordmark size={28} />
-            <SetLogo logo={opts.logo} label={opts.setLabel} />
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-            <div style={{ display: "flex", fontSize: 20, letterSpacing: 6, color: "#9aa3b5" }}>{opts.kicker}</div>
-            <div style={{ display: "flex", flexDirection: "column", marginTop: 14, alignItems: "center" }}>
-              {lines.map((ln, i) => (<div key={i} style={{ display: "flex" }}><HoloText size={hsize}>{ln}</HoloText></div>))}
-            </div>
-            <div style={{ display: "flex", marginTop: 22 }}><MultiLine text={opts.body} size={27} color="#c6cdda" lh={1.45} /></div>
-            <div style={{ display: "flex", marginTop: 30 }}>
-              <span style={{ fontFamily: "Clash", fontSize: 24, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{opts.foot}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
   return (
     <div style={{ display: "flex", width: "100%", height: "100%", position: "relative", background: BG, color: "#E8ECF4", fontFamily: "Satoshi, sans-serif" }}>
       <img src={opts.image} width={opts.zw} height={Math.round(opts.zw * 1.394)} style={{ display: "flex", position: "absolute", left: opts.zx, top: opts.zy }} />
@@ -1175,7 +1141,6 @@ export async function GET(request: NextRequest) {
         zx: Math.min(400, Math.max(-7000, pnum("zx", -300))),
         zy: Math.min(400, Math.max(-7000, pnum("zy", -150))),
         foot: textParam(p.get("foot"), 30) ?? "swipe →",
-        wide: p.get("wide") === "1",
       });
     } else if (slide === "grail-odds") {
       const boosters: string[] = [];
