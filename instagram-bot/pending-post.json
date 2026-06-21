@@ -6,10 +6,10 @@
     "date": "2026-06-21",
     "theme": "grails",
     "slides": [
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/fd6c2b327197a22fd71e0ed2851ce2a2.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/3de8bd303d9da4fd7d1c2d290c97c1a4.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/f925b9f25d5792f090b9329e29732e52.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/3a1b41dfdb9ca1c1e5166d779e77047b.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/c82830eeee5ccc0bb354af0ca7151035.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/89eca1d954f53cbc02e65f5d15986224.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7b7eb097e5aac094585a104d262be04b.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/910b027ad68077988f04ead9f7b9cbdf.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -47,7 +47,7 @@
       "#pokemonsealed"
     ],
     "brief": {
-      "shockHeadline": "Worth more than|most people guess",
+      "shockHeadline": "Worth more than|a luxury mechanical watch",
       "priceNote": "for a single card",
       "compare": null,
       "cardKicker": "THE CARD",
@@ -55,18 +55,18 @@
       "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "Fukuda layers dense multicolor star clusters behind Mewtwo | the holo treatment turns each burst into a live light source.",
+      "craftBody": "Masakazu Fukuda layered vivid star clusters into the deep-space field | the scattered light bursts give the void genuine depth and motion.",
       "craftZoom": {
         "zw": 4012,
-        "zx": -2349,
-        "zy": -974
+        "zx": -182,
+        "zy": -750
       },
       "sceneKicker": "THE SCENE",
-      "sceneHeadline": "MEWTWO STAR. EX HOLON PHANTOMS.",
-      "sceneBody": "Mewtwo hovers weightless against deep space, body rendered in cool silver-violet | the gold star stamp in the name bar marks it as a 1-per-deck legend.",
+      "sceneHeadline": "Mewtwo Star, Holon Phantoms 2006",
+      "sceneBody": "Mewtwo hovers weightless at the center of a cosmic scene, tail arcing outward | the holographic Star treatment amplifies the galactic backdrop into something genuinely rare.",
       "sceneZoom": {
         "zw": 2242,
-        "zx": -536,
+        "zx": -626,
         "zy": -645
       },
       "oddsBody": "Rip a sealed booster and|the odds are 214 to 1.",
@@ -119,9 +119,7 @@
         "name": "Mewtwo Star"
       }
     ],
-    "qa_warnings": [
-      "slide 4: The large gradient headline 'MEWTWOSTAR.EXHOLONPHANTOMS.' overlaps with the card's printed text 'You can't have more than 1 Pokémo...' making both the headline and the card text unreadable where they intersect"
-    ]
+    "qa_warnings": []
   },
   "ctx": {
     "theme": "grails",
@@ -142,28 +140,28 @@
       "artist": "Masakazu Fukuda",
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a cosmic starfield, arms outstretched",
-        "hidden": "Scattered holographic star bursts embedded in the galaxy backdrop behind Mewtwo",
-        "craftCenterX": 0.72,
-        "craftCenterY": 0.26,
+        "subject": "Mewtwo Star floating in a cosmic nebula, arms outstretched",
+        "hidden": "Scattered star clusters and colorful light bursts embedded in the galaxy background",
+        "craftCenterX": 0.18,
+        "craftCenterY": 0.22,
         "craftFactor": 3.4,
-        "craftHeadline": "COSMIC STARFIELD TEXTURE",
-        "craftBody": "Fukuda layers dense multicolor star clusters behind Mewtwo | the holo treatment turns each burst into a live light source.",
-        "sceneCenterX": 0.48,
+        "craftHeadline": "Nebula Texture Detail",
+        "craftBody": "Masakazu Fukuda layered vivid star clusters into the deep-space field | the scattered light bursts give the void genuine depth and motion.",
+        "sceneCenterX": 0.52,
         "sceneCenterY": 0.36,
         "sceneFactor": 1.9,
-        "sceneHeadline": "MEWTWO STAR. EX HOLON PHANTOMS.",
-        "sceneBody": "Mewtwo hovers weightless against deep space, body rendered in cool silver-violet | the gold star stamp in the name bar marks it as a 1-per-deck legend.",
-        "compare": "a Rolex Oyster Perpetual 36",
-        "compareUsd": 5900,
+        "sceneHeadline": "Mewtwo Star, Holon Phantoms 2006",
+        "sceneBody": "Mewtwo hovers weightless at the center of a cosmic scene, tail arcing outward | the holographic Star treatment amplifies the galactic backdrop into something genuinely rare.",
+        "compare": "a luxury mechanical watch",
+        "compareUsd": 2500,
         "craftZoom": {
           "zw": 4012,
-          "zx": -2349,
-          "zy": -974
+          "zx": -182,
+          "zy": -750
         },
         "sceneZoom": {
           "zw": 2242,
-          "zx": -536,
+          "zx": -626,
           "zy": -645
         }
       }
