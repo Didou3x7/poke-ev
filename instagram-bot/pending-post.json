@@ -8,8 +8,8 @@
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46857615d2be49895495cbf0e8131a11.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7fac0fdf95915dbb9be88cc745f57886.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/78ca636fe204f8a518efc4321b8e1ee1.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/3bf4d600125d7f74345ad1bb1ca24a66.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/704541349ba30a4f65031e167fde9608.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5880b071b449e902e010aae9cfbd728f.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7bd92286a2ac321813651002ab61b24b.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -55,19 +55,19 @@
       "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A nebula-like burst of white and multicolor light anchors the upper-left. The holo treatment makes star points shift with the card's angle.",
+      "craftBody": "A bright starburst in the upper-left|radiates through the holographic foil.|Multicolored flecks scatter across|the dark background.",
       "craftZoom": {
-        "zw": 4248,
-        "zx": -1294,
-        "zy": -661
+        "zw": 4097,
+        "zx": -1229,
+        "zy": -839
       },
       "sceneKicker": "THE SCENE",
-      "sceneHeadline": "Mewtwo Star, Full Presence",
-      "sceneBody": "Mewtwo hovers against a deep-space backdrop. The gold star symbol above its name marks its 1-per-deck rarity.",
+      "sceneHeadline": "One card. One Mewtwo.",
+      "sceneBody": "The Star rarity Mewtwo hovers|against a deep cosmic field.|Limit one per deck, zero on the shelf.",
       "sceneZoom": {
-        "zw": 3094,
-        "zx": -796,
-        "zy": -634
+        "zw": 2690,
+        "zx": -621,
+        "zy": -375
       },
       "oddsBody": "Rip a sealed booster and|the odds are 214 to 1.",
       "caption": "Mewtwo Star from EX Holon Phantoms is worth $7,100. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com",
@@ -141,41 +141,41 @@
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/37967e8f7bd2c3c4f702db3c264ba3cf.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a cosmic starfield, arms extended",
+        "subject": "Mewtwo Star floating in a star-field galaxy, arms extended",
         "hidden": "",
         "sceneCenterX": 0.5,
-        "sceneCenterY": 0.34,
+        "sceneCenterY": 0.33,
         "sceneFactor": 1.9,
-        "sceneHeadline": "Mewtwo Star, Full Presence",
-        "sceneBody": "Mewtwo hovers against a deep-space backdrop of scattered light | the gold star symbol above its name marks its 1-per-deck rarity.",
+        "sceneHeadline": "One card. One Mewtwo.",
+        "sceneBody": "The Star rarity Mewtwo hovers against a deep cosmic field. | Limit one per deck, zero on the shelf.",
         "craftCenterX": 0.38,
         "craftCenterY": 0.22,
-        "craftFactor": 3.6,
-        "craftHeadline": "The Cosmic Burst Detail",
-        "craftBody": "A bright nebula-like burst of white and multicolor light anchors the upper-left of the art | the holo treatment makes these scattered star points shift with the card's angle.",
+        "craftFactor": 3.5,
+        "craftHeadline": "The burst of cosmic light",
+        "craftBody": "A bright starburst in the upper-left quadrant radiates through the holographic foil. | Multicolored flecks scatter across the dark background like scattered rare pulls.",
         "compare": "a high-end home espresso machine",
         "compareUsd": 1200,
         "craftZoom": {
-          "zw": 4248,
-          "zx": -1074,
-          "zy": -823
+          "zw": 4130,
+          "zx": -1029,
+          "zy": -787
         },
         "sceneZoom": {
           "zw": 2242,
           "zx": -581,
-          "zy": -582
+          "zy": -551
         }
       },
       "crops": {
         "scene": {
-          "zw": 3094,
-          "zx": -796,
-          "zy": -634
+          "zw": 2690,
+          "zx": -621,
+          "zy": -375
         },
         "craft": {
-          "zw": 4248,
-          "zx": -1294,
-          "zy": -661
+          "zw": 4097,
+          "zx": -1229,
+          "zy": -839
         }
       }
     },
