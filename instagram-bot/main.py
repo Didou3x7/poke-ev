@@ -1110,7 +1110,7 @@ def slides_connected(base, facts, brief):
     total_str = fmt_usd(facts["total"])
     set_lbl = facts["setLabel"]
     logo = _png(facts["setLogo"])
-    imgparams = "".join(f"&img{i}={q(_png(it['image']))}" for i, it in enumerate(items))
+    imgparams = "".join(f"&img{i}={q(_png(it.get('hd_image') or it['image']))}" for i, it in enumerate(items))
     valparams = "".join(f"&v{i}={q(fmt_usd(it['usd']))}" for i, it in enumerate(items))
 
     cover = (f"{H}?slide=connect-cover"
@@ -1129,7 +1129,7 @@ def slides_connected(base, facts, brief):
             tally = f"the last piece · {total_str} complete"
         else:
             tally = f"{fmt_usd(running)} of {total_str} shown"
-        u = (f"{H}?slide=connect&img0={q(_png(it['image']))}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
+        u = (f"{H}?slide=connect&img0={q(_png(it.get('hd_image') or it['image']))}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
              f"&series={q(series)}&tally={q(tally)}&set={q(set_lbl)}")
         if logo:
             u += f"&logo={q(logo)}"
@@ -1322,7 +1322,7 @@ def slides_ripkeep(base, facts, brief):
     tline = "The chase pulls are worth a small fortune.|The catch: you have to actually hit one."
     tempt = f"{H}?slide=rk-tempt&set={q(set_name)}{logop}"
     for i, c in enumerate(facts["chase"]):
-        tempt += f"&img{i}={q(_png(c['image']))}&v{i}={q(fmt_usd(c['usd']))}"
+        tempt += f"&img{i}={q(_png(c.get('hd_image') or c['image']))}&v{i}={q(fmt_usd(c['usd']))}"
     tempt += f"&line={q(tline)}"
 
     stat_sealed = (f"{H}?slide=rk-stat&set={q(set_name)}{logop}"
@@ -1726,6 +1726,9 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
                 it["usd"] = int(round(rec["display_usd"]))
             verify.append(rec)
         facts["total"] = sum(it["usd"] for it in facts["items"])  # keep total == sum of shown
+        for it in facts["items"]:  # AI-upscale every card to max (owner rule: quality above all)
+            it["hd_image"] = upscale_card(it["image"])
+        log(f"  connected upscaled {sum(1 for it in facts['items'] if it.get('hd_image'))}/{len(facts['items'])} cards")
         return {"theme": theme, "base": base, "facts": facts, "verify": verify,
                 "keys": [facts["key"]], "api_key": api_key}
 
@@ -1737,6 +1740,9 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
         for c, rec in zip(facts["chase"], verify):
             if rec.get("display_usd"):
                 c["usd"] = int(round(rec["display_usd"]))
+        for c in facts["chase"]:  # AI-upscale every chase card to max (quality-above-all rule)
+            c["hd_image"] = upscale_card(c["image"])
+        log(f"  ripkeep upscaled {sum(1 for c in facts['chase'] if c.get('hd_image'))}/{len(facts['chase'])} chase cards")
         return {"theme": theme, "base": base, "facts": facts, "verify": verify,
                 "keys": [facts["key"]], "api_key": api_key}
 
