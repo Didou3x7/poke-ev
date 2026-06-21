@@ -520,9 +520,9 @@ function connectedCta(opts: { setLabel: string; logo: string | null; eyebrow: st
           <SetLogo logo={opts.logo} label={opts.setLabel} />
         </div>
       ) : (
-        // Closing slide with no set logo: center the lone PokéEV wordmark, 3x bigger, as a
-        // premium brand sign-off.
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        // Closing slide with no set logo: the lone PokéEV wordmark, 3x bigger, dropped into
+        // the upper area (not glued to the very top) as a premium brand sign-off.
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: 170 }}>
           <Wordmark hero />
         </div>
       )}
@@ -738,7 +738,7 @@ function rkVerdict(opts: { setLabel: string; logo: string | null; verdict: strin
 function rkCta(opts: { eyebrow: string; h1: string; h2: string; body: string }) {
   return (
     <Frame>
-      <div style={{ display: "flex", justifyContent: "center" }}><Wordmark hero /></div>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 170 }}><Wordmark hero /></div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
         <div style={{ display: "flex" }}><HoloText size={100}>{opts.h1}</HoloText></div>
