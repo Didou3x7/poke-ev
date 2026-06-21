@@ -512,10 +512,17 @@ function connectedReveal(opts: { images: string[]; values: (string | null)[]; ti
 function connectedCta(opts: { setLabel: string; logo: string | null; eyebrow: string; h1: string; h2: string; body: string; verdict: string | null }) {
   return (
     <Frame>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Wordmark size={34} />
-        <SetLogo logo={opts.logo} label={opts.setLabel} />
-      </div>
+      {opts.logo ? (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Wordmark size={34} />
+          <SetLogo logo={opts.logo} label={opts.setLabel} />
+        </div>
+      ) : (
+        // Closing slide with no set logo: center the lone PokéEV wordmark at the top (premium).
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Wordmark size={34} />
+        </div>
+      )}
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
         <div style={{ display: "flex" }}><HoloText size={opts.h2 ? 104 : opts.h1.length <= 10 ? 100 : opts.h1.length <= 16 ? 84 : opts.h1.length <= 22 ? 72 : 60}>{opts.h1}</HoloText></div>
@@ -728,7 +735,7 @@ function rkVerdict(opts: { setLabel: string; logo: string | null; verdict: strin
 function rkCta(opts: { eyebrow: string; h1: string; h2: string; body: string }) {
   return (
     <Frame>
-      <div style={{ display: "flex" }}><Wordmark size={34} /></div>
+      <div style={{ display: "flex", justifyContent: "center" }}><Wordmark size={34} /></div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
         <div style={{ display: "flex" }}><HoloText size={100}>{opts.h1}</HoloText></div>

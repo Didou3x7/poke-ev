@@ -2127,12 +2127,16 @@ def tg_send_preview(token, chat_id, plan, buttons=True):
             f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION ({ntags} hashtags folded in):\n"
             f"{plan['caption']}\n\nPublish this carousel?")
     payload = {"chat_id": chat_id, "text": text[:4000]}
-    # Inline buttons ONLY when a live process is waiting to ack the tap (do_run). In the
-    # async 2-phase flow the prepare run has already exited, so a button would spin
-    # forever with no response — there we drive everything by TEXT reply instead.
+    # Inline buttons: ✅ Approve / ✏️ Revise / 🚫 Skip. They work in BOTH the live `run` flow
+    # AND the async 2-phase flow now — frequent poll ticks (do_poll) answer the tap (stop the
+    # spinner) + confirm. Approve = post at 20:00; Revise = the bot asks what to change; Skip =
+    # don't post today. (Replying ok/skip/changes by text still works too.)
     if buttons:
-        payload["reply_markup"] = {"inline_keyboard": [[{"text": "✅ Approve", "callback_data": "approve"},
-                                                        {"text": "❌ Reject", "callback_data": "reject"}]]}
+        payload["reply_markup"] = {"inline_keyboard": [[
+            {"text": "✅ Approve", "callback_data": "approve"},
+            {"text": "✏️ Revise", "callback_data": "revise"},
+            {"text": "🚫 Skip", "callback_data": "skip"},
+        ]]}
     tg_api(token, "sendMessage", payload)
 
 
@@ -2153,13 +2157,17 @@ def tg_wait_decision(token, chat_id, timeout=1200):
             cq = u.get("callback_query")
             if cq and str(cq["message"]["chat"]["id"]) == str(chat_id):
                 tg_api(token, "answerCallbackQuery", {"callback_query_id": cq["id"], "text": "Got it ✓"})
-                if cq.get("data") == "approve":
+                data = cq.get("data")
+                if data == "approve":
                     tg_api(token, "sendMessage", {"chat_id": chat_id, "text": "📤 Publishing…"})
                     return "approve", None
+                if data in ("skip", "reject"):
+                    tg_api(token, "sendMessage", {"chat_id": chat_id, "text": "🚫 Skipped — nothing posted today."})
+                    return "cancel", None
                 tg_api(token, "sendMessage", {"chat_id": chat_id,
                        "text": "✏️ What should change? Reply with your notes and I'll rework it — "
-                               "or send 'cancel' to skip today."})
-                continue  # keep listening for the notes
+                               "or tap 🚫 Skip to skip today."})
+                continue  # keep listening for the notes (✏️ Revise)
             msg = u.get("message")
             if msg and str(msg.get("chat", {}).get("id")) == str(chat_id):
                 txt = (msg.get("text") or "").strip()
@@ -2326,10 +2334,13 @@ def latest_decision(token, chat_id, offset):
                 tg_api(token, "answerCallbackQuery", {"callback_query_id": cq["id"], "text": "Got it ✓"})
             except Exception:  # noqa: BLE001
                 pass
-            if cq.get("data") == "approve":
+            data = cq.get("data")
+            if data == "approve":
                 decision, notes = "approve", None
-            elif cq.get("data") == "reject":
+            elif data in ("skip", "reject"):  # "reject" kept for any old button still queued
                 decision, notes = "skip", None
+            elif data == "revise":
+                decision, notes = "revise", None  # button tap, no notes yet -> bot will ask
             continue
         msg = u.get("message")
         if msg and str(msg.get("chat", {}).get("id")) == str(chat_id):
@@ -2362,7 +2373,7 @@ def do_prepare():
         log("Telegram gate not configured — built the post but cannot preview/queue it.")
         return
     offset = tg_offset_now(tg_token)
-    tg_send_preview(tg_token, tg_chat, plan, buttons=False)
+    tg_send_preview(tg_token, tg_chat, plan, buttons=True)
     write_pending(plan, ctx, offset)
     # Early warning: probe the IG token NOW (morning) so a dead/expired token is flagged
     # with hours to fix it, instead of only surfacing as a failed publish at 20:00.
@@ -2377,11 +2388,11 @@ def do_prepare():
     qa = ("\n\n🔎 Auto-reviewed before sending — flagged to fix:\n"
           + "\n".join(f"• {w}" for w in qwarn)) if qwarn else "\n\n🔎 Auto-reviewed before sending — looks clean."
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-           "text": "🕛 Today's preview is ready. Just REPLY to this chat (no buttons):\n"
-                   "• reply \"ok\" to approve — I post the carousel at 20:00 Paris\n"
-                   "• reply with any changes to revise it (I learn them for next time)\n"
-                   "• reply \"skip\" to cancel today\n"
-                   "Nothing posts without your ok." + qa + warn})
+           "text": "🕛 Today's preview is ready. Just tap a button below the preview:\n"
+                   "• ✅ Approve — I post the carousel at 20:00 Paris\n"
+                   "• ✏️ Revise — I ask what to change, then rework it (and learn it for next time)\n"
+                   "• 🚫 Skip — nothing today\n"
+                   "(You can also just reply ok / skip / your changes.) Nothing posts without your ok." + qa + warn})
 
 
 def do_publish_pending(final=True):
@@ -2474,12 +2485,18 @@ def do_publish_pending(final=True):
         log("no ✅ approval yet — keeping the pending post for a later evening tick")
 
 
-def do_ack():
-    """Afternoon — CONFIRM receipt of the editor's decision on today's pending preview.
-    The morning preview has no live process, so a 'ok' reply otherwise got no feedback
-    until 20:00 (owner: 'le bot me renvoit rien, ca a marché?'). This closes the loop and
-    states the publish time. Idempotent — each NEW decision is confirmed exactly once,
-    tracked by pending['acked']; it never publishes (that's the 20:00 tick's job)."""
+def _save_pending(pending):
+    _pending_path().write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def do_poll():
+    """Through the day — handle the editor's button taps / text replies on today's pending
+    preview, and confirm so nothing is a silent void. Runs often (the repo is public, so
+    frequent ticks are free) → buttons feel responsive. Never publishes (20:00 does that).
+      ✅ Approve / "ok"  -> mark approved, confirm "posting at 20:00".
+      🚫 Skip / "skip"   -> don't post today, clear the pending.
+      ✏️ Revise (button) -> ask what to change.
+      <text changes>     -> LEARN it, rework + re-preview (with buttons) so you re-approve."""
     pending = read_pending()
     today = datetime.now(timezone.utc).date().isoformat()
     if not pending or pending.get("date") != today:
@@ -2489,24 +2506,61 @@ def do_ack():
     if not (tg_token and tg_chat):
         return
     decision, notes = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
-    if decision == "none" or pending.get("acked") == decision:
+
+    if decision == "approve":
+        if pending.get("acked") == "approve":
+            return
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "✅ Approved — I'll publish the carousel at 20:00 Paris tonight."})
+        pending["acked"] = "approve"
+        _save_pending(pending)
+        log("poll: approved")
         return
-    msg = {
-        "approve": "✅ Got your OK — the carousel will be published at 20:00 Paris tonight.",
-        "revise": "🔄 Got your changes — I'll rework + re-preview, then publish at 20:00 Paris.",
-        "skip": "🚫 Skipped — nothing will be posted today.",
-    }.get(decision)
-    if not msg:
+
+    if decision == "skip":
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "🚫 Skipped — nothing will be posted today."})
+        clear_pending()
+        log("poll: skipped")
         return
-    # LEARN the correction the MOMENT it's given (afternoon), not only at the 20:00 rebuild,
-    # so the preference is captured even if tonight's publish tick never runs. De-duped, so
-    # the 20:00 revise branch re-appending it is a harmless no-op.
+
     if decision == "revise" and notes:
+        # The editor said WHAT to change → learn it, rework, and re-preview WITH buttons so
+        # they can approve the new version. Advance the offset so we read only fresh taps.
         append_style_note(notes)
-    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": msg})
-    pending["acked"] = decision
-    _pending_path().write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
-    log(f"acked decision: {decision}")
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🔄 Reworking with your notes…"})
+        ctx = pending.get("ctx") or {}
+        ctx["api_key"] = env("ANTHROPIC_API_KEY")
+        plan = pending["plan"]
+        try:
+            plan = build_theme_plan(ctx, feedback=notes, prior_brief=plan.get("brief"))
+        except Exception as exc:  # noqa: BLE001
+            log(f"poll revise rebuild failed ({exc}); keeping the previous plan")
+        try:
+            tg_send_preview(tg_token, tg_chat, plan, buttons=True)
+        except Exception as exc:  # noqa: BLE001
+            log(f"poll re-preview send failed ({exc})")
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "🔄 Reworked — review the new version above and tap ✅ Approve (or ✏️ Revise again / 🚫 Skip)."})
+        pending["plan"] = plan
+        pending["tg_offset"] = tg_offset_now(tg_token)
+        pending.pop("acked", None)
+        pending.pop("asked_notes", None)
+        _save_pending(pending)
+        log("poll: reworked + re-previewed")
+        return
+
+    if decision == "revise":  # button tapped, no notes yet → ask once
+        if pending.get("asked_notes"):
+            return
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "✏️ What should I change? Reply with your notes and I'll rework it "
+                       "(or tap ✅ Approve / 🚫 Skip)."})
+        pending["asked_notes"] = True
+        _save_pending(pending)
+        log("poll: asked for revise notes")
+        return
+    # decision == "none" → nothing new; stay quiet.
 
 
 def do_scheduled():
@@ -2530,15 +2584,15 @@ def do_scheduled():
     try:
         if 8 <= h < 13:
             if prepared_today:
-                log("already prepared today — nothing to do this tick")
+                do_poll()  # morning preview already sent — handle button taps / replies
             else:
                 do_prepare()
         elif 13 <= h < 20:
-            do_ack()  # confirm the editor's reply (no-op until there's a new decision)
+            do_poll()  # handle button taps / replies (approve, revise, skip) + confirm
         elif 20 <= h < 24:
             do_publish_pending(final=h >= 23)
         else:
-            log(f"Paris hour {h} outside the prepare (08-12) / ack (13-19) / publish (20-23) windows — exiting.")
+            log(f"Paris hour {h} outside the prepare (08-12) / poll (13-19) / publish (20-23) windows — exiting.")
     except Exception as exc:  # noqa: BLE001 — the bot must NEVER fail silently
         # do_publish_pending already sends a tailored publish-failure alert (and sets the
         # flag); for any OTHER crash, tell the editor here so a broken tick is never silent.
@@ -2556,8 +2610,8 @@ def main():
         publish_to_instagram(json.loads(Path(env("PLAN_PATH", "plan.json")).read_text(encoding="utf-8")))
     elif cmd == "prepare":
         do_prepare()
-    elif cmd == "ack":  # confirm a received decision on today's pending preview
-        do_ack()
+    elif cmd in ("ack", "poll"):  # handle button taps / replies on today's pending preview
+        do_poll()
     elif cmd == "diagnose":  # probe the IG token vs app-side block
         do_diagnose()
     elif cmd == "publish-pending":
