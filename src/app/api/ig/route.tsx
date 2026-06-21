@@ -834,6 +834,8 @@ function grailZoom(opts: { image: string; setLabel: string; logo: string | null;
   return (
     <div style={{ display: "flex", width: "100%", height: "100%", position: "relative", background: BG, color: "#E8ECF4", fontFamily: "Satoshi, sans-serif" }}>
       <img src={opts.image} width={opts.zw} height={Math.round(opts.zw * 1.394)} style={{ display: "flex", position: "absolute", left: opts.zx, top: opts.zy }} />
+      {/* centered radial glow so the background gradient sits in the MIDDLE of this slide too */}
+      <div style={{ display: "flex", position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: GLOW }} />
       <div style={{ display: "flex", position: "absolute", top: 0, left: 0, width: "100%", height: 300, background: "linear-gradient(to bottom, rgba(11,14,20,0.82), rgba(11,14,20,0))" }} />
       <div style={{ display: "flex", position: "absolute", bottom: 0, left: 0, width: "100%", height: 660, background: "linear-gradient(to top, rgba(11,14,20,0.98) 32%, rgba(11,14,20,0))" }} />
       <div style={{ display: "flex", flexDirection: "column", position: "absolute", top: 0, left: 0, width: "100%", height: "100%", padding: 72, justifyContent: "space-between" }}>
