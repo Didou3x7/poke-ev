@@ -886,14 +886,19 @@ function grailOdds(opts: { boosters: string[]; setLabel: string; logo: string | 
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         {opts.kicker ? <div style={{ display: "flex", fontSize: 21, letterSpacing: 6, color: "#7c8499" }}>{opts.kicker}</div> : null}
         {opts.boosters.length > 0 ? (
-        // PREMIUM flat lineup: 3 upright packs, evenly spaced, soft subtle shadow. NO rotation /
-        // fan / heavy drop-shadow (that read as a cheap 3D fan).
-        <div style={{ display: "flex", width: 940, height: 560, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
-          {opts.boosters.slice(0, 3).map((src, i) => {
-            const bw = 280;
+        // FAN (éventail) of packs, HD source (x8 upscale), with a SOFT premium shadow (the old
+        // harsh near-black shadow is what read as cheap — not the fan itself).
+        <div style={{ display: "flex", position: "relative", width: 900, height: 588, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
+          {opts.boosters.map((src, i) => {
+            const n = opts.boosters.length || 1;
+            const t = i - (n - 1) / 2;
+            const bw = 292;
             const bh = Math.round(bw * 1.86);
+            const rot = Math.round(t * 105) / 10;
+            const left = Math.round(450 - bw / 2 + t * 120);
+            const top = Math.round(6 + Math.abs(t) * 26);
             return (
-              <img key={i} src={src} width={bw} height={bh} style={{ display: "flex", objectFit: "contain", margin: "0 14px", boxShadow: "0 20px 46px -26px rgba(0,0,0,0.55)" }} />
+              <img key={i} src={src} width={bw} height={bh} style={{ position: "absolute", left, top, display: "flex", objectFit: "contain", transform: `rotate(${rot}deg)`, boxShadow: "0 16px 40px -20px rgba(0,0,0,0.5)" }} />
             );
           })}
         </div>
