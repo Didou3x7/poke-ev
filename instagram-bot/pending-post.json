@@ -7,9 +7,9 @@
     "theme": "grails",
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/fd6c2b327197a22fd71e0ed2851ce2a2.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/abc43c1bedd23f08bf6752b80b50a8e8.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/8c939448e37405a9ffa76cca5a6d635a.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/f2de81632b40798a5b102bf8ce16d262.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/f925b9f25d5792f090b9329e29732e52.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/1fac4a36d297c23e31d34798ab1833dd.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/de4900f8c6703f23658cc5f87b1e2238.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/90088381a01aa5a1860267577bac59e6.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -52,18 +52,18 @@
       "compare": null,
       "cardKicker": "THE CARD",
       "cardHeadline": "Mewtwo Star",
-      "cardBody": "EX Holon Phantoms crown jewel.|The card the whole set chases.",
+      "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A white-core starburst anchors the upper-left.|Color flecks scatter across the field. Reads differently under every light.",
+      "craftBody": "A white nebula anchors the upper left. Scattered color flecks across the dark field give the holo its depth.",
       "craftZoom": {
         "zw": 4248,
         "zx": -1329,
         "zy": -982
       },
       "sceneKicker": "THE SCENE",
-      "sceneHeadline": "Mewtwo Star. One Per Deck.",
-      "sceneBody": "Fukuda renders Mewtwo suspended in space,|arms extended. The holofoil background|shifts with every tilt.",
+      "sceneHeadline": "ONE PER DECK. FOR GOOD REASON.",
+      "sceneBody": "Mewtwo Star hovers against a deep-space backdrop. The holographic starfield shifts with every tilt.",
       "sceneZoom": {
         "zw": 2520,
         "zx": -569,
@@ -140,29 +140,29 @@
       "artist": "Masakazu Fukuda",
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a star-filled cosmic void",
+        "subject": "Mewtwo Star floating in a cosmic nebula field",
         "hidden": "",
         "sceneCenterX": 0.5,
-        "sceneCenterY": 0.33,
+        "sceneCenterY": 0.32,
         "sceneFactor": 1.9,
-        "sceneHeadline": "Mewtwo Star. One Per Deck.",
-        "sceneBody": "Masakazu Fukuda renders Mewtwo suspended in deep space, arms extended. | The holofoil galaxy background shifts with every tilt of the card.",
-        "craftCenterX": 0.3,
-        "craftCenterY": 0.25,
+        "sceneHeadline": "ONE PER DECK. FOR GOOD REASON.",
+        "sceneBody": "Mewtwo Star hovers against a deep-space backdrop | the holographic starfield shifts with every tilt of the card.",
+        "craftCenterX": 0.28,
+        "craftCenterY": 0.22,
         "craftFactor": 3.4,
-        "craftHeadline": "The Cosmic Burst Detail",
-        "craftBody": "A concentrated white-core starburst anchors the upper-left field, surrounded by scattered color flecks. | Printed on holofoil stock, this cluster reads differently under every light source.",
-        "compare": "a high-end gaming PC",
-        "compareUsd": 3500,
+        "craftHeadline": "THE BURST BEHIND THE LEGEND",
+        "craftBody": "A concentrated white nebula explosion anchors the upper left | scattered color flecks across the dark field give the holo its depth.",
+        "compare": "a high-end home espresso machine",
+        "compareUsd": 1200,
         "craftZoom": {
           "zw": 4012,
-          "zx": -664,
-          "zy": -918
+          "zx": -583,
+          "zy": -750
         },
         "sceneZoom": {
           "zw": 2242,
           "zx": -581,
-          "zy": -551
+          "zy": -520
         }
       },
       "crops": {
