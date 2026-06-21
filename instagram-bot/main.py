@@ -962,25 +962,37 @@ def _no_dash(s):
     return re.sub(r"\s*[—–]\s*", " · ", str(s)).strip()
 
 
-def _wrap_clauses(text, width=50):
+def _wrap_clauses(text, width=56):
     """Re-flow body copy so NO single line overflows the slide. The renderer draws each
-    '|'-separated clause on its own line with no auto-wrap. width=50 because at body size 27
-    a ~50-char line still fits the panel — so a normal clause stays WHOLE on one line (each
+    '|'-separated clause on its own line with no auto-wrap. width=56 because at body size 27
+    the caption panel fits ~62 chars — so a normal phrase stays WHOLE on one line (each
     phrase starts AND ends on the same line, owner's rule); only a genuinely long clause is
-    greedy-wrapped. Preserves the art-director's intentional '|' breaks."""
+    wrapped. Widow guard: never leave a lone last word — rebalance so the final line keeps
+    >=2 words. Preserves the art-director's intentional '|' breaks."""
     if not text:
         return text
     out = []
     for clause in str(text).split("|"):
+        words = clause.split()
+        if not words:
+            continue
+        lines = []
         line = ""
-        for w in clause.split():
+        for w in words:
             if line and len(line) + 1 + len(w) > width:
-                out.append(line)
+                lines.append(line)
                 line = w
             else:
                 line = f"{line} {w}".strip()
         if line:
-            out.append(line)
+            lines.append(line)
+        # widow guard: a lone word on the final line reads as an orphan — pull the
+        # previous line's last word down so the tail line keeps at least two words.
+        if len(lines) >= 2 and len(lines[-1].split()) == 1 and len(lines[-2].split()) >= 2:
+            prev = lines[-2].split()
+            lines[-2] = " ".join(prev[:-1])
+            lines[-1] = f"{prev[-1]} {lines[-1]}"
+        out.extend(lines)
     return "|".join(out)
 
 
