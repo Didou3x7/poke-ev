@@ -2265,7 +2265,7 @@ def do_ack():
     tg_chat = env("TELEGRAM_CHAT_ID")
     if not (tg_token and tg_chat):
         return
-    decision, _ = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
+    decision, notes = latest_decision(tg_token, tg_chat, pending.get("tg_offset", 0))
     if decision == "none" or pending.get("acked") == decision:
         return
     msg = {
@@ -2275,6 +2275,11 @@ def do_ack():
     }.get(decision)
     if not msg:
         return
+    # LEARN the correction the MOMENT it's given (afternoon), not only at the 20:00 rebuild,
+    # so the preference is captured even if tonight's publish tick never runs. De-duped, so
+    # the 20:00 revise branch re-appending it is a harmless no-op.
+    if decision == "revise" and notes:
+        append_style_note(notes)
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": msg})
     pending["acked"] = decision
     _pending_path().write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
