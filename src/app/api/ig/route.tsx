@@ -129,8 +129,12 @@ const Wordmark = ({ hero }: { size?: number; hero?: boolean }) => (
   </div>
 );
 
-const HoloText = ({ children, size, ls = -2 }: { children: React.ReactNode; size: number; ls?: number }) => (
-  <span style={{ fontFamily: "Clash", fontSize: size, letterSpacing: ls, backgroundImage: HOLO, backgroundClip: "text", color: "transparent", lineHeight: 1.0 }}>
+// letterSpacing default is SIZE-AWARE: tight tracking (-2) reads as premium on BIG punchy
+// headlines, but at small sizes (e.g. a descriptive zoom title at 40px) it eats the word
+// spaces and the words run together (owner: "0 espace entre les mots"). So small holo text
+// gets readable positive tracking instead. Callers can still pass an explicit `ls`.
+const HoloText = ({ children, size, ls }: { children: React.ReactNode; size: number; ls?: number }) => (
+  <span style={{ fontFamily: "Clash", fontSize: size, letterSpacing: ls ?? (size < 52 ? 1 : -2), backgroundImage: HOLO, backgroundClip: "text", color: "transparent", lineHeight: 1.0 }}>
     {children}
   </span>
 );
