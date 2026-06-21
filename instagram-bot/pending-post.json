@@ -1,0 +1,183 @@
+{
+  "date": "2026-06-21",
+  "theme": "grails",
+  "tg_offset": 0,
+  "plan": {
+    "date": "2026-06-21",
+    "theme": "grails",
+    "slides": [
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/ca58beba0c30b4eabe7c1bac38cdd151.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/2f542f69ee8ac6a899e6e61eccd3575e.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/d67844a32c492ce2263a8e900fc3395b.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/4b61b306a81609e6fa0be8e5b4fb648e.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/c6f7a98dadbbae5fc858cc7bcce6d4f7.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
+    ],
+    "caption": "Charizard from Skyridge is worth $5,250. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #charizard #skyridge #secretrare #koukisaitou #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pokemonsealed",
+    "hashtags": [
+      "#pokemongrails",
+      "#grailcard",
+      "#pokemonart",
+      "#pokemoninvesting",
+      "#charizard",
+      "#skyridge",
+      "#secretrare",
+      "#koukisaitou",
+      "#pokemon",
+      "#pokemontcg",
+      "#pokemoncards",
+      "#pokemoncollector",
+      "#tcg",
+      "#pokemoncommunity",
+      "#pokemoncardcollection",
+      "#pokemoncollection",
+      "#tcgcollector",
+      "#pokemoncardgame",
+      "#tradingcards",
+      "#tradingcardgame",
+      "#cardcollector",
+      "#tcgcommunity",
+      "#pokemoncardcollector",
+      "#pokemontcgcollector",
+      "#pokemonfan",
+      "#pokemontcgcards",
+      "#pokemontcgcommunity",
+      "#pokemoncollectors",
+      "#pokemonpulls",
+      "#pokemonsealed"
+    ],
+    "brief": {
+      "shockHeadline": "Worth more than|a round-trip domestic flight",
+      "priceNote": "for a single card",
+      "compare": null,
+      "cardKicker": "THE CARD",
+      "cardHeadline": "Charizard",
+      "cardBody": "Skyridge's crown jewel.|The card the whole set chases.",
+      "craftKicker": "THE ARTIST",
+      "craftHeadline": "Kouki Saitou",
+      "craftBody": "The wing membrane renders in translucent amber layers | stippled starlight bleeds through the holo substrate beneath.",
+      "craftZoom": {
+        "zw": 3776,
+        "zx": -2405,
+        "zy": -1520
+      },
+      "sceneKicker": "THE SCENE",
+      "sceneHeadline": "Skyridge Charizard 146/144",
+      "sceneBody": "A secret rare numbered beyond the set total, printed on full holo stock | Saitou frames Charizard against a cosmic void that no other Zard art matched.",
+      "sceneZoom": {
+        "zw": 2242,
+        "zx": -536,
+        "zy": -520
+      },
+      "oddsBody": "Rip a sealed booster and|the odds are 65 to 1.",
+      "caption": "Charizard from Skyridge is worth $5,250. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com",
+      "hashtags": [
+        "#pokemongrails",
+        "#grailcard",
+        "#pokemonart",
+        "#pokemoninvesting",
+        "#charizard",
+        "#skyridge",
+        "#secretrare",
+        "#koukisaitou",
+        "#pokemon",
+        "#pokemontcg",
+        "#pokemoncards",
+        "#pokemoncollector",
+        "#tcg",
+        "#pokemoncommunity",
+        "#pokemoncardcollection",
+        "#pokemoncollection",
+        "#tcgcollector",
+        "#pokemoncardgame",
+        "#tradingcards",
+        "#tradingcardgame",
+        "#cardcollector",
+        "#tcgcommunity",
+        "#pokemoncardcollector",
+        "#pokemontcgcollector",
+        "#pokemonfan",
+        "#pokemontcgcards",
+        "#pokemontcgcommunity",
+        "#pokemoncollectors",
+        "#pokemonpulls",
+        "#pokemonsealed"
+      ]
+    },
+    "keys": [
+      "ecard3-146"
+    ],
+    "verify": [
+      {
+        "snap_usd": 5250,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "live fetch failed (pokemontcg https://api.pokemontcg.io/v2/cards/ecard3-146_hires -> 404) — snapshot price kept",
+        "display_usd": 5250,
+        "name": "Charizard"
+      }
+    ]
+  },
+  "ctx": {
+    "theme": "grails",
+    "base": "https://pokeev.com",
+    "facts": {
+      "_usd": 5250,
+      "key": "ecard3-146",
+      "card_id": "ecard3-146",
+      "set_id": "skyridge",
+      "set_name": "Skyridge",
+      "logo": "https://assets.tcgdex.net/en/ecard/ecard3/logo.webp",
+      "name": "Charizard",
+      "rarity": "secret-rare",
+      "image": "https://images.pokemontcg.io/ecard3/146_hires.png",
+      "usd": 5250,
+      "odds_n": 65,
+      "booster": null,
+      "artist": "Kouki Saitou",
+      "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/24ef1e962c1f377b62bcef9ac0cfccd0.png",
+      "vision": {
+        "subject": "Charizard rearing against a deep starfield background",
+        "hidden": "A smaller Charizard silhouette visible in the lower-right flame glow",
+        "craftCenterX": 0.78,
+        "craftCenterY": 0.38,
+        "craftFactor": 3.2,
+        "craftHeadline": "Kouki Saitou's Flame Detail",
+        "craftBody": "The wing membrane renders in translucent amber layers | stippled starlight bleeds through the holo substrate beneath.",
+        "sceneCenterX": 0.48,
+        "sceneCenterY": 0.32,
+        "sceneFactor": 1.9,
+        "sceneHeadline": "Skyridge Charizard 146/144",
+        "sceneBody": "A secret rare numbered beyond the set total, printed on full holo stock | Saitou frames Charizard against a cosmic void that no other Zard art matched.",
+        "compare": "a round-trip domestic flight",
+        "craftZoom": {
+          "zw": 3776,
+          "zx": -2405,
+          "zy": -1520
+        },
+        "sceneZoom": {
+          "zw": 2242,
+          "zx": -536,
+          "zy": -520
+        }
+      }
+    },
+    "verify": [
+      {
+        "snap_usd": 5250,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "live fetch failed (pokemontcg https://api.pokemontcg.io/v2/cards/ecard3-146_hires -> 404) — snapshot price kept",
+        "display_usd": 5250,
+        "name": "Charizard"
+      }
+    ],
+    "keys": [
+      "ecard3-146"
+    ]
+  }
+}
