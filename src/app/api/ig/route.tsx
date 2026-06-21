@@ -541,7 +541,7 @@ function connectedCta(opts: { setLabel: string; logo: string | null; eyebrow: st
   if (!opts.logo) {
     return (
       <Frame>
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-evenly", alignItems: "center" }}>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-around", alignItems: "center" }}>
           <Wordmark hero />
           {texts}
           {linkInBio}
@@ -750,7 +750,7 @@ function rkCta(opts: { eyebrow: string; h1: string; h2: string; body: string }) 
   // Same balanced rhythm as connectedCta: hero wordmark + texts + link, EVENLY distributed.
   return (
     <Frame>
-      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-evenly", alignItems: "center" }}>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-around", alignItems: "center" }}>
         <Wordmark hero />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
           <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
