@@ -7,9 +7,9 @@
     "theme": "grails",
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46857615d2be49895495cbf0e8131a11.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7fac0fdf95915dbb9be88cc745f57886.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/3929ba260f254b5d75a7157909266f2b.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/baeae60bbf393f69b03d42d735e7dff9.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/e60eb40fa961d8c2b3b5ff18779f4101.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/9c91136363bd972f5de592b8e55707eb.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/0e288191eda2736175f571abcf3feb81.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/cc695be9f9172bcbb69a7e82b2db943f.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -52,18 +52,18 @@
       "compare": null,
       "cardKicker": "THE CARD",
       "cardHeadline": "Mewtwo Star",
-      "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
+      "cardBody": "EX Holon Phantoms crown jewel. The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A bright white starburst erupts near Mewtwo's left side. Colored light points dot the deep-space backdrop.",
+      "craftBody": "A bright white starburst erupts near Mewtwo's left side. Scattered color-flecked stars fan outward.",
       "craftZoom": {
-        "zw": 3459,
-        "zx": -498,
-        "zy": -482
+        "zw": 3026,
+        "zx": -368,
+        "zy": -422
       },
       "sceneKicker": "THE SCENE",
       "sceneHeadline": "Mewtwo adrift in deep space",
-      "sceneBody": "Mewtwo hovers weightless against a dense starfield. Its pale lavender body glows against the dark cosmic background.",
+      "sceneBody": "Mewtwo hovers against a dense star field. The pale blue body glows against the dark background.",
       "sceneZoom": {
         "zw": 2690,
         "zx": -621,
@@ -141,29 +141,29 @@
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/37967e8f7bd2c3c4f702db3c264ba3cf.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a star-filled cosmic void",
+        "subject": "Mewtwo Star floating in a glittering cosmic void",
         "hidden": "",
         "sceneCenterX": 0.5,
-        "sceneCenterY": 0.33,
+        "sceneCenterY": 0.34,
         "sceneFactor": 1.9,
         "sceneHeadline": "Mewtwo adrift in deep space",
-        "sceneBody": "Mewtwo hovers weightless against a dense starfield | its pale lavender body glows softly against the dark cosmic background.",
+        "sceneBody": "Mewtwo Star hovers weightless against a dense star field | the pale blue body glows softly against the dark cosmic background",
         "craftCenterX": 0.3,
-        "craftCenterY": 0.22,
+        "craftCenterY": 0.26,
         "craftFactor": 3.4,
-        "craftHeadline": "Starburst cluster in the cosmos",
-        "craftBody": "A bright white starburst erupts near Mewtwo's left side | scattered colored light points dot the surrounding deep-space backdrop.",
-        "compare": "a high-end home espresso machine",
-        "compareUsd": 800,
+        "craftHeadline": "Starburst cluster in the background",
+        "craftBody": "A bright white starburst erupts near Mewtwo's left side | scattered color-flecked stars fan outward through the deep space field",
+        "compare": "a high-end mirrorless camera kit",
+        "compareUsd": 2800,
         "craftZoom": {
           "zw": 4012,
           "zx": -664,
-          "zy": -750
+          "zy": -974
         },
         "sceneZoom": {
           "zw": 2242,
           "zx": -581,
-          "zy": -551
+          "zy": -582
         }
       },
       "crops": {
