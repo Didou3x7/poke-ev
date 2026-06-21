@@ -148,7 +148,10 @@ def verify_price(item):
     if not m:
         rec["note"] = "no pokemontcg id (modern scan) — snapshot price kept"
         return rec
-    card_id = f"{m.group(1)}-{m.group(2)}"
+    # The image URL may be the _hires variant (e.g. ecard3-146_hires.png); the card-id
+    # endpoint wants the bare id, so strip the suffix or the lookup 404s (was silently
+    # killing the live price cross-check for grail cards).
+    card_id = f"{m.group(1)}-{m.group(2)}".replace("_hires", "")
     try:
         data = (_ptcg_get(f"{PTCG_API}/cards/{card_id}") or {}).get("data") or {}
     except Exception as exc:
@@ -930,6 +933,27 @@ def _no_dash(s):
     return re.sub(r"\s*[—–]\s*", " · ", str(s)).strip()
 
 
+def _wrap_clauses(text, width=36):
+    """Re-flow body copy so NO single line overflows the slide. The renderer draws each
+    '|'-separated clause on its own line with no auto-wrap, so a long clause was clipped
+    off both edges (seen on the grail SCENE slide). Greedy-wrap each clause to <=width
+    chars, preserving any intentional '|' breaks the art-director already chose."""
+    if not text:
+        return text
+    out = []
+    for clause in str(text).split("|"):
+        line = ""
+        for w in clause.split():
+            if line and len(line) + 1 + len(w) > width:
+                out.append(line)
+                line = w
+            else:
+                line = f"{line} {w}".strip()
+        if line:
+            out.append(line)
+    return "|".join(out)
+
+
 def _slug_words(*xs):
     """Lowercase alnum tokens for dynamic hashtags, e.g. 'Latias ex' -> 'latiasex'."""
     out = []
@@ -1454,7 +1478,7 @@ def slides_grails(base, facts, brief, hd_image=None):
 
     card = (f"{H}?slide=grail-story&set={q(set_name)}{logop}&img0={q(img)}&tilt=-3"
             f"&kicker={q(brief.get('cardKicker') or 'THE CARD')}&headline={q(brief.get('cardHeadline') or facts['name'])}"
-            f"&body={q(brief.get('cardBody') or '')}")
+            f"&body={q(_wrap_clauses(brief.get('cardBody') or ''))}")
 
     # Zoom #1 — THE ARTIST / THE CRAFT (off-centre art-detail crop).
     cz = brief.get("craftZoom") or _safe_craft_zoom()
@@ -1462,7 +1486,7 @@ def slides_grails(base, facts, brief, hd_image=None):
     craft_headline = brief.get("craftHeadline") or (artist or "Hand-drawn")
     zoom_craft = (f"{H}?slide=grail-zoom&set={q(set_name)}{logop}&img0={q(zoom_img)}"
                   f"&kicker={q(craft_kicker)}&headline={q(craft_headline)}"
-                  f"&body={q(brief.get('craftBody') or '')}"
+                  f"&body={q(_wrap_clauses(brief.get('craftBody') or ''))}"
                   f"&zw={cz['zw']}&zx={cz['zx']}&zy={cz['zy']}&foot={q('but what is it? →')}")
 
     # Zoom #2 — THE SCENE (centred subject crop, a DIFFERENT region than #1).
@@ -1471,11 +1495,11 @@ def slides_grails(base, facts, brief, hd_image=None):
     scene_headline = brief.get("sceneHeadline") or "The subject, up close"
     zoom_scene = (f"{H}?slide=grail-zoom&set={q(set_name)}{logop}&img0={q(zoom_img)}"
                   f"&kicker={q(scene_kicker)}&headline={q(scene_headline)}"
-                  f"&body={q(brief.get('sceneBody') or '')}"
+                  f"&body={q(_wrap_clauses(brief.get('sceneBody') or ''))}"
                   f"&zw={sz['zw']}&zx={sz['zx']}&zy={sz['zy']}&foot={q('and how rare? →')}")
 
     odds_n = facts.get("odds_n")
-    booster = facts.get("booster")
+    booster = _png(facts.get("booster"))  # tcgdex serves .webp; Satori needs .png
     odds = f"{H}?slide=grail-odds&set={q(set_name)}{logop}"
     if booster:
         odds += "".join(f"&b{i}={q(booster)}" for i in range(5))
@@ -1483,7 +1507,7 @@ def slides_grails(base, facts, brief, hd_image=None):
         odds += f"&statA={q('1')}&statB={q(f'{odds_n:,}')}&statSub={q('PACKS TO PULL THIS CARD')}"
     else:
         odds += f"&statA={q('1')}&statB={q('???')}&statSub={q('THE RAREST TIER IN THE SET')}"
-    odds += (f"&kicker={q('THE ODDS')}&body={q(brief.get('oddsBody') or '')}"
+    odds += (f"&kicker={q('THE ODDS')}&body={q(_wrap_clauses(brief.get('oddsBody') or ''))}"
              f"&foot={q('so… is it worth it? →')}")
 
     body = "pokeev.com runs the live Expected Value.|Know if any set is worth ripping."
@@ -1548,9 +1572,11 @@ def grail_vision_research(api_key, facts):
         '  "sceneFactor": 1.6..2.6 how tight to crop the SCENE (wider than the craft).\n'
         '  "sceneHeadline": <= 40 char title for the SCENE zoom slide.\n'
         '  "sceneBody": <= 140 chars, two clauses split by |, about the subject/scene.\n'
-        f'  "compare": a single real-world thing that costs CLEARLY LESS than {price} (so the card is '
-        'the more expensive side), as a short phrase, e.g. "a Nintendo Switch". Must be verifiably cheaper. '
-        'Use null if unsure.\n'
+        f'  "compare": a single tasteful CONSUMER GOOD you are CERTAIN costs well under {price}, as a short '
+        'phrase (e.g. "a high-end gaming PC", "a designer handbag"). NEVER a car/vehicle, a house/apartment, '
+        f'rent, a mortgage or a salary, and NEVER anything that could cost MORE than {price}. Use null if unsure.\n'
+        f'  "compareUsd": your best NUMBER estimate of that thing\'s USD price (must be clearly below '
+        f'{facts["usd"]}). Use null if unsure.\n'
         "No em-dashes anywhere."
     )
     try:
@@ -1663,8 +1689,12 @@ def _fresh_brief(theme, api_key, facts):
                 brief["sceneHeadline"] = v["sceneHeadline"]
             if v.get("sceneBody"):
                 brief["sceneBody"] = v["sceneBody"]
-            if v.get("compare"):
-                brief["shockHeadline"] = f"Worth more than|{v['compare']}"
+            cmp_txt, cmp_usd = v.get("compare"), v.get("compareUsd")
+            # Only use a money comparison that is VERIFIABLY cheaper (30% margin) — never let
+            # the model flex the card against something pricier (it once said "a used Honda
+            # Civic", which costs MORE than the card and is an off-brand car analogy).
+            if cmp_txt and isinstance(cmp_usd, (int, float)) and 0 < cmp_usd < facts["usd"] * 0.7:
+                brief["shockHeadline"] = f"Worth more than|{cmp_txt}"
         elif facts.get("artist"):
             brief["craftKicker"] = "THE ARTIST"
             brief["craftHeadline"] = facts["artist"]

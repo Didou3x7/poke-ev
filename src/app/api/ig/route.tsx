@@ -561,14 +561,14 @@ const RkFootCue = ({ text }: { text: string }) => (
 // orphan — every line is centred and hand-balanced. Satori's auto-wrap can't do this.
 // Inline emphasis: wrap a phrase in *asterisks* to render it in the holo gradient.
 const MultiLine = ({ text, size, color, lh = 1.34 }: { text: string; size: number; color: string; lh?: number }) => (
-  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", maxWidth: 900 }}>
     {text.split("|").map((ln, i) => (
-      <div key={i} style={{ display: "flex", alignItems: "baseline" }}>
+      <div key={i} style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "baseline", maxWidth: 900 }}>
         {ln.trim().split("*").map((seg, j) =>
           seg === "" ? null : (
             <span
               key={j}
-              style={{ display: "flex", whiteSpace: "pre", fontSize: size, lineHeight: lh, ...(j % 2 === 1 ? { backgroundImage: HOLO, backgroundClip: "text", color: "transparent" } : { color }) }}
+              style={{ display: "flex", whiteSpace: "pre-wrap", maxWidth: 900, fontSize: size, lineHeight: lh, ...(j % 2 === 1 ? { backgroundImage: HOLO, backgroundClip: "text", color: "transparent" } : { color }) }}
             >
               {seg}
             </span>
@@ -854,6 +854,7 @@ function grailOdds(opts: { boosters: string[]; setLabel: string; logo: string | 
       </div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         {opts.kicker ? <div style={{ display: "flex", fontSize: 21, letterSpacing: 6, color: "#7c8499" }}>{opts.kicker}</div> : null}
+        {opts.boosters.length > 0 ? (
         <div style={{ display: "flex", position: "relative", width: 860, height: 568, alignItems: "center", justifyContent: "center", marginTop: 6 }}>
           {opts.boosters.map((src, i) => {
             const n = opts.boosters.length || 1;
@@ -868,6 +869,7 @@ function grailOdds(opts: { boosters: string[]; setLabel: string; logo: string | 
             );
           })}
         </div>
+        ) : null}
         <div style={{ display: "flex", alignItems: "baseline", marginTop: 50 }}>
           <HoloText size={140} ls={-3}>{opts.statA}</HoloText>
           <span style={{ display: "flex", fontSize: 50, color: "#5C6477", margin: "0 40px" }}>in</span>
