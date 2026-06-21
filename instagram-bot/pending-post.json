@@ -8,8 +8,8 @@
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/fd6c2b327197a22fd71e0ed2851ce2a2.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/dd00dca779a8a0830df36ab55ed79544.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/f99fab11c61d3b15a33cdc5dac9bcf47.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/a3fc99a789d28c8991c0787b522d22e6.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/9ee6c53841eeac63ed6df9ae8ba7ff99.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/f3e25f86658d9e524ea8b252799d9750.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/90088381a01aa5a1860267577bac59e6.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -55,15 +55,15 @@
       "cardBody": "EX Holon Phantoms crown jewel. The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "Fukuda layers multicolored light bursts across deep black space. The holo shifts each point of light as the card tilts.",
+      "craftBody": "A bright starburst bloom anchors the upper-left, painted in soft whites and color flecks. It reads as a distant nebula.",
       "craftZoom": {
         "zw": 4248,
         "zx": -1329,
         "zy": -982
       },
       "sceneKicker": "THE SCENE",
-      "sceneHeadline": "MEWTWO STAR IN FULL",
-      "sceneBody": "Mewtwo hovers against a cosmic backdrop, rendered in cool silver-blue. The Star mark sits above the name bar.",
+      "sceneHeadline": "Mewtwo Star, Unrestrained",
+      "sceneBody": "Fukuda renders Mewtwo mid-levitation against a deep-space backdrop. The foil layer makes the starfield shift with every tilt.",
       "sceneZoom": {
         "zw": 2520,
         "zx": -569,
@@ -140,29 +140,29 @@
       "artist": "Masakazu Fukuda",
       "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c5ece04cea1e5c3b57e18ffa42820c1e.png",
       "vision": {
-        "subject": "Mewtwo Star floating in a starfield, arms outstretched",
+        "subject": "Mewtwo Star floating in a cosmic starfield, arms extended",
         "hidden": "",
         "sceneCenterX": 0.5,
-        "sceneCenterY": 0.32,
+        "sceneCenterY": 0.33,
         "sceneFactor": 1.9,
-        "sceneHeadline": "MEWTWO STAR IN FULL",
-        "sceneBody": "Mewtwo hovers against a deep cosmic backdrop, body rendered in cool silver-blue. | The full Star designation mark sits above the name bar, confirming its 1-per-deck rarity.",
-        "craftCenterX": 0.38,
+        "sceneHeadline": "Mewtwo Star, Unrestrained",
+        "sceneBody": "Masakazu Fukuda renders Mewtwo mid-levitation against a deep-space backdrop | the holographic foil layer makes the starfield shift with every tilt of the card.",
+        "craftCenterX": 0.3,
         "craftCenterY": 0.22,
         "craftFactor": 3.4,
-        "craftHeadline": "THE STARFIELD SCATTER",
-        "craftBody": "Masakazu Fukuda's background layers multicolored light bursts, red, green, and white, across deep black space. | The holo treatment makes each point of light shift as the card tilts.",
-        "compare": "a high-end gaming PC",
-        "compareUsd": 2500,
+        "craftHeadline": "The Cosmic Burst Detail",
+        "craftBody": "A bright starburst bloom anchors the upper-left corner, painted in soft whites and scattered color flecks | it reads as a distant nebula and grounds Mewtwo's pose in deep space.",
+        "compare": "a flagship iPhone",
+        "compareUsd": 1199,
         "craftZoom": {
           "zw": 4012,
-          "zx": -985,
+          "zx": -664,
           "zy": -750
         },
         "sceneZoom": {
           "zw": 2242,
           "zx": -581,
-          "zy": -520
+          "zy": -551
         }
       },
       "crops": {
