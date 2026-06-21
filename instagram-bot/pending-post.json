@@ -7,9 +7,9 @@
     "theme": "grails",
     "slides": [
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46857615d2be49895495cbf0e8131a11.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/d241f53a116e24abe21935f437c50a8d.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5eb04c7f62e205630321d106221f434b.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/e0e6529d2a42086226e6798bc5c24d39.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7fac0fdf95915dbb9be88cc745f57886.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/22ffd0cdbe44aee042ee8921f2557a8b.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/8b56b230caa0db6e872f56a33eeaff12.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/cc695be9f9172bcbb69a7e82b2db943f.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
@@ -52,18 +52,18 @@
       "compare": null,
       "cardKicker": "THE CARD",
       "cardHeadline": "Mewtwo Star",
-      "cardBody": "EX Holon Phantoms crown jewel. The card the whole set chases.",
+      "cardBody": "EX Holon Phantoms's crown jewel.|The card the whole set chases.",
       "craftKicker": "THE ARTIST",
       "craftHeadline": "Masakazu Fukuda",
-      "craftBody": "A white-blue light bloom fills the upper-left corner. Multicolored star flecks scatter across the dark field.",
+      "craftBody": "A nebula-like flare blooms in the upper-left corner. Multicolored specks of red, blue, and gold scatter through the holographic foil.",
       "craftZoom": {
-        "zw": 3026,
-        "zx": -368,
-        "zy": -422
+        "zw": 3124,
+        "zx": -397,
+        "zy": -436
       },
       "sceneKicker": "THE SCENE",
       "sceneHeadline": "Mewtwo adrift in deep space",
-      "sceneBody": "The legendary clone hovers weightless against a dense starfield. Its pale body glows faintly against the cosmic dark.",
+      "sceneBody": "Mewtwo hovers weightless against a dense starfield. Cool violet hues and scattered light give the scene an otherworldly calm.",
       "sceneZoom": {
         "zw": 2690,
         "zx": -621,
@@ -147,18 +147,18 @@
         "sceneCenterY": 0.33,
         "sceneFactor": 1.9,
         "sceneHeadline": "Mewtwo adrift in deep space",
-        "sceneBody": "The legendary clone hovers weightless against a dense starfield | its pale blue-grey body glows faintly against the dark cosmic backdrop",
+        "sceneBody": "The genetic Pokemon hovers weightless against a dense starfield | cool violet hues and scattered light give the scene an isolated, otherworldly calm.",
         "craftCenterX": 0.3,
-        "craftCenterY": 0.26,
+        "craftCenterY": 0.25,
         "craftFactor": 3.4,
-        "craftHeadline": "Bright nebula burst, upper left",
-        "craftBody": "A concentrated white-blue light bloom dominates the upper-left corner of the art | surrounded by scattered multicolored star flecks across the dark field",
+        "craftHeadline": "Cosmic light burst in the background",
+        "craftBody": "A bright nebula-like flare blooms in the upper-left corner of the art | multicolored specks of red, blue, and gold scatter outward through the holographic foil.",
         "compare": "a high-end home espresso machine",
         "compareUsd": 1200,
         "craftZoom": {
           "zw": 4012,
           "zx": -664,
-          "zy": -974
+          "zy": -918
         },
         "sceneZoom": {
           "zw": 2242,
