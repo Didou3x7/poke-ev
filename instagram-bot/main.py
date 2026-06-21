@@ -1456,6 +1456,19 @@ def _band_crop(cx, band_top, band_bottom, fmin=1.35, fmax=3.6):
     return {"zw": zw, "zx": zx, "zy": zy}
 
 
+def _center_crop(cx, cy, span):
+    """Crop a vertical `span` of artwork centred on (cx, cy), kept inside the pure-art window
+    [0.10, 0.46] (no title bar, no text boxes). Used for the CRAFT detail at a DIFFERENT, off-
+    centre spot than the scene. Bigger span = less zoom."""
+    try:
+        cx = min(1.0, max(0.0, float(cx)))
+        cy = min(0.42, max(0.16, float(cy)))
+        span = min(0.34, max(0.18, float(span)))
+    except (TypeError, ValueError):
+        return _safe_craft_zoom()
+    return _band_crop(cx, cy - span / 2, cy + span / 2)
+
+
 def compute_grail_crops(image_url):
     """REAL framing — no LLM coordinate guessing (that kept cutting the subject). Detect the
     card's subject with OpenCV saliency (largest salient blob in the ART band, below the title
@@ -1824,12 +1837,17 @@ def _fresh_brief(theme, api_key, facts):
         elif facts.get("artist"):
             brief["craftKicker"] = "THE ARTIST"
             brief["craftHeadline"] = facts["artist"]
-        # Deterministic saliency crops (from the actual image) OVERRIDE the LLM's guessed
-        # coordinates — they center the subject and never cut the head.
+        # SCENE = the saliency subject (centred + wide). CRAFT must be a DIFFERENT region:
+        # use the vision-chosen detail (off-centre, and its craftBody describes THAT spot),
+        # framed safely + a touch wider so it isn't over-zoomed. Falls back to the saliency
+        # crop if there's no vision.
         crops = facts.get("crops")
         if crops:
-            brief["craftZoom"] = crops["craft"]
             brief["sceneZoom"] = crops["scene"]
+            brief["craftZoom"] = crops["craft"]
+        v = facts.get("vision")
+        if v and isinstance(v.get("craftCenterX"), (int, float)) and isinstance(v.get("craftCenterY"), (int, float)):
+            brief["craftZoom"] = _center_crop(v["craftCenterX"], v["craftCenterY"], 0.32)
         return brief
     sys.exit(f"[pokeev-bot] unknown theme {theme}")
 
