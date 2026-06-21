@@ -512,40 +512,51 @@ function connectedReveal(opts: { images: string[]; values: (string | null)[]; ti
 }
 
 function connectedCta(opts: { setLabel: string; logo: string | null; eyebrow: string; h1: string; h2: string; body: string; verdict: string | null }) {
+  const texts = (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+      <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
+      <div style={{ display: "flex" }}><HoloText size={opts.h2 ? 104 : opts.h1.length <= 10 ? 100 : opts.h1.length <= 16 ? 84 : opts.h1.length <= 22 ? 72 : 60}>{opts.h1}</HoloText></div>
+      {opts.h2 ? <div style={{ display: "flex" }}><HoloText size={104}>{opts.h2}</HoloText></div> : null}
+      {opts.body.includes("|") ? (
+        <div style={{ display: "flex", marginTop: 36 }}><MultiLine text={opts.body} size={33} color="#aab2c5" lh={1.38} /></div>
+      ) : (
+        <div style={{ display: "flex", fontSize: 33, lineHeight: 1.38, color: "#aab2c5", marginTop: 36, maxWidth: 860 }}>{opts.body}</div>
+      )}
+      {opts.verdict ? (
+        <div style={{ display: "flex", marginTop: 24 }}>
+          <HoloText size={40} ls={-1}>{opts.verdict}</HoloText>
+        </div>
+      ) : null}
+    </div>
+  );
+  const linkInBio = (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ display: "flex", height: 10, width: 200, borderRadius: 10, backgroundImage: HOLO }} />
+      <div style={{ display: "flex", fontFamily: "Clash", fontSize: 46, marginTop: 26 }}>→ link in bio</div>
+      <div style={{ display: "flex", fontSize: 24, letterSpacing: 4, color: "#5C6477", marginTop: 10 }}>@pokeev.tcg</div>
+    </div>
+  );
+  // Closing CTA (no set logo): hero wordmark + texts + link, EVENLY distributed (space-evenly)
+  // so there's no big void — logo upper, texts centered, link in the lower area, balanced rhythm.
+  if (!opts.logo) {
+    return (
+      <Frame>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-evenly", alignItems: "center" }}>
+          <Wordmark hero />
+          {texts}
+          {linkInBio}
+        </div>
+      </Frame>
+    );
+  }
   return (
     <Frame>
-      {opts.logo ? (
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Wordmark size={34} />
-          <SetLogo logo={opts.logo} label={opts.setLabel} />
-        </div>
-      ) : (
-        // No set logo: float the 3x hero wordmark in the upper area. ABSOLUTE so it does NOT
-        // push the body block — which then stays centered in the MIDDLE of the slide.
-        <div style={{ position: "absolute", top: 210, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-          <Wordmark hero />
-        </div>
-      )}
-      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-        <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
-        <div style={{ display: "flex" }}><HoloText size={opts.h2 ? 104 : opts.h1.length <= 10 ? 100 : opts.h1.length <= 16 ? 84 : opts.h1.length <= 22 ? 72 : 60}>{opts.h1}</HoloText></div>
-        {opts.h2 ? <div style={{ display: "flex" }}><HoloText size={104}>{opts.h2}</HoloText></div> : null}
-        {opts.body.includes("|") ? (
-          <div style={{ display: "flex", marginTop: 36 }}><MultiLine text={opts.body} size={33} color="#aab2c5" lh={1.38} /></div>
-        ) : (
-          <div style={{ display: "flex", fontSize: 33, lineHeight: 1.38, color: "#aab2c5", marginTop: 36, maxWidth: 860 }}>{opts.body}</div>
-        )}
-        {opts.verdict ? (
-          <div style={{ display: "flex", marginTop: 24 }}>
-            <HoloText size={40} ls={-1}>{opts.verdict}</HoloText>
-          </div>
-        ) : null}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Wordmark size={34} />
+        <SetLogo logo={opts.logo} label={opts.setLabel} />
       </div>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ display: "flex", height: 10, width: 200, borderRadius: 10, backgroundImage: HOLO }} />
-        <div style={{ display: "flex", fontFamily: "Clash", fontSize: 46, marginTop: 26 }}>→ link in bio</div>
-        <div style={{ display: "flex", fontSize: 24, letterSpacing: 4, color: "#5C6477", marginTop: 10 }}>@pokeev.tcg</div>
-      </div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center" }}>{texts}</div>
+      {linkInBio}
     </Frame>
   );
 }
@@ -736,19 +747,22 @@ function rkVerdict(opts: { setLabel: string; logo: string | null; verdict: strin
 // Slide 7 — the conversion. The verdict you just saw was one set; the site runs the
 // exact same math, live, on any sealed set. Straight to the link in bio.
 function rkCta(opts: { eyebrow: string; h1: string; h2: string; body: string }) {
+  // Same balanced rhythm as connectedCta: hero wordmark + texts + link, EVENLY distributed.
   return (
     <Frame>
-      <div style={{ position: "absolute", top: 210, left: 0, right: 0, display: "flex", justifyContent: "center" }}><Wordmark hero /></div>
-      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-        <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
-        <div style={{ display: "flex" }}><HoloText size={100}>{opts.h1}</HoloText></div>
-        <div style={{ display: "flex" }}><HoloText size={100}>{opts.h2}</HoloText></div>
-        <div style={{ display: "flex", marginTop: 36 }}><MultiLine text={opts.body} size={33} color="#aab2c5" lh={1.38} /></div>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ display: "flex", height: 10, width: 200, borderRadius: 10, backgroundImage: HOLO }} />
-        <div style={{ display: "flex", fontFamily: "Clash", fontSize: 46, marginTop: 26 }}>→ link in bio</div>
-        <div style={{ display: "flex", fontSize: 24, letterSpacing: 4, color: "#5C6477", marginTop: 10 }}>@pokeev.tcg</div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "space-evenly", alignItems: "center" }}>
+        <Wordmark hero />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+          <div style={{ display: "flex", fontSize: 24, letterSpacing: 5, color: "#7c8499", marginBottom: 22 }}>{opts.eyebrow}</div>
+          <div style={{ display: "flex" }}><HoloText size={100}>{opts.h1}</HoloText></div>
+          <div style={{ display: "flex" }}><HoloText size={100}>{opts.h2}</HoloText></div>
+          <div style={{ display: "flex", marginTop: 36 }}><MultiLine text={opts.body} size={33} color="#aab2c5" lh={1.38} /></div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", height: 10, width: 200, borderRadius: 10, backgroundImage: HOLO }} />
+          <div style={{ display: "flex", fontFamily: "Clash", fontSize: 46, marginTop: 26 }}>→ link in bio</div>
+          <div style={{ display: "flex", fontSize: 24, letterSpacing: 4, color: "#5C6477", marginTop: 10 }}>@pokeev.tcg</div>
+        </div>
       </div>
     </Frame>
   );
