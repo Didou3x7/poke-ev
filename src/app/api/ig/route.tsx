@@ -354,7 +354,7 @@ function recapSlide(rows: { rank: number; name: string; setName: string; price: 
 
 const SetLogo = ({ logo, label }: { logo: string | null; label: string }) =>
   logo ? (
-    <img src={logo} width={280} height={75} style={{ display: "flex", objectFit: "contain", objectPosition: "right center" }} />
+    <img src={logo} height={82} style={{ display: "flex", objectFit: "contain" }} />
   ) : (
     <span style={{ display: "flex", fontSize: 18, letterSpacing: 4, color: "#8A93A6" }}>{label.toUpperCase()}</span>
   );
