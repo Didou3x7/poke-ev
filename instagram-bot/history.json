@@ -1,7 +1,13 @@
 [
   {
     "date": "2026-06-19",
-    "theme": "connected"
+    "theme": "connected",
+    "keys": [
+      "crown-zenith-sinnoh-legends"
+    ],
+    "sets": [
+      "crown-zenith-sinnoh-legends"
+    ]
   },
   {
     "date": "2026-06-20",
