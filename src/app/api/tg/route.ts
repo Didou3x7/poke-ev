@@ -17,6 +17,32 @@ export const maxDuration = 300; // Vercel Pro — a carousel publish takes ~40s
 
 const PUBLISH_FROM_HOUR = 20; // Paris — never post before 20:00 (owner rule)
 
+/** Kick the Python bot (GitHub Actions) NOW so a revise note is reworked within ~1 min,
+ *  instead of waiting for an unreliable cron tick. The webhook only RECORDS the note (the
+ *  rework = Claude rebuild + Satori render = Python). Best-effort; the cron is the fallback. */
+async function dispatchBot(mode: string): Promise<void> {
+  const token = process.env.GH_DISPATCH_TOKEN;
+  if (!token) return;
+  try {
+    await fetch(
+      "https://api.github.com/repos/Didou3x7/poke-ev/actions/workflows/instagram-bot.yml/dispatches",
+      {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+          accept: "application/vnd.github+json",
+          "x-github-api-version": "2022-11-28",
+          "content-type": "application/json",
+          "user-agent": "pokeev-tg",
+        },
+        body: JSON.stringify({ ref: "main", inputs: { mode } }),
+      },
+    );
+  } catch {
+    /* the next cron tick reworks it anyway */
+  }
+}
+
 function parisHour(): number {
   const h = new Intl.DateTimeFormat("en-GB", {
     timeZone: "Europe/Paris",
@@ -125,7 +151,10 @@ async function handleReviseNote(chatId: string, note: string): Promise<void> {
     awaiting_revise: false,
     ts: nowIso(),
   });
-  await sendMessage(chatId, "🔄 Got it — I'll rework the post with your notes and send a fresh preview shortly.");
+  // Trigger the rework immediately (don't wait for a cron tick — that was the gap: the note
+  // was recorded but never reworked until a Python run happened to fire).
+  await dispatchBot("poll");
+  await sendMessage(chatId, "🔄 Got it — reworking with your notes now, a fresh preview lands in ~1 min.");
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
