@@ -1146,7 +1146,11 @@ def slides_connected(base, facts, brief):
     total_str = fmt_usd(facts["total"])
     set_lbl = facts["setLabel"]
     logo = _png(facts["setLogo"])
-    imgparams = "".join(f"&img{i}={q(_png(it.get('hd_image') or it['image']))}" for i, it in enumerate(items))
+    # Use the ORIGINAL scan (~734px), NOT the x8 HD upscale (4096px, ~28MB each). These
+    # slides show the cards SMALL (cover fan ~300px, reveal row ~250px) where 734px is already
+    # pixel-perfect — and Satori 500s when asked to fetch+decode several 4096px PNGs at once
+    # (the connect-reveal slide crashed loading 4×28MB). HD is only for the full-bleed grail zoom.
+    imgparams = "".join(f"&img{i}={q(_png(it['image']))}" for i, it in enumerate(items))
     valparams = "".join(f"&v{i}={q(fmt_usd(it['usd']))}" for i, it in enumerate(items))
 
     cover = (f"{H}?slide=connect-cover"
@@ -1165,7 +1169,7 @@ def slides_connected(base, facts, brief):
             tally = f"the last piece · {total_str} complete"
         else:
             tally = f"{fmt_usd(running)} of {total_str} shown"
-        u = (f"{H}?slide=connect&img0={q(_png(it.get('hd_image') or it['image']))}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
+        u = (f"{H}?slide=connect&img0={q(_png(it['image']))}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
              f"&series={q(series)}&tally={q(tally)}&set={q(set_lbl)}")
         if logo:
             u += f"&logo={q(logo)}"
@@ -1358,7 +1362,9 @@ def slides_ripkeep(base, facts, brief):
     tline = "The chase pulls are worth a small fortune.|The catch: you have to actually hit one."
     tempt = f"{H}?slide=rk-tempt&set={q(set_name)}{logop}"
     for i, c in enumerate(facts["chase"]):
-        tempt += f"&img{i}={q(_png(c.get('hd_image') or c['image']))}&v{i}={q(fmt_usd(c['usd']))}"
+        # Original scan, not the x8 HD (the 3-up tempt row shows cards small; several 4096px
+        # PNGs in one Satori render 500s — same crash as connect-reveal).
+        tempt += f"&img{i}={q(_png(c['image']))}&v{i}={q(fmt_usd(c['usd']))}"
     tempt += f"&line={q(tline)}"
 
     stat_sealed = (f"{H}?slide=rk-stat&set={q(set_name)}{logop}"
@@ -1786,9 +1792,9 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
                 it["usd"] = int(round(rec["display_usd"]))
             verify.append(rec)
         facts["total"] = sum(it["usd"] for it in facts["items"])  # keep total == sum of shown
-        for it in facts["items"]:  # AI-upscale every card to max (owner rule: quality above all)
-            it["hd_image"] = upscale_card(it["image"])
-        log(f"  connected upscaled {sum(1 for it in facts['items'] if it.get('hd_image'))}/{len(facts['items'])} cards")
+        # NOTE: no x8 upscale for connect cards — every connect slide shows them SMALL
+        # (≤~700px) where the original scan is already pixel-perfect, and feeding several
+        # 4096px PNGs to Satori 500s the render (connect-reveal). Upscale is grail-zoom only.
         return {"theme": theme, "base": base, "facts": facts, "verify": verify,
                 "keys": [facts["key"]], "api_key": api_key}
 
@@ -1800,9 +1806,8 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
         for c, rec in zip(facts["chase"], verify):
             if rec.get("display_usd"):
                 c["usd"] = int(round(rec["display_usd"]))
-        for c in facts["chase"]:  # AI-upscale every chase card to max (quality-above-all rule)
-            c["hd_image"] = upscale_card(c["image"])
-        log(f"  ripkeep upscaled {sum(1 for c in facts['chase'] if c.get('hd_image'))}/{len(facts['chase'])} chase cards")
+        # No x8 upscale: the rk-tempt row shows chase cards small; several 4096px PNGs in one
+        # Satori render 500s (same crash as connect-reveal). Original scans are crisp at that size.
         return {"theme": theme, "base": base, "facts": facts, "verify": verify,
                 "keys": [facts["key"]], "api_key": api_key}
 
@@ -2193,11 +2198,22 @@ def tg_send_preview(token, chat_id, plan, buttons=True):
     # the slide URLs — Telegram's ~5s media-fetch timeout can't render an HD slide in
     # time, but the bot can download it patiently and push the bytes.
     urls = plan_slides(plan)[:10]
-    media, files = [], {}
+    media, files, skipped = [], {}, []
     for i, u in enumerate(urls):
+        # Resilient: a single slide that won't render (e.g. a Satori 500) must NOT abort the
+        # whole preview (it did on 2026-06-22 — one bad slide = no preview at all). Skip it,
+        # warn, and send the rest, so the editor always gets a preview + a heads-up to fix.
+        try:
+            payload_bytes = _download_bytes(u, timeout=90, tries=3)
+        except Exception as exc:  # noqa: BLE001
+            skipped.append(i + 1)
+            log(f"  preview: slide {i + 1} unavailable, skipping ({str(exc)[:140]})")
+            continue
         name = f"p{i}"
         media.append({"type": "photo", "media": f"attach://{name}"})
-        files[name] = (f"{name}.png", _download_bytes(u, timeout=90, tries=3), "image/png")
+        files[name] = (f"{name}.png", payload_bytes, "image/png")
+    if len(media) < 2:
+        raise RuntimeError(f"only {len(media)} slide(s) rendered — cannot send a preview")
     r = requests.post(
         f"https://api.telegram.org/bot{token}/sendMediaGroup",
         data={"chat_id": chat_id, "media": _json.dumps(media)},
@@ -2211,9 +2227,10 @@ def tg_send_preview(token, chat_id, plan, buttons=True):
         for v in plan.get("verify", [])
     )
     ntags = len(plan.get("hashtags") or [])
+    skip_note = f"\n\n⚠️ Slide(s) {skipped} failed to render and were skipped — needs a fix." if skipped else ""
     text = (f"🎴 PokeEV post — {plan['theme'].upper()} ({plan['date']})\n\n"
             f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION ({ntags} hashtags folded in):\n"
-            f"{plan['caption']}\n\nPublish this carousel?")
+            f"{plan['caption']}{skip_note}\n\nPublish this carousel?")
     payload = {"chat_id": chat_id, "text": text[:4000]}
     # Inline buttons: ✅ Approve / ✏️ Revise / 🚫 Skip. They work in BOTH the live `run` flow
     # AND the async 2-phase flow now — frequent poll ticks (do_poll) answer the tap (stop the
