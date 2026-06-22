@@ -409,12 +409,14 @@ const CardFan = ({ images }: { images: string[] }) => {
 
 // HOOK cover: the card fan (visual hook) + an emotional line + the combined total kept
 // secret (blurred + a question mark). Minimal text, two loops the reveal closes.
-function connectCoverSlide(opts: { eyebrow: string; headline: string; total: string; cue: string; images: string[] }) {
+function connectCoverSlide(opts: { eyebrow: string; headline: string; total: string; cue: string; images: string[]; setLabel?: string; logo?: string | null }) {
   const { size, lines } = titleLayout(opts.headline);
   return (
     <Frame>
-      <div style={{ display: "flex" }}>
+      {/* Same header as every other slide: PokéEV top-left, set logo flush top-right. */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Wordmark />
+        <SetLogo logo={opts.logo ?? null} label={opts.setLabel ?? ""} />
       </div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
         <CardFan images={opts.images} />
@@ -1022,6 +1024,8 @@ export async function GET(request: NextRequest) {
         total: moneyParam(p.get("title")) ?? "$0",
         cue: textParam(p.get("cue"), 30) ?? "swipe →",
         images: imgs,
+        setLabel,
+        logo,
       });
     } else if (slide === "connect-cta") {
       element = connectedCta({

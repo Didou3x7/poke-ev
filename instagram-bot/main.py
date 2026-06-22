@@ -214,9 +214,12 @@ def _download_bytes(url, timeout=90, tries=3):
     raise RuntimeError(f"download failed {url}: {last}")
 
 
-def upscale_card(image_url):
-    """Free AI super-resolution (OpenCV LapSRN x8): the ~734px scan → 8x then capped to
-    4096px wide, hosted on Vercel Blob so /api/ig renders the full-bleed zoom razor-sharp.
+def upscale_card(image_url, max_w=4096):
+    """Free AI super-resolution (OpenCV LapSRN x8): the native scan → 8x then capped to
+    `max_w` wide, hosted on Vercel Blob. `max_w=4096` for the full-bleed grail zoom (one
+    image, displayed huge). For the carousel CARDS (connect/ripkeep), pass a SMALLER cap
+    (~1500) — crisp at their ≤612px display AND light enough that a multi-image slide
+    (cover fan, reveal row) doesn't 500 Satori (several 4096px PNGs OOM the renderer).
     Returns the HD url, or None (graceful) without BLOB_READ_WRITE_TOKEN or on failure."""
     if not os.environ.get("BLOB_READ_WRITE_TOKEN") or not image_url:
         return None
@@ -239,17 +242,16 @@ def upscale_card(image_url):
         sr.readModel(str(here / "models" / "LapSRN_x8.pb"))
         sr.setModel("lapsrn", 8)
         out = sr.upsample(arr)
-        # 8x of a ~734px scan is ~5872px wide. Downscale the WIDTH to <= 4096 (renderer-safe;
-        # still ~40% more zoom resolution than the old 4x) while keeping the 8x supersampled
-        # crispness for the full-bleed grail zoom.
-        MAXW = 4096
+        # 8x supersample, then downscale the WIDTH to <= max_w (INTER_AREA keeps edges clean).
+        # The 8x pass reconstructs detail even when capping to a medium width, so a 600px scan
+        # downscaled to 1500px looks far crisper than the raw 600px at a 612px display.
         h, w = out.shape[:2]
-        if w > MAXW:
-            out = cv2.resize(out, (MAXW, int(round(h * MAXW / w))), interpolation=cv2.INTER_AREA)
+        if w > max_w:
+            out = cv2.resize(out, (max_w, int(round(h * max_w / w))), interpolation=cv2.INTER_AREA)
         fd, tmp = tempfile.mkstemp(suffix=".png")
         os.close(fd)
         cv2.imwrite(tmp, out)
-        pathname = f"ig-cards/{hashlib.md5(src.encode()).hexdigest()}.png"
+        pathname = f"ig-cards/{hashlib.md5(f'{src}@{max_w}'.encode()).hexdigest()}.png"
         return _blob_put(tmp, pathname)
     except Exception as exc:  # noqa: BLE001 — never fail a post over upscaling
         log(f"  upscale failed ({exc})")
@@ -1146,15 +1148,15 @@ def slides_connected(base, facts, brief):
     total_str = fmt_usd(facts["total"])
     set_lbl = facts["setLabel"]
     logo = _png(facts["setLogo"])
-    # Use the ORIGINAL scan (~734px), NOT the x8 HD upscale (4096px, ~28MB each). These
-    # slides show the cards SMALL (cover fan ~300px, reveal row ~250px) where 734px is already
-    # pixel-perfect — and Satori 500s when asked to fetch+decode several 4096px PNGs at once
-    # (the connect-reveal slide crashed loading 4×28MB). HD is only for the full-bleed grail zoom.
-    imgparams = "".join(f"&img{i}={q(_png(it['image']))}" for i, it in enumerate(items))
+    # MEDIUM-upscaled HD (1500px) for crisp card edges — native scans are tiny (Southern
+    # Islands = 600px → pixelated). 1500px is safe for the multi-image cover/reveal (4096px×N
+    # OOMs Satori); falls back to the raw scan if upscaling was unavailable.
+    imgparams = "".join(f"&img{i}={q(_png(it.get('hd_image') or it['image']))}" for i, it in enumerate(items))
     valparams = "".join(f"&v{i}={q(fmt_usd(it['usd']))}" for i, it in enumerate(items))
 
-    cover = (f"{H}?slide=connect-cover"
-             f"&eyebrow={q(brief['eyebrow'])}&headline={q(brief['headline'])}"
+    cover = (f"{H}?slide=connect-cover&set={q(set_lbl)}"
+             + (f"&logo={q(logo)}" if logo else "")
+             + f"&eyebrow={q(brief['eyebrow'])}&headline={q(brief['headline'])}"
              f"&title={q(total_str)}&cue={q('swipe →')}{imgparams}")
 
     cards = []
@@ -1169,7 +1171,7 @@ def slides_connected(base, facts, brief):
             tally = f"the last piece · {total_str} complete"
         else:
             tally = f"{fmt_usd(running)} of {total_str} shown"
-        u = (f"{H}?slide=connect&img0={q(_png(it['image']))}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
+        u = (f"{H}?slide=connect&img0={q(_png(it.get('hd_image') or it['image']))}&name={q(it['name'])}&val={q(fmt_usd(it['usd']))}"
              f"&series={q(series)}&tally={q(tally)}&set={q(set_lbl)}")
         if logo:
             u += f"&logo={q(logo)}"
@@ -1362,9 +1364,8 @@ def slides_ripkeep(base, facts, brief):
     tline = "The chase pulls are worth a small fortune.|The catch: you have to actually hit one."
     tempt = f"{H}?slide=rk-tempt&set={q(set_name)}{logop}"
     for i, c in enumerate(facts["chase"]):
-        # Original scan, not the x8 HD (the 3-up tempt row shows cards small; several 4096px
-        # PNGs in one Satori render 500s — same crash as connect-reveal).
-        tempt += f"&img{i}={q(_png(c['image']))}&v{i}={q(fmt_usd(c['usd']))}"
+        # Medium-upscaled HD (1500px) for crisp edges, Satori-safe for the 3-up row.
+        tempt += f"&img{i}={q(_png(c.get('hd_image') or c['image']))}&v{i}={q(fmt_usd(c['usd']))}"
     tempt += f"&line={q(tline)}"
 
     stat_sealed = (f"{H}?slide=rk-stat&set={q(set_name)}{logop}"
@@ -1792,9 +1793,13 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
                 it["usd"] = int(round(rec["display_usd"]))
             verify.append(rec)
         facts["total"] = sum(it["usd"] for it in facts["items"])  # keep total == sum of shown
-        # NOTE: no x8 upscale for connect cards — every connect slide shows them SMALL
-        # (≤~700px) where the original scan is already pixel-perfect, and feeding several
-        # 4096px PNGs to Satori 500s the render (connect-reveal). Upscale is grail-zoom only.
+        # AI-upscale each card to a MEDIUM 1500px (not 4096): the per-card slide shows it at
+        # 612px and the native scans are tiny (Southern Islands = 600px → pixelated edges raw),
+        # so 1500px makes the edges crisp; 1500px also stays light enough that the multi-image
+        # cover/reveal slides don't 500 Satori (4096px×N OOMs it).
+        for it in facts["items"]:
+            it["hd_image"] = upscale_card(it["image"], max_w=1500)
+        log(f"  connected upscaled {sum(1 for it in facts['items'] if it.get('hd_image'))}/{len(facts['items'])} cards (1500px)")
         return {"theme": theme, "base": base, "facts": facts, "verify": verify,
                 "keys": [facts["key"]], "api_key": api_key}
 
@@ -1806,8 +1811,11 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
         for c, rec in zip(facts["chase"], verify):
             if rec.get("display_usd"):
                 c["usd"] = int(round(rec["display_usd"]))
-        # No x8 upscale: the rk-tempt row shows chase cards small; several 4096px PNGs in one
-        # Satori render 500s (same crash as connect-reveal). Original scans are crisp at that size.
+        # AI-upscale each chase card to a MEDIUM 1500px (crisp at the rk-tempt display, light
+        # enough that the 3-up row doesn't 500 Satori — see connect note above).
+        for c in facts["chase"]:
+            c["hd_image"] = upscale_card(c["image"], max_w=1500)
+        log(f"  ripkeep upscaled {sum(1 for c in facts['chase'] if c.get('hd_image'))}/{len(facts['chase'])} chase cards (1500px)")
         return {"theme": theme, "base": base, "facts": facts, "verify": verify,
                 "keys": [facts["key"]], "api_key": api_key}
 
