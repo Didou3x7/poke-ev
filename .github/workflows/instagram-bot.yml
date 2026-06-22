@@ -118,6 +118,8 @@ jobs:
           META_ACCESS_TOKEN:       ${{ secrets.META_ACCESS_TOKEN }}
           INSTAGRAM_BUSINESS_ID:   ${{ secrets.INSTAGRAM_BUSINESS_ID }}
           BLOB_READ_WRITE_TOKEN:   ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          GH_DISPATCH_TOKEN:       ${{ secrets.GH_DISPATCH_TOKEN }}
+          CRON_SECRET:             ${{ secrets.CRON_SECRET }}
           META_GRAPH_VERSION:      v21.0
         run: |
           npm i -g vercel@54.14.0
@@ -135,6 +137,8 @@ jobs:
           setenv META_ACCESS_TOKEN
           setenv INSTAGRAM_BUSINESS_ID
           setenv BLOB_READ_WRITE_TOKEN
+          setenv GH_DISPATCH_TOKEN
+          setenv CRON_SECRET
           setenv META_GRAPH_VERSION
           echo "redeploying so the new runtime env vars are picked up..."
           vercel build --prod --token="$VERCEL_TOKEN"
