@@ -38,11 +38,41 @@ async function readPriorFromBlob(): Promise<Snapshot | null> {
   }
 }
 
+// Wake the IG bot's MORNING preview. Vercel Hobby allows only 2 daily crons (this refresh +
+// ig-tick), so this 05:00 cron doubles as the reliable morning bot trigger — fired up-front
+// so a slow/timed-out snapshot build can never skip the preview. Best-effort; GitHub's
+// */15 cron is the backup. (The bot reads committed /data, independent of this Blob refresh.)
+async function dispatchBotPrepare(): Promise<void> {
+  const token = process.env.GH_DISPATCH_TOKEN;
+  if (!token) return;
+  try {
+    await fetch(
+      "https://api.github.com/repos/Didou3x7/poke-ev/actions/workflows/instagram-bot.yml/dispatches",
+      {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+          accept: "application/vnd.github+json",
+          "x-github-api-version": "2022-11-28",
+          "content-type": "application/json",
+          "user-agent": "pokeev-cron",
+        },
+        body: JSON.stringify({ ref: "main", inputs: { mode: "prepare" } }),
+      },
+    );
+  } catch {
+    /* GitHub cron is the fallback */
+  }
+}
+
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+  // Trigger the morning IG preview FIRST (before the long snapshot build), so it fires
+  // reliably regardless of how the build goes.
+  await dispatchBotPrepare();
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     return NextResponse.json({ error: "BLOB_READ_WRITE_TOKEN not configured" }, { status: 503 });
   }
