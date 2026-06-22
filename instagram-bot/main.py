@@ -2713,6 +2713,24 @@ def do_publish_pending(final=True):
         log("no ✅ approval yet — keeping the pending post for a later evening tick")
 
 
+def do_evening_publish():
+    """RELIABLE, DST-PROOF evening publish. The evening Vercel cron fires at a FIXED UTC time
+    (18:00); this WAITS until the Paris publish window opens (>=20:00) then publishes — so the
+    same fixed UTC fire works in summer (fires AT 20:00 Paris → publishes immediately) AND in
+    winter (fires at 19:00 Paris → waits ~1h to 20:00). It's reliable because Vercel Cron never
+    drops a fire, unlike GitHub's `schedule` cron which silently skipped EVERY evening tick
+    (the recurring "20h et pas posté" bug). Capped so the GitHub job never runs away."""
+    waited = 0
+    while paris_hour() < 20 and waited < 4500:  # up to 75 min — covers the winter UTC offset
+        log(f"evening-publish: Paris {paris_hour()}h — waiting for the 20:00 window…")
+        time.sleep(300)
+        waited += 300
+    if paris_hour() >= 20:
+        do_publish_pending(final=False)
+    else:  # safety: a mis-fire far from 20:00 must NEVER post before the owner's window
+        log("evening-publish: still before 20:00 after the wait cap — NOT publishing (safety)")
+
+
 def _save_pending(pending):
     _pending_path().write_text(json.dumps(pending, indent=2, ensure_ascii=False), encoding="utf-8")
 
@@ -2800,6 +2818,8 @@ def main():
         do_diagnose()
     elif cmd == "publish-pending":
         do_publish_pending()
+    elif cmd == "evening":  # reliable DST-proof evening publish (waits for 20:00 Paris, then posts)
+        do_evening_publish()
     elif cmd == "set-webhook":  # register the Telegram webhook (instant button handling)
         set_webhook()
     elif cmd == "run":  # legacy single-shot: build + gate + publish in one go

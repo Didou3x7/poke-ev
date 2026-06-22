@@ -22,7 +22,7 @@ on:
         description: 'Manual run mode (test the preview or publish phase on demand)'
         type: choice
         default: scheduled
-        options: [scheduled, prepare, poll, ack, publish-pending, run, diagnose, set-webhook, setup-webhook]
+        options: [scheduled, prepare, poll, ack, publish-pending, evening, run, diagnose, set-webhook, setup-webhook]
       set:
         description: 'Force a specific set for the RIP OR KEEP (T2) post, e.g. brilliant-stars (blank = auto)'
         type: string
@@ -39,7 +39,7 @@ jobs:
   run:
     if: github.event.inputs.mode != 'setup-webhook'
     runs-on: ubuntu-latest
-    timeout-minutes: 60   # room for the Telegram approve/revise loop
+    timeout-minutes: 90   # room for the Telegram approve/revise loop + the DST wait in mode=evening (waits up to ~75min for the 20:00 Paris window in winter)
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5

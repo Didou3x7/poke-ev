@@ -1,9 +1,9 @@
-// RELIABLE scheduler for the Instagram bot. GitHub Actions' own cron is best-effort and
-// silently drops scheduled runs (it skipped the ENTIRE morning window on 2026-06-22, so no
-// preview was sent). Vercel Cron, by contrast, fires reliably — so we let Vercel be the
-// clock and have it trigger the GitHub workflow (where the heavy Python bot runs) via
-// workflow_dispatch. The bot still routes by Paris time + idempotency, so frequent ticks
-// are safe (no double preview / double post).
+// RELIABLE evening-publish trigger for the Instagram bot. GitHub Actions' own `schedule` cron
+// is best-effort and silently drops runs (it skipped the ENTIRE morning AND evening windows on
+// 2026-06-22 — "20h et pas posté"). Vercel Cron fires reliably, so it's the clock: this fires
+// at a FIXED 18:00 UTC and dispatches `mode=evening`, which WAITS for the 20:00 Paris window
+// then publishes (DST-proof — one fixed UTC fire works summer and winter). The morning preview
+// is triggered the same way from /api/cron/refresh-snapshot (Hobby allows only 2 daily crons).
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         "content-type": "application/json",
         "user-agent": "pokeev-cron",
       },
-      body: JSON.stringify({ ref: "main", inputs: { mode: "scheduled" } }),
+      body: JSON.stringify({ ref: "main", inputs: { mode: "evening" } }),
     },
   );
   if (!r.ok) {

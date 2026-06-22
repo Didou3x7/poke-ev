@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/ig-tick",
-      "schedule": "5 19 * * *"
+      "schedule": "0 18 * * *"
     }
   ]
 }
