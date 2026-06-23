@@ -6,22 +6,22 @@
     "date": "2026-06-23",
     "theme": "ripkeep",
     "slides": [
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5139fa3b20d060e1856ad509e65d392b.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/6d0b9f307a165f4636d3288781e7757e.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5bb74ba461284478dadf034c52809c87.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/20db07bde1b453947bd95d40bff8b81b.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/103bdef63b64a4cdc190c7fcc56aa68d.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/c6a92a464d1ec4a748db33926dca24c5.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/0fc134bb4b60f4b4a4ca4e061436027c.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/c778ccd8bb9891afc37bac7cd8ff6ef3.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/400192517ccaa89960af129eeb25ed35.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/50b98bbb8d126d8c7e6dc11d452114e0.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/265662fdbb5c0e50cd9bc1a9a5c1ca97.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/e3cd8a1411f7c37f41dd3460007b3c29.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/35ecee1da1b0e2f282861856277ebc4a.png"
     ],
-    "caption": "A sealed White Flare ETB costs $147. Rip it and you average just $66.\n\nThe math says keep it sealed.\n\nThat gap is $81. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com\n\n#pokemonsealed #riporkeep #elitetrainerbox #pokemoninvesting #sealedpokemon #whiteflare #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pullrate #pokemoninvestment #pokemonuk",
+    "caption": "A sealed Ascended Heroes ETB costs $180. Rip it and you average just $72.\n\nThe math says keep it sealed.\n\nThat gap is $108. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com\n\n#pokemonsealed #riporkeep #elitetrainerbox #pokemoninvesting #sealedpokemon #ascendedheroes #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pullrate #pokemoninvestment #pokemonuk",
     "hashtags": [
       "#pokemonsealed",
       "#riporkeep",
       "#elitetrainerbox",
       "#pokemoninvesting",
       "#sealedpokemon",
-      "#whiteflare",
+      "#ascendedheroes",
       "#pokemon",
       "#pokemontcg",
       "#pokemoncards",
@@ -50,15 +50,15 @@
     "brief": {
       "eyebrow": "THE COLLECTOR'S DILEMMA",
       "verdictWord": "KEEP IT|SEALED",
-      "reason": "Ripping averages $66.|Sealed it sits at $147. Keep it.",
-      "caption": "A sealed White Flare ETB costs $147. Rip it and you average just $66.\n\nThe math says keep it sealed.\n\nThat gap is $81. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com",
+      "reason": "Ripping averages $72.|Sealed it sits at $180. Keep it.",
+      "caption": "A sealed Ascended Heroes ETB costs $180. Rip it and you average just $72.\n\nThe math says keep it sealed.\n\nThat gap is $108. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com",
       "hashtags": [
         "#pokemonsealed",
         "#riporkeep",
         "#elitetrainerbox",
         "#pokemoninvesting",
         "#sealedpokemon",
-        "#whiteflare",
+        "#ascendedheroes",
         "#pokemon",
         "#pokemontcg",
         "#pokemoncards",
@@ -86,38 +86,38 @@
       ]
     },
     "keys": [
-      "white-flare"
+      "ascended-heroes"
     ],
     "verify": [
       {
-        "snap_usd": 483,
+        "snap_usd": 1373,
         "snap_eur": null,
         "live_usd": null,
         "live_eur": null,
         "agree": null,
         "note": "no pokemontcg id (modern scan) — snapshot price kept",
-        "display_usd": 483,
-        "name": "Reshiram ex"
+        "display_usd": 1373,
+        "name": "Mega Gengar ex"
       },
       {
-        "snap_usd": 481,
+        "snap_usd": 1368,
         "snap_eur": null,
         "live_usd": null,
         "live_eur": null,
         "agree": null,
         "note": "no pokemontcg id (modern scan) — snapshot price kept",
-        "display_usd": 481,
-        "name": "Victini"
+        "display_usd": 1368,
+        "name": "Pikachu ex"
       },
       {
-        "snap_usd": 214,
+        "snap_usd": 878,
         "snap_eur": null,
         "live_usd": null,
         "live_eur": null,
         "agree": null,
         "note": "no pokemontcg id (modern scan) — snapshot price kept",
-        "display_usd": 214,
-        "name": "Reshiram ex"
+        "display_usd": 878,
+        "name": "Mega Dragonite ex"
       }
     ],
     "qa_warnings": []
@@ -126,76 +126,76 @@
     "theme": "ripkeep",
     "base": "https://pokeev.com",
     "facts": {
-      "key": "white-flare",
-      "set_id": "white-flare",
-      "set_name": "White Flare",
-      "logo": "https://assets.tcgdex.net/en/sv/sv10.5w/logo.webp",
-      "pack_ev": 7.357557320043859,
+      "key": "ascended-heroes",
+      "set_id": "ascended-heroes",
+      "set_name": "Ascended Heroes",
+      "logo": "https://assets.tcgdex.net/en/me/me02.5/logo.webp",
+      "pack_ev": 8.042125425808498,
       "packs": 9,
-      "open_ev": 66,
-      "sealed": 147,
-      "etb_name": "White Flare Elite Trainer Box",
-      "gap": 81,
-      "rel_gap": 0.5502410114759578,
+      "open_ev": 72,
+      "sealed": 180,
+      "etb_name": "Ascended Heroes Elite Trainer Box",
+      "gap": 108,
+      "rel_gap": 0.5981839292051492,
       "verdict_rip": false,
       "chase": [
         {
-          "name": "Reshiram ex",
-          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/173/high.webp",
-          "usd": 483,
-          "rarity": "black-white-rare",
-          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/dcba5e845a1b997b60432b655a86441a.png"
-        },
-        {
-          "name": "Victini",
-          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/172/high.webp",
-          "usd": 481,
-          "rarity": "black-white-rare",
-          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/ce037bc990f9f23efbcd801065b592af.png"
-        },
-        {
-          "name": "Reshiram ex",
-          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/166/high.webp",
-          "usd": 214,
+          "name": "Mega Gengar ex",
+          "image": "https://assets.tcgdex.net/en/me/me02.5/284/high.webp",
+          "usd": 1373,
           "rarity": "special-illustration-rare",
-          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c23416874f9421c8e49e3b3f5d1b74f4.png"
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/d36823dd9b5930d194afbc6ec55d6059.png"
+        },
+        {
+          "name": "Pikachu ex",
+          "image": "https://assets.tcgdex.net/en/me/me02.5/276/high.webp",
+          "usd": 1368,
+          "rarity": "special-illustration-rare",
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/9d9583c76ec35f954f2758cfd66ebad1.png"
+        },
+        {
+          "name": "Mega Dragonite ex",
+          "image": "https://assets.tcgdex.net/en/me/me02.5/290/high.webp",
+          "usd": 878,
+          "rarity": "special-illustration-rare",
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/d4ca7b85f00cf9657485fa33ec38498f.png"
         }
       ]
     },
     "verify": [
       {
-        "snap_usd": 483,
+        "snap_usd": 1373,
         "snap_eur": null,
         "live_usd": null,
         "live_eur": null,
         "agree": null,
         "note": "no pokemontcg id (modern scan) — snapshot price kept",
-        "display_usd": 483,
-        "name": "Reshiram ex"
+        "display_usd": 1373,
+        "name": "Mega Gengar ex"
       },
       {
-        "snap_usd": 481,
+        "snap_usd": 1368,
         "snap_eur": null,
         "live_usd": null,
         "live_eur": null,
         "agree": null,
         "note": "no pokemontcg id (modern scan) — snapshot price kept",
-        "display_usd": 481,
-        "name": "Victini"
+        "display_usd": 1368,
+        "name": "Pikachu ex"
       },
       {
-        "snap_usd": 214,
+        "snap_usd": 878,
         "snap_eur": null,
         "live_usd": null,
         "live_eur": null,
         "agree": null,
         "note": "no pokemontcg id (modern scan) — snapshot price kept",
-        "display_usd": 214,
-        "name": "Reshiram ex"
+        "display_usd": 878,
+        "name": "Mega Dragonite ex"
       }
     ],
     "keys": [
-      "white-flare"
+      "ascended-heroes"
     ]
   }
 }
