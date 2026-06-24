@@ -1583,12 +1583,14 @@ def _center_crop(cx, cy, span):
 
 
 def compute_grail_crops(image_url):
-    """REAL framing — no LLM coordinate guessing (that kept cutting the subject). Detect the
-    card's subject with OpenCV saliency (largest salient blob in the ART band, below the title
-    bar / above the attack-text boxes), then frame two crops that CENTER it and never cut the
-    head: SCENE = subject prominent (focal biased above centre), CRAFT = tight on the upper
-    detail (face/head). Deterministic head-biased fallback if saliency is weak/unavailable."""
-    cx, top, sh, sw = 0.5, 0.15, 0.34, 0.60  # default subject box (card fractions)
+    """Slides 3 & 4 = a PIXEL-PERFECT 2-PANEL PANORAMA of the card art — the illustration unrolls
+    SEAMLESSLY across the swipe for EVERY T3 (owner: "comme une seule image scindée en 2", aucun
+    décalage). Both panels share the SAME zoom (zw) and SAME vertical anchor (zy); their zx differ
+    by EXACTLY one slide width (1080) → zero-gap seam. The 0.80-wide window is CENTRED on the card's
+    subject (OpenCV saliency; centred fallback) and clamped inside the card. The fixed vertical band
+    is y[~0.101, 0.46] = pure art (no title bar, no attack/rules text). Returns {"craft": LEFT panel
+    (slide 3), "scene": RIGHT panel (slide 4)}. A curated per-card panorama in _GRAIL_OVERRIDES wins."""
+    cx = 0.50  # subject horizontal centre (card fraction); 0.5 = centred fallback
     try:
         import cv2
         import numpy as np
@@ -1598,8 +1600,7 @@ def compute_grail_crops(image_url):
         arr = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
         if arr is not None:
             H, W = arr.shape[:2]
-            y0, y1 = int(H * 0.11), int(H * 0.49)  # the pure-art window (exclude title + text boxes)
-            band = arr[y0:y1, :]
+            band = arr[int(H * 0.11):int(H * 0.49), :]  # pure-art window (exclude title + text boxes)
             try:
                 sal = cv2.saliency.StaticSaliencyFineGrained_create()
                 ok, smap = sal.computeSaliency(band)
@@ -1611,21 +1612,20 @@ def compute_grail_crops(image_url):
                 cnts, _ = cv2.findContours(thr, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 big = [c for c in cnts if cv2.contourArea(c) > 0.03 * band.shape[0] * band.shape[1]]
                 if big:
-                    x, y, w, h = cv2.boundingRect(max(big, key=cv2.contourArea))
+                    x, _, w, _ = cv2.boundingRect(max(big, key=cv2.contourArea))
                     cx = (x + w / 2) / W
-                    top = (y0 + y) / H
-                    sh = max(0.12, h / H)
-                    sw = max(0.18, w / W)
-                    log(f"  grail subject: cx={cx:.2f} top={top:.2f} w={sw:.2f} h={sh:.2f}")
+                    log(f"  grail panorama centred on subject cx={cx:.2f}")
     except Exception as exc:  # noqa: BLE001 — never fail a post over crop detection
-        log(f"  grail crop detection failed ({exc}); using deterministic crop")
-    # SCENE — show MORE of the art (zoomed out a touch, owner: "le zoom est un peu trop gros"):
-    # extend the band up toward the top of the art window so the subject breathes. Bottom still
-    # hard-capped above the text boxes.
-    scene = _band_crop(cx, top - 0.08, top + sh + 0.05)
-    # CRAFT — the upper detail (face / head), also a touch wider than before.
-    craft = _band_crop(cx, max(0.08, top - 0.03), top + sh * 0.66)
-    return {"scene": scene, "craft": craft}
+        log(f"  grail crop detection failed ({exc}); using a centred panorama")
+    ZW = 2700                                  # each panel shows 1080/2700 = 0.40 of card width → 0.80 span
+    zh = int(round(ZW * PORTRAIT_RATIO))       # 3764
+    zy = int(round(1350 - 0.46 * zh))          # bottom-anchor the art band at y=0.46 → visible top ~0.101
+    panel = 1080.0 / ZW                        # 0.40 (one panel's width fraction)
+    left = min(max(cx - panel, 0.0), 1.0 - 2 * panel)   # 0.80 window centred on the subject, clamped in-card
+    zx_l = int(round(-left * ZW))
+    zx_r = zx_l - 1080                         # EXACT seam: the right panel starts where the left ends
+    return {"craft": {"zw": ZW, "zx": zx_l, "zy": zy},
+            "scene": {"zw": ZW, "zx": zx_r, "zy": zy}}
 
 
 def fallback_grail_brief(facts):
@@ -1998,17 +1998,16 @@ def _fresh_brief(theme, api_key, facts):
         elif facts.get("artist"):
             brief["craftKicker"] = "THE ARTIST"
             brief["craftHeadline"] = facts["artist"]
-        # SCENE = the saliency subject (centred + wide). CRAFT must be a DIFFERENT region:
-        # use the vision-chosen detail (off-centre, and its craftBody describes THAT spot),
-        # framed safely + a touch wider so it isn't over-zoomed. Falls back to the saliency
-        # crop if there's no vision.
+        # SLIDES 3 & 4 = a SEAMLESS 2-PANEL PANORAMA of the card art (compute_grail_crops):
+        # craft = LEFT panel, scene = RIGHT panel, pixel-perfect gap-free seam. This is set LAST
+        # (after the vision copy above) and OVERRIDES any vision-suggested INDEPENDENT crops, so
+        # the two panels can never desync — the illustration unrolls cleanly on EVERY T3. (The
+        # vision step still drives the COPY: artist/scene headlines + bodies.) A curated per-card
+        # panorama in _GRAIL_OVERRIDES wins below.
         crops = facts.get("crops")
         if crops:
-            brief["sceneZoom"] = crops["scene"]
             brief["craftZoom"] = crops["craft"]
-        v = facts.get("vision")
-        if v and isinstance(v.get("craftCenterX"), (int, float)) and isinstance(v.get("craftCenterY"), (int, float)):
-            brief["craftZoom"] = _center_crop(v["craftCenterX"], v["craftCenterY"], 0.32)
+            brief["sceneZoom"] = crops["scene"]
         # Hand-curated override (applied LAST so it beats fallback + saliency + vision): two
         # distinct zoom regions + a unique, non-repeating shock headline for known grails.
         ov = _GRAIL_OVERRIDES.get(facts.get("card_id"))
