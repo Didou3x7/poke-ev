@@ -196,6 +196,23 @@ def _blob_put(local_path, pathname):
     ).strip() or None
 
 
+def _blob_exists_url(pathname):
+    """Return the public URL if `pathname` is ALREADY hosted on Blob, else None — lets
+    upscale_card reuse a cached upscale instead of re-spending a Real-ESRGAN (Replicate)
+    credit on every rebuild/revise. Graceful: any error → None (proceed to upscale)."""
+    import subprocess
+
+    here = Path(__file__).parent
+    try:
+        out = subprocess.check_output(
+            ["node", str(here / "blob_upload.mjs"), "--exists", pathname],
+            text=True, timeout=60, cwd=str(here),
+        ).strip()
+        return out or None
+    except Exception:  # noqa: BLE001 — never block a build on the cache check
+        return None
+
+
 def _download_bytes(url, timeout=90, tries=3):
     """GET a URL with retries (the /api/ig render can take ~6s); return bytes or raise.
     The bot is patient where Telegram/Instagram's short fetch timeouts are not."""
@@ -274,6 +291,16 @@ def upscale_card(image_url, max_w=4096):
         import requests
 
         src = _hires(image_url)
+        # CREDIT-SAVER: the upscaled asset's Blob path is deterministic (src + max_w + method). If
+        # it's ALREADY hosted (from any earlier build/revise — even a previous day or post), reuse
+        # it and SKIP Replicate entirely. So Real-ESRGAN runs at most ONCE per unique card, not on
+        # every rebuild. (Daily cost ≈ only the genuinely new cards that day.)
+        intended = "esrgan" if os.environ.get("REPLICATE_API_TOKEN") else "lapsrn"
+        cache_path = f"ig-cards/{hashlib.md5(f'{src}@{max_w}@{intended}'.encode()).hexdigest()}.png"
+        cached = _blob_exists_url(cache_path)
+        if cached:
+            log("  upscale: Blob cache hit — reused (no Replicate spend)")
+            return cached
         rep = _replicate_upscale(src)          # SOTA path (no-op without the token)
         method = "esrgan" if rep else "lapsrn"
         data = requests.get(rep or src, timeout=60).content
