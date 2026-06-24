@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { cloneElement, isValidElement } from "react";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
@@ -96,7 +97,34 @@ async function loadFonts() {
   ];
 }
 
-const Frame = ({ children }: { children: React.ReactNode }) => (
+// Cross-slide CONTINUITY background — the brand "holo terminal" DA (globals.css): a faint
+// terminal GRID (the signature striation) + a COLD HALO that TRAVELS left→right across the
+// carousel by slide index, so the whole post reads as ONE continuous environment with the cold
+// light sweeping toward the end — pulling the eye to keep swiping. Driven by `i` (0-based slide
+// position) and `n` (total slides), injected once in the GET handler. The full-bleed grail-zoom
+// PANORAMA slides root a plain <div> (NOT Frame), so they never get this layer — their seamless
+// art IS their own continuity (owner: skip the panorama slides).
+const Continuity = ({ i = 0, n = 1 }: { i?: number; n?: number }) => {
+  const t = n > 1 ? i / (n - 1) : 0.5; // 0 → 1 across the whole carousel
+  const hx = Math.round(14 + t * 72); // cold-halo x%: 14 (first slide) → 86 (last)
+  const hy = Math.round(30 + t * 38); // y%: 30 → 68, a gentle diagonal descent
+  const halo = `radial-gradient(circle at ${hx}% ${hy}%, rgba(139,92,246,0.32), rgba(34,211,238,0.09) 38%, rgba(11,14,20,0) 64%)`;
+  return (
+    <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", display: "flex" }}>
+      <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", display: "flex" }}>
+        {Array.from({ length: 12 }, (_, k) => (
+          <div key={"gv" + k} style={{ position: "absolute", top: 0, left: k * 98, width: 1, height: "100%", background: "rgba(140,160,200,0.05)" }} />
+        ))}
+        {Array.from({ length: 15 }, (_, k) => (
+          <div key={"gh" + k} style={{ position: "absolute", left: 0, top: k * 98, width: "100%", height: 1, background: "rgba(140,160,200,0.05)" }} />
+        ))}
+      </div>
+      <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", display: "flex", background: halo }} />
+    </div>
+  );
+};
+
+const Frame = ({ children, i = 0, n = 1 }: { children: React.ReactNode; i?: number; n?: number }) => (
   <div
     style={{
       width: "100%",
@@ -110,7 +138,7 @@ const Frame = ({ children }: { children: React.ReactNode }) => (
       padding: 72,
     }}
   >
-    <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", background: GLOW }} />
+    <Continuity i={i} n={n} />
     {children}
   </div>
 );
@@ -1184,6 +1212,13 @@ export async function GET(request: NextRequest) {
     const mask = Math.max(0, Math.min(3, Number(p.get("mask")) || 0));
     element = coverSlide(theme, mask, step, total);
   }
+
+  // Inject the carousel position (i of n) into the root <Frame> so its Continuity layer places
+  // the traveling cold halo. Done once here (vs threading through every slide). Grail-zoom panorama
+  // slides root a plain <div>, not Frame, so the prop is harmlessly ignored — they stay clean.
+  const ci = Number(p.get("i")) || 0;
+  const cn = Math.max(1, Number(p.get("n")) || 1);
+  if (isValidElement(element)) element = cloneElement(element, { i: ci, n: cn });
 
   return new ImageResponse(element, { ...SIZE, fonts });
 }

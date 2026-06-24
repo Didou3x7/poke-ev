@@ -493,19 +493,23 @@ def materialize_slides(urls):
     import tempfile
 
     out = []
+    n = len(urls)
     for i, u in enumerate(urls, 1):
+        # Tell the renderer this slide's position in the carousel (0-based) + the total, so the
+        # shared Continuity background places the traveling cold halo (cross-slide continuity).
+        cu = f"{u}&i={i - 1}&n={n}"
         tmp = None
         try:
-            data = _download_bytes(u, timeout=90, tries=3)
+            data = _download_bytes(cu, timeout=90, tries=3)
             fd, tmp = tempfile.mkstemp(suffix=".png")
             os.close(fd)
             Path(tmp).write_bytes(data)
-            hosted = _blob_put(tmp, f"ig-slides/{hashlib.md5(u.encode()).hexdigest()}.png")
-            out.append(hosted or u)
+            hosted = _blob_put(tmp, f"ig-slides/{hashlib.md5(cu.encode()).hexdigest()}.png")
+            out.append(hosted or cu)
             log(f"  slide {i}/{len(urls)} hosted: {hosted}")
         except Exception as exc:  # noqa: BLE001 — never fail a post over hosting
             log(f"  slide {i} materialize failed ({exc}); using render URL")
-            out.append(u)
+            out.append(cu)
         finally:
             if tmp and os.path.exists(tmp):
                 os.unlink(tmp)
