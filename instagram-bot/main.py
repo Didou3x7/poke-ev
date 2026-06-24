@@ -214,13 +214,53 @@ def _download_bytes(url, timeout=90, tries=3):
     raise RuntimeError(f"download failed {url}: {last}")
 
 
+def _replicate_upscale(src_url, scale=4):
+    """SOTA super-resolution via Replicate Real-ESRGAN — sharp, DENOISED edges (fixes the soft/
+    pixelated card borders LapSRN/EDSR cannot, proven far better on the δ-Charizard borders).
+    Returns the upscaled image URL (replicate.delivery — already allowlisted in /api/ig), or None
+    without REPLICATE_API_TOKEN / on ANY failure, so the caller falls back to LapSRN. Uses the
+    model-predictions endpoint + `Prefer: wait` (no version pin to maintain; short poll backup)."""
+    token = os.environ.get("REPLICATE_API_TOKEN")
+    if not (token and src_url):
+        return None
+    try:
+        import time
+
+        import requests
+
+        hdr = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+        r = requests.post(
+            "https://api.replicate.com/v1/models/nightmareai/real-esrgan/predictions",
+            headers={**hdr, "Prefer": "wait"},
+            json={"input": {"image": src_url, "scale": scale, "face_enhance": False}},
+            timeout=180,
+        )
+        r.raise_for_status()
+        d = r.json()
+        out = d.get("output")
+        get_url = (d.get("urls") or {}).get("get")
+        tries = 0
+        while not out and d.get("status") not in ("failed", "canceled") and get_url and tries < 45:
+            time.sleep(2)
+            tries += 1
+            d = requests.get(get_url, headers=hdr, timeout=30).json()
+            out = d.get("output")
+        if isinstance(out, list):
+            out = out[0] if out else None
+        if out:
+            log("  Real-ESRGAN (Replicate) ✓")
+        return out or None
+    except Exception as exc:  # noqa: BLE001
+        log(f"  Replicate upscale failed ({exc}); falling back to LapSRN")
+        return None
+
+
 def upscale_card(image_url, max_w=4096):
-    """Free AI super-resolution (OpenCV LapSRN x8): the native scan → 8x then capped to
-    `max_w` wide, hosted on Vercel Blob. `max_w=4096` for the full-bleed grail zoom (one
-    image, displayed huge). For the carousel CARDS (connect/ripkeep), pass a SMALLER cap
-    (~1500) — crisp at their ≤612px display AND light enough that a multi-image slide
-    (cover fan, reveal row) doesn't 500 Satori (several 4096px PNGs OOM the renderer).
-    Returns the HD url, or None (graceful) without BLOB_READ_WRITE_TOKEN or on failure."""
+    """AI super-resolution → hosted on Vercel Blob. Prefers Replicate Real-ESRGAN (SOTA for
+    illustration, crisp DENOISED borders) when REPLICATE_API_TOKEN is set; otherwise falls back
+    to the free OpenCV LapSRN x8. Either way the result is capped to `max_w` wide (4096 for the
+    full-bleed grail zoom; ~1500 for carousel cards — light enough that multi-image slides don't
+    500 Satori). Returns the HD url, or None (graceful) without BLOB_READ_WRITE_TOKEN / on failure."""
     if not os.environ.get("BLOB_READ_WRITE_TOKEN") or not image_url:
         return None
     here = Path(__file__).parent
@@ -234,24 +274,27 @@ def upscale_card(image_url, max_w=4096):
         import requests
 
         src = _hires(image_url)
-        data = requests.get(src, timeout=30).content
+        rep = _replicate_upscale(src)          # SOTA path (no-op without the token)
+        method = "esrgan" if rep else "lapsrn"
+        data = requests.get(rep or src, timeout=60).content
         arr = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
         if arr is None:
             return None
-        sr = cv2.dnn_superres.DnnSuperResImpl_create()
-        sr.readModel(str(here / "models" / "LapSRN_x8.pb"))
-        sr.setModel("lapsrn", 8)
-        out = sr.upsample(arr)
-        # 8x supersample, then downscale the WIDTH to <= max_w (INTER_AREA keeps edges clean).
-        # The 8x pass reconstructs detail even when capping to a medium width, so a 600px scan
-        # downscaled to 1500px looks far crisper than the raw 600px at a 612px display.
-        h, w = out.shape[:2]
+        if not rep:
+            # No Replicate → free OpenCV LapSRN x8 supersample (INTER_AREA downscale keeps edges
+            # clean). The 8x pass reconstructs detail even when capping to a medium width.
+            sr = cv2.dnn_superres.DnnSuperResImpl_create()
+            sr.readModel(str(here / "models" / "LapSRN_x8.pb"))
+            sr.setModel("lapsrn", 8)
+            arr = sr.upsample(arr)
+        h, w = arr.shape[:2]
         if w > max_w:
-            out = cv2.resize(out, (max_w, int(round(h * max_w / w))), interpolation=cv2.INTER_AREA)
+            arr = cv2.resize(arr, (max_w, int(round(h * max_w / w))), interpolation=cv2.INTER_AREA)
         fd, tmp = tempfile.mkstemp(suffix=".png")
         os.close(fd)
-        cv2.imwrite(tmp, out)
-        pathname = f"ig-cards/{hashlib.md5(f'{src}@{max_w}'.encode()).hexdigest()}.png"
+        cv2.imwrite(tmp, arr)
+        # `method` in the hash so switching LapSRN→ESRGAN yields a FRESH path (no stale cache).
+        pathname = f"ig-cards/{hashlib.md5(f'{src}@{max_w}@{method}'.encode()).hexdigest()}.png"
         return _blob_put(tmp, pathname)
     except Exception as exc:  # noqa: BLE001 — never fail a post over upscaling
         log(f"  upscale failed ({exc})")
