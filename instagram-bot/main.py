@@ -1853,6 +1853,26 @@ def compose_caption(caption, hashtags):
     return f"{body}\n\n{' '.join(tags)}"
 
 
+# Hand-curated grail overrides — used when the AI vision step is unavailable (e.g. the
+# Anthropic key is down) so a featured grail still gets TWO DISTINCT zoom regions + a UNIQUE
+# shock headline, instead of the generic fallbacks (the "most people guess" headline repeats
+# post-to-post, and compute_grail_crops collapses both zooms onto the SAME saliency blob —
+# owner: "2 fois le même zoom au même endroit, à ne jamais faire"). Crop specs are
+# (cx, cy, span) fed to _center_crop. Keyed by card_id. Applied LAST so it wins.
+_GRAIL_OVERRIDES = {
+    "ex15-100": {  # Charizard Star δ — EX Dragon Frontiers (the dark δ-species "shiny" Charizard)
+        "shockHeadline": "The Charizard|you've never seen",
+        "sceneZoom": (0.58, 0.28, 0.32),  # THE SCENE — the δ Charizard subject (centre-right)
+        "sceneHeadline": "A Charizard in disguise",
+        "sceneBody": "A Dragon-type recolor: black scales,|not the orange Charizard you know.",
+        "craftZoom": (0.20, 0.27, 0.30),  # THE ARTIST — the flame bursting the frame (left)
+        "craftKicker": "THE ARTIST",
+        "craftHeadline": "Masakazu Fukuda",
+        "craftBody": "His flame erupts past the border,|a hand-painted 3D depth effect.",
+    },
+}
+
+
 def _fresh_brief(theme, api_key, facts):
     """First-preview brief, built from scratch (no editor feedback yet)."""
     if theme == "connected":
@@ -1901,6 +1921,13 @@ def _fresh_brief(theme, api_key, facts):
         v = facts.get("vision")
         if v and isinstance(v.get("craftCenterX"), (int, float)) and isinstance(v.get("craftCenterY"), (int, float)):
             brief["craftZoom"] = _center_crop(v["craftCenterX"], v["craftCenterY"], 0.32)
+        # Hand-curated override (applied LAST so it beats fallback + saliency + vision): two
+        # distinct zoom regions + a unique, non-repeating shock headline for known grails.
+        ov = _GRAIL_OVERRIDES.get(facts.get("card_id"))
+        if ov:
+            for key, val in ov.items():
+                brief[key] = _center_crop(*val) if key in ("sceneZoom", "craftZoom") else val
+            log(f"  grail: applied hand-curated override for {facts.get('card_id')}")
         return brief
     sys.exit(f"[pokeev-bot] unknown theme {theme}")
 
