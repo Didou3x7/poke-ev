@@ -1861,9 +1861,10 @@ def compose_caption(caption, hashtags):
 # (cx, cy, span) fed to _center_crop. Keyed by card_id. Applied LAST so it wins.
 _GRAIL_OVERRIDES = {
     "ex15-100": {  # Charizard Gold Star δ — EX Dragon Frontiers (Delta Species; owner frames it as δ, NOT "shiny")
-        # SHOCK headline = a verified-cheaper "Worth more than..." comparison (owner asked for the
-        # shock format). A PlayStation 5 (~$500) is unambiguously < $4,000, not a banned car/luxury.
-        "shockHeadline": "Worth more than|a PlayStation 5",
+        # SHOCK headline = the PS5 MULTIPLE (owner: "à tant de dollars c'est plusieurs PS5").
+        # Card market = $4,000 (cross-checked: TCGplayer market 2026/06/24); a PS5 ~$480-500 street,
+        # so $4,000 buys MORE than 8 → "8 PlayStation 5s". Verified-cheaper, not a banned car/luxury.
+        "shockHeadline": "Worth more than|8 PlayStation 5s",
         # Zooms at span 0.40 = the WIDEST CLEAN framing — the pure-art band (0.10-0.46) caps it;
         # dezooming further would show the card's title/attack text (a locked no-no). Two distinct regions.
         "sceneZoom": (0.62, 0.30, 0.40),  # THE SCENE — the Charizard subject, fuller (centre-right)
