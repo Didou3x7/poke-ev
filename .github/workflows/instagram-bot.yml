@@ -39,7 +39,7 @@ jobs:
   run:
     if: github.event.inputs.mode != 'setup-webhook'
     runs-on: ubuntu-latest
-    timeout-minutes: 90   # room for the Telegram approve/revise loop + the DST wait in mode=evening (waits up to ~75min for the 20:00 Paris window in winter)
+    timeout-minutes: 175   # mode=evening waits up to 150 min for the 20:00 Paris window (a 17:00 UTC cron can land at 18:00 Paris in winter), + setup/publish overhead
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5

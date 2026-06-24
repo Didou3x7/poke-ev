@@ -1,8 +1,12 @@
 // RELIABLE evening-publish trigger for the Instagram bot. GitHub Actions' own `schedule` cron
 // is best-effort and silently drops runs (it skipped the ENTIRE morning AND evening windows on
 // 2026-06-22 — "20h et pas posté"). Vercel Cron fires reliably, so it's the clock: this fires
-// at a FIXED 18:00 UTC and dispatches `mode=evening`, which WAITS for the 20:00 Paris window
-// then publishes (DST-proof — one fixed UTC fire works summer and winter). The morning preview
+// at a FIXED 17:00 UTC and dispatches `mode=evening`, which WAITS for the 20:00 Paris window
+// then publishes. 17:00 (not 18:00) is deliberate: Vercel Hobby crons fire only "within the
+// hour", so a 17:00 slot lands at 19:00-20:00 Paris (summer) / 18:00-19:00 (winter) — ALWAYS
+// before 20:00 — and the bot's wait-loop then posts precisely at 20:00 in both seasons. (An
+// 18:00 slot landed at 20:00-21:00 Paris in summer, AFTER the window, so it posted late/never.)
+// The morning preview
 // is triggered the same way from /api/cron/refresh-snapshot (Hobby allows only 2 daily crons).
 import { NextRequest, NextResponse } from "next/server";
 

@@ -2741,14 +2741,17 @@ def do_publish_pending(final=True):
 
 
 def do_evening_publish():
-    """RELIABLE, DST-PROOF evening publish. The evening Vercel cron fires at a FIXED UTC time
-    (18:00); this WAITS until the Paris publish window opens (>=20:00) then publishes — so the
-    same fixed UTC fire works in summer (fires AT 20:00 Paris → publishes immediately) AND in
-    winter (fires at 19:00 Paris → waits ~1h to 20:00). It's reliable because Vercel Cron never
-    drops a fire, unlike GitHub's `schedule` cron which silently skipped EVERY evening tick
-    (the recurring "20h et pas posté" bug). Capped so the GitHub job never runs away."""
+    """RELIABLE, DST-PROOF evening publish. The evening Vercel cron fires at a FIXED 17:00 UTC;
+    this WAITS until the Paris publish window opens (>=20:00) then publishes. The 17:00 fire is
+    deliberate: Vercel Hobby crons only fire "within the hour" of the slot, so a 17:00 slot lands
+    in [17:00,18:00) UTC = 19:00-20:00 Paris (summer) / 18:00-19:00 Paris (winter) — ALWAYS before
+    20:00 — and the wait-loop below then publishes PRECISELY at 20:00 in both seasons. (The old
+    18:00 fire landed at 20:00-21:00 Paris in summer, AFTER the window, so the wait couldn't help
+    and it posted late/never — the recurring "20h et pas posté" bug.) Cap = 9000s/150min so the
+    winter worst case (fire at 18:00 Paris → 2h wait) still reaches 20:00; the GitHub job timeout
+    (175 min) covers it. The safety guard NEVER posts before 20:00 even on a wild mis-fire."""
     waited = 0
-    while paris_hour() < 20 and waited < 4500:  # up to 75 min — covers the winter UTC offset
+    while paris_hour() < 20 and waited < 9000:  # up to 150 min — covers the winter 2h offset from a 17:00 UTC fire
         log(f"evening-publish: Paris {paris_hour()}h — waiting for the 20:00 window…")
         time.sleep(300)
         waited += 300
