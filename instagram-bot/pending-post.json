@@ -1,0 +1,173 @@
+{
+  "date": "2026-06-24",
+  "theme": "grails",
+  "tg_offset": 0,
+  "plan": {
+    "date": "2026-06-24",
+    "theme": "grails",
+    "slides": [
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/4ba06b2f166850101b8104276eca845c.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/22893a38482faf7f13422535ff3f0745.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/f82c5003af422c47bd9abd76542cb5d5.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/96c6d6491f82d6afee7bfdc1eed873ee.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/83dcfda20d2cadb3fcb1a59600327404.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
+    ],
+    "caption": "Charizard Star δ from EX Dragon Frontiers is worth $4,000. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #charizardstar #exdragonfrontiers #goldstar #masakazufukuda #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pokemonsealed",
+    "hashtags": [
+      "#pokemongrails",
+      "#grailcard",
+      "#pokemonart",
+      "#pokemoninvesting",
+      "#charizardstar",
+      "#exdragonfrontiers",
+      "#goldstar",
+      "#masakazufukuda",
+      "#pokemon",
+      "#pokemontcg",
+      "#pokemoncards",
+      "#pokemoncollector",
+      "#tcg",
+      "#pokemoncommunity",
+      "#pokemoncardcollection",
+      "#pokemoncollection",
+      "#tcgcollector",
+      "#pokemoncardgame",
+      "#tradingcards",
+      "#tradingcardgame",
+      "#cardcollector",
+      "#tcgcommunity",
+      "#pokemoncardcollector",
+      "#pokemontcgcollector",
+      "#pokemonfan",
+      "#pokemontcgcards",
+      "#pokemontcgcommunity",
+      "#pokemoncollectors",
+      "#pokemonpulls",
+      "#pokemonsealed"
+    ],
+    "brief": {
+      "shockHeadline": "Worth more than|most people guess",
+      "priceNote": "for a single card",
+      "compare": null,
+      "cardKicker": "THE CARD",
+      "cardHeadline": "Charizard Star δ",
+      "cardBody": "EX Dragon Frontiers's crown jewel.|The card the whole set chases.",
+      "craftKicker": "THE ARTIST",
+      "craftHeadline": "Masakazu Fukuda",
+      "craftBody": "Look at the linework up close.|Every detail painted by hand.",
+      "craftZoom": {
+        "zw": 3721,
+        "zx": -1773,
+        "zy": -519
+      },
+      "sceneKicker": "THE SCENE",
+      "sceneHeadline": "The subject, up close",
+      "sceneBody": "The character the whole card|is built around.",
+      "sceneZoom": {
+        "zw": 2690,
+        "zx": -1132,
+        "zy": -375
+      },
+      "oddsBody": "Rip a sealed booster.|The odds are 143 to 1.",
+      "caption": "Charizard Star δ from EX Dragon Frontiers is worth $4,000. For one card.\n\nIt is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\nWould you keep it or sell it? Tell us below.\n\npokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\nlink in bio -> pokeev.com",
+      "hashtags": [
+        "#pokemongrails",
+        "#grailcard",
+        "#pokemonart",
+        "#pokemoninvesting",
+        "#charizardstar",
+        "#exdragonfrontiers",
+        "#goldstar",
+        "#masakazufukuda",
+        "#pokemon",
+        "#pokemontcg",
+        "#pokemoncards",
+        "#pokemoncollector",
+        "#tcg",
+        "#pokemoncommunity",
+        "#pokemoncardcollection",
+        "#pokemoncollection",
+        "#tcgcollector",
+        "#pokemoncardgame",
+        "#tradingcards",
+        "#tradingcardgame",
+        "#cardcollector",
+        "#tcgcommunity",
+        "#pokemoncardcollector",
+        "#pokemontcgcollector",
+        "#pokemonfan",
+        "#pokemontcgcards",
+        "#pokemontcgcommunity",
+        "#pokemoncollectors",
+        "#pokemonpulls",
+        "#pokemonsealed"
+      ]
+    },
+    "keys": [
+      "ex15-100"
+    ],
+    "verify": [
+      {
+        "snap_usd": 4000,
+        "snap_eur": null,
+        "live_usd": 4000.0,
+        "live_eur": 838.41,
+        "agree": true,
+        "note": "agree",
+        "display_usd": 4000.0,
+        "name": "Charizard Star δ"
+      }
+    ],
+    "qa_warnings": []
+  },
+  "ctx": {
+    "theme": "grails",
+    "base": "https://pokeev.com",
+    "facts": {
+      "_usd": 4000,
+      "key": "ex15-100",
+      "card_id": "ex15-100",
+      "set_id": "ex-dragon-frontiers",
+      "set_name": "EX Dragon Frontiers",
+      "logo": "https://assets.tcgdex.net/en/ex/ex15/logo.webp",
+      "name": "Charizard Star δ",
+      "rarity": "gold-star",
+      "image": "https://images.pokemontcg.io/ex15/100_hires.png",
+      "usd": 4000,
+      "odds_n": 143,
+      "booster": "https://tcgplayer-cdn.tcgplayer.com/product/98533.jpg",
+      "artist": "Masakazu Fukuda",
+      "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/432a94eb0ae90fb1213b701e9b2e31e2.png",
+      "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/ac75b54704a9c10bffac36ceab603a24.png",
+      "vision": null,
+      "crops": {
+        "scene": {
+          "zw": 2690,
+          "zx": -1132,
+          "zy": -375
+        },
+        "craft": {
+          "zw": 3721,
+          "zx": -1773,
+          "zy": -519
+        }
+      }
+    },
+    "verify": [
+      {
+        "snap_usd": 4000,
+        "snap_eur": null,
+        "live_usd": 4000.0,
+        "live_eur": 838.41,
+        "agree": true,
+        "note": "agree",
+        "display_usd": 4000.0,
+        "name": "Charizard Star δ"
+      }
+    ],
+    "keys": [
+      "ex15-100"
+    ]
+  }
+}
