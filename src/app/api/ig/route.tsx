@@ -790,13 +790,13 @@ function grailShock(opts: { image: string; setLabel: string; logo: string | null
   const hsize = longest <= 14 ? 84 : longest <= 19 ? 70 : 58;
   return (
     <Frame>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26 }}>
         <Wordmark size={34} />
         <SetLogo logo={opts.logo} label={opts.setLabel} />
       </div>
       <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-        <img src={opts.image} width={540} height={742} style={{ display: "flex", borderRadius: 18, objectFit: "contain", boxShadow: "0 34px 84px -22px rgba(0,0,0,0.92)" }} />
-        <div style={{ display: "flex", fontSize: 21, letterSpacing: 6, color: "#7c8499", marginTop: 20 }}>{opts.eyebrow}</div>
+        <img src={opts.image} width={512} height={704} style={{ display: "flex", borderRadius: 18, objectFit: "contain", boxShadow: "0 34px 84px -22px rgba(0,0,0,0.92)" }} />
+        <div style={{ display: "flex", fontSize: 21, letterSpacing: 6, color: "#7c8499", marginTop: 16 }}>{opts.eyebrow}</div>
         {/* Shock headline: the holo lineHeight is 1.0, so stacked lines touched vertically and
             the -2 tracking jammed the words — owner couldn't read it. Give the lines real
             vertical breathing room (gap) and neutral word tracking, scoped to THIS slide. */}

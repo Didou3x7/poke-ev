@@ -1860,23 +1860,25 @@ def compose_caption(caption, hashtags):
 # owner: "2 fois le même zoom au même endroit, à ne jamais faire"). Crop specs are
 # (cx, cy, span) fed to _center_crop. Keyed by card_id. Applied LAST so it wins.
 _GRAIL_OVERRIDES = {
-    "ex15-100": {  # Charizard Gold Star δ — EX Dragon Frontiers (officially a SHINY Rare; the dark δ-species Charizard)
-        "shockHeadline": "The Charizard|you've never seen",
-        # Zooms DEZOOMED (owner: "trop poussé") to span 0.40 — the widest clean framing (art band
-        # caps it; wider would show the card's title/text). Still two DISTINCT regions.
+    "ex15-100": {  # Charizard Gold Star δ — EX Dragon Frontiers (Delta Species; owner frames it as δ, NOT "shiny")
+        # SHOCK headline = a verified-cheaper "Worth more than..." comparison (owner asked for the
+        # shock format). A PlayStation 5 (~$500) is unambiguously < $4,000, not a banned car/luxury.
+        "shockHeadline": "Worth more than|a PlayStation 5",
+        # Zooms at span 0.40 = the WIDEST CLEAN framing — the pure-art band (0.10-0.46) caps it;
+        # dezooming further would show the card's title/attack text (a locked no-no). Two distinct regions.
         "sceneZoom": (0.62, 0.30, 0.40),  # THE SCENE — the Charizard subject, fuller (centre-right)
-        "sceneHeadline": "The shiny Charizard",
-        "sceneBody": "Its Gold Star alternate colour:|black scales, Dragon typing.",
-        "craftZoom": (0.22, 0.30, 0.40),  # THE ARTIST — the flame bursting the frame (left), dezoomed
+        "sceneHeadline": "A Delta Species Charizard",
+        "sceneBody": "Black scales and Dragon typing,|a Delta Species recolour.",
+        "craftZoom": (0.22, 0.30, 0.40),  # THE ARTIST — the flame bursting the frame (left)
         "craftKicker": "THE ARTIST",
         "craftHeadline": "Masakazu Fukuda",
         "craftBody": "His flame erupts past the border,|a hand-painted 3D depth effect.",
-        # Caption explicitly names it a SHINY Charizard (owner-verified: Gold Star = Shiny Rare).
+        # Caption frames it as a DELTA SPECIES (owner: don't call it "shiny", it's δ species).
         "caption": (
-            "This is a shiny Charizard, and most people wouldn't even recognise it.\n\n"
-            "Charizard Gold Star (Delta Species) from EX Dragon Frontiers, 2006: the official "
-            "shiny, recoloured with black scales and Dragon typing. One of the most chased cards "
-            "of the whole EX era.\n\n"
+            "Most people wouldn't even recognise this as a Charizard.\n\n"
+            "It's the Charizard Gold Star (Delta Species) from EX Dragon Frontiers, 2006: a Delta "
+            "Species recolour with black scales and Dragon typing, and one of the most chased "
+            "cards of the whole EX era.\n\n"
             "Around $4,000 for a single card, pulled roughly 1 in 143 packs.\n\n"
             "Rip for it, or keep it sealed? pokeev.com runs the live Expected Value on any set, so "
             "you know before you open it.\nlink in bio -> pokeev.com"
