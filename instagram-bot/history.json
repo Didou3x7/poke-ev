@@ -48,5 +48,15 @@
     "sets": [
       "ascended-heroes"
     ]
+  },
+  {
+    "date": "2026-06-24",
+    "theme": "grails",
+    "keys": [
+      "ex15-100"
+    ],
+    "sets": [
+      "ex15-100"
+    ]
   }
 ]
