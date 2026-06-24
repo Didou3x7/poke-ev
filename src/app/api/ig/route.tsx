@@ -1218,7 +1218,7 @@ export async function GET(request: NextRequest) {
   // slides root a plain <div>, not Frame, so the prop is harmlessly ignored — they stay clean.
   const ci = Number(p.get("i")) || 0;
   const cn = Math.max(1, Number(p.get("n")) || 1);
-  if (isValidElement(element)) element = cloneElement(element, { i: ci, n: cn });
+  if (isValidElement(element)) element = cloneElement(element as React.ReactElement<{ i?: number; n?: number }>, { i: ci, n: cn });
 
   return new ImageResponse(element, { ...SIZE, fonts });
 }
