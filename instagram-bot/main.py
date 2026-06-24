@@ -1935,12 +1935,15 @@ _GRAIL_OVERRIDES = {
         # Card market = $4,000 (cross-checked: TCGplayer market 2026/06/24); a PS5 ~$480-500 street,
         # so $4,000 buys MORE than 8 → "8 PlayStation 5s". Verified-cheaper, not a banned car/luxury.
         "shockHeadline": "Worth more than|8 PlayStation 5s",
-        # Zooms at span 0.40 = the WIDEST CLEAN framing — the pure-art band (0.10-0.46) caps it;
-        # dezooming further would show the card's title/attack text (a locked no-no). Two distinct regions.
-        "sceneZoom": (0.62, 0.30, 0.40),  # THE SCENE — the Charizard subject, fuller (centre-right)
+        # Slides 3 & 4 are a PIXEL-PERFECT 2-panel PANORAMA: same zw, same zy, and zx differing by
+        # EXACTLY 1080 (one slide width) → the illustration unrolls seamlessly across the swipe with
+        # ZERO gap/offset (owner: "comme une seule image scindée en 2"). zy=-381 anchors the visible
+        # band to card y[0.101, 0.46] = pure art (no title bar, no attack text). Panel L = x[0.08,0.48]
+        # (flame + head), Panel R = x[0.48,0.88] (body + wings). Don't desync these two crops.
+        "craftZoom": {"zw": 2700, "zx": -216, "zy": -381},   # SLIDE 3 — LEFT panel (flame side)
+        "sceneZoom": {"zw": 2700, "zx": -1296, "zy": -381},  # SLIDE 4 — RIGHT panel (Charizard side), seam = L.zx - 1080
         "sceneHeadline": "A Delta Species Charizard",
         "sceneBody": "Black scales and Dragon typing,|a Delta Species recolour.",
-        "craftZoom": (0.22, 0.30, 0.40),  # THE ARTIST — the flame bursting the frame (left)
         "craftKicker": "THE ARTIST",
         "craftHeadline": "Masakazu Fukuda",
         "craftBody": "His flame erupts past the border,|a hand-painted 3D depth effect.",
@@ -2011,7 +2014,12 @@ def _fresh_brief(theme, api_key, facts):
         ov = _GRAIL_OVERRIDES.get(facts.get("card_id"))
         if ov:
             for key, val in ov.items():
-                brief[key] = _center_crop(*val) if key in ("sceneZoom", "craftZoom") else val
+                if key in ("sceneZoom", "craftZoom"):
+                    # tuple (cx,cy,span) → _center_crop; dict {zw,zx,zy} → exact crop (used for
+                    # the pixel-perfect 2-panel PANORAMA, where the seam must be gap-free).
+                    brief[key] = _center_crop(*val) if isinstance(val, tuple) else val
+                else:
+                    brief[key] = val
             log(f"  grail: applied hand-curated override for {facts.get('card_id')}")
         return brief
     sys.exit(f"[pokeev-bot] unknown theme {theme}")
