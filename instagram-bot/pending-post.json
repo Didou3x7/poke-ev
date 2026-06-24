@@ -142,15 +142,15 @@
       "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/b083707d7c04ecfc5fadb945ee3206bb.png",
       "vision": null,
       "crops": {
-        "scene": {
-          "zw": 2690,
-          "zx": -1132,
-          "zy": -375
-        },
         "craft": {
-          "zw": 3721,
-          "zx": -1773,
-          "zy": -519
+          "zw": 2700,
+          "zx": -540,
+          "zy": -381
+        },
+        "scene": {
+          "zw": 2700,
+          "zx": -1620,
+          "zy": -381
         }
       }
     },
