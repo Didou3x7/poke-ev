@@ -1,0 +1,201 @@
+{
+  "date": "2026-06-26",
+  "theme": "ripkeep",
+  "tg_offset": 0,
+  "plan": {
+    "date": "2026-06-26",
+    "theme": "ripkeep",
+    "slides": [
+      "https://pokeev.com/api/ig?slide=rk-cover&set=White%20Flare&logo=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2Flogo.png&eyebrow=THE%20COLLECTOR%27S%20DILEMMA&delta=%2482&cue=swipe%20%E2%86%92",
+      "https://pokeev.com/api/ig?slide=rk-tempt&set=White%20Flare&logo=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2Flogo.png&img0=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2F172%2Fhigh.png&v0=%24489&img1=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2F173%2Fhigh.png&v1=%24486&img2=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2F166%2Fhigh.png&v2=%24216&line=The%20chase%20pulls%20are%20worth%20a%20small%20fortune.%7CThe%20catch%3A%20you%20have%20to%20actually%20hit%20one.",
+      "https://pokeev.com/api/ig?slide=rk-stat&set=White%20Flare&logo=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2Flogo.png&kicker=THE%20SEALED%20PRICE&label=A%20sealed%20White%20Flare%7CElite%20Trainer%20Box%20costs&value=%24148&sub=Live%20market%20price%2C%7Crefreshed%20daily%20on%20pokeev.com.&foot=now%20rip%20it%20open%E2%80%A6%20%E2%86%92",
+      "https://pokeev.com/api/ig?slide=rk-stat&set=White%20Flare&logo=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2Flogo.png&kicker=THE%20EXPECTED%20VALUE&label=Rip%20that%20same%20Elite%20Trainer%20Box%2C%7Con%20average%20it%20pulls%20back&value=%2466&sub=9%20packs%2C%20every%20card%20inside%7Cpriced%20live%20on%20pokeev.com.&foot=so%E2%80%A6%20rip%20or%20keep%3F%20%E2%86%92",
+      "https://pokeev.com/api/ig?slide=rk-versus&set=White%20Flare&logo=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2Flogo.png&rip=0&product=White%20Flare%20%C2%B7%20Elite%20Trainer%20Box&sealed=%24148&ev=%2466&gap=%2482&gapLabel=KEEPING%20WINS%20BY",
+      "https://pokeev.com/api/ig?slide=rk-verdict&set=White%20Flare&logo=https%3A%2F%2Fassets.tcgdex.net%2Fen%2Fsv%2Fsv10.5w%2Flogo.png&rip=0&verdict=KEEP%20IT%7CSEALED&reason=Ripping%20averages%20%2466.%7CSealed%20it%20sits%20at%20%24148.%20Keep%20it.&sealed=%24148&ev=%2466",
+      "https://pokeev.com/api/ig?slide=rk-cta&eyebrow=NOW%20DO%20IT%20FOR%20ANY%20SET&h1=Rip%20or%20keep%3F&h2=Know%20in%20seconds.&body=pokeev.com%20runs%20the%20live%20Expected%20Value%7Con%20every%20sealed%20set%2C%20so%20you%20never%20rip%20blind."
+    ],
+    "caption": "A sealed White Flare ETB costs $148. Rip it and you average just $66.\n\nThe math says keep it sealed.\n\nThat gap is $82. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com\n\n#pokemonsealed #riporkeep #elitetrainerbox #pokemoninvesting #sealedpokemon #whiteflare #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pullrate #pokemoninvestment #pokemonuk",
+    "hashtags": [
+      "#pokemonsealed",
+      "#riporkeep",
+      "#elitetrainerbox",
+      "#pokemoninvesting",
+      "#sealedpokemon",
+      "#whiteflare",
+      "#pokemon",
+      "#pokemontcg",
+      "#pokemoncards",
+      "#pokemoncollector",
+      "#tcg",
+      "#pokemoncommunity",
+      "#pokemoncardcollection",
+      "#pokemoncollection",
+      "#tcgcollector",
+      "#pokemoncardgame",
+      "#tradingcards",
+      "#tradingcardgame",
+      "#cardcollector",
+      "#tcgcommunity",
+      "#pokemoncardcollector",
+      "#pokemontcgcollector",
+      "#pokemonfan",
+      "#pokemontcgcards",
+      "#pokemontcgcommunity",
+      "#pokemoncollectors",
+      "#pokemonpulls",
+      "#pullrate",
+      "#pokemoninvestment",
+      "#pokemonuk"
+    ],
+    "brief": {
+      "eyebrow": "THE COLLECTOR'S DILEMMA",
+      "verdictWord": "KEEP IT|SEALED",
+      "reason": "Ripping averages $66.|Sealed it sits at $148. Keep it.",
+      "caption": "A sealed White Flare ETB costs $148. Rip it and you average just $66.\n\nThe math says keep it sealed.\n\nThat gap is $82. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com",
+      "hashtags": [
+        "#pokemonsealed",
+        "#riporkeep",
+        "#elitetrainerbox",
+        "#pokemoninvesting",
+        "#sealedpokemon",
+        "#whiteflare",
+        "#pokemon",
+        "#pokemontcg",
+        "#pokemoncards",
+        "#pokemoncollector",
+        "#tcg",
+        "#pokemoncommunity",
+        "#pokemoncardcollection",
+        "#pokemoncollection",
+        "#tcgcollector",
+        "#pokemoncardgame",
+        "#tradingcards",
+        "#tradingcardgame",
+        "#cardcollector",
+        "#tcgcommunity",
+        "#pokemoncardcollector",
+        "#pokemontcgcollector",
+        "#pokemonfan",
+        "#pokemontcgcards",
+        "#pokemontcgcommunity",
+        "#pokemoncollectors",
+        "#pokemonpulls",
+        "#pullrate",
+        "#pokemoninvestment",
+        "#pokemonuk"
+      ]
+    },
+    "keys": [
+      "white-flare"
+    ],
+    "verify": [
+      {
+        "snap_usd": 489,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 489,
+        "name": "Victini"
+      },
+      {
+        "snap_usd": 486,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 486,
+        "name": "Reshiram ex"
+      },
+      {
+        "snap_usd": 216,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 216,
+        "name": "Reshiram ex"
+      }
+    ],
+    "qa_warnings": []
+  },
+  "ctx": {
+    "theme": "ripkeep",
+    "base": "https://pokeev.com",
+    "facts": {
+      "key": "white-flare",
+      "set_id": "white-flare",
+      "set_name": "White Flare",
+      "logo": "https://assets.tcgdex.net/en/sv/sv10.5w/logo.webp",
+      "pack_ev": 7.353067973195489,
+      "packs": 9,
+      "open_ev": 66,
+      "sealed": 148,
+      "etb_name": "White Flare Elite Trainer Box",
+      "gap": 82,
+      "rel_gap": 0.5536381238448712,
+      "verdict_rip": false,
+      "chase": [
+        {
+          "name": "Victini",
+          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/172/high.webp",
+          "usd": 489,
+          "rarity": "black-white-rare",
+          "hd_image": null
+        },
+        {
+          "name": "Reshiram ex",
+          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/173/high.webp",
+          "usd": 486,
+          "rarity": "black-white-rare",
+          "hd_image": null
+        },
+        {
+          "name": "Reshiram ex",
+          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/166/high.webp",
+          "usd": 216,
+          "rarity": "special-illustration-rare",
+          "hd_image": null
+        }
+      ]
+    },
+    "verify": [
+      {
+        "snap_usd": 489,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 489,
+        "name": "Victini"
+      },
+      {
+        "snap_usd": 486,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 486,
+        "name": "Reshiram ex"
+      },
+      {
+        "snap_usd": 216,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 216,
+        "name": "Reshiram ex"
+      }
+    ],
+    "keys": [
+      "white-flare"
+    ]
+  }
+}
