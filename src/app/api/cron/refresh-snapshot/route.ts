@@ -38,6 +38,36 @@ async function readPriorFromBlob(): Promise<Snapshot | null> {
   }
 }
 
+/** Prune accumulated IG media from Blob so the store never re-fills to the point Vercel
+ *  SUSPENDS it (the failure that silently broke the approve→publish flow). The upscale cache
+ *  (`ig-cards/`) and rendered carousels (`ig-slides/`) are content-hashed and rebuild on
+ *  demand, so deleting old ones is lossless. NEVER touches `ig-state/` (today's state + plan)
+ *  or `snapshot.json`. Best-effort: a prune failure must never fail the refresh. */
+async function pruneOldIgBlobs(maxAgeDays = 14): Promise<number> {
+  try {
+    const { list, del } = await import("@vercel/blob");
+    const cutoff = Date.now() - maxAgeDays * 86_400_000;
+    const stale: string[] = [];
+    for (const prefix of ["ig-slides/", "ig-cards/", "ig-health/"]) {
+      let cursor: string | undefined;
+      do {
+        const { blobs, cursor: next } = await list({ prefix, cursor, limit: 1000 });
+        for (const b of blobs) {
+          if (new Date(b.uploadedAt).getTime() < cutoff) stale.push(b.url);
+        }
+        cursor = next;
+      } while (cursor);
+    }
+    // del accepts up to ~1000 urls/call; chunk to be safe.
+    for (let i = 0; i < stale.length; i += 500) {
+      await del(stale.slice(i, i + 500));
+    }
+    return stale.length;
+  } catch {
+    return 0;
+  }
+}
+
 // Wake the IG bot's MORNING preview. Vercel Hobby allows only 2 daily crons (this refresh +
 // ig-tick), so this 05:00 cron doubles as the reliable morning bot trigger — fired up-front
 // so a slow/timed-out snapshot build can never skip the preview. Best-effort; GitHub's
@@ -124,12 +154,16 @@ export async function GET(request: NextRequest) {
     logs.push(`sealed merge failed: ${(e as Error).message}`);
   }
 
+  // Keep the Blob store small so it never gets suspended for over-usage.
+  const pruned = await pruneOldIgBlobs(14);
+
   return NextResponse.json({
     ok: true,
     sets: Object.keys(snapshot.sets).length,
     sealedMatched,
     generatedAt: snapshot.generatedAt,
     fx: snapshot.fx,
+    prunedIgBlobs: pruned,
     logs,
   });
 }

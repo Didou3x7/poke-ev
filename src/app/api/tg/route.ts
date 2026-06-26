@@ -202,7 +202,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
   } catch (e) {
     // Never make Telegram retry on our own bug; surface it to the editor instead.
-    await sendMessage(chatId, "⚠️ Webhook error handling your tap: " + String(e).slice(0, 300));
+    const msg = String(e);
+    if (/suspended/i.test(msg)) {
+      await sendMessage(
+        chatId,
+        "⚠️ Le store Vercel Blob est SUSPENDU — le bot ne peut ni enregistrer ta décision ni publier.\n" +
+          "→ Vercel → Storage → réactive le store (Resume), puis re-tape ton bouton.",
+      );
+    } else {
+      await sendMessage(chatId, "⚠️ Webhook error handling your tap: " + msg.slice(0, 300));
+    }
   }
   return NextResponse.json({ ok: true });
 }
