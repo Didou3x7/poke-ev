@@ -41,6 +41,25 @@ async function getAccessToken(saJson: string): Promise<string | null> {
   }
 }
 
+/** Which GSC property to query. Honours GSC_SITE_URL if set, else auto-detects the property the
+ *  service account can see (preferring a Domain property `sc-domain:pokeev.com`). So it works
+ *  whether the owner verified a Domain or a URL-prefix property — no env var needed. */
+async function resolveSiteUrl(token: string): Promise<string | null> {
+  const explicit = process.env.GSC_SITE_URL;
+  if (explicit) return explicit;
+  try {
+    const r = await fetch("https://searchconsole.googleapis.com/webmasters/v3/sites", {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    if (!r.ok) return null;
+    const sites = ((await r.json()) as { siteEntry?: Array<{ siteUrl: string; permissionLevel: string }> }).siteEntry ?? [];
+    const usable = sites.filter((s) => s.permissionLevel !== "siteUnverifiedUser" && /pokeev\.com/i.test(s.siteUrl));
+    return (usable.find((s) => s.siteUrl.startsWith("sc-domain:")) ?? usable[0])?.siteUrl ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export interface GscRow {
   keys: string[]; // [query, page] in our queries
   clicks: number;
@@ -59,7 +78,8 @@ export async function gscQuery(body: {
   if (!saJson) return null;
   const token = await getAccessToken(saJson);
   if (!token) return null;
-  const site = process.env.GSC_SITE_URL || "https://pokeev.com/";
+  const site = await resolveSiteUrl(token);
+  if (!site) return null;
   try {
     const r = await fetch(
       `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/searchAnalytics/query`,
@@ -124,8 +144,21 @@ export async function gscDiagnose(): Promise<Record<string, unknown>> {
   if (!token) {
     return { stage: "token", ok: false, clientEmail: sa.client_email, pkLooksValid, detail: tokenErr };
   }
+  // What properties can this SA see?
+  let sitesSeen: string[] = [];
+  try {
+    const sr = await fetch("https://searchconsole.googleapis.com/webmasters/v3/sites", {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    if (sr.ok)
+      sitesSeen = (((await sr.json()) as { siteEntry?: Array<{ siteUrl: string; permissionLevel: string }> }).siteEntry ?? []).map(
+        (s) => `${s.siteUrl} (${s.permissionLevel})`,
+      );
+  } catch {
+    /* ignore */
+  }
   // Query
-  const site = process.env.GSC_SITE_URL || "https://pokeev.com/";
+  const site = (await resolveSiteUrl(token)) ?? process.env.GSC_SITE_URL ?? "https://pokeev.com/";
   const r = await fetch(
     `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/searchAnalytics/query`,
     {
@@ -140,6 +173,7 @@ export async function gscDiagnose(): Promise<Record<string, unknown>> {
     ok: r.ok,
     clientEmail: sa.client_email,
     site,
+    sitesSeen,
     pkLooksValid,
     httpStatus: r.status,
     detail: r.ok ? "OK" : qbody.slice(0, 220),
