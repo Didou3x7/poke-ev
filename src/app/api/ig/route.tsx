@@ -648,7 +648,10 @@ function rkCover(opts: { logo: string | null; setLabel: string; eyebrow: string;
 // this is what ripping is chasing. Builds the desire the cold math then tests.
 function rkTemptation(opts: { images: string[]; values: (string | null)[]; setLabel: string; logo: string | null; line: string }) {
   const n = Math.min(opts.images.length, 3) || 1;
-  const w = n >= 3 ? 330 : 380;
+  // Fit inside the Frame's padded width (1080 − 2×72 = 936): 3×300 + 3×(2×5) margin = 930,
+  // so all three cards show FULLY. The old 330 made the row 1038px wide → it overflowed the
+  // padding and clipped the outer cards (the right one most visibly).
+  const w = n >= 3 ? 300 : 380;
   const h = Math.round(w * 1.392);
   return (
     <Frame>
@@ -658,7 +661,7 @@ function rkTemptation(opts: { images: string[]; values: (string | null)[]; setLa
         <div style={{ display: "flex", marginTop: 12 }}><HoloText size={62}>you&apos;re chasing these</HoloText></div>
         <div style={{ display: "flex", alignItems: "flex-end", marginTop: 50 }}>
           {opts.images.slice(0, 3).map((src, i) => (
-            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 8px" }}>
+            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "0 5px" }}>
               <img src={src} width={w} height={h} style={{ display: "flex", borderRadius: 12, objectFit: "contain", boxShadow: "0 24px 60px -22px rgba(0,0,0,0.85)" }} />
               <span style={{ display: "flex", fontFamily: "Clash", fontSize: 30, marginTop: 18, backgroundImage: HOLO, backgroundClip: "text", color: "transparent" }}>{opts.values[i] ?? "—"}</span>
             </div>
