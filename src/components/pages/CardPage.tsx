@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { getDict, tpl } from "@/lib/i18n";
 import { absoluteUrl, formatMoney, localePath, type Locale } from "@/lib/i18n/config";
 import { getSnapshot } from "@/lib/data/snapshot";
@@ -161,12 +162,12 @@ export async function CardPage({ locale, slug }: { locale: Locale; slug: string 
                       {/* EN scan: always present on TCGdex; the FR print scan
                           404s for many sets, so thumbnails use the reliable EN
                           image (the big hero still shows the localized print). */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={r.imageEn}
                         alt={`${r.name} — ${data.setName}`}
-                        loading="lazy"
-                        decoding="async"
+                        width={245}
+                        height={343}
+                        sizes="(min-width:1024px) 16vw, (min-width:640px) 33vw, 50vw"
                         className="mb-2 aspect-[5/7] w-full rounded-lg bg-ink-850 object-cover"
                       />
                       <span className="truncate text-xs font-medium leading-tight">{r.name}</span>
@@ -199,12 +200,12 @@ export async function CardPage({ locale, slug }: { locale: Locale; slug: string 
                       {/* EN scan: always present on TCGdex; the FR print scan
                           404s for many sets, so thumbnails use the reliable EN
                           image (the big hero still shows the localized print). */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={r.imageEn}
                         alt={`${r.name} — ${data.setName}`}
-                        loading="lazy"
-                        decoding="async"
+                        width={245}
+                        height={343}
+                        sizes="(min-width:1024px) 16vw, (min-width:640px) 33vw, 50vw"
                         className="mb-2 aspect-[5/7] w-full rounded-lg bg-ink-850 object-cover"
                       />
                       <span className="truncate text-xs font-medium leading-tight">{r.name}</span>

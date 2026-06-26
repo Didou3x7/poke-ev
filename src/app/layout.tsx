@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { fontVariables } from "@/lib/fonts";
 import { SITE_URL } from "@/lib/i18n/config";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { MotionProvider } from "@/components/MotionProvider";
 import { GrainOverlay } from "@/components/chrome/GrainOverlay";
 import { ScrollProgress } from "@/components/chrome/ScrollProgress";
@@ -102,6 +103,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <GrainOverlay />
         <ScrollProgress />
         <MotionProvider>{children}</MotionProvider>
+        {/* Real-user Core Web Vitals (LCP/INP/CLS), first-party beacon (no CSP/cookie impact).
+            Complements Umami's cookieless traffic stats with actual performance data. */}
+        <SpeedInsights />
       </body>
     </html>
   );

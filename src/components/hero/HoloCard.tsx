@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, m, useMotionValue, useMotionTemplate, useReducedMotion, useSpring, useTransform } from "motion/react";
 import type { HeroCard } from "@/lib/hero-cards";
 
@@ -144,36 +145,22 @@ function CardImage({
   eager?: boolean;
   fallbackSrc?: string;
 }) {
-  // No opacity gate on load: cached images don't fire onLoad reliably, which
-  // would leave them invisible. The AnimatePresence wrapper handles fades.
-  const ref = useRef<HTMLImageElement>(null);
-  // Hydration-safe fallback: an eager FR scan can 404 BEFORE React attaches
-  // onError (the event then never replays), so on mount we also swap any image
-  // that already failed. Covers the localized hero on sets with no FR scan.
+  // next/image serves AVIF/WebP at the right DPR for the ~360px hero (faster LCP,
+  // sharper). State-based fallback: when a localized print 404s, swap to the EN
+  // scan (the pool rotates this component through cards, so re-sync on src change).
+  const [imgSrc, setImgSrc] = useState(src);
   useEffect(() => {
-    const img = ref.current;
-    if (fallbackSrc && img && img.complete && img.naturalWidth === 0 && img.src !== fallbackSrc) {
-      img.src = fallbackSrc;
-    }
-  }, [fallbackSrc, src]);
+    setImgSrc(src);
+  }, [src]);
   return (
-    <img
-      ref={ref}
-      src={src}
+    <Image
+      src={imgSrc}
       alt={name}
-      width={600}
-      height={825}
-      loading={eager ? "eager" : "lazy"}
-      decoding="async"
-      onError={
-        fallbackSrc
-          ? (e) => {
-              const img = e.currentTarget;
-              if (img.src !== fallbackSrc) img.src = fallbackSrc;
-            }
-          : undefined
-      }
-      className="block h-full w-full object-contain"
+      fill
+      sizes="(min-width: 1024px) 360px, 80vw"
+      priority={eager}
+      onError={fallbackSrc ? () => setImgSrc((cur) => (cur === fallbackSrc ? cur : fallbackSrc)) : undefined}
+      className="object-contain"
     />
   );
 }

@@ -14,9 +14,17 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.pokemontcg.io" },
+      { protocol: "https", hostname: "assets.tcgdex.net" },
       { protocol: "https", hostname: "static.tcggo.com" },
       { protocol: "https", hostname: "*.tcggo.com" },
+      { protocol: "https", hostname: "*.blob.vercel-storage.com" },
     ],
+    // AVIF/WebP are ~30-50% smaller than the source PNGs → faster LCP, sharper at
+    // the right DPR. Card art is immutable, so cache optimized variants for the max
+    // (31 days) — every repeat view across the ~9k card pages is then a CDN hit, not
+    // a re-transform (keeps Pro image-optimization usage low).
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2678400,
   },
   async headers() {
     // CSP only in production — `next dev` HMR needs 'unsafe-eval'. Covers the
