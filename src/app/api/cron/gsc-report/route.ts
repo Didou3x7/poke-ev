@@ -4,7 +4,7 @@
 // page 1. Plus a clicks/impressions snapshot. No-ops cleanly until GSC_SA_JSON is configured.
 import { NextResponse, type NextRequest } from "next/server";
 import { notifyOps } from "@/lib/ops/notify";
-import { gscQuery, isGscConfigured, gscDiagnose } from "@/lib/ops/gsc";
+import { gscQuery, isGscConfigured } from "@/lib/ops/gsc";
 import { SITE_URL } from "@/lib/i18n/config";
 
 export const runtime = "nodejs";
@@ -17,17 +17,8 @@ function isoDaysAgo(n: number): string {
 
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  // TEMP self-test token (one-time, removed right after the manual verification run).
-  const TEST_TOKEN = "357c5c2e-6098-4fa9-a55b-918647bd90ff";
-  const authed =
-    (secret && request.headers.get("authorization") === `Bearer ${secret}`) ||
-    request.nextUrl.searchParams.get("selftest") === TEST_TOKEN;
-  if (!authed) {
+  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-  // TEMP: ?selftest=…&diag=1 returns a step-by-step diagnostic (no secrets). Removed with the trigger.
-  if (request.nextUrl.searchParams.get("diag") === "1") {
-    return NextResponse.json(await gscDiagnose());
   }
   if (!isGscConfigured()) {
     return NextResponse.json({ ok: true, skipped: "GSC_SA_JSON not configured" });
