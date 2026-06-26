@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/ig-tick",
       "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/cron/ig-watchdog",
+      "schedule": "*/30 17-20 * * *"
     }
   ]
 }
