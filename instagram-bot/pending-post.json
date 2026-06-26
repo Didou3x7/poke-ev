@@ -6,15 +6,15 @@
     "date": "2026-06-26",
     "theme": "ripkeep",
     "slides": [
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/65b2791cb37943d08b91894bc2279493.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/645fb435ac3696c4711e24f9d04f74ab.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/46878d22230ad467bd43c62968a1da2e.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5139fa3b20d060e1856ad509e65d392b.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/91442c10983ea584c0e27fe2a3070758.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5bb74ba461284478dadf034c52809c87.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/20db07bde1b453947bd95d40bff8b81b.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/6dffb809d0215b5c92e68ee810b6c86b.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/b529659a3040d671cd271450b3e09ff0.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/103bdef63b64a4cdc190c7fcc56aa68d.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/c6a92a464d1ec4a748db33926dca24c5.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/35ecee1da1b0e2f282861856277ebc4a.png"
     ],
-    "caption": "A sealed White Flare ETB costs $148. Rip it and you average just $66.\n\nThe math says keep it sealed.\n\nThat gap is $82. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com\n\n#pokemonsealed #riporkeep #elitetrainerbox #pokemoninvesting #sealedpokemon #whiteflare #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pullrate #pokemoninvestment #pokemonuk",
+    "caption": "A sealed White Flare ETB costs $147. Rip it and you average just $66.\n\nThe math says keep it sealed.\n\nThat gap is $81. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com\n\n#pokemonsealed #riporkeep #elitetrainerbox #pokemoninvesting #sealedpokemon #whiteflare #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pullrate #pokemoninvestment #pokemonuk",
     "hashtags": [
       "#pokemonsealed",
       "#riporkeep",
@@ -50,8 +50,8 @@
     "brief": {
       "eyebrow": "THE COLLECTOR'S DILEMMA",
       "verdictWord": "KEEP IT|SEALED",
-      "reason": "Ripping averages $66.|Sealed it sits at $148. Keep it.",
-      "caption": "A sealed White Flare ETB costs $148. Rip it and you average just $66.\n\nThe math says keep it sealed.\n\nThat gap is $82. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com",
+      "reason": "Ripping averages $66.|Sealed it sits at $147. Keep it.",
+      "caption": "A sealed White Flare ETB costs $147. Rip it and you average just $66.\n\nThe math says keep it sealed.\n\nThat gap is $81. Rip or keep is never a vibe, it is a number.\n\nWould you crack it or keep it sealed? Tell us below.\n\npokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\nlink in bio -> pokeev.com",
       "hashtags": [
         "#pokemonsealed",
         "#riporkeep",
@@ -90,13 +90,13 @@
     ],
     "verify": [
       {
-        "snap_usd": 489,
+        "snap_usd": 497,
         "snap_eur": null,
         "live_usd": null,
         "live_eur": null,
         "agree": null,
         "note": "no pokemontcg id (modern scan) — snapshot price kept",
-        "display_usd": 489,
+        "display_usd": 497,
         "name": "Victini"
       },
       {
@@ -130,19 +130,19 @@
       "set_id": "white-flare",
       "set_name": "White Flare",
       "logo": "https://assets.tcgdex.net/en/sv/sv10.5w/logo.webp",
-      "pack_ev": 7.353067973195489,
+      "pack_ev": 7.368382553195489,
       "packs": 9,
       "open_ev": 66,
-      "sealed": 148,
+      "sealed": 147,
       "etb_name": "White Flare Elite Trainer Box",
-      "gap": 82,
-      "rel_gap": 0.5536381238448712,
+      "gap": 81,
+      "rel_gap": 0.5492425028632449,
       "verdict_rip": false,
       "chase": [
         {
           "name": "Victini",
           "image": "https://assets.tcgdex.net/en/sv/sv10.5w/172/high.webp",
-          "usd": 489,
+          "usd": 497,
           "rarity": "black-white-rare",
           "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/a42f5262ee40f8b86fc2d633ff095d8c.png"
         },
@@ -164,13 +164,13 @@
     },
     "verify": [
       {
-        "snap_usd": 489,
+        "snap_usd": 497,
         "snap_eur": null,
         "live_usd": null,
         "live_eur": null,
         "agree": null,
         "note": "no pokemontcg id (modern scan) — snapshot price kept",
-        "display_usd": 489,
+        "display_usd": 497,
         "name": "Victini"
       },
       {
