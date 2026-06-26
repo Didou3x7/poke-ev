@@ -1287,6 +1287,45 @@ RK_SEALED_MAX = 600  # ETBs priced above this are vintage outliers — the rip/k
 RK_SEALED_MIN = 25   # is then trivially "KEEP" and makes a dull, repetitive post.
 
 
+# Gold / secret rares (hyper-rare, rainbow, gold, secret) are the priciest cards but scan as a
+# flat metallic slab — the Pokémon is barely visible and they look cheap on IG. The gorgeous
+# full-art versions (special-illustration / illustration rare) are right behind on price. So the
+# CHASE DISPLAY skips gold and dedupes by Pokémon (no Mega Lucario twice), keeping the best-LOOKING
+# high-value cards. EV/verdict still use every card — this only changes which cards we SHOW.
+_GOLD_RARITIES = ("hyper", "gold", "rainbow", "secret")
+
+
+def _is_gold(card) -> bool:
+    r = (card.get("rarity") or "").lower()
+    return any(g in r for g in _GOLD_RARITIES)
+
+
+def _pick_chase_display(cards, k=3):
+    pool = sorted(cards, key=lambda c: c.get("usd") or 0, reverse=True)
+    chosen, seen = [], set()
+    # First pass: best-looking (non-gold), one per Pokémon name.
+    for c in pool:
+        if _is_gold(c):
+            continue
+        name = (c.get("name") or "").lower()
+        if name in seen:
+            continue
+        seen.add(name)
+        chosen.append(c)
+        if len(chosen) >= k:
+            return chosen
+    # Fallback: a set whose only chases are gold — top up (still deduped) so we never show < k.
+    for c in pool:
+        name = (c.get("name") or "").lower()
+        if name in seen:
+            continue
+        seen.add(name)
+        chosen.append(c)
+        if len(chosen) >= k:
+            break
+    return chosen[:k]
+
+
 def select_ripkeep(snapshot, names, data_dir: Path, exclude=None):
     """Pick an EV-enabled set (ev.en.packEv>0) with a REAL etb sealed price in a
     believable band, not recently used. Ranked by the CLOSEST call (smallest relative
@@ -1311,7 +1350,7 @@ def select_ripkeep(snapshot, names, data_dir: Path, exclude=None):
         cards = [c for c in s.get("cards", []) if c.get("image") and (c.get("usd") or 0) > 0]
         if not cards:
             continue
-        top3 = sorted(cards, key=lambda c: c.get("usd") or 0, reverse=True)[:3]
+        top3 = _pick_chase_display(cards, 3)
         gap = abs(sealed - open_ev)
         rel_gap = gap / sealed if sealed else 1.0
         rows.append({
