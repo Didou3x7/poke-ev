@@ -1,10 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { revalidatePath } from "next/cache";
 import { buildTcgdexSnapshot } from "@/lib/data/build-tcgdex";
 import { mergeSealedPrices } from "@/lib/data/sealed-merge";
 import { TcgcsvProvider } from "@/lib/data/tcgcsv";
 import { getAllSets, getPullRates } from "@/lib/data/catalog";
 import { isSnapshot, readBundledSnapshot } from "@/lib/data/snapshot";
 import { EMPTY_SNAPSHOT, type Snapshot } from "@/lib/data/snapshot-types";
+import { computeMovers, writeMovers, type MoverItem } from "@/lib/data/movers";
+import { detectAndAlertNewSets } from "@/lib/ops/new-sets";
+import { pingIndexNow } from "@/lib/ops/indexnow";
+import { notifyOps } from "@/lib/ops/notify";
+import { SITE_URL } from "@/lib/i18n/config";
 
 /**
  * Daily snapshot refresh, invoked by Vercel Cron (see vercel.json).
@@ -48,7 +54,7 @@ async function pruneOldIgBlobs(maxAgeDays = 14): Promise<number> {
     const { list, del } = await import("@vercel/blob");
     const cutoff = Date.now() - maxAgeDays * 86_400_000;
     const stale: string[] = [];
-    for (const prefix of ["ig-slides/", "ig-cards/", "ig-health/"]) {
+    for (const prefix of ["ig-slides/", "ig-cards/", "ig-health/", "backups/"]) {
       let cursor: string | undefined;
       do {
         const { blobs, cursor: next } = await list({ prefix, cursor, limit: 1000 });
@@ -154,6 +160,63 @@ export async function GET(request: NextRequest) {
     logs.push(`sealed merge failed: ${(e as Error).message}`);
   }
 
+  // ── Daily intelligence: 24h movers, new-set radar, search-engine ping, backup ──
+  const today = new Date().toISOString().slice(0, 10);
+
+  let moversCount = 0;
+  try {
+    const movers = computeMovers(prior, snapshot);
+    await writeMovers(movers);
+    moversCount = movers.gainers.length + movers.losers.length;
+    revalidatePath("/tendances");
+    revalidatePath("/en/trends");
+    const top = [...movers.gainers.slice(0, 3), ...movers.losers.slice(0, 3)];
+    if (top.length) {
+      const fmt = (i: MoverItem) =>
+        `${i.pct > 0 ? "📈" : "📉"} ${i.cardName} (${i.setName}) ${i.pct > 0 ? "+" : ""}${i.pct}% → ${i.newEur}€`;
+      await notifyOps(`💹 Mouvements 24h (top) :\n${top.map(fmt).join("\n")}\n\n→ ${SITE_URL}/tendances`);
+    }
+  } catch (e) {
+    logs.push(`movers failed: ${(e as Error).message}`);
+  }
+
+  try {
+    await detectAndAlertNewSets(today, (m) => logs.push(m));
+  } catch (e) {
+    logs.push(`new-set radar failed: ${(e as Error).message}`);
+  }
+
+  // Tell search engines to recrawl the new prices: home, set lists, the trends page, every set.
+  try {
+    const setUrls = Object.keys(snapshot.sets).flatMap((id) => [
+      `${SITE_URL}/sets/${id}`,
+      `${SITE_URL}/en/sets/${id}`,
+    ]);
+    await pingIndexNow([
+      `${SITE_URL}/`,
+      `${SITE_URL}/en`,
+      `${SITE_URL}/sets`,
+      `${SITE_URL}/en/sets`,
+      `${SITE_URL}/tendances`,
+      `${SITE_URL}/en/trends`,
+      ...setUrls,
+    ]);
+  } catch (e) {
+    logs.push(`indexnow failed: ${(e as Error).message}`);
+  }
+
+  // Dated backup so a bad day's prices can be rolled back.
+  try {
+    await put(`backups/snapshot-${today}.json`, JSON.stringify(snapshot), {
+      access: "public",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: "application/json",
+    });
+  } catch (e) {
+    logs.push(`backup failed: ${(e as Error).message}`);
+  }
+
   // Keep the Blob store small so it never gets suspended for over-usage.
   const pruned = await pruneOldIgBlobs(14);
 
@@ -161,6 +224,7 @@ export async function GET(request: NextRequest) {
     ok: true,
     sets: Object.keys(snapshot.sets).length,
     sealedMatched,
+    moversCount,
     generatedAt: snapshot.generatedAt,
     fx: snapshot.fx,
     prunedIgBlobs: pruned,

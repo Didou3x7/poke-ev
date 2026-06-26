@@ -435,5 +435,10 @@ export const en: Dict = {
       title: "Cookie policy | Poké EV",
       description: "A single functional language cookie, no tracking cookies. Details of our cookie policy.",
     },
+    trends: {
+      title: "Today's movers · biggest Pokémon card price gains and drops | Poké EV",
+      description:
+        "The Pokémon cards whose market price moved most over 24h: top gainers and losers, refreshed daily.",
+    },
   },
 };

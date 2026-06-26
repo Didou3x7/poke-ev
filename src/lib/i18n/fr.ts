@@ -436,5 +436,10 @@ export const fr: Dict = {
       title: "Politique cookies | Poké EV",
       description: "Un seul cookie fonctionnel de langue, pas de cookies de suivi. Détails de notre politique cookies.",
     },
+    trends: {
+      title: "Tendances du jour · plus fortes hausses et baisses de prix Pokémon | Poké EV",
+      description:
+        "Les cartes Pokémon dont la cote a le plus bougé sur 24h : top hausses et baisses du marché, mises à jour chaque jour.",
+    },
   },
 };

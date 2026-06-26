@@ -15,6 +15,7 @@ const pageToMeta: Record<PageKey, MetaKey> = {
   legal: "legal",
   privacy: "privacy",
   cookies: "cookies",
+  trends: "trends",
 };
 
 /** Localized metadata with canonical + hreflang + OG/Twitter for any page. */

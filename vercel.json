@@ -11,6 +11,18 @@
     {
       "path": "/api/cron/ig-watchdog",
       "schedule": "*/30 17-20 * * *"
+    },
+    {
+      "path": "/api/cron/refresh-top",
+      "schedule": "0 */3 * * *"
+    },
+    {
+      "path": "/api/cron/ops-watchdog",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/ops-digest",
+      "schedule": "30 6 * * *"
     }
   ]
 }

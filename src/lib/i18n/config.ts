@@ -21,7 +21,8 @@ export type PageKey =
   | "methodology"
   | "legal"
   | "privacy"
-  | "cookies";
+  | "cookies"
+  | "trends";
 
 const staticPaths: Record<Locale, Record<Exclude<PageKey, "set" | "card">, string>> = {
   fr: {
@@ -33,6 +34,7 @@ const staticPaths: Record<Locale, Record<Exclude<PageKey, "set" | "card">, strin
     legal: "/mentions-legales",
     privacy: "/confidentialite",
     cookies: "/cookies",
+    trends: "/tendances",
   },
   en: {
     home: "/en",
@@ -43,6 +45,7 @@ const staticPaths: Record<Locale, Record<Exclude<PageKey, "set" | "card">, strin
     legal: "/en/legal-notice",
     privacy: "/en/privacy",
     cookies: "/en/cookies",
+    trends: "/en/trends",
   },
 };
 

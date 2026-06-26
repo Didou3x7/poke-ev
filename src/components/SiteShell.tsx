@@ -27,6 +27,7 @@ export function SiteShell({
   const nav = [
     { href: localePath(locale, "calculator"), label: t.common.nav.calculator, key: "calculator" as PageKey },
     { href: localePath(locale, "sets"), label: t.common.nav.sets, key: "sets" as PageKey },
+    { href: localePath(locale, "trends"), label: locale === "fr" ? "Tendances" : "Trends", key: "trends" as PageKey },
     { href: localePath(locale, "faq"), label: t.common.nav.faq, key: "faq" as PageKey },
   ];
   const updated =

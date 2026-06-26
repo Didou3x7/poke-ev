@@ -7,7 +7,7 @@ import { absoluteUrl, alternates, type PageKey } from "@/lib/i18n/config";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const snapshot = await getSnapshot();
   const lastModified = new Date(snapshot.generatedAt);
-  const staticPages: PageKey[] = ["home", "calculator", "sets", "faq", "methodology", "legal", "privacy", "cookies"];
+  const staticPages: PageKey[] = ["home", "calculator", "sets", "trends", "faq", "methodology", "legal", "privacy", "cookies"];
   const entries: MetadataRoute.Sitemap = [];
 
   const push = (
@@ -29,8 +29,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   };
 
   for (const page of staticPages) {
-    const priority = page === "home" ? 1 : page === "calculator" ? 0.9 : page === "sets" ? 0.8 : page === "faq" ? 0.6 : page === "methodology" ? 0.5 : 0.3;
-    const daily = page === "home" || page === "calculator" || page === "sets";
+    const priority = page === "home" ? 1 : page === "calculator" ? 0.9 : page === "sets" ? 0.8 : page === "trends" ? 0.7 : page === "faq" ? 0.6 : page === "methodology" ? 0.5 : 0.3;
+    const daily = page === "home" || page === "calculator" || page === "sets" || page === "trends";
     const isLegal = page === "legal" || page === "privacy" || page === "cookies";
     push(page, alternates(page), priority, daily ? "daily" : "weekly", !isLegal);
   }

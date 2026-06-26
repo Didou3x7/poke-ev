@@ -196,5 +196,6 @@ export interface Dict {
     legal: { title: string; description: string };
     privacy: { title: string; description: string };
     cookies: { title: string; description: string };
+    trends: { title: string; description: string };
   };
 }
