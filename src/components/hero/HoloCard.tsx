@@ -65,7 +65,9 @@ export function HoloCard({
   if (reduce) {
     return (
       <div className={className} style={{ transform: `rotate(${baseRotate}deg)` }}>
-        <div className="relative overflow-hidden rounded-[18px] ring-1 ring-line-strong">
+        {/* aspect-ratio gives the fill image its height (a `fill` image is absolute
+            and contributes no layout height, unlike the old intrinsic-sized <img>). */}
+        <div className="relative aspect-[600/825] overflow-hidden rounded-[18px] ring-1 ring-line-strong">
           <CardImage src={src} name={card.name} eager={eager} fallbackSrc={fallbackSrc} key={card.path} />
         </div>
         <CardLabel name={card.name} tag={card.tag} cardKey={card.path} />
