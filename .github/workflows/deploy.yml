@@ -51,7 +51,7 @@ jobs:
           # the price refresh going.
           if ! npm run validate:data; then
             echo "::warning::discovered catalog data invalid — reverting catalog changes, keeping price refresh"
-            git checkout -- data/sets data/sources/tcgdex-sets.json
+            git checkout -- data/sets data/sources/tcgdex-sets.json data/pull-rates
           fi
           npm run snapshot
           # Anti-regression gate: if a fixed price/EV bug recurs (reverse-holo leak,
@@ -60,11 +60,11 @@ jobs:
           npm run validate:snapshot
           git config user.name "Didou3x7"
           git config user.email "292510557+Didou3x7@users.noreply.github.com"
-          git add data/snapshot/snapshot.json data/sets data/sources/tcgdex-sets.json
+          git add data/snapshot/snapshot.json data/sets data/sources/tcgdex-sets.json data/pull-rates
           if git diff --staged --quiet; then
             echo "No data changes today."
           else
-            git commit -m "chore: daily refresh (new sets + TCGdex/TCGCSV prices)"
+            git commit -m "chore: daily refresh (new sets + estimated EV + TCGdex/TCGCSV prices)"
             git push
           fi
 

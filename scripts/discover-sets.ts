@@ -8,13 +8,44 @@
  * is then priced (cards + sealed) and gets a chase card on the snapshot build.
  * EV stays "indisponible" until a sourced pull-rate file is added by hand.
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { discoverNewSets, type DiscoveredSet } from "../src/lib/data/discover-sets";
+import { deriveEstimatedPullRate } from "../src/lib/data/estimate-pull-rate";
 import { getAllSets } from "../src/lib/data/catalog";
+import { pullRateConfigSchema, type PullRateConfigInput } from "../src/lib/data/schemas";
 
 const DATA_DIR = join(import.meta.dirname, "..", "data");
 const MAP_PATH = join(DATA_DIR, "sources", "tcgdex-sets.json");
+const RATES_DIR = join(DATA_DIR, "pull-rates");
+
+/** Auto-write an ESTIMATED pull-rate file (low confidence) for each newly-added set that has
+ *  none, so its EV appears immediately. Cloned from the newest standard same-era set; never
+ *  overwrites a sourced file. EV stays accurate-or-estimated, never silently absent. */
+function writeEstimatedPullRates(added: DiscoveredSet[]): number {
+  const existing: PullRateConfigInput[] = [];
+  for (const f of readdirSync(RATES_DIR)) {
+    if (!f.endsWith(".json")) continue;
+    const parsed = pullRateConfigSchema.safeParse(JSON.parse(readFileSync(join(RATES_DIR, f), "utf8")));
+    if (parsed.success) existing.push(parsed.data);
+  }
+  const releaseDateById = new Map(getAllSets().map((s) => [s.id, s.releaseDate]));
+  let wrote = 0;
+  for (const s of added) {
+    const path = join(RATES_DIR, `${s.id}.json`);
+    if (existsSync(path)) continue; // a sourced file already exists — keep it
+    const est = deriveEstimatedPullRate({ newSetId: s.id, era: s.era, existing, releaseDateById });
+    if (!est) {
+      console.warn(`[discover] no same-era reference for ${s.id} — EV stays unavailable until sourced`);
+      continue;
+    }
+    writeFileSync(path, JSON.stringify(est, null, 2) + "\n");
+    existing.push(est); // later sets in this batch can reference it too
+    wrote++;
+    console.log(`[discover] estimated pull-rate for ${s.id} (cloned ${est.notes?.match(/"([^"]+)"/)?.[1] ?? "same-era"})`);
+  }
+  return wrote;
+}
 
 type MapFile = Record<string, string>;
 
@@ -115,7 +146,10 @@ async function main() {
   const addedSets: DiscoveredSet[] = [];
   for (const [era, sets] of byEra) addedSets.push(...writeEraFile(era, sets));
   if (addedSets.length > 0) writeMap(map, addedSets);
-  console.log(`discover: added ${addedSets.length} new set(s) to the catalog + map.`);
+  const estimated = addedSets.length > 0 ? writeEstimatedPullRates(addedSets) : 0;
+  console.log(
+    `discover: added ${addedSets.length} new set(s) to the catalog + map; ${estimated} estimated pull-rate(s) written.`,
+  );
 }
 
 main().catch((e) => {

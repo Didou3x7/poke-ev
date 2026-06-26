@@ -57,8 +57,9 @@ export async function detectAndAlertNewSets(today: string, log: (m: string) => v
     (s) => `• ${s.nameEn} (${s.seriesEn}) — ${s.releaseDate}, ${s.cardCount ?? "?"} cartes`,
   );
   await notifyOps(
-    `🆕 Nouveau(x) set(s) Pokémon détecté(s) :\n${lines.join("\n")}\n\n` +
-      `→ À onboarder (FR+EN, prix+chase, pull-rates) quand tu veux. EV restera "indisponible" jusqu'au fichier pull-rate.`,
+    `🆕 Nouveau(x) set(s) Pokémon détecté(s) — onboardés AUTOMATIQUEMENT :\n${lines.join("\n")}\n\n` +
+      `✅ Pages FR+EN, prix, chase card et EV (estimé, confiance faible) en ligne au prochain build. ` +
+      `Rien à faire — affine le pull-rate à la main plus tard si tu veux une EV haute confiance.`,
   );
   fresh.forEach((s) => alerted.add(s.tcgdexId));
   await writeAlerted(alerted);
