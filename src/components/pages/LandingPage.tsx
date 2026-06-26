@@ -8,6 +8,7 @@ import { buildCalculatorShell } from "@/lib/view/calculator-vm";
 import { buildFeaturedSets } from "@/lib/view/featured";
 import { getAllSets } from "@/lib/data/catalog";
 import { SiteShell } from "@/components/SiteShell";
+import { PopularSearches } from "@/components/PopularSearches";
 import { Calculator } from "@/components/calculator/Calculator";
 import { AnimatedInt } from "@/components/AnimatedNumber";
 import { HeroCardSlot } from "@/components/hero/HeroCards";
@@ -203,6 +204,7 @@ export async function LandingPage({ locale }: { locale: Locale }) {
           </Link>
         </div>
       </section>
+      <PopularSearches locale={locale} />
     </SiteShell>
   );
 }

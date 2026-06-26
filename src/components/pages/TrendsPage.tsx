@@ -3,6 +3,7 @@ import Image from "next/image";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import { readMovers, type MoverItem } from "@/lib/data/movers";
 import { SiteShell } from "@/components/SiteShell";
+import { PopularSearches } from "@/components/PopularSearches";
 
 /**
  * "Today's movers" — the cards whose EUR market price moved most over the last 24h, recomputed
@@ -107,6 +108,7 @@ export async function TrendsPage({ locale }: { locale: Locale }) {
           </div>
         )}
       </div>
+      <PopularSearches locale={locale} />
     </SiteShell>
   );
 }

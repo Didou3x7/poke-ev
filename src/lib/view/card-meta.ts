@@ -6,8 +6,9 @@ import {
   localizedCardName,
   type SnapshotCard,
 } from "@/lib/data/snapshot-types";
-import { formatMoney, type Locale } from "@/lib/i18n/config";
+import { formatMoney, localePath, type Locale } from "@/lib/i18n/config";
 import { rarityLabel } from "@/lib/i18n/rarities";
+import { withSeoQuery } from "@/lib/ops/seo-targets";
 import { pageMetadata } from "./seo";
 
 /**
@@ -264,7 +265,7 @@ export async function cardPageMetadata(locale: Locale, slug: string): Promise<Me
       robots: { index: false, follow: false },
     };
   }
-  return pageMetadata(locale, "card", {
+  const meta = pageMetadata(locale, "card", {
     slug,
     vars: {
       card: data.cardName,
@@ -272,4 +273,5 @@ export async function cardPageMetadata(locale: Locale, slug: string): Promise<Me
       price: data.priceFormatted ?? (locale === "fr" ? "à venir" : "TBD"),
     },
   });
+  return withSeoQuery(meta, localePath(locale, "card", slug), locale);
 }
