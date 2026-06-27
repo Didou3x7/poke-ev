@@ -11,3 +11,4 @@ in code; this file is the COPY/art-direction memory.)
 - Change ONLY slide 5: replace the title: “The Full Panorama: $545 Combined” by one title that can fit into one line and not repeating the price which is already below the cards
 - Change the card because it will make 2 charizards in the row
 - Je ne veux pas cette carte, change mets une autre
+- Vérifie bien les prix affichés et corrige tout ce qui est faux
