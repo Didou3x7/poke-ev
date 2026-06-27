@@ -1536,8 +1536,13 @@ def select_grails(snapshot, names, exclude=None):
     """Pick the single highest-USD chase card of an EV-enabled set, not recently
     used (dedup on card id). Returns facts incl. odds + booster image for slides."""
     exclude = exclude or set()
+    # Owner override (POKEEV_GRAIL_SET / workflow_dispatch `grail`): feature a specific set's top
+    # chase instead of the automatic highest-value pick — e.g. to avoid two Charizards in a row.
+    force = (os.environ.get("POKEEV_GRAIL_SET") or "").strip() or None
     best = None
     for sid, s in snapshot.get("sets", {}).items():
+        if force and sid != force:
+            continue
         ev = (s.get("ev") or {}).get(LOCALE) or {}
         if (ev.get("packEv") or 0) <= 0:
             continue
@@ -1545,7 +1550,7 @@ def select_grails(snapshot, names, exclude=None):
         if not cards:
             continue
         chase = max(cards, key=lambda c: c.get("usd") or 0)
-        if chase.get("id") in exclude:
+        if not force and chase.get("id") in exclude:  # a forced set wins even if recently used
             continue
         if best is None or (chase.get("usd") or 0) > best["_usd"]:
             odds = _odds_for_card(s, chase.get("rarity"))
