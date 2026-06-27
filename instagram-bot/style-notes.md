@@ -10,3 +10,4 @@ in code; this file is the COPY/art-direction memory.)
 - NEVER invent unverifiable facts about the art or card (e.g. "the eyes follow you at any angle", a made-up PSA-10 population, fabricated lore). @pokeev.tcg is a data-credibility brand — describe ONLY what is visibly true in the artwork.
 - Change ONLY slide 5: replace the title: “The Full Panorama: $545 Combined” by one title that can fit into one line and not repeating the price which is already below the cards
 - Change the card because it will make 2 charizards in the row
+- Je ne veux pas cette carte, change mets une autre
