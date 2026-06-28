@@ -1167,9 +1167,11 @@ def fallback_connected(facts):
         "revealTitle": _no_dash(reveal_title)[:36],
         "caption": (
             f"{n} separate cards. One continuous illustration.\n\n"
-            f"Line them up and {artist}'s artwork becomes a single panorama, scattered across the set.\n\n"
-            f"Which piece is your favorite? Tell us below.\n\n"
-            "pokeev.com prices every card live, so you always know what a set is really worth.\n"
+            f"Line them up and {artist}'s artwork becomes a single panorama, scattered across {set_lbl}.\n"
+            "The live value of every piece, and the whole set, is on pokeev.com.\n\n"
+            f"Save this before you hunt the full {set_lbl} panorama.\n\n"
+            "Which piece is your favorite? Tell us below.\n\n"
+            "Follow @pokeev.tcg for the live Expected Value on every sealed set.\n"
             "link in bio -> pokeev.com"
         ),
         "hashtags": _clean_hashtags(
@@ -1428,10 +1430,12 @@ def fallback_ripkeep(facts):
         "verdictWord": "RIP IT" if rip else "KEEP IT|SEALED",
         "reason": (f"Ripping averages {ev}.|Sealed it sits at {sealed}. {'Open it.' if rip else 'Keep it.'}"),
         "caption": (
-            f"{hook}\n\n{sub}\n\n"
-            f"That gap is {gap}. Rip or keep is never a vibe, it is a number.\n\n"
+            f"{hook}\n\n"
+            f"{sub} The gap is {gap}. Rip or keep is never a vibe, it is a number.\n"
+            "pokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\n\n"
+            f"Save this before you open a {set_name} ETB.\n\n"
             "Would you crack it or keep it sealed? Tell us below.\n\n"
-            "pokeev.com runs the live Expected Value on every sealed set, so you never rip blind.\n"
+            "Follow @pokeev.tcg for the live Expected Value on every sealed set.\n"
             "link in bio -> pokeev.com"
         ),
         "hashtags": _clean_hashtags(
