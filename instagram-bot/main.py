@@ -2078,7 +2078,41 @@ def _slides_for(theme, base, facts, brief):
     sys.exit(f"[pokeev-bot] unknown theme {theme}")
 
 
-def patch_brief(api_key, prior_brief, feedback):
+def _slide_guide(theme, n_items=0):
+    """Human map of slide number → which editable brief key(s) control it, so a revise note that
+    refers to a slide BY NUMBER ('change the slide 5 title') resolves to the right field. Slides
+    marked FIXED are hardcoded/data-driven and cannot be changed via copy edits."""
+    if theme == "connected":
+        n = n_items or 3
+        return (
+            "Slide 1 = COVER -> editable: eyebrow (small top line), headline (big title).\n"
+            f"Slides 2 to {1 + n} = ONE PER CARD -> FIXED (card name + price; not editable here).\n"
+            f"Slide {2 + n} = THE REVEAL (the full combined illustration of all the cards) -> editable: revealTitle (its title).\n"
+            f"Slide {3 + n} = CTA (final 'open it or keep it sealed') -> FIXED."
+        )
+    if theme == "ripkeep":
+        return (
+            "Slide 1 = COVER -> editable: eyebrow.\n"
+            "Slide 2 = 'you're chasing these' (the 3 chase cards) -> editable: the caption line shown under the cards.\n"
+            "Slide 3 = THE SEALED PRICE (one big number) -> FIXED.\n"
+            "Slide 4 = THE EXPECTED VALUE (one big number) -> FIXED.\n"
+            "Slide 5 = THE FACE-OFF (sealed vs EV) -> FIXED.\n"
+            "Slide 6 = THE VERDICT -> editable: verdictWord (RIP IT / KEEP IT), reason (the one-line why).\n"
+            "Slide 7 = CTA -> FIXED."
+        )
+    if theme == "grails":
+        return (
+            "Slide 1 = THE SHOCK (price hook) -> editable: shockHeadline.\n"
+            "Slide 2 = THE CARD -> editable: cardKicker, cardHeadline, cardBody.\n"
+            "Slide 3 = THE ARTIST / CRAFT (art-detail zoom) -> editable: craftKicker, craftHeadline, craftBody.\n"
+            "Slide 4 = THE SCENE (art-detail zoom) -> editable: sceneKicker, sceneHeadline, sceneBody.\n"
+            "Slide 5 = THE ODDS -> editable: oddsBody.\n"
+            "Slide 6 = CTA -> FIXED."
+        )
+    return ""
+
+
+def patch_brief(api_key, prior_brief, feedback, theme=None, n_items=0):
     """SURGICAL revise. The editor rejected the post for ONE reason — apply only that
     change and leave every other field byte-identical, so untouched slides cannot drift.
     We send Claude the current copy and ask for ONLY the keys it must rewrite, then merge
@@ -2090,11 +2124,20 @@ def patch_brief(api_key, prior_brief, feedback):
     # Expose only editable text/list copy — hide zoom-crop dicts, numbers, image URLs so
     # Claude can neither see nor accidentally rewrite the layout.
     editable = {k: v for k, v in prior_brief.items() if isinstance(v, (str, list))}
+    guide = _slide_guide(theme, n_items)
+    guide_block = (
+        "The editor often refers to a slide BY NUMBER or position. Here is what each slide is and "
+        "which of the keys above control it (keys not listed for a slide are FIXED and CANNOT be "
+        "changed by a copy edit — if the editor asks to change a FIXED slide, return {} and do not "
+        "guess a different key):\n" + guide + "\n\n"
+        if guide else ""
+    )
     prompt = (
         "You are making ONE small edit to an Instagram post the editor just rejected. "
         "Here is its current copy as JSON:\n"
         + json.dumps(editable, ensure_ascii=False, indent=2) + "\n\n"
-        f"The editor wants exactly this, and nothing else:\n\"{feedback}\"\n\n"
+        + guide_block
+        + f"The editor wants exactly this, and nothing else:\n\"{feedback}\"\n\n"
         "Return a JSON object containing ONLY the keys you must change to satisfy that note, "
         "with their new values. Do NOT include any key you are leaving unchanged. Change as "
         "few keys as possible (ideally one). Keep every price, number, set/card name and the "
@@ -2239,7 +2282,7 @@ def build_theme_plan(ctx, feedback=None, prior_brief=None):
         brief = _fresh_brief(theme, api_key, facts)
         brief = self_review_brief(api_key, theme, facts, brief)  # PRE-PREVIEW copy QA (auto-fix)
     else:
-        brief = patch_brief(api_key, prior_brief, feedback)
+        brief = patch_brief(api_key, prior_brief, feedback, theme=theme, n_items=len(facts.get("items", []) or []))
     slides = _slides_for(theme, base, facts, brief)
 
     hosted = materialize_slides(slides)
