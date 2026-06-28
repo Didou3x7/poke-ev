@@ -88,5 +88,15 @@
     "sets": [
       "neo4-107"
     ]
+  },
+  {
+    "date": "2026-06-28",
+    "theme": "connected",
+    "keys": [
+      "southern-islands-water"
+    ],
+    "sets": [
+      "southern-islands-water"
+    ]
   }
 ]
