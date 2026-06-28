@@ -1229,8 +1229,14 @@ def slides_connected(base, facts, brief):
     base = base.rstrip("/")
     H = f"{base}/api/ig"
     items = facts["items"]
-    # Deterministic punctuation: never let the Pokemon list in the eyebrow drop a separator.
-    brief = {**brief, "eyebrow": _fix_namelist_commas(brief.get("eyebrow", ""), [it["name"] for it in items])}
+    # Deterministic punctuation: never let the Pokemon list drop a separator — in the cover
+    # eyebrow OR the reveal title (both can list the featured Pokemon, e.g. "Marill & Lapras").
+    _names = [it["name"] for it in items]
+    brief = {
+        **brief,
+        "eyebrow": _fix_namelist_commas(brief.get("eyebrow", ""), _names),
+        "revealTitle": _fix_namelist_commas(brief.get("revealTitle", ""), _names),
+    }
     total_str = fmt_usd(facts["total"])
     set_lbl = facts["setLabel"]
     logo = _png(facts["setLogo"])
