@@ -886,24 +886,18 @@ def claude_vision_review(api_key, prompt, image_bytes_list, system=None, max_tok
     return json.loads(_strip_json_fence(raw))
 
 
-def _clean_hashtags(tags, lo=24, hi=30):
-    """Normalize, de-dup (case-insensitive), strip em-dashes, cap length. The caller's
-    post-specific tags lead; a deep, INTERNATIONAL-reach core pads the tail so every
-    post ships a full 24-30 layered block even when Claude/fallback under-delivers.
-    Core layers: high-volume global, broad collector/TCG, active community, regional."""
+def _clean_hashtags(tags, lo=8, hi=10):
+    """Normalize, de-dup (case-insensitive), strip em-dashes, cap at `hi` — MAX 10 (owner wants
+    only the most impactful tags, kept at the END of the caption by compose_caption). The caller's
+    POST-SPECIFIC tags lead (most relevant + rankable); a tight, high-impact core pads ONLY if the
+    caller under-delivers, so a post never ships with a near-empty tag block."""
     core = [
-        # high-volume global
-        "#pokemon", "#pokemontcg", "#pokemoncards", "#pokemoncollector", "#tcg",
-        "#pokemoncommunity", "#pokemoncardcollection", "#pokemoncollection",
-        # broad collector / TCG
-        "#tcgcollector", "#pokemoncardgame", "#tradingcards", "#tradingcardgame",
-        "#cardcollector", "#tcgcommunity", "#pokemoncardcollector", "#pokemontcgcollector",
-        # active community / discovery
-        "#pokemonfan", "#pokemontcgcards", "#pokemontcgcommunity", "#pokemoncollectors",
-        "#pokemonpulls", "#pokemonsealed", "#pullrate", "#pokemoninvesting", "#pokemoninvestment",
-        # international / regional reach
-        "#pokemonuk", "#pokemoneurope", "#pokemonusa", "#pokemonjapan", "#pokemoncardsuk",
-        "#pokemontcgeurope", "#tcgplayer", "#pokemonmaster", "#pokemontcgjapan", "#cardgames"]
+        # niche / rankable where this account actually competes …
+        "#pokemoninvesting", "#sealedpokemon", "#pokemoncollector", "#pokemonpulls",
+        "#pokemoncommunity", "#tcgcollector", "#pokemoncardgame",
+        # … then a little high-volume reach
+        "#pokemontcg", "#pokemoncards", "#tcg", "#pokemon",
+    ]
     seen, out = set(), []
     for t in list(tags or []) + core:
         t = str(t).strip().replace("—", "").replace("–", "")
@@ -1025,19 +1019,15 @@ _CAPTION_RULES = (
 
 # Shared hashtag brief — every post must maximize INTERNATIONAL discoverability.
 _HASHTAG_RULES = (
-    "HASHTAGS — engineer for MAXIMUM INTERNATIONAL REACH. Audience: global "
-    "English-speaking Pokemon TCG collectors and investors (mostly US, UK, EU, plus "
-    "international). Return 24-30 UNIQUE English hashtags, NO fixed block, layered as:\n"
-    "  1) high-VOLUME global core: #pokemon #pokemontcg #pokemoncards #pokemoncollector "
-    "#tcg #pokemoncommunity;\n"
-    "  2) broad collector/TCG tags: #tcgcollector #pokemoncardgame #tradingcards "
-    "#cardcollector #pokemoninvesting;\n"
-    "  3) currently-ACTIVE community/discovery tags collectors browse and search;\n"
-    "  4) INTERNATIONAL/regional reach tags (e.g. #pokemonuk #pokemoneurope #pokemonusa "
-    "#pokemonjapan) so the post surfaces beyond one country;\n"
-    "  5) POST-SPECIFIC tags built from this post: the set, the Pokemon name(s), the card, "
-    "the rarity, and the artist when known.\n"
-    "No banned/spammy/irrelevant tags. No em-dashes. Each tag unique and lowercase."
+    "HASHTAGS — return AT MOST 10, the most IMPACTFUL ones, as a JSON list. Quality over "
+    "quantity: 10 sharp, relevant tags beat 30 generic ones. Build them in this priority, most "
+    "relevant first:\n"
+    "  1) POST-SPECIFIC (lead with these — they are the most rankable): the set, the featured "
+    "Pokemon name(s), the chase card, the rarity, and the artist when known.\n"
+    "  2) NICHE / RANKABLE tags this account can realistically surface in (e.g. #pokemoninvesting "
+    "#sealedpokemon #riporkeep #pokemonpulls #pokemoncollector).\n"
+    "  3) one or two HIGH-VOLUME reach tags (#pokemontcg #pokemoncards).\n"
+    "All lowercase, unique, English. No banned/spammy/irrelevant tags, no em-dashes."
 )
 
 
