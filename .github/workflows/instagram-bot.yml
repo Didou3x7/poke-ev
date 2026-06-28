@@ -22,7 +22,7 @@ on:
         description: 'Manual run mode (test the preview or publish phase on demand)'
         type: choice
         default: scheduled
-        options: [scheduled, prepare, poll, ack, publish-pending, evening, run, diagnose, set-webhook, setup-webhook]
+        options: [scheduled, prepare, poll, ack, publish-pending, evening, run, diagnose, set-webhook, setup-webhook, reel-test]
       set:
         description: 'Force a specific set for the RIP OR KEEP (T2) post, e.g. brilliant-stars (blank = auto)'
         type: string

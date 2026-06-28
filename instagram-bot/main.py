@@ -3398,6 +3398,55 @@ def do_scheduled():
         raise
 
 
+def do_reel_test():
+    """One-off QA: render ALL THREE themes as Reels and send them to Telegram for review.
+    No approval gate, no publish, no history — purely a visual check of the three reel comps."""
+    data_dir = Path(env("POKEEV_DATA_DIR", "data"))
+    base = env("POKEEV_IMAGE_BASE_URL", "https://pokeev.com")
+    api_key = env("ANTHROPIC_API_KEY")
+    tg_token, tg_chat = env("TELEGRAM_BOT_TOKEN"), env("TELEGRAM_CHAT_ID")
+    snapshot = load_snapshot(data_dir)
+    names = load_set_names(data_dir)
+    today = datetime.now(timezone.utc).date().isoformat()
+    if tg_token and tg_chat:
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "🧪 REEL TEST — rendering T1/T2/T3 as Reels for review. NOTHING will be "
+                       "published; just reply with your feedback on each."})
+    for theme in ROTATION:
+        try:
+            ctx = prepare_theme(theme, data_dir, base, names, snapshot, set(), api_key)
+            if not ctx:
+                log(f"reel-test: no content for {theme}")
+                if tg_token and tg_chat:
+                    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+                           "text": f"⚠️ {theme.upper()}: no fresh content to render."})
+                continue
+            facts = ctx["facts"]
+            brief = _fresh_brief(theme, api_key, facts)
+            caption = compose_caption(brief["caption"], brief.get("hashtags"))
+            plan = {"date": today, "theme": theme, "brief": brief, "caption": caption,
+                    "slides": [], "hashtags": brief.get("hashtags", []), "verify": ctx["verify"]}
+            reel_plan = build_reel(plan, ctx)
+            if tg_token and tg_chat:
+                loc = reel_plan.get("mp4_local")
+                data_bytes = (Path(loc).read_bytes() if loc and os.path.exists(loc)
+                              else _download_bytes(reel_plan["video_url"], timeout=120, tries=3))
+                tg_send_video(tg_token, tg_chat, data_bytes, caption=f"🧪 TEST REEL — {theme.upper()}")
+                table = "\n".join(
+                    f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
+                    for v in ctx.get("verify", []))
+                tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+                       "text": f"⬆️ {theme.upper()} — price check:\n{table}\n\nCaption:\n{caption[:1200]}"})
+        except Exception as exc:  # noqa: BLE001 — one theme failing must not abort the others
+            log(f"reel-test {theme} failed: {exc}")
+            if tg_token and tg_chat:
+                notify_error(f"⚠️ reel-test {theme} failed: {str(exc)[:300]}")
+    if tg_token and tg_chat:
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "🧪 Reel test done — the 3 Reels are above. Reply with your feedback per "
+                       "theme (nothing was published)."})
+
+
 def main():
     cmd = sys.argv[1] if len(sys.argv) > 1 else "scheduled"
     if cmd == "plan":
@@ -3418,6 +3467,8 @@ def main():
         set_webhook()
     elif cmd == "run":  # legacy single-shot: build + gate + publish in one go
         do_run()
+    elif cmd == "reel-test":  # one-off QA: render all 3 themes as Reels, send to Telegram, no publish
+        do_reel_test()
     else:  # default (cron) = the Paris-time-routed 2-phase flow
         do_scheduled()
 
