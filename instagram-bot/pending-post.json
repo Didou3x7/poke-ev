@@ -1,0 +1,205 @@
+{
+  "date": "2026-06-28",
+  "theme": "connected",
+  "tg_offset": 0,
+  "plan": {
+    "date": "2026-06-28",
+    "theme": "connected",
+    "slides": [
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/e0feed53518cac732a44ac7a906a770d.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/d4f5de69e4b2c750788e183d238e67cd.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/e30e4436488660b4f5176f6768c24a8e.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/aa0a9c8a5bd38f8269998f87c800c7c5.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/956dfda039ff46efd26218af82748ea5.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/726028d18dae2b2d9d61709b111224d9.png"
+    ],
+    "caption": "3 separate cards. One continuous illustration.\n\nLine them up and Naoyo Kimura's artwork becomes a single panorama, scattered across the set.\n\nWhich piece is your favorite? Tell us below.\n\npokeev.com prices every card live, so you always know what a set is really worth.\nlink in bio -> pokeev.com\n\n#pokemonart #connectingart #pokemonillustration #cardart #naoyokimura #southernislands #pokemon #pokemontcg #pokemoncards #pokemoncollector #tcg #pokemoncommunity #pokemoncardcollection #pokemoncollection #tcgcollector #pokemoncardgame #tradingcards #tradingcardgame #cardcollector #tcgcommunity #pokemoncardcollector #pokemontcgcollector #pokemonfan #pokemontcgcards #pokemontcgcommunity #pokemoncollectors #pokemonpulls #pokemonsealed #pullrate #pokemoninvesting",
+    "hashtags": [
+      "#pokemonart",
+      "#connectingart",
+      "#pokemonillustration",
+      "#cardart",
+      "#naoyokimura",
+      "#southernislands",
+      "#pokemon",
+      "#pokemontcg",
+      "#pokemoncards",
+      "#pokemoncollector",
+      "#tcg",
+      "#pokemoncommunity",
+      "#pokemoncardcollection",
+      "#pokemoncollection",
+      "#tcgcollector",
+      "#pokemoncardgame",
+      "#tradingcards",
+      "#tradingcardgame",
+      "#cardcollector",
+      "#tcgcommunity",
+      "#pokemoncardcollector",
+      "#pokemontcgcollector",
+      "#pokemonfan",
+      "#pokemontcgcards",
+      "#pokemontcgcommunity",
+      "#pokemoncollectors",
+      "#pokemonpulls",
+      "#pokemonsealed",
+      "#pullrate",
+      "#pokemoninvesting"
+    ],
+    "brief": {
+      "eyebrow": "SOUTHERN ISLANDS · TENTACRUEL, MARILL & LAPRAS",
+      "headline": "They drew one scene.",
+      "revealTitle": "Tentacruel, Marill & Lapras",
+      "caption": "3 separate cards. One continuous illustration.\n\nLine them up and Naoyo Kimura's artwork becomes a single panorama, scattered across the set.\n\nWhich piece is your favorite? Tell us below.\n\npokeev.com prices every card live, so you always know what a set is really worth.\nlink in bio -> pokeev.com",
+      "hashtags": [
+        "#pokemonart",
+        "#connectingart",
+        "#pokemonillustration",
+        "#cardart",
+        "#naoyokimura",
+        "#southernislands",
+        "#pokemon",
+        "#pokemontcg",
+        "#pokemoncards",
+        "#pokemoncollector",
+        "#tcg",
+        "#pokemoncommunity",
+        "#pokemoncardcollection",
+        "#pokemoncollection",
+        "#tcgcollector",
+        "#pokemoncardgame",
+        "#tradingcards",
+        "#tradingcardgame",
+        "#cardcollector",
+        "#tcgcommunity",
+        "#pokemoncardcollector",
+        "#pokemontcgcollector",
+        "#pokemonfan",
+        "#pokemontcgcards",
+        "#pokemontcgcommunity",
+        "#pokemoncollectors",
+        "#pokemonpulls",
+        "#pokemonsealed",
+        "#pullrate",
+        "#pokemoninvesting"
+      ]
+    },
+    "keys": [
+      "southern-islands-water"
+    ],
+    "verify": [
+      {
+        "snap_usd": 43,
+        "snap_eur": null,
+        "live_usd": 43.3,
+        "live_eur": 37.6,
+        "agree": true,
+        "note": "agree",
+        "display_usd": 43.3,
+        "name": "Tentacruel"
+      },
+      {
+        "snap_usd": 128,
+        "snap_eur": null,
+        "live_usd": 132.26,
+        "live_eur": 91.83,
+        "agree": true,
+        "note": "agree",
+        "display_usd": 132.26,
+        "name": "Marill"
+      },
+      {
+        "snap_usd": 61,
+        "snap_eur": null,
+        "live_usd": 62.97,
+        "live_eur": 71.66,
+        "agree": true,
+        "note": "agree",
+        "display_usd": 62.97,
+        "name": "Lapras"
+      }
+    ],
+    "qa_warnings": []
+  },
+  "ctx": {
+    "theme": "connected",
+    "base": "https://pokeev.com",
+    "facts": {
+      "key": "southern-islands-water",
+      "group_id": "southern-islands-water",
+      "theme_line": "Southern Islands — Tentacruel, Marill & Lapras",
+      "artist": "Naoyo Kimura",
+      "era": "Southern Islands",
+      "setLabel": "Southern Islands",
+      "setLogo": "https://images.pokemontcg.io/si1/logo.png",
+      "items": [
+        {
+          "name": "Tentacruel",
+          "image": "https://images.pokemontcg.io/si1/10_hires.png",
+          "usd": 43,
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png",
+          "ptcgId": "si1-10",
+          "number": "10",
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/ad1faf6f4cdf5edc1980a715866140c6.png"
+        },
+        {
+          "name": "Marill",
+          "image": "https://images.pokemontcg.io/si1/11_hires.png",
+          "usd": 132,
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png",
+          "ptcgId": "si1-11",
+          "number": "11",
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/8545ad6a6dff69854640c737351874ed.png"
+        },
+        {
+          "name": "Lapras",
+          "image": "https://images.pokemontcg.io/si1/12_hires.png",
+          "usd": 63,
+          "setLabel": "Southern Islands",
+          "setLogo": "https://images.pokemontcg.io/si1/logo.png",
+          "ptcgId": "si1-12",
+          "number": "12",
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/d920771787bd0b11e0b7c35d9c2a9f3a.png"
+        }
+      ],
+      "total": 238
+    },
+    "verify": [
+      {
+        "snap_usd": 43,
+        "snap_eur": null,
+        "live_usd": 43.3,
+        "live_eur": 37.6,
+        "agree": true,
+        "note": "agree",
+        "display_usd": 43.3,
+        "name": "Tentacruel"
+      },
+      {
+        "snap_usd": 128,
+        "snap_eur": null,
+        "live_usd": 132.26,
+        "live_eur": 91.83,
+        "agree": true,
+        "note": "agree",
+        "display_usd": 132.26,
+        "name": "Marill"
+      },
+      {
+        "snap_usd": 61,
+        "snap_eur": null,
+        "live_usd": 62.97,
+        "live_eur": 71.66,
+        "agree": true,
+        "note": "agree",
+        "display_usd": 62.97,
+        "name": "Lapras"
+      }
+    ],
+    "keys": [
+      "southern-islands-water"
+    ]
+  }
+}
