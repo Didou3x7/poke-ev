@@ -1209,12 +1209,24 @@ def artdirect_connected(api_key, facts):
     return brief
 
 
+def _fix_namelist_commas(text, names):
+    """Insert a comma between any two consecutive featured names the AI left space-separated, so a
+    Pokemon list reads 'A, B, C' (or 'A, B and C' if it used 'and') not 'A, B C'. Preserves the
+    matched casing (the eyebrow is ALL-CAPS), so only the missing separator is added."""
+    out = text or ""
+    for a, b in zip(names, names[1:]):
+        out = re.sub(rf"\b({re.escape(a)})(\s+)({re.escape(b)})\b", r"\1, \3", out, flags=re.IGNORECASE)
+    return out
+
+
 def slides_connected(base, facts, brief):
     """Port of /tmp/render_connect.py: connect-cover, one connect per card,
     connect-reveal, connect-cta. img/v params are 0-indexed (img0..)."""
     base = base.rstrip("/")
     H = f"{base}/api/ig"
     items = facts["items"]
+    # Deterministic punctuation: never let the Pokemon list in the eyebrow drop a separator.
+    brief = {**brief, "eyebrow": _fix_namelist_commas(brief.get("eyebrow", ""), [it["name"] for it in items])}
     total_str = fmt_usd(facts["total"])
     set_lbl = facts["setLabel"]
     logo = _png(facts["setLogo"])
