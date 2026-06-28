@@ -12,3 +12,4 @@ in code; this file is the COPY/art-direction memory.)
 - Change the card because it will make 2 charizards in the row
 - Je ne veux pas cette carte, change mets une autre
 - Vérifie bien les prix affichés et corrige tout ce qui est faux
+- Slide 5 you forgot to put “and” between Marill and Lapras
