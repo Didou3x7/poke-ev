@@ -6,42 +6,42 @@
     "date": "2026-06-28",
     "theme": "connected",
     "slides": [
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/3268f84eea1c825039300ef4db8a7657.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/67cc2837db1e923ba09e6293ff49f3e4.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/d4f5de69e4b2c750788e183d238e67cd.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/e30e4436488660b4f5176f6768c24a8e.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/aa0a9c8a5bd38f8269998f87c800c7c5.png",
-      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/0a6493966b2e748afb18e6a00900308c.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/bfb483610648172aad8b948bc0d0f661.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/726028d18dae2b2d9d61709b111224d9.png"
     ],
-    "caption": "3 separate cards. One continuous illustration.\n\nLine them up and Naoyo Kimura's artwork becomes a single panorama, scattered across Southern Islands.\nThe live value of every piece, and the whole set, is on pokeev.com.\n\nSave this before you hunt the full Southern Islands panorama.\n\nWhich piece is your favorite? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com\n\n#pokemonart #connectingart #pokemonillustration #cardart #naoyokimura #southernislands #pokemoninvesting #sealedpokemon #pokemoncollector #pokemonpulls",
+    "caption": "Three cards. One continuous ocean painted across all of them.\n\nNaoyo Kimura illustrated the Southern Islands set as a single connected scene, and Tentacruel, Marill, and Lapras share the same stretch of water. Most collectors own one. Few realize all three lock together into a full panorama.\n\nTentacruel: $43. Marill: $132. Lapras: $63. Combined panorama value: $238, for a piece of 2000-era promo art that was only available in a mail-order set shipped with a Topps movie collection.\n\npokeev.com tracks the live market on every Southern Islands card so you know exactly where each one sits before you buy or sell.\n\nSave this for when you are hunting Southern Islands singles and need a verified price anchor.\n\nWhich of the three do you already own? Drop it below.\n\nFollow @pokeev.tcg for live Expected Value on sealed product and singles every week.\nLink in bio -> pokeev.com\n\n#southernislands #naoyokimura #tentacruel #marill #lapras #connectingart #pokemonart #pokemonillustration #pokemoncollector #pokemoninvesting",
     "hashtags": [
-      "#pokemonart",
-      "#connectingart",
-      "#pokemonillustration",
-      "#cardart",
-      "#naoyokimura",
       "#southernislands",
-      "#pokemoninvesting",
-      "#sealedpokemon",
+      "#naoyokimura",
+      "#tentacruel",
+      "#marill",
+      "#lapras",
+      "#connectingart",
+      "#pokemonart",
+      "#pokemonillustration",
       "#pokemoncollector",
-      "#pokemonpulls"
+      "#pokemoninvesting"
     ],
     "brief": {
-      "eyebrow": "SOUTHERN ISLANDS · TENTACRUEL, MARILL & LAPRAS",
-      "headline": "They drew one scene.",
-      "revealTitle": "Tentacruel, Marill & Lapras",
-      "caption": "3 separate cards. One continuous illustration.\n\nLine them up and Naoyo Kimura's artwork becomes a single panorama, scattered across Southern Islands.\nThe live value of every piece, and the whole set, is on pokeev.com.\n\nSave this before you hunt the full Southern Islands panorama.\n\nWhich piece is your favorite? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com",
+      "eyebrow": "SOUTHERN ISLANDS · CONNECTING ART",
+      "headline": "One ocean. Three cards.",
+      "revealTitle": "The Full Panorama Revealed",
+      "caption": "Three cards. One continuous ocean painted across all of them.\n\nNaoyo Kimura illustrated the Southern Islands set as a single connected scene, and Tentacruel, Marill, and Lapras share the same stretch of water. Most collectors own one. Few realize all three lock together into a full panorama.\n\nTentacruel: $43. Marill: $132. Lapras: $63. Combined panorama value: $238, for a piece of 2000-era promo art that was only available in a mail-order set shipped with a Topps movie collection.\n\npokeev.com tracks the live market on every Southern Islands card so you know exactly where each one sits before you buy or sell.\n\nSave this for when you are hunting Southern Islands singles and need a verified price anchor.\n\nWhich of the three do you already own? Drop it below.\n\nFollow @pokeev.tcg for live Expected Value on sealed product and singles every week.\nLink in bio -> pokeev.com",
       "hashtags": [
-        "#pokemonart",
-        "#connectingart",
-        "#pokemonillustration",
-        "#cardart",
-        "#naoyokimura",
         "#southernislands",
-        "#pokemoninvesting",
-        "#sealedpokemon",
+        "#naoyokimura",
+        "#tentacruel",
+        "#marill",
+        "#lapras",
+        "#connectingart",
+        "#pokemonart",
+        "#pokemonillustration",
         "#pokemoncollector",
-        "#pokemonpulls"
+        "#pokemoninvesting"
       ]
     },
     "keys": [
@@ -79,7 +79,11 @@
         "name": "Lapras"
       }
     ],
-    "qa_warnings": []
+    "qa_warnings": [
+      "slide 2: Card name 'Tentacruel' is partially cut off in the top-left of the card image on slide 1 (visible as 'Tentacrue'), but on slide 2 the full card renders correctly — no issue here",
+      "slide 3: Card text body is heavily obscured and unreadable due to the holographic foil overlay making the attack text, stats, and flavor text illegible",
+      "slide 5: Card names below the three cards are missing — only prices ($43, $132, $63) appear, but no Tentacruel, Marill, and Lapras labels to identify which price belongs to which card"
+    ]
   },
   "ctx": {
     "theme": "connected",
