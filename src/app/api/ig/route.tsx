@@ -54,7 +54,7 @@ function moneyParam(v: string | null): string | null {
 function textParam(v: string | null, maxLen: number): string | null {
   if (!v) return null;
   const cleaned = v
-    .replace(/[<>&{}\\]/g, "")
+    .replace(/[<>{}\\]/g, "")
     .replace(/[\u0000-\u001f]/g, " ")
     .replace(/\s+/g, " ")
     .trim()

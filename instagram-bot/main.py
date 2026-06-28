@@ -1210,12 +1210,16 @@ def artdirect_connected(api_key, facts):
 
 
 def _fix_namelist_commas(text, names):
-    """Insert a comma between any two consecutive featured names the AI left space-separated, so a
-    Pokemon list reads 'A, B, C' (or 'A, B and C' if it used 'and') not 'A, B C'. Preserves the
-    matched casing (the eyebrow is ALL-CAPS), so only the missing separator is added."""
+    """Normalize the separator between two consecutive FEATURED card names so the Pokemon list
+    reads 'A, B, C'. Two cases, both scoped to actual card-name pairs (so a set name like
+    'Sword & Shield' is never touched): a missing separator ('A B') and an ampersand ('A & B') —
+    the latter matters because the OG renderer's textParam STRIPS '&', which would otherwise leave
+    'A  B'. Preserves the matched casing (the eyebrow is ALL-CAPS)."""
     out = text or ""
     for a, b in zip(names, names[1:]):
-        out = re.sub(rf"\b({re.escape(a)})(\s+)({re.escape(b)})\b", r"\1, \3", out, flags=re.IGNORECASE)
+        ea, eb = re.escape(a), re.escape(b)
+        out = re.sub(rf"\b({ea})\s*&\s*({eb})\b", r"\1, \2", out, flags=re.IGNORECASE)  # "A & B" -> "A, B"
+        out = re.sub(rf"\b({ea})\s+({eb})\b", r"\1, \2", out, flags=re.IGNORECASE)       # "A B"  -> "A, B"
     return out
 
 
