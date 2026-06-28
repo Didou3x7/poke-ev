@@ -1003,9 +1003,24 @@ def append_style_note(feedback):
 
 
 _CAPTION_RULES = (
-    "The caption is ENGLISH ONLY and flows: hook line, then substance, then an "
-    "engagement nudge, then a 'link in bio -> pokeev.com' CTA. Name pokeev.com at "
-    "least twice. No hashtags inside the caption. No em-dashes or en-dashes."
+    "CAPTION — ENGLISH ONLY, engineered to earn SAVES first, then likes, then follows, while "
+    "keeping the restrained brand voice (no hype, the verified numbers carry the weight). Write it "
+    "as short stand-alone lines (one idea per line, nothing wraps), in THIS order:\n"
+    "  1) HOOK — the first line is the ONLY thing shown in the feed before 'more', so it must stop "
+    "the scroll by itself. Under ~120 characters. Open with a curiosity gap or ONE specific verified "
+    "number. Never a generic opener ('Let's talk about...', 'Did you know').\n"
+    "  2) SUBSTANCE — the save-worthy takeaway: the actual numbers/verdict stated as a reference a "
+    "collector wants to keep (the EV, the sealed price, the gap, the pull odds, the panorama value). "
+    "Concrete and verified. This is WHY someone saves the post.\n"
+    "  3) SAVE TRIGGER — ONE line giving a concrete reason to save it for later, tied to a real "
+    "moment (e.g. 'Save this before you open a <set>.' / 'Keep this for the next rip-or-hold call.'). "
+    "Make saving feel useful, never salesy. Saves are the #1 goal — earn them on substance.\n"
+    "  4) ENGAGEMENT — one short, opinion-based question anyone can answer in a few words "
+    "(rip or keep? which card? over or under on the EV?) to pull comments.\n"
+    "  5) FOLLOW CTA — position the account as the tool collectors need: 'Follow @pokeev.tcg for the "
+    "live Expected Value on every sealed set.' Then a 'link in bio -> pokeev.com' line.\n"
+    "Mention the @pokeev.tcg handle once (drives follows) and name pokeev.com at least twice. No "
+    "hashtags inside the caption. No em-dashes or en-dashes."
 )
 
 # Shared hashtag brief — every post must maximize INTERNATIONAL discoverability.
@@ -1721,10 +1736,12 @@ def fallback_grail_brief(facts):
         "sceneZoom": _safe_scene_zoom(),
         "oddsBody": odds_line,
         "caption": (
-            f"{name} from {set_name} is worth {price}. For one card.\n\n"
-            f"It is one of the rarest pulls in the set, and the artwork is why collectors chase it.\n\n"
-            "Would you keep it or sell it? Tell us below.\n\n"
-            "pokeev.com runs the live Expected Value on every set, so you know exactly what your pulls are worth.\n"
+            f"{name} is a {price} card. One card.\n\n"
+            f"It sits in the rarest tier of {set_name}, and the art is why collectors chase it.\n"
+            f"The pull odds, open value and live price for the whole set are on pokeev.com.\n\n"
+            f"Save this before you chase {name}.\n\n"
+            "Keep it sealed or rip for it? Tell us below.\n\n"
+            "Follow @pokeev.tcg for the live Expected Value on every sealed set.\n"
             "link in bio -> pokeev.com"
         ),
         "hashtags": _clean_hashtags(
@@ -1732,6 +1749,34 @@ def fallback_grail_brief(facts):
             + ["#" + w for w in _slug_words(name, set_name, facts.get("rarity"), artist)]
         ),
     }
+
+
+def grail_caption(api_key, facts, brief):
+    """Save-first, AI-tailored caption for a grail post, built ONLY from verified facts (never
+    invents a price/odds/claim). Returns None on any failure so the caller keeps the deterministic
+    template caption from fallback_grail_brief."""
+    if not api_key:
+        return None
+    odds_n = facts.get("odds_n")
+    prompt = (
+        "Write the Instagram caption for a single-card GRAIL deep-dive post for @pokeev.tcg. "
+        "Use ONLY these verified facts. NEVER invent a price, odds, name, rarity or any claim:\n"
+        f"- Card: {facts['name']} from {facts['set_name']}\n"
+        f"- Market price: {fmt_usd(facts['usd'])} for ONE card\n"
+        + (f"- Pull odds: about {odds_n} to 1 from a sealed booster\n" if odds_n else "")
+        + (f"- Illustrator: {facts['artist']}\n" if facts.get("artist") else "")
+        + (f"- Rarity: {facts['rarity']}\n" if facts.get("rarity") else "")
+        + (f"- What the art shows: {brief.get('sceneHeadline', '')}\n" if brief.get("sceneHeadline") else "")
+        + "\n" + _CAPTION_RULES
+        + '\n\nReturn ONLY a JSON object: {"caption": "<the caption>"}.'
+    )
+    try:
+        out = claude_json(api_key, prompt, system=voice())
+        cap = (out or {}).get("caption")
+        return cap if isinstance(cap, str) and len(cap.strip()) > 60 else None
+    except Exception as exc:  # noqa: BLE001
+        log(f"  grail caption gen failed ({exc}); keeping template caption")
+        return None
 
 
 def grail_zoom_from_vision(center_x, center_y, zoom):
@@ -2086,6 +2131,10 @@ def _fresh_brief(theme, api_key, facts):
                 else:
                     brief[key] = val
             log(f"  grail: applied hand-curated override for {facts.get('card_id')}")
+        # Save-first AI caption (verified facts only); deterministic template stays as fallback.
+        cap = grail_caption(api_key, facts, brief)
+        if cap:
+            brief["caption"] = cap
         return brief
     sys.exit(f"[pokeev-bot] unknown theme {theme}")
 
