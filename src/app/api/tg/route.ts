@@ -8,8 +8,15 @@
 // `x-telegram-bot-api-secret-token` header on every call — we reject anything else.
 import { NextRequest, NextResponse } from "next/server";
 
-import { publishCarousel } from "@/lib/ig/publish";
-import { readPlan, readState, writeState, type Decision, type IgState } from "@/lib/ig/state";
+import { publishCarousel, publishReel } from "@/lib/ig/publish";
+import {
+  readPlan,
+  readState,
+  writeState,
+  type Decision,
+  type IgState,
+  type MediaFormat,
+} from "@/lib/ig/state";
 import { answerCallback, sendMessage, setDecisionLabel } from "@/lib/ig/telegram";
 
 export const runtime = "nodejs";
@@ -70,6 +77,8 @@ function freshState(prev: IgState | null): IgState {
     seq: 0,
     published: false,
     awaiting_revise: false,
+    format: "carousel",
+    format_seq: 0,
     ts: nowIso(),
   };
 }
@@ -92,15 +101,34 @@ function classifyText(text: string): { decision: Decision; note: string | null }
  *  cron tick or tap retries. */
 async function publishNow(chatId: string, state: IgState): Promise<void> {
   const plan = await readPlan();
-  if (!plan || plan.date !== state.date || !plan.slides?.length) {
+  if (!plan || plan.date !== state.date) {
     await sendMessage(chatId, "⚠️ Approved, but I can't find today's built post to publish. The 20:00 cron will handle it.");
     return;
   }
+  const wantReel = state.format === "reel";
+  const planIsReel = plan.format === "reel" && !!plan.video_url;
+  // The editor chose 🎬 Reels but the bot hasn't finished rendering/hosting it yet — DON'T
+  // fall back to publishing the carousel (that would post the wrong format). Wait for the reel.
+  if (wantReel && !planIsReel) {
+    await sendMessage(chatId, "🎬 The Reel is still rendering — I'll post the preview here in a moment, then tap ✅ Approve.");
+    return;
+  }
+  if (!planIsReel && !plan.slides?.length) {
+    await sendMessage(chatId, "⚠️ Approved, but today's post has no media to publish. The 20:00 cron will handle it.");
+    return;
+  }
   await writeState({ ...state, decision: "approve", published: true, ts: nowIso() });
-  await sendMessage(chatId, "📤 Approved — publishing now…");
+  await sendMessage(chatId, planIsReel ? "📤 Approved — publishing your Reel now…" : "📤 Approved — publishing now…");
   try {
-    const { permalink } = await publishCarousel(plan.slides, plan.caption);
-    await sendMessage(chatId, "✅ Published!" + (permalink ? "\n" + permalink : "") + "\n\n(open it to add to your story manually)");
+    const { permalink } = planIsReel
+      ? await publishReel(plan.video_url as string, plan.caption, plan.cover_url)
+      : await publishCarousel(plan.slides, plan.caption);
+    await sendMessage(
+      chatId,
+      (planIsReel ? "✅ Reel published!" : "✅ Published!") +
+        (permalink ? "\n" + permalink : "") +
+        "\n\n(open it to add to your story manually)",
+    );
   } catch (e) {
     await writeState({ ...state, decision: "approve", published: false, ts: nowIso() });
     await sendMessage(
@@ -139,6 +167,37 @@ async function handleReviseTap(chatId: string, messageId: number | null): Promis
   if (messageId) await setDecisionLabel(chatId, messageId, "✏️ Revising");
   await writeState({ ...state, awaiting_revise: true, ts: nowIso() });
   await sendMessage(chatId, "✏️ What should I change? Reply with the notes and I'll rework it.");
+}
+
+/** 🎬 Reels / 🖼 Carousel toggle. The webhook only RECORDS the chosen format + bumps format_seq;
+ *  the Python bot (which has Remotion) renders the Reel and re-previews. Resets the decision to
+ *  "none" so the editor re-approves the new version. */
+async function handleFormatTap(
+  chatId: string,
+  messageId: number | null,
+  fmt: MediaFormat,
+): Promise<void> {
+  const state = freshState(await readState());
+  if (state.published) {
+    await sendMessage(chatId, "✅ Today's post is already published — nothing more to do.");
+    return;
+  }
+  if (messageId) await setDecisionLabel(chatId, messageId, fmt === "reel" ? "🎬 Reels" : "🖼 Carousel");
+  await writeState({
+    ...state,
+    format: fmt,
+    format_seq: (state.format_seq ?? 0) + 1,
+    decision: "none",
+    awaiting_revise: false,
+    ts: nowIso(),
+  });
+  await dispatchBot("poll");
+  await sendMessage(
+    chatId,
+    fmt === "reel"
+      ? "🎬 Rendering this post as a vertical Reel — a fresh preview lands here in ~2-3 min."
+      : "🖼 Switching back to the carousel — a fresh preview lands here shortly.",
+  );
 }
 
 async function handleReviseNote(chatId: string, note: string): Promise<void> {
@@ -181,6 +240,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       if (cq.data === "approve") await handleApprove(chatId, mid);
       else if (cq.data === "skip" || cq.data === "reject") await handleSkip(chatId, mid);
       else if (cq.data === "revise") await handleReviseTap(chatId, mid);
+      else if (cq.data === "reel") await handleFormatTap(chatId, mid, "reel");
+      else if (cq.data === "carousel") await handleFormatTap(chatId, mid, "carousel");
       return NextResponse.json({ ok: true });
     }
 

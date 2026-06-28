@@ -52,6 +52,15 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
+      # Cache the Reel toolchain (Remotion deps + its downloaded headless browser, which lives
+      # under node_modules/.remotion). The bot installs these lazily ONLY when a Reel is actually
+      # rendered (main.py _ensure_reel_deps), so normal cron ticks stay fast; the cache makes that
+      # first render quick too. Keyed on the reel lockfile so a dep bump busts it.
+      - name: Cache reel toolchain (Remotion + browser)
+        uses: actions/cache@v4
+        with:
+          path: instagram-bot/reel/node_modules
+          key: reel-${{ runner.os }}-${{ hashFiles('instagram-bot/reel/package-lock.json') }}
       - run: pip install -r instagram-bot/requirements.txt
       - run: npm install --no-save @vercel/blob   # tiny Blob uploader for HD card art
         working-directory: instagram-bot

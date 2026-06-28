@@ -17,11 +17,22 @@ if (args[0] === "--exists") {
 }
 
 const [file, pathname] = args;
+// Infer the content type from the extension — Instagram fetches a Reel's video_url and
+// REQUIRES it served as video/mp4, while card art stays image/png. Anything else → octet.
+const ext = (pathname.split(".").pop() || "").toLowerCase();
+const CT = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  mp4: "video/mp4",
+  mov: "video/quicktime",
+  json: "application/json",
+};
 const blob = await put(pathname, readFileSync(file), {
   access: "public",
   addRandomSuffix: false,
   allowOverwrite: true,
-  contentType: "image/png",
+  contentType: CT[ext] || "application/octet-stream",
   token: process.env.BLOB_READ_WRITE_TOKEN,
 });
 console.log(blob.url);

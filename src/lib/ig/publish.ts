@@ -86,3 +86,40 @@ export async function publishCarousel(slides: string[], caption: string): Promis
   }
   return { mediaId, permalink };
 }
+
+/** Publish a rendered MP4 as an Instagram Reel (media_type=REELS). The bot (GitHub Actions)
+ *  renders + hosts the MP4; this only needs the public video_url, so the webhook can publish a
+ *  Reel in the evening just like a carousel. Video containers process slower → a longer poll. */
+export async function publishReel(
+  videoUrl: string,
+  caption: string,
+  coverUrl?: string | null,
+): Promise<PublishResult> {
+  const token = process.env.META_ACCESS_TOKEN;
+  if (!token) throw new Error("META_ACCESS_TOKEN missing");
+  const ig = process.env.INSTAGRAM_BUSINESS_ID || (await igUserId(token));
+
+  const params: Record<string, string> = {
+    media_type: "REELS",
+    video_url: videoUrl,
+    caption,
+    share_to_feed: "true",
+    access_token: token,
+  };
+  if (coverUrl) params.cover_url = coverUrl;
+
+  const cid = String((await graphPost(`${ig}/media`, params)).id);
+  await waitFinished(cid, token, 60, 5000); // ~5 min budget — video encode is slow
+
+  const mediaId = String((await graphPost(`${ig}/media_publish`, { creation_id: cid, access_token: token })).id);
+
+  let permalink = "";
+  try {
+    permalink = String(
+      (await graphGet(mediaId, { fields: "permalink", access_token: token })).permalink || "",
+    );
+  } catch {
+    /* permalink is a nicety, not required */
+  }
+  return { mediaId, permalink };
+}

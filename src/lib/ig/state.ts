@@ -14,6 +14,8 @@ const PLAN_PATH = "ig-state/plan.json";
 
 export type Decision = "none" | "approve" | "skip" | "revise";
 
+export type MediaFormat = "carousel" | "reel";
+
 export interface IgState {
   date: string; // UTC date this state is for (ties the decision to today's preview)
   decision: Decision; // the editor's latest intent
@@ -21,15 +23,21 @@ export interface IgState {
   seq: number; // bumped on each new revise note so the cron only reworks NEW notes
   published: boolean; // true once the carousel is live (idempotency guard)
   awaiting_revise: boolean; // true after a ✏️ Revise tap, until the editor sends the notes
+  format?: MediaFormat; // which format today's post publishes as (default carousel)
+  format_seq?: number; // bumped on each 🎬/🖼 toggle so the Python cron only rebuilds NEW toggles
   ts: string; // last-write timestamp (debug)
 }
 
-/** Minimal plan the webhook needs to publish directly in the evening. */
+/** Minimal plan the webhook needs to publish directly in the evening. A reel plan also carries
+ *  the Blob-hosted video_url (+ optional cover_url) so the webhook can publish it without Remotion. */
 export interface IgPlan {
   date: string;
   theme: string;
   slides: string[]; // Blob-hosted PNG URLs, directly fetchable by Instagram
   caption: string;
+  format?: MediaFormat;
+  video_url?: string | null; // the rendered MP4 (when format === "reel")
+  cover_url?: string | null; // the reel cover/thumbnail
 }
 
 function token(): string | undefined {

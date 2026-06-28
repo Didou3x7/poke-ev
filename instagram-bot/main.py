@@ -588,6 +588,9 @@ def ig_user_id(token):
 
 
 def publish_to_instagram(plan):
+    # A Reel post (the editor tapped 🎬) publishes as a single video, not a carousel.
+    if plan.get("format") == "reel":
+        return publish_reel(plan)
     token = env("META_ACCESS_TOKEN", required=True)
     ig = env("INSTAGRAM_BUSINESS_ID") or ig_user_id(token)
     children = []
@@ -631,14 +634,198 @@ def notify_published(plan, media_id, token):
     except Exception as exc:  # noqa: BLE001
         log(f"  permalink lookup failed ({exc}); confirming without a link")
     ntags = len(plan.get("hashtags") or [])
+    kind = "🎬 Reel" if plan.get("format") == "reel" else f"{len(plan_slides(plan))} slides"
     text = (f"✅ Published to @pokeev.tcg — {plan['theme'].upper()} ({plan['date']})\n"
-            f"{len(plan_slides(plan))} slides, {ntags} hashtags.{link}\n\n"
+            f"{kind}, {ntags} hashtags.{link}\n\n"
             "🔁 To add it to your story with a tappable post sticker, open the post and "
             "tap Share -> Add to story (app-only; the API can't do this).")
     try:
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": text})
     except Exception as exc:  # noqa: BLE001
         log(f"  publish-confirm message failed ({exc})")
+
+
+# -------------------------------- reels ----------------------------------- #
+# A Reel is the SAME verified facts + AI copy as the carousel, rendered as a bespoke vertical
+# (9:16) motion piece with Remotion (instagram-bot/reel/). The editor opts in per post by
+# tapping 🎬 Reels on the carousel preview; the bot renders the matching theme composition,
+# hosts the MP4 on Blob, and publishes it as media_type=REELS INSTEAD of the carousel.
+REEL_DIR = Path(__file__).parent / "reel"
+_REEL_COMP = {"connected": "Connected", "ripkeep": "RipKeep", "grails": "Grails"}
+_REEL_COVER_FRAME = {"connected": 58, "ripkeep": 50, "grails": 60}
+
+
+def reel_props(theme, facts, brief):
+    """Build the render-ready props the Remotion comps consume (props.ts). Prices are
+    PRE-FORMATTED here so a Reel shows the exact same verified numbers as its carousel."""
+    brief = brief or {}
+    if theme == "connected":
+        names = [it["name"] for it in facts["items"]]
+        return {
+            "theme": "connected",
+            "setLabel": facts["setLabel"],
+            "setLogo": _png(facts.get("setLogo")),
+            "artist": facts.get("artist") or "",
+            "eyebrow": _fix_namelist_commas(brief.get("eyebrow", ""), names),
+            "headline": _no_dash(brief.get("headline", "They drew one scene.")),
+            "revealTitle": _fix_namelist_commas(brief.get("revealTitle", facts["setLabel"]), names),
+            "total": fmt_usd(facts["total"]),
+            "cards": [
+                {"name": it["name"], "price": fmt_usd(it["usd"]),
+                 "image": _png(it.get("hd_image") or it["image"])}
+                for it in facts["items"]
+            ],
+        }
+    if theme == "ripkeep":
+        rip = bool(facts["verdict_rip"])
+        return {
+            "theme": "ripkeep",
+            "setName": facts["set_name"],
+            "setLogo": _png(facts.get("logo")),
+            "sealed": fmt_usd(facts["sealed"]),
+            "openEv": fmt_usd(facts["open_ev"]),
+            "gap": fmt_usd(facts["gap"]),
+            "verdictRip": rip,
+            "verdictWord": brief.get("verdictWord", "RIP IT" if rip else "KEEP IT|SEALED"),
+            "reason": brief.get("reason", ""),
+            "chase": [
+                {"name": c["name"], "price": fmt_usd(c["usd"]),
+                 "image": _png(c.get("hd_image") or c["image"]), "rarity": c.get("rarity")}
+                for c in facts["chase"]
+            ],
+        }
+    if theme == "grails":
+        return {
+            "theme": "grails",
+            "setName": facts["set_name"],
+            "setLogo": _png(facts.get("logo")),
+            "name": facts["name"],
+            "price": fmt_usd(facts["usd"]),
+            "artist": facts.get("artist"),
+            "rarity": facts.get("rarity"),
+            "oddsLine": (brief.get("oddsBody")
+                         or (f"Pulled roughly|1 in {facts['odds_n']} packs." if facts.get("odds_n")
+                             else "It sits in the rarest tier of the set.")),
+            "shockHeadline": brief.get("shockHeadline", "Worth more than|most people guess"),
+            "cardKicker": brief.get("cardKicker", "The card"),
+            "cardHeadline": brief.get("cardHeadline", facts["name"]),
+            "cardBody": brief.get("cardBody", ""),
+            "craftKicker": brief.get("craftKicker", "The artist"),
+            "craftHeadline": brief.get("craftHeadline", ""),
+            "craftBody": brief.get("craftBody", ""),
+            "sceneKicker": brief.get("sceneKicker", "The scene"),
+            "sceneHeadline": brief.get("sceneHeadline", ""),
+            "sceneBody": brief.get("sceneBody", ""),
+            "image": _png(facts.get("hd_image") or facts["image"]),
+            "booster": _png(facts.get("booster_hd") or facts.get("booster")),
+        }
+    raise RuntimeError(f"reel_props: unknown theme {theme}")
+
+
+def _run_remotion(args, timeout):
+    import subprocess
+
+    return subprocess.run(["npx", "remotion", *args], cwd=str(REEL_DIR),
+                          capture_output=True, text=True, timeout=timeout)
+
+
+def _ensure_reel_deps():
+    """Make the Remotion toolchain ready ON DEMAND (only when a Reel is actually rendered), so
+    normal cron ticks stay fast and a cold dispatched runner can still render: install node deps
+    if missing, install Chrome's shared libs on Linux CI (best-effort), and fetch the headless
+    browser. Locally (deps already present) this is a near no-op."""
+    import subprocess
+
+    nm = REEL_DIR / "node_modules"
+    if not (nm / "remotion").exists():
+        log("reel: installing node deps…")
+        cmd = ["npm", "ci"] if (REEL_DIR / "package-lock.json").exists() else ["npm", "install"]
+        r = subprocess.run(cmd, cwd=str(REEL_DIR), capture_output=True, text=True, timeout=900)
+        if r.returncode != 0:  # ci can fail on a drifted lockfile — fall back to install
+            r = subprocess.run(["npm", "install"], cwd=str(REEL_DIR), capture_output=True, text=True, timeout=900)
+            if r.returncode != 0:
+                raise RuntimeError(f"reel npm install failed: {(r.stderr or '')[:300]}")
+    if sys.platform.startswith("linux"):  # CI: ensure Chrome's shared libs (tolerant — usually present)
+        try:
+            subprocess.run(
+                ["bash", "-lc",
+                 "sudo apt-get update -y >/dev/null 2>&1 && sudo apt-get install -y "
+                 "libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 "
+                 "libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2 libpango-1.0-0 libcairo2 >/dev/null 2>&1"],
+                capture_output=True, text=True, timeout=300)
+        except Exception:  # noqa: BLE001 — libs are usually preinstalled on ubuntu-latest
+            pass
+    try:  # download Remotion's headless browser if not already cached (no-op if present)
+        _run_remotion(["browser", "ensure"], timeout=900)
+    except Exception as exc:  # noqa: BLE001 — render will surface a clearer error if it's truly missing
+        log(f"  reel: browser ensure warning ({exc})")
+
+
+def render_reel(theme, props):
+    """Render the theme's 9:16 composition to an MP4 (and a cover still) via Remotion.
+    Returns (mp4_path, cover_path|None). Raises if the MP4 didn't render."""
+    _ensure_reel_deps()
+    comp = _REEL_COMP[theme]
+    out = REEL_DIR / "out"
+    out.mkdir(parents=True, exist_ok=True)
+    pf = out / f"{theme}-props.json"
+    pf.write_text(json.dumps({"data": props}, ensure_ascii=False), encoding="utf-8")
+    mp4 = out / f"{theme}.mp4"
+    if mp4.exists():
+        mp4.unlink()
+    r = _run_remotion(["render", "src/index.ts", comp, str(mp4),
+                       f"--props={pf}", "--log=error", "--concurrency=2"], timeout=1800)
+    if r.returncode != 0 or not mp4.exists():
+        raise RuntimeError(f"remotion render failed: {((r.stderr or '') + (r.stdout or ''))[:500]}")
+    cover = out / f"{theme}-cover.png"
+    frame = _REEL_COVER_FRAME.get(theme, 40)
+    rc = _run_remotion(["still", "src/index.ts", comp, str(cover),
+                        f"--frame={frame}", f"--props={pf}", "--log=error"], timeout=300)
+    return mp4, (cover if rc.returncode == 0 and cover.exists() else None)
+
+
+def build_reel(plan, ctx):
+    """Render today's post as a Reel and return a reel-plan (carousel plan + format/video_url/
+    cover_url). Keeps the carousel slides so a switch back to 🖼 carousel needs no rebuild."""
+    theme = plan["theme"]
+    props = reel_props(theme, ctx["facts"], plan.get("brief"))
+    log(f"rendering {theme} reel…")
+    mp4, cover = render_reel(theme, props)
+    video_url = _blob_put(str(mp4), f"ig-reels/{plan['date']}-{theme}.mp4")
+    if not video_url:
+        raise RuntimeError("reel hosted upload returned no URL")
+    cover_url = _blob_put(str(cover), f"ig-reels/{plan['date']}-{theme}-cover.png") if cover else None
+    log(f"  reel hosted: {video_url}")
+    reel_plan = {**plan, "format": "reel", "video_url": video_url,
+                 "cover_url": cover_url, "mp4_local": str(mp4)}
+    Path(env("PLAN_PATH", "plan.json")).write_text(
+        json.dumps(reel_plan, indent=2, ensure_ascii=False), encoding="utf-8")
+    return reel_plan
+
+
+def carousel_plan_of(plan):
+    """Strip the reel-only fields so a plan previews/publishes as its original carousel."""
+    return {k: v for k, v in plan.items() if k not in ("format", "video_url", "cover_url", "mp4_local")}
+
+
+def publish_reel(plan):
+    """Publish the rendered MP4 as an Instagram Reel (media_type=REELS). Video containers take
+    longer to FINISH than image ones, so the poll budget is larger."""
+    token = env("META_ACCESS_TOKEN", required=True)
+    ig = env("INSTAGRAM_BUSINESS_ID") or ig_user_id(token)
+    if not plan.get("video_url"):
+        raise RuntimeError("publish_reel: plan has no video_url")
+    params = {"media_type": "REELS", "video_url": plan["video_url"],
+              "caption": plan["caption"], "share_to_feed": "true"}
+    if plan.get("cover_url"):
+        params["cover_url"] = plan["cover_url"]
+    cid = container(ig, token, **params)
+    log(f"  reel container {cid} — waiting for video processing…")
+    wait_finished(cid, token, tries=60, delay=5)  # ~5 min budget; video encode is slow
+    media_id = publish_media(ig, token, cid)
+    log(f"✓ reel published: {media_id}")
+    notify_published(plan, media_id, token)
+    return media_id
 
 
 # -------------------------------- summary --------------------------------- #
@@ -2470,14 +2657,67 @@ def _publish_error_hint(err):
     return "Check the run logs. Your approval is KEPT, so a retry will publish once it's resolved."
 
 
+def tg_send_video(token, chat_id, mp4_bytes, caption=""):
+    """Push the rendered Reel MP4 to Telegram as a playable video (bytes, not a URL — same
+    reasoning as the slide preview: the bot fetches patiently, Telegram's short fetch can't)."""
+    import requests
+
+    r = requests.post(
+        f"https://api.telegram.org/bot{token}/sendVideo",
+        data={"chat_id": chat_id, "caption": caption[:1000], "supports_streaming": "true"},
+        files={"video": ("reel.mp4", mp4_bytes, "video/mp4")},
+        timeout=180,
+    )
+    data = r.json()
+    if not data.get("ok"):
+        raise RuntimeError(f"telegram sendVideo: {data}")
+
+
+def _preview_keyboard(is_reel):
+    """Decision buttons + a format toggle: a carousel preview offers 🎬 Reels; a reel preview
+    offers 🖼 Carousel to switch back. The decision row is identical either way."""
+    decisions = [{"text": "✅ Approve", "callback_data": "approve"},
+                 {"text": "✏️ Revise", "callback_data": "revise"},
+                 {"text": "🚫 Skip", "callback_data": "skip"}]
+    toggle = ([{"text": "🖼 Carousel", "callback_data": "carousel"}] if is_reel
+              else [{"text": "🎬 Reels", "callback_data": "reel"}])
+    return {"inline_keyboard": [decisions, toggle]}
+
+
 def tg_send_preview(token, chat_id, plan, buttons=True):
     import json as _json
 
     import requests
 
-    # Upload the actual image bytes (multipart attach://) instead of handing Telegram
-    # the slide URLs — Telegram's ~5s media-fetch timeout can't render an HD slide in
-    # time, but the bot can download it patiently and push the bytes.
+    table = "\n".join(
+        f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
+        for v in plan.get("verify", [])
+    )
+    ntags = len(plan.get("hashtags") or [])
+
+    # ---- REEL preview: send the rendered MP4 + a caption/decision message ----
+    if plan.get("format") == "reel":
+        data_bytes = None
+        loc = plan.get("mp4_local")
+        if loc and os.path.exists(loc):
+            data_bytes = Path(loc).read_bytes()
+        elif plan.get("video_url"):
+            data_bytes = _download_bytes(plan["video_url"], timeout=120, tries=3)
+        if not data_bytes:
+            raise RuntimeError("reel preview: no MP4 bytes (no local file or video_url)")
+        tg_send_video(token, chat_id, data_bytes, caption=f"🎬 REEL — {plan['theme'].upper()}")
+        text = (f"🎬 PokeEV REEL — {plan['theme'].upper()} ({plan['date']})\n\n"
+                f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION ({ntags} hashtags folded in):\n"
+                f"{plan['caption']}\n\nPublish this REEL?")
+        payload = {"chat_id": chat_id, "text": text[:4000]}
+        if buttons:
+            payload["reply_markup"] = _preview_keyboard(True)
+        tg_api(token, "sendMessage", payload)
+        return
+
+    # ---- CAROUSEL preview: upload the actual image bytes (multipart attach://) instead of
+    # handing Telegram the slide URLs — Telegram's ~5s media-fetch timeout can't render an HD
+    # slide in time, but the bot can download it patiently and push the bytes.
     urls = plan_slides(plan)[:10]
     media, files, skipped = [], {}, []
     for i, u in enumerate(urls):
@@ -2503,26 +2743,17 @@ def tg_send_preview(token, chat_id, plan, buttons=True):
     data = r.json()
     if not data.get("ok"):
         raise RuntimeError(f"telegram sendMediaGroup: {data}")
-    table = "\n".join(
-        f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
-        for v in plan.get("verify", [])
-    )
-    ntags = len(plan.get("hashtags") or [])
     skip_note = f"\n\n⚠️ Slide(s) {skipped} failed to render and were skipped — needs a fix." if skipped else ""
     text = (f"🎴 PokeEV post — {plan['theme'].upper()} ({plan['date']})\n\n"
             f"PRICE CROSS-CHECK:\n{table}\n\nCAPTION ({ntags} hashtags folded in):\n"
             f"{plan['caption']}{skip_note}\n\nPublish this carousel?")
     payload = {"chat_id": chat_id, "text": text[:4000]}
-    # Inline buttons: ✅ Approve / ✏️ Revise / 🚫 Skip. They work in BOTH the live `run` flow
-    # AND the async 2-phase flow now — frequent poll ticks (do_poll) answer the tap (stop the
-    # spinner) + confirm. Approve = post at 20:00; Revise = the bot asks what to change; Skip =
-    # don't post today. (Replying ok/skip/changes by text still works too.)
+    # Inline buttons: ✅ Approve / ✏️ Revise / 🚫 Skip + 🎬 Reels (render this theme as a Reel).
+    # They work in BOTH the live `run` flow AND the async 2-phase flow — frequent poll ticks
+    # (do_poll) answer the tap (stop the spinner) + confirm. Approve = post at 20:00; Revise =
+    # the bot asks what to change; Skip = don't post today; Reels = re-render as a vertical Reel.
     if buttons:
-        payload["reply_markup"] = {"inline_keyboard": [[
-            {"text": "✅ Approve", "callback_data": "approve"},
-            {"text": "✏️ Revise", "callback_data": "revise"},
-            {"text": "🚫 Skip", "callback_data": "skip"},
-        ]]}
+        payload["reply_markup"] = _preview_keyboard(False)
     tg_api(token, "sendMessage", payload)
 
 
@@ -2665,7 +2896,8 @@ def write_pending(plan, ctx, tg_offset):
     ctx2 = {k: v for k, v in ctx.items() if k != "api_key"}
     _pending_path().write_text(
         json.dumps({"date": plan["date"], "theme": plan["theme"], "tg_offset": tg_offset,
-                    "plan": plan, "ctx": ctx2}, indent=2, ensure_ascii=False),
+                    "plan": plan, "ctx": ctx2, "handled_seq": 0, "handled_format_seq": 0},
+                   indent=2, ensure_ascii=False),
         encoding="utf-8")
     log("stored pending-post.json")
 
@@ -2777,11 +3009,15 @@ def blob_state_write(state):
 
 
 def blob_plan_write(plan):
-    """Publish-minimal plan so the webhook can publish directly in the evening."""
-    return _blob_put_json(_BLOB_PLAN_PATH, {
-        "date": plan["date"], "theme": plan["theme"],
-        "slides": plan_slides(plan), "caption": plan["caption"],
-    })
+    """Publish-minimal plan so the webhook can publish directly in the evening. A reel plan
+    also carries the video_url + cover_url so the webhook can publish the Reel without Remotion."""
+    payload = {"date": plan["date"], "theme": plan["theme"],
+               "slides": plan_slides(plan), "caption": plan["caption"]}
+    if plan.get("format") == "reel":
+        payload["format"] = "reel"
+        payload["video_url"] = plan.get("video_url")
+        payload["cover_url"] = plan.get("cover_url")
+    return _blob_put_json(_BLOB_PLAN_PATH, payload)
 
 
 def blob_state_fresh(prev):
@@ -2790,6 +3026,7 @@ def blob_state_fresh(prev):
         return dict(prev)
     return {"date": today, "decision": "none", "note": None, "seq": 0,
             "published": False, "awaiting_revise": False,
+            "format": "carousel", "format_seq": 0,
             "ts": datetime.now(timezone.utc).isoformat()}
 
 
@@ -2867,7 +3104,10 @@ def do_prepare():
     # Webhook flow: publish the plan + a fresh "none" decision to Blob. The webhook reads
     # the plan to publish in the evening and writes the editor's decision back here.
     blob_plan_write(plan)
-    blob_state_write(blob_state_fresh(None))
+    # Preserve a SAME-DAY decision/format the webhook may have already recorded (e.g. an early 🎬
+    # tap on a lingering preview) — only a NEW day resets to a fresh carousel state. blob_state_fresh
+    # returns the prior dict unchanged when its date is today, else a fresh one.
+    blob_state_write(blob_state_fresh(blob_state_read()))
     # Early warning: probe the IG token NOW (morning) so a dead/expired token is flagged
     # with hours to fix it, instead of only surfacing as a failed publish at 20:00.
     warn = ""
@@ -2886,6 +3126,7 @@ def do_prepare():
                    "• ✅ Approve — posts the carousel at 20:00 Paris (or right away if it's already evening)\n"
                    "• ✏️ Revise — I ask what to change, then rework it (and learn it for next time)\n"
                    "• 🚫 Skip — nothing today\n"
+                   "• 🎬 Reels — render THIS theme as a vertical Reel instead, then approve to publish it as a Reel\n"
                    "(You can also just reply ok / skip / your changes.) Nothing posts without your ok." + qa + warn})
 
 
@@ -2925,6 +3166,69 @@ def _maybe_rework(pending, st, tg_token, tg_chat):
     return True
 
 
+def _maybe_switch_format(pending, st, tg_token, tg_chat):
+    """If Blob state carries a NEW format toggle (format_seq beyond the last handled), rebuild
+    today's post in the requested format — 🎬 render it as a Reel, or 🖼 switch back to the
+    carousel — re-preview WITH buttons, refresh the Blob plan, and reset the decision to none
+    so the editor re-approves the new version. Returns True if it switched (caller stops)."""
+    if not st:
+        return False
+    seq = st.get("format_seq", 0)
+    if seq <= pending.get("handled_format_seq", 0):
+        return False
+    desired = st.get("format", "carousel")
+    plan = pending["plan"]
+    current = "reel" if plan.get("format") == "reel" else "carousel"
+    if desired == current:  # already in the requested format — just ack the seq
+        pending["handled_format_seq"] = seq
+        _save_pending(pending)
+        return False
+    if desired == "reel":
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": "🎬 Rendering your Reel… this takes ~2-3 min, a fresh preview lands here."})
+        ctx = pending.get("ctx") or {}
+        ctx["api_key"] = env("ANTHROPIC_API_KEY")
+        try:
+            plan = build_reel(plan, ctx)
+        except Exception as exc:  # noqa: BLE001 — a render failure must not drop the post
+            notify_error("⚠️ Couldn't render the Reel:\n" + str(exc)[:300] +
+                         "\n\nStaying on the carousel — tap ✅ Approve to post it, or 🎬 to retry the Reel.")
+            # Revert to a CONSISTENT carousel state so the editor is never stuck: the plan stays the
+            # carousel AND Blob state/plan are reset to carousel, so ✅ Approve posts the carousel and a
+            # fresh 🎬 tap retries the render. (Without resetting state.format the publish guard would
+            # see format=reel with no rendered video and refuse to post anything.)
+            plan = carousel_plan_of(plan)
+            pending["plan"] = plan
+            pending["handled_format_seq"] = seq
+            pending.pop("acked", None)
+            _save_pending(pending)
+            blob_plan_write(plan)
+            blob_state_write({**st, "format": "carousel", "decision": "none", "note": None,
+                              "awaiting_revise": False, "published": False,
+                              "ts": datetime.now(timezone.utc).isoformat()})
+            return True
+    else:  # back to the carousel — no rebuild, just drop the reel-only fields
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🖼 Back to the carousel."})
+        plan = carousel_plan_of(plan)
+    try:
+        tg_send_preview(tg_token, tg_chat, plan, buttons=True)
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": ("🎬 Reviewed above — tap ✅ Approve to publish this Reel "
+                        "(or ✏️ Revise / 🚫 Skip / 🖼 Carousel)." if plan.get("format") == "reel"
+                        else "🖼 Back to the carousel — tap ✅ Approve, ✏️ Revise, 🚫 Skip or 🎬 Reels.")})
+    except Exception as exc:  # noqa: BLE001
+        log(f"format-switch re-preview failed ({exc})")
+    pending["plan"] = plan
+    pending["handled_format_seq"] = seq
+    pending.pop("acked", None)
+    _save_pending(pending)
+    blob_plan_write(plan)
+    blob_state_write({**st, "decision": "none", "note": None, "awaiting_revise": False,
+                      "published": False, "ts": datetime.now(timezone.utc).isoformat()})
+    log(f"switched format to {desired} + re-previewed")
+    return True
+
+
 def do_publish_pending(final=True):
     """Evening — publish today's pending post ONLY if approved. The decision is read from
     shared Blob state (written instantly by the Telegram webhook), not getUpdates. A late
@@ -2945,6 +3249,8 @@ def do_publish_pending(final=True):
     if reconcile_published(pending):
         return
     st = blob_state_read() or blob_state_fresh(None)
+    if _maybe_switch_format(pending, st, tg_token, tg_chat):
+        return
     if _maybe_rework(pending, st, tg_token, tg_chat):
         return
     decision = st.get("decision", "none")
@@ -2956,6 +3262,16 @@ def do_publish_pending(final=True):
             log("already posted today — not publishing again")
             blob_state_write({**st, "published": True, "ts": datetime.now(timezone.utc).isoformat()})
             clear_pending()
+            return
+        # Close the publish-vs-toggle race: the WEBHOOK (a separate Vercel process) may have flipped
+        # the format or withdrawn the approval AFTER we read `st` above. Re-read right before posting
+        # and defer to the next tick if anything material changed, so we never publish the wrong
+        # format or a withdrawn post. (_maybe_switch_format on the next tick rebuilds + re-previews.)
+        st2 = blob_state_read() or st
+        if (st2.get("format_seq", 0) != st.get("format_seq", 0)
+                or st2.get("seq", 0) != st.get("seq", 0)
+                or st2.get("decision") != "approve"):
+            log("state changed during the publish decision — deferring to the next tick")
             return
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "📤 Approved — publishing now…"})
         try:
@@ -3028,6 +3344,8 @@ def do_poll():
         return
     st = blob_state_read()
     if not st or st.get("date") != today:
+        return
+    if _maybe_switch_format(pending, st, tg_token, tg_chat):
         return
     if _maybe_rework(pending, st, tg_token, tg_chat):
         return
