@@ -672,7 +672,7 @@ def reel_props(theme, facts, brief):
             "total": fmt_usd(facts["total"]),
             "cards": [
                 {"name": it["name"], "price": fmt_usd(it["usd"]),
-                 "image": _png(it.get("hd_image") or it["image"])}
+                 "image": _png(it.get("reel_image") or it.get("hd_image") or it["image"])}
                 for it in facts["items"]
             ],
         }
@@ -690,7 +690,7 @@ def reel_props(theme, facts, brief):
             "reason": brief.get("reason", ""),
             "chase": [
                 {"name": c["name"], "price": fmt_usd(c["usd"]),
-                 "image": _png(c.get("hd_image") or c["image"]), "rarity": c.get("rarity")}
+                 "image": _png(c.get("reel_image") or c.get("hd_image") or c["image"]), "rarity": c.get("rarity")}
                 for c in facts["chase"]
             ],
         }
@@ -716,8 +716,8 @@ def reel_props(theme, facts, brief):
             "sceneKicker": brief.get("sceneKicker", "The scene"),
             "sceneHeadline": brief.get("sceneHeadline", ""),
             "sceneBody": brief.get("sceneBody", ""),
-            "image": _png(facts.get("hd_image") or facts["image"]),
-            "booster": _png(facts.get("booster_hd") or facts.get("booster")),
+            "image": _png(facts.get("reel_image") or facts.get("hd_image") or facts["image"]),
+            "booster": _png(facts.get("reel_booster") or facts.get("booster_hd") or facts.get("booster")),
         }
     raise RuntimeError(f"reel_props: unknown theme {theme}")
 
@@ -784,10 +784,32 @@ def render_reel(theme, props):
     return mp4, (cover if rc.returncode == 0 and cover.exists() else None)
 
 
+def _upscale_reel_cards(theme, facts):
+    """MAX-quality (4096px) upscale of the cards a Reel features BIG, so they stay razor-crisp
+    filling the frame. Cached on Blob (deterministic pathname) so repeat builds don't re-spend a
+    Replicate credit. The carousel keeps its lighter 1500px render (a Satori OOM guard); only the
+    reel — which Remotion renders, not Satori — goes full-res."""
+    try:
+        if theme == "connected":
+            for it in facts.get("items", []):
+                it["reel_image"] = upscale_card(it["image"], max_w=4096) or it.get("hd_image")
+        elif theme == "ripkeep":
+            for c in facts.get("chase", []):
+                c["reel_image"] = upscale_card(c["image"], max_w=4096) or c.get("hd_image")
+        elif theme == "grails":
+            facts["reel_image"] = upscale_card(facts["image"], max_w=4096) or facts.get("hd_image")
+            if facts.get("booster"):
+                facts["reel_booster"] = upscale_card(facts["booster"], max_w=4096) or facts.get("booster_hd")
+        log(f"  reel cards upscaled to 4096px for {theme}")
+    except Exception as exc:  # noqa: BLE001 — never fail a reel over an upscale hiccup
+        log(f"  reel upscale warning ({exc})")
+
+
 def build_reel(plan, ctx):
     """Render today's post as a Reel and return a reel-plan (carousel plan + format/video_url/
     cover_url). Keeps the carousel slides so a switch back to 🖼 carousel needs no rebuild."""
     theme = plan["theme"]
+    _upscale_reel_cards(theme, ctx["facts"])  # full-res card art for the reel (cards dominate)
     props = reel_props(theme, ctx["facts"], plan.get("brief"))
     log(f"rendering {theme} reel…")
     mp4, cover = render_reel(theme, props)
