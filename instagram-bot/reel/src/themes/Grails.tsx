@@ -98,7 +98,7 @@ const Shock: React.FC<{ p: GrailsProps }> = ({ p }) => {
   const lines = splitLines(p.shockHeadline);
   return (
     <Stage glowY={34} sparkle={false}>
-      <ZoomArt src={p.image} fx={0.5} fy={0.42} z0={1.5} z1={1.7} panX={22} />
+      <ZoomArt src={p.image} fx={0.5} fy={0.36} z0={1.4} z1={1.56} panX={20} />
       <SetLogo src={p.setLogo} />
       <AbsoluteFill style={{ padding: 84, paddingBottom: SAFE_BOTTOM + 40, flexDirection: "column", justifyContent: "flex-end" }}>
         <div style={{ flexDirection: "column", display: "flex" }}>
