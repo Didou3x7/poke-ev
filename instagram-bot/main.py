@@ -2679,14 +2679,18 @@ def _publish_error_hint(err):
     return "Check the run logs. Your approval is KEPT, so a retry will publish once it's resolved."
 
 
-def tg_send_video(token, chat_id, mp4_bytes, caption=""):
+def tg_send_video(token, chat_id, mp4_bytes, caption="", width=1080, height=1920):
     """Push the rendered Reel MP4 to Telegram as a playable video (bytes, not a URL — same
-    reasoning as the slide preview: the bot fetches patiently, Telegram's short fetch can't)."""
+    reasoning as the slide preview: the bot fetches patiently, Telegram's short fetch can't).
+    CRUCIAL: pass width/height (the 9:16 dimensions). Without them Telegram squeezes the tall
+    video into its default wider preview box, so the editor sees a 'crushed' (écrasé) aspect even
+    though the MP4 itself is a correct 1080×1920 — the published Instagram Reel is unaffected."""
     import requests
 
     r = requests.post(
         f"https://api.telegram.org/bot{token}/sendVideo",
-        data={"chat_id": chat_id, "caption": caption[:1000], "supports_streaming": "true"},
+        data={"chat_id": chat_id, "caption": caption[:1000], "supports_streaming": "true",
+              "width": str(width), "height": str(height)},
         files={"video": ("reel.mp4", mp4_bytes, "video/mp4")},
         timeout=180,
     )
