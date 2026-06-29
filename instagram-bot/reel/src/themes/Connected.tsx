@@ -44,38 +44,37 @@ const CARD_ASPECT = 1.395;
 
 const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const n = p.cards.length;
-  const cw = Math.min(310, 1000 / Math.max(n, 3) + 80);
+  // BIG cards — the fan fills the lower frame so the hook never feels empty
+  const cw = Math.min(480, 1180 / Math.max(n, 3) + 150);
   const ch = cw * CARD_ASPECT;
+  const spread = Math.min(170, 720 / Math.max(n, 2));
   return (
-    <Stage glowY={36}>
-      <AbsoluteFill style={{ padding: 84, paddingTop: 140, flexDirection: "column", alignItems: "center" }}>
-        {/* INSTANT context: which set, in the first second */}
-        <SetBadge logo={p.setLogo} name={p.setLabel} delay={2} />
-        <Rise delay={10} style={{ marginTop: 20 }}>
+    <Stage glowY={32}>
+      {/* compact, punchy top: set identity + bold hook line */}
+      <AbsoluteFill style={{ padding: 76, paddingTop: 116, flexDirection: "column", alignItems: "center" }}>
+        <SetBadge logo={p.setLogo} name={p.setLabel} delay={2} size={92} />
+        <Rise delay={8} style={{ marginTop: 12 }}>
           <Kicker style={{ fontSize: 26 }}>Connecting Art</Kicker>
         </Rise>
-        <TitleReveal text={p.headline || "They drew one scene."} delay={14} size={112} align="center" maxWidth={920} style={{ marginTop: 14 }} />
+        <TitleReveal text={p.headline || "They drew one scene."} delay={12} size={120} align="center" maxWidth={930} style={{ marginTop: 12 }} />
         <Rise delay={22} style={{ marginTop: 16 }}>
-          <div style={{ fontSize: 40, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3, textAlign: "center", maxWidth: 880 }}>
-            {n} cards form one continuous illustration by {p.artist || "one illustrator"}.
+          <div style={{ fontSize: 38, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3, textAlign: "center", maxWidth: 860 }}>
+            Watch {n} cards become one illustration ↓
           </div>
         </Rise>
-        {/* a fanned hand — overlapping, big, never crams regardless of card count */}
-        <div style={{ position: "relative", width: "100%", height: ch + 50, marginTop: 40, display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {p.cards.map((c, i) => {
-            const t = i - (n - 1) / 2;
-            const pop = usePop(18 + i * 4, 13);
-            return (
-              <div key={i} style={{ position: "absolute", transform: `translateX(${t * 132}px) translateY(${Math.abs(t) * 12 + (1 - pop) * 130}px) rotate(${t * 6 * pop}deg) scale(${0.72 + pop * 0.28})`, opacity: pop }}>
-                <CardArt src={c.image} w={cw} />
-              </div>
-            );
-          })}
-        </div>
       </AbsoluteFill>
-      <Rise delay={34} style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", justifyContent: "center" }}>
-        <div style={{ fontSize: 34, letterSpacing: 2, ...holoText() }}>watch them connect ↓</div>
-      </Rise>
+      {/* a BIG fanned hand filling the lower frame */}
+      <div style={{ position: "absolute", bottom: SAFE_BOTTOM - 40, width: "100%", height: ch + 120, display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
+        {p.cards.map((c, i) => {
+          const t = i - (n - 1) / 2;
+          const pop = usePop(16 + i * 4, 13);
+          return (
+            <div key={i} style={{ position: "absolute", transformOrigin: "bottom center", transform: `translateX(${t * spread}px) translateY(${(1 - pop) * 150}px) rotate(${t * 7 * pop}deg) scale(${0.7 + pop * 0.3})`, opacity: pop }}>
+              <CardArt src={c.image} w={cw} />
+            </div>
+          );
+        })}
+      </div>
     </Stage>
   );
 };

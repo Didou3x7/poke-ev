@@ -46,31 +46,32 @@ const CARD_ASPECT = 1.395;
 
 const Hook: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const n = p.chase.length;
-  const cw = 270;
+  // BIG cards filling the lower frame — the hook never feels empty
+  const cw = Math.min(480, 1180 / Math.max(n, 3) + 150);
   const ch = cw * CARD_ASPECT;
+  const spread = Math.min(170, 720 / Math.max(n, 2));
   return (
-    <Stage glowY={38}>
-      <AbsoluteFill style={{ padding: 84, paddingTop: 150, flexDirection: "column", alignItems: "center" }}>
-        {/* INSTANT context: which set, in the first second */}
-        <SetBadge logo={p.setLogo} name={p.setName} delay={2} />
-        <TitleReveal text="Rip or keep?" delay={10} size={150} holo align="center" style={{ justifyContent: "center", marginTop: 38 }} />
-        <Rise delay={20} style={{ marginTop: 20 }}>
-          <div style={{ fontSize: 42, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3, textAlign: "center", maxWidth: 900 }}>
-            A sealed {p.setName} ETB costs {p.sealed} — open it, or keep it sealed?
+    <Stage glowY={36}>
+      <AbsoluteFill style={{ padding: 76, paddingTop: 116, flexDirection: "column", alignItems: "center" }}>
+        <SetBadge logo={p.setLogo} name={p.setName} delay={2} size={92} />
+        <TitleReveal text="Rip or keep?" delay={8} size={150} holo align="center" style={{ marginTop: 22 }} />
+        <Rise delay={18} style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 40, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3, textAlign: "center", maxWidth: 880 }}>
+            A sealed {p.setName} ETB costs {p.sealed}.
           </div>
         </Rise>
-        <div style={{ position: "relative", width: "100%", height: ch + 40, marginTop: 40, display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {p.chase.map((c, i) => {
-            const t = i - (n - 1) / 2;
-            const pop = usePop(16 + i * 4, 13);
-            return (
-              <div key={i} style={{ position: "absolute", transform: `translateX(${t * 130}px) translateY(${Math.abs(t) * 10 + (1 - pop) * 130}px) rotate(${t * 6 * pop}deg) scale(${0.72 + pop * 0.28})`, opacity: pop }}>
-                <CardArt src={c.image} w={cw} />
-              </div>
-            );
-          })}
-        </div>
       </AbsoluteFill>
+      <div style={{ position: "absolute", bottom: SAFE_BOTTOM - 40, width: "100%", height: ch + 120, display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
+        {p.chase.map((c, i) => {
+          const t = i - (n - 1) / 2;
+          const pop = usePop(16 + i * 4, 13);
+          return (
+            <div key={i} style={{ position: "absolute", transformOrigin: "bottom center", transform: `translateX(${t * spread}px) translateY(${(1 - pop) * 150}px) rotate(${t * 7 * pop}deg) scale(${0.7 + pop * 0.3})`, opacity: pop }}>
+              <CardArt src={c.image} w={cw} />
+            </div>
+          );
+        })}
+      </div>
     </Stage>
   );
 };
