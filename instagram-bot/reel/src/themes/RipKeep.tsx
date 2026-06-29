@@ -46,10 +46,11 @@ const CARD_ASPECT = 1.395;
 
 const Hook: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const n = p.chase.length;
-  // BIG cards filling the lower frame — the hook never feels empty
-  const cw = Math.min(480, 1180 / Math.max(n, 3) + 150);
+  // BIG cards that ALWAYS fit inside the 9:16 frame (side cards never clipped)
+  const spread = Math.min(140, 480 / Math.max(n - 1, 1));
+  const cw = Math.min(440, Math.round((460 - ((n - 1) / 2) * spread) / 0.6));
   const ch = cw * CARD_ASPECT;
-  const spread = Math.min(170, 720 / Math.max(n, 2));
+  const rot = Math.min(7, 26 / n);
   return (
     <Stage glowY={36}>
       <AbsoluteFill style={{ padding: 76, paddingTop: 116, flexDirection: "column", alignItems: "center" }}>
@@ -61,12 +62,12 @@ const Hook: React.FC<{ p: RipKeepProps }> = ({ p }) => {
           </div>
         </Rise>
       </AbsoluteFill>
-      <div style={{ position: "absolute", bottom: SAFE_BOTTOM - 40, width: "100%", height: ch + 120, display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
+      <div style={{ position: "absolute", left: 0, bottom: SAFE_BOTTOM - 56, width: "100%", height: ch, display: "flex", justifyContent: "center" }}>
         {p.chase.map((c, i) => {
           const t = i - (n - 1) / 2;
           const pop = usePop(16 + i * 4, 13);
           return (
-            <div key={i} style={{ position: "absolute", transformOrigin: "bottom center", transform: `translateX(${t * spread}px) translateY(${(1 - pop) * 150}px) rotate(${t * 7 * pop}deg) scale(${0.7 + pop * 0.3})`, opacity: pop }}>
+            <div key={i} style={{ position: "absolute", bottom: 0, transformOrigin: "bottom center", transform: `translateX(${t * spread}px) translateY(${(1 - pop) * 160}px) rotate(${t * rot * pop}deg) scale(${0.7 + pop * 0.3})`, opacity: pop }}>
               <CardArt src={c.image} w={cw} />
             </div>
           );
@@ -78,21 +79,22 @@ const Hook: React.FC<{ p: RipKeepProps }> = ({ p }) => {
 
 const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const n = p.chase.length;
+  // equal cards sized so the whole row fits inside the frame with even margins (never clipped)
+  const cw = Math.min(320, Math.floor((916 - (n - 1) * 18) / n));
   return (
     <Stage glowY={42}>
       <SetLogo src={p.setLogo} />
-      <Rise delay={2} style={{ position: "absolute", top: 130, width: "100%", justifyContent: "center" }}>
+      <Rise delay={2} style={{ position: "absolute", top: 132, width: "100%", justifyContent: "center" }}>
         <Kicker style={{ fontSize: 28 }}>You're chasing these</Kicker>
       </Rise>
-      <AbsoluteFill style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 24 }}>
+      <AbsoluteFill style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 18 }}>
         {p.chase.map((c, i) => {
           const pop = usePop(8 + i * 7, 13);
-          const big = i === 1 && n >= 3;
           return (
             <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", transform: `translateY(${(1 - pop) * 90}px) scale(${0.85 + pop * 0.15})`, opacity: pop }}>
-              <CardArt src={c.image} w={big ? 420 : 330} />
-              <div style={{ marginTop: 20, fontSize: 32, color: INK, fontFamily: SATOSHI }}>{c.name}</div>
-              <div style={{ marginTop: 2, fontSize: 50, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
+              <CardArt src={c.image} w={cw} />
+              <div style={{ marginTop: 16, fontSize: 30, color: INK, fontFamily: SATOSHI }}>{c.name}</div>
+              <div style={{ marginTop: 2, fontSize: 46, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
             </div>
           );
         })}

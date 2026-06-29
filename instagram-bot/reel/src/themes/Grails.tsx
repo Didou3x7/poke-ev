@@ -120,22 +120,18 @@ const TheCard: React.FC<{ p: GrailsProps }> = ({ p }) => (
   </Stage>
 );
 
-const ArtBeat: React.FC<{ p: GrailsProps; kicker: string; headline: string; body: string; step: number; zoom: number }> = ({ p, kicker, headline, body, step, zoom }) => (
+const ArtBeat: React.FC<{ p: GrailsProps; kicker: string; headline: string; step: number; zoom: number }> = ({ p, kicker, headline, step, zoom }) => (
   <Stage glowY={step === 2 ? 38 : 46}>
     <SetLogo src={p.setLogo} />
-    <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 80, paddingBottom: SAFE_BOTTOM + 70 }}>
+    <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 80, paddingBottom: SAFE_BOTTOM + 40 }}>
       {/* the full card slowly zooms toward its art (subject stays in view) */}
-      <GrailCard src={p.image} w={620} delay={0} zoom={zoom} rise />
+      <GrailCard src={p.image} w={640} delay={0} zoom={zoom} rise />
     </AbsoluteFill>
+    {/* minimal copy — a clean museum label, fast to read */}
     <div style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", display: "flex", flexDirection: "column", alignItems: "center", padding: "0 84px" }}>
       <Rise delay={8} style={{ flexDirection: "column", alignItems: "center" }}>
         <Kicker style={{ fontSize: 28 }}>{kicker}</Kicker>
-        <TitleReveal text={headline} delay={12} size={74} align="center" maxWidth={900} style={{ marginTop: 12 }} />
-        <div style={{ marginTop: 14, flexDirection: "column", alignItems: "center", display: "flex" }}>
-          {splitLines(body).map((line, i) => (
-            <div key={i} style={{ fontSize: 40, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3, textAlign: "center" }}>{line}</div>
-          ))}
-        </div>
+        <TitleReveal text={headline} delay={12} size={82} align="center" maxWidth={900} style={{ marginTop: 12 }} />
       </Rise>
     </div>
     <ProgressDots total={5} step={step} />
@@ -184,11 +180,11 @@ export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
       </TransitionSeries.Sequence>
       {fadeT}
       <TransitionSeries.Sequence durationInFrames={G_ZOOM}>
-        <ArtBeat p={data} kicker={data.craftKicker || "The artist"} headline={data.craftHeadline} body={data.craftBody} step={2} zoom={0.22} />
+        <ArtBeat p={data} kicker={data.craftKicker || "The artist"} headline={data.craftHeadline} step={2} zoom={0.22} />
       </TransitionSeries.Sequence>
       {fadeT}
       <TransitionSeries.Sequence durationInFrames={G_ZOOM}>
-        <ArtBeat p={data} kicker={data.sceneKicker || "The scene"} headline={data.sceneHeadline} body={data.sceneBody} step={3} zoom={0.15} />
+        <ArtBeat p={data} kicker={data.sceneKicker || "The scene"} headline={data.sceneHeadline} step={3} zoom={0.15} />
       </TransitionSeries.Sequence>
       {fadeT}
       <TransitionSeries.Sequence durationInFrames={G_ODDS}>

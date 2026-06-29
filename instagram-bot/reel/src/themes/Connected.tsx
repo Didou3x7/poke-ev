@@ -44,10 +44,12 @@ const CARD_ASPECT = 1.395;
 
 const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const n = p.cards.length;
-  // BIG cards — the fan fills the lower frame so the hook never feels empty
-  const cw = Math.min(480, 1180 / Math.max(n, 3) + 150);
+  // BIG cards that ALWAYS fit inside the 9:16 frame: the fan's outer extent is bounded to the
+  // safe width so the side cards are never clipped, whatever the card count.
+  const spread = Math.min(140, 480 / Math.max(n - 1, 1));
+  const cw = Math.min(440, Math.round((460 - ((n - 1) / 2) * spread) / 0.6));
   const ch = cw * CARD_ASPECT;
-  const spread = Math.min(170, 720 / Math.max(n, 2));
+  const rot = Math.min(7, 26 / n);
   return (
     <Stage glowY={32}>
       {/* compact, punchy top: set identity + bold hook line */}
@@ -63,13 +65,13 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
           </div>
         </Rise>
       </AbsoluteFill>
-      {/* a BIG fanned hand filling the lower frame */}
-      <div style={{ position: "absolute", bottom: SAFE_BOTTOM - 40, width: "100%", height: ch + 120, display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
+      {/* a BIG fanned hand filling the lower frame — bottom-anchored, always inside the frame */}
+      <div style={{ position: "absolute", left: 0, bottom: SAFE_BOTTOM - 56, width: "100%", height: ch, display: "flex", justifyContent: "center" }}>
         {p.cards.map((c, i) => {
           const t = i - (n - 1) / 2;
           const pop = usePop(16 + i * 4, 13);
           return (
-            <div key={i} style={{ position: "absolute", transformOrigin: "bottom center", transform: `translateX(${t * spread}px) translateY(${(1 - pop) * 150}px) rotate(${t * 7 * pop}deg) scale(${0.7 + pop * 0.3})`, opacity: pop }}>
+            <div key={i} style={{ position: "absolute", bottom: 0, transformOrigin: "bottom center", transform: `translateX(${t * spread}px) translateY(${(1 - pop) * 160}px) rotate(${t * rot * pop}deg) scale(${0.7 + pop * 0.3})`, opacity: pop }}>
               <CardArt src={c.image} w={cw} />
             </div>
           );
