@@ -2197,11 +2197,13 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
         for c, rec in zip(facts["chase"], verify):
             if rec.get("display_usd"):
                 c["usd"] = int(round(rec["display_usd"]))
-        # AI-upscale each chase card to a MEDIUM 1500px (crisp at the rk-tempt display, light
-        # enough that the 3-up row doesn't 500 Satori — see connect note above).
+        # AI-upscale each chase card to MAX (4096px) — keep the full Real-ESRGAN detail (capping to
+        # 1500 threw it away and the cards read soft on slide 2). Only THREE cards here, so the 3-up
+        # rk-tempt row stays well under the Satori memory ceiling (the 1500 cap was for the connected
+        # cover/reveal which load up to SEVEN cards — that one stays medium).
         for c in facts["chase"]:
-            c["hd_image"] = upscale_card(c["image"], max_w=1500)
-        log(f"  ripkeep upscaled {sum(1 for c in facts['chase'] if c.get('hd_image'))}/{len(facts['chase'])} chase cards (1500px)")
+            c["hd_image"] = upscale_card(c["image"], max_w=4096)
+        log(f"  ripkeep upscaled {sum(1 for c in facts['chase'] if c.get('hd_image'))}/{len(facts['chase'])} chase cards (4096px)")
         return {"theme": theme, "base": base, "facts": facts, "verify": verify,
                 "keys": [facts["key"]], "api_key": api_key}
 
