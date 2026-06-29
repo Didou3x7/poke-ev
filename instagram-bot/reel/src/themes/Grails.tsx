@@ -32,12 +32,12 @@ import {
   holoText,
 } from "../lib";
 
-export const G_FADE = 8;
-export const G_SHOCK = 96;
-export const G_CARD = 78;
-export const G_ZOOM = 86;
-export const G_ODDS = 82;
-export const G_OUTRO = 78;
+export const G_FADE = 10;
+export const G_SHOCK = 118;
+export const G_CARD = 104;
+export const G_ZOOM = 116;
+export const G_ODDS = 104;
+export const G_OUTRO = 84;
 
 export const grailsFrames = (): number => G_SHOCK + G_CARD + G_ZOOM + G_ZOOM + G_ODDS + G_OUTRO - G_FADE * 5;
 
@@ -121,20 +121,19 @@ const Shock: React.FC<{ p: GrailsProps }> = ({ p }) => {
 const TheCard: React.FC<{ p: GrailsProps }> = ({ p }) => (
   <Stage glowY={40}>
     <SetLogo src={p.setLogo} />
-    <Rise delay={1} style={{ position: "absolute", top: 128, width: "100%", justifyContent: "center" }}>
+    <Rise delay={1} style={{ position: "absolute", top: 140, width: "100%", justifyContent: "center" }}>
       <Kicker style={{ fontSize: 28 }}>{p.cardKicker || "The card"}</Kicker>
     </Rise>
-    <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <CardHero src={p.image} w={780} delay={0} />
-    </AbsoluteFill>
-    <div style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <Rise delay={12} style={{ flexDirection: "column", alignItems: "center" }}>
+    {/* card + title as ONE centred column — a real gap so the card never overlaps the name */}
+    <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 110, paddingBottom: SAFE_BOTTOM - 70 }}>
+      <CardHero src={p.image} w={620} delay={0} />
+      <Rise delay={16} style={{ flexDirection: "column", alignItems: "center", marginTop: 52 }}>
         <Display size={62} style={{ textAlign: "center", maxWidth: 940, display: "block" }}>{p.cardHeadline || p.name}</Display>
         {splitLines(p.cardBody).map((line, i) => (
           <div key={i} style={{ fontSize: 38, color: MUTE, fontFamily: SATOSHI, marginTop: 6 }}>{line}</div>
         ))}
       </Rise>
-    </div>
+    </AbsoluteFill>
     <ProgressDots total={5} step={1} />
   </Stage>
 );

@@ -31,12 +31,12 @@ import {
   holoText,
 } from "../lib";
 
-export const R_FADE = 8;
-export const R_HOOK = 80;
-export const R_TEMPT = 80;
-export const R_FACE = 102;
-export const R_VERDICT = 102;
-export const R_OUTRO = 78;
+export const R_FADE = 10;
+export const R_HOOK = 96;
+export const R_TEMPT = 112;
+export const R_FACE = 124;
+export const R_VERDICT = 120;
+export const R_OUTRO = 84;
 
 export const ripkeepFrames = (): number => R_HOOK + R_TEMPT + R_FACE + R_VERDICT + R_OUTRO - R_FADE * 4;
 

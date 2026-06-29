@@ -12,6 +12,7 @@ import {
   CardHero,
   Display,
   EASE,
+  EASE_IN_OUT,
   HoloBar,
   Kicker,
   MoneyCount,
@@ -31,11 +32,11 @@ import {
   holoText,
 } from "../lib";
 
-export const C_FADE = 8;
-export const C_HOOK = 80;
-export const C_CARD = 54;
-export const C_REVEAL = 150;
-export const C_OUTRO = 78;
+export const C_FADE = 10;
+export const C_HOOK = 96;
+export const C_CARD = 78;
+export const C_REVEAL = 220;
+export const C_OUTRO = 86;
 
 export const connectedFrames = (n: number): number => C_HOOK + n * C_CARD + C_REVEAL + C_OUTRO - C_FADE * (n + 2);
 
@@ -86,19 +87,17 @@ const CardScene: React.FC<{ p: ConnectedProps; i: number }> = ({ p, i }) => {
   return (
     <Stage glowY={40}>
       <SetLogo src={p.setLogo} />
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-        <Rise delay={1} style={{ position: "absolute", top: 130, width: "100%", justifyContent: "center" }}>
-          <Kicker style={{ fontSize: 28 }}>{`Piece ${i + 1} of ${n}`}</Kicker>
+      <Rise delay={1} style={{ position: "absolute", top: 140, width: "100%", justifyContent: "center" }}>
+        <Kicker style={{ fontSize: 28 }}>{`Piece ${i + 1} of ${n}`}</Kicker>
+      </Rise>
+      {/* card + title as ONE centred column — a real gap so the card never overlaps the name */}
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 110, paddingBottom: SAFE_BOTTOM - 70 }}>
+        <CardHero src={c.image} w={600} delay={0} />
+        <Rise delay={16} style={{ flexDirection: "column", alignItems: "center", marginTop: 56 }}>
+          <Display size={68}>{c.name}</Display>
+          <div style={{ fontSize: 86, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
         </Rise>
-        {/* the card DOMINATES the frame */}
-        <CardHero src={c.image} w={760} delay={0} />
       </AbsoluteFill>
-      <div style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Rise delay={12} style={{ flexDirection: "column", alignItems: "center" }}>
-          <Display size={66}>{c.name}</Display>
-          <div style={{ marginTop: 2, fontSize: 84, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
-        </Rise>
-      </div>
       <ProgressDots total={n + 2} step={i + 1} />
     </Stage>
   );
@@ -107,31 +106,36 @@ const CardScene: React.FC<{ p: ConnectedProps; i: number }> = ({ p, i }) => {
 const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const n = p.cards.length;
   const frame = useCurrentFrame();
-  // Full-height cards flush in a strip; the CAMERA pans across them. They stay HUGE the whole
-  // time (no shrink-to-fit), so the connected illustration flows by, card to card.
-  const cardH = 1360;
+  // Full-height cards flush in a strip. PHASE A: a SLOW pan across the panorama (cards stay huge,
+  // the illustration flows by). PHASE B: zoom OUT so all N cards lock together in one shot, held.
+  const cardH = 1340;
   const cardW = Math.round(cardH / CARD_ASPECT);
-  const f = interpolate(frame, [14, 128], [0, n - 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
-  const tx = ((n - 1) / 2 - f) * cardW;
-  const breathe = interpolate(frame, [0, 150], [1.05, 1.0], { extrapolateRight: "clamp", easing: EASE });
+  const stripW = n * cardW;
+  const fitScale = Math.min(1, (1080 * 0.92) / stripW);
+  const center = (n - 1) / 2;
+  const panF = interpolate(frame, [26, 150], [0, n - 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE_IN_OUT });
+  const zoom = interpolate(frame, [150, 190], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const f = panF + (center - panF) * zoom;
+  const scale = 1 + (fitScale - 1) * zoom;
+  const tx = (center - f) * cardW * scale;
   return (
     <Stage glowY={44} sparkle={false}>
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-        <div style={{ display: "flex", transform: `translateX(${tx}px) scale(${breathe})`, transformOrigin: "center center", filter: "drop-shadow(0 40px 90px rgba(0,0,0,0.8))" }}>
+        <div style={{ display: "flex", transform: `translateX(${tx}px) scale(${scale})`, transformOrigin: "center center", filter: "drop-shadow(0 40px 90px rgba(0,0,0,0.8))" }}>
           {p.cards.map((c, i) => (
             <Img key={i} src={c.image} style={{ width: cardW, height: cardH, objectFit: "cover", marginLeft: i ? -2 : 0 }} />
           ))}
         </div>
       </AbsoluteFill>
-      <AbsoluteFill style={{ background: "linear-gradient(to bottom, rgba(11,14,20,0.92) 0%, rgba(11,14,20,0) 20%, rgba(11,14,20,0) 60%, rgba(11,14,20,0.97) 100%)" }} />
+      <AbsoluteFill style={{ background: "linear-gradient(to bottom, rgba(11,14,20,0.92) 0%, rgba(11,14,20,0) 20%, rgba(11,14,20,0) 58%, rgba(11,14,20,0.97) 100%)" }} />
       <Rise delay={2} style={{ position: "absolute", top: 116, width: "100%", flexDirection: "column", alignItems: "center" }}>
         <Kicker style={{ fontSize: 28 }}>The reveal — one illustration</Kicker>
         <Display size={56} style={{ marginTop: 12, textAlign: "center", maxWidth: 960, display: "block" }}>{p.revealTitle || p.setLabel}</Display>
       </Rise>
       <div style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Rise delay={118} style={{ flexDirection: "column", alignItems: "center" }}>
+        <Rise delay={168} style={{ flexDirection: "column", alignItems: "center" }}>
           <div style={{ fontSize: 34, color: MUTE }}>Combined panorama value</div>
-          <MoneyCount value={p.total} delay={120} dur={24} size={146} style={{ marginTop: 4 }} />
+          <MoneyCount value={p.total} delay={170} dur={22} size={146} style={{ marginTop: 4 }} />
         </Rise>
       </div>
       <ProgressDots total={n + 2} step={n + 1} />
