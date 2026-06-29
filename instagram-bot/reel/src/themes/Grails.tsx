@@ -78,7 +78,7 @@ const ZoomCopy: React.FC<{ kicker: string; headline: string; body: string; step:
       <Rise delay={6}>
         <Kicker style={{ fontSize: 28 }}>{kicker}</Kicker>
       </Rise>
-      <TitleReveal text={headline} delay={12} size={86} style={{ marginTop: 16, maxWidth: 900 }} />
+      <TitleReveal text={headline} delay={12} size={86} maxWidth={880} style={{ marginTop: 16 }} />
       <Rise delay={24} style={{ marginTop: 20, flexDirection: "column" }}>
         {splitLines(body).map((line, i) => (
           <div key={i} style={{ fontSize: 42, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.32 }}>{line}</div>
@@ -105,7 +105,7 @@ const Shock: React.FC<{ p: GrailsProps }> = ({ p }) => {
       <AbsoluteFill style={{ padding: 84, paddingBottom: SAFE_BOTTOM + 20, flexDirection: "column", justifyContent: "flex-end" }}>
         <div style={{ flexDirection: "column", display: "flex" }}>
           {lines.map((l, i) => (
-            <TitleReveal key={i} text={l} delay={1 + i * 4} size={88} holo={i === lines.length - 1} />
+            <TitleReveal key={i} text={l} delay={1 + i * 4} size={88} holo={i === lines.length - 1} maxWidth={960} />
           ))}
         </div>
         <Rise delay={10} style={{ alignItems: "flex-end", gap: 18, marginTop: 22 }}>

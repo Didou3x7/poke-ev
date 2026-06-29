@@ -161,9 +161,49 @@ const GlyphShine: React.FC<{ text: string; delay: number; size: number }> = ({ t
   );
 };
 
+/** Break a title into BALANCED lines so a phrase never orphans a single word onto its own line
+ *  (e.g. "One sky. Four cards." → "One sky." / "Four cards.", never "...Four" / "cards"). One line
+ *  if it fits; otherwise the 2-line split that minimises the longest line; greedy for 3+. */
+const splitBalanced = (words: string[], maxChars: number): string[][] => {
+  const total = words.join(" ").length;
+  if (words.length < 2 || total <= maxChars) return [words];
+  if (total <= maxChars * 2) {
+    let best = 1;
+    let bestCost = Infinity;
+    for (let i = 1; i < words.length; i++) {
+      const a = words.slice(0, i).join(" ").length;
+      const b = words.slice(i).join(" ").length;
+      const cost = Math.max(a, b);
+      if (cost < bestCost) {
+        bestCost = cost;
+        best = i;
+      }
+    }
+    return [words.slice(0, best), words.slice(best)];
+  }
+  const nLines = Math.ceil(total / maxChars);
+  const target = total / nLines;
+  const lines: string[][] = [];
+  let cur: string[] = [];
+  let len = 0;
+  for (const w of words) {
+    const add = (len ? 1 : 0) + w.length;
+    if (cur.length && len + add > target && lines.length < nLines - 1) {
+      lines.push(cur);
+      cur = [w];
+      len = w.length;
+    } else {
+      cur.push(w);
+      len += add;
+    }
+  }
+  if (cur.length) lines.push(cur);
+  return lines;
+};
+
 /** Animated title — each WORD rises out of a blur and fades in, staggered, then a holo shine
- *  sweeps across the GLYPHS (no rectangle). The signature "title appears" effect, done clean. */
-export const TitleReveal: React.FC<{ text: string; delay?: number; size?: number; holo?: boolean; stagger?: number; align?: "flex-start" | "center"; shimmer?: boolean; style?: React.CSSProperties }> = ({
+ *  sweeps across the GLYPHS (no rectangle). Lines are BALANCED (no orphan word ever). */
+export const TitleReveal: React.FC<{ text: string; delay?: number; size?: number; holo?: boolean; stagger?: number; align?: "flex-start" | "center"; shimmer?: boolean; maxWidth?: number; style?: React.CSSProperties }> = ({
   text,
   delay = 0,
   size = 110,
@@ -171,22 +211,29 @@ export const TitleReveal: React.FC<{ text: string; delay?: number; size?: number
   stagger = 4,
   align = "flex-start",
   shimmer = true,
+  maxWidth = 900,
   style,
 }) => {
   const frame = useCurrentFrame();
-  const words = text.split(" ");
+  const charsPerLine = Math.max(6, Math.floor(maxWidth / (size * 0.55)));
+  const lines = splitBalanced(text.split(" "), charsPerLine);
+  let wi = 0;
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: align, rowGap: 6, columnGap: "0.26em", fontFamily: CLASH, fontWeight: 700, fontSize: size, lineHeight: 1.02, letterSpacing: -1.5, ...style }}>
-      {words.map((w, i) => {
-        const d = delay + i * stagger;
-        const p = interpolate(frame - d, [0, 15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
-        return (
-          <span key={i} style={{ position: "relative", display: "inline-block" }}>
-            <span style={{ display: "inline-block", opacity: p, transform: `translateY(${(1 - p) * 0.5 * size}px)`, filter: `blur(${(1 - p) * 11}px)`, ...(holo ? holoText() : { color: INK }) }}>{w}</span>
-            {shimmer ? <GlyphShine text={w} delay={d + 8} size={size} /> : null}
-          </span>
-        );
-      })}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: align, fontFamily: CLASH, fontWeight: 700, fontSize: size, lineHeight: 1.04, letterSpacing: -1.5, ...style }}>
+      {lines.map((line, li) => (
+        <div key={li} style={{ display: "flex", flexDirection: "row", columnGap: "0.26em" }}>
+          {line.map((w, k) => {
+            const d = delay + wi++ * stagger;
+            const p = interpolate(frame - d, [0, 15], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+            return (
+              <span key={k} style={{ position: "relative", display: "inline-block" }}>
+                <span style={{ display: "inline-block", opacity: p, transform: `translateY(${(1 - p) * 0.5 * size}px)`, filter: `blur(${(1 - p) * 11}px)`, ...(holo ? holoText() : { color: INK }) }}>{w}</span>
+                {shimmer ? <GlyphShine text={w} delay={d + 8} size={size} /> : null}
+              </span>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 };
@@ -199,16 +246,25 @@ export const CardArt: React.FC<{ src: string; w: number; radius?: number; style?
 /** THE hero card moment: a spring slam-in from a big scale, a soft holo glow (no rectangle), and
  *  a specular shine that sweeps across the CARD ITSELF (clipped to the card, not a box), then a
  *  slow Ken Burns push. The card dominates the frame. */
-export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo?: number; shine?: boolean }> = ({ src, w = 900, delay = 0, kenTo = 1.05, shine = true }) => {
+export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo?: number; shine?: boolean; variant?: number }> = ({ src, w = 900, delay = 0, kenTo = 1.05, shine = true, variant = 0 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = spring({ frame: frame - delay, fps, config: { damping: 15, mass: 0.9, stiffness: 125 } });
-  const scale = interpolate(s, [0, 1], [1.32, 1.0]);
+  const inv = 1 - s;
   const ken = interpolate(frame - delay, [6, 150], [1.0, kenTo], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
   const sweep = interpolate(frame - delay, [16, 56], [-1.4, 1.7], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const op = interpolate(s, [0, 0.35], [0, 1]);
+  // VARY the entrance per card (no two consecutive cards animate the same): slam, slide-right,
+  // rise, slide-left, flip. All converge to identity as the spring settles.
+  const v = ((variant % 5) + 5) % 5;
+  const entry =
+    v === 1 ? `translateX(${inv * 420}px) rotate(${inv * 9}deg) scale(${1 + inv * 0.05})`
+    : v === 2 ? `translateY(${inv * 340}px) scale(${1 - inv * 0.12})`
+    : v === 3 ? `translateX(${inv * -420}px) rotate(${inv * -9}deg) scale(${1 + inv * 0.05})`
+    : v === 4 ? `perspective(1600px) rotateY(${inv * -72}deg) scale(${1 - inv * 0.04})`
+    : `scale(${1 + inv * 0.32})`;
   return (
-    <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform: `scale(${scale * ken})`, opacity: op }}>
+    <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform: `${entry} scale(${ken})`, opacity: op }}>
       <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: CARD_GLOW }} />
       {shine ? (
         <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>

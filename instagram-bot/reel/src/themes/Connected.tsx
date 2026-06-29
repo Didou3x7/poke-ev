@@ -54,7 +54,7 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
         <Rise delay={10} style={{ marginTop: 20 }}>
           <Kicker style={{ fontSize: 26 }}>Connecting Art</Kicker>
         </Rise>
-        <TitleReveal text={p.headline || "They drew one scene."} delay={14} size={112} align="center" style={{ justifyContent: "center", marginTop: 14, maxWidth: 940 }} />
+        <TitleReveal text={p.headline || "They drew one scene."} delay={14} size={112} align="center" maxWidth={920} style={{ marginTop: 14 }} />
         <Rise delay={22} style={{ marginTop: 16 }}>
           <div style={{ fontSize: 40, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3, textAlign: "center", maxWidth: 880 }}>
             {n} cards form one continuous illustration by {p.artist || "one illustrator"}.
@@ -92,7 +92,8 @@ const CardScene: React.FC<{ p: ConnectedProps; i: number }> = ({ p, i }) => {
       </Rise>
       {/* card + title as ONE centred column — a real gap so the card never overlaps the name */}
       <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 110, paddingBottom: SAFE_BOTTOM - 70 }}>
-        <CardHero src={c.image} w={600} delay={0} />
+        {/* each card enters with a DIFFERENT animation (slam / slide-R / rise / slide-L / flip) */}
+        <CardHero src={c.image} w={600} delay={0} variant={i} />
         <Rise delay={16} style={{ flexDirection: "column", alignItems: "center", marginTop: 56 }}>
           <Display size={68}>{c.name}</Display>
           <div style={{ fontSize: 86, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
