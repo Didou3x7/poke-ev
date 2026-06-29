@@ -1,0 +1,165 @@
+{
+  "date": "2026-06-29",
+  "theme": "ripkeep",
+  "tg_offset": 0,
+  "plan": {
+    "date": "2026-06-29",
+    "theme": "ripkeep",
+    "slides": [
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/08bd246f5034596e8bdd51816a4afb1b.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/056400d672eac0c510921e542685827b.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/4c1d10f2863d37849ad2abea476ec21e.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/82c08fa9fe0bcc0da77b1d1faef17669.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/b34b79ad501fe1f4170943a3ced05cfa.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/f644fc283ae9d39f34e500bae088314a.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/35ecee1da1b0e2f282861856277ebc4a.png"
+    ],
+    "caption": "White Flare ETBs cost $146 sealed. Opening one averages $67. That gap is $79.\n\nThe math on this one is clean.\nBooster EV: $7.48 per pack across 9 packs.\nSealed price beats open value by $79.\nVerdict: Keep it sealed.\n\nTop chase cards doing the heavy lifting:\nVictini at $518. Reshiram ex at $488. Oshawott at $94.\nFull breakdown is live at pokeev.com.\n\nSave this before you crack a White Flare ETB.\n\nRip or keep, what are you doing with yours?\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nLink in bio -> pokeev.com\n\n#whiteflare #victini #reshiramex #riporkeep #elitetrainerbox #sealedpokemon #pokemoninvesting #pokemoncollector #pokemonpulls #pokemontcg",
+    "hashtags": [
+      "#whiteflare",
+      "#victini",
+      "#reshiramex",
+      "#riporkeep",
+      "#elitetrainerbox",
+      "#sealedpokemon",
+      "#pokemoninvesting",
+      "#pokemoncollector",
+      "#pokemonpulls",
+      "#pokemontcg"
+    ],
+    "brief": {
+      "eyebrow": "WHITE FLARE · ELITE TRAINER BOX",
+      "verdictWord": "KEEP IT|SEALED",
+      "reason": "Opening averages $67. Sealed sits at $146.|That $79 gap is the argument — don't rip it.",
+      "caption": "White Flare ETBs cost $146 sealed. Opening one averages $67. That gap is $79.\n\nThe math on this one is clean.\nBooster EV: $7.48 per pack across 9 packs.\nSealed price beats open value by $79.\nVerdict: Keep it sealed.\n\nTop chase cards doing the heavy lifting:\nVictini at $518. Reshiram ex at $488. Oshawott at $94.\nFull breakdown is live at pokeev.com.\n\nSave this before you crack a White Flare ETB.\n\nRip or keep, what are you doing with yours?\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nLink in bio -> pokeev.com",
+      "hashtags": [
+        "#whiteflare",
+        "#victini",
+        "#reshiramex",
+        "#riporkeep",
+        "#elitetrainerbox",
+        "#sealedpokemon",
+        "#pokemoninvesting",
+        "#pokemoncollector",
+        "#pokemonpulls",
+        "#pokemontcg"
+      ]
+    },
+    "keys": [
+      "white-flare"
+    ],
+    "verify": [
+      {
+        "snap_usd": 518,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 518,
+        "name": "Victini"
+      },
+      {
+        "snap_usd": 488,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 488,
+        "name": "Reshiram ex"
+      },
+      {
+        "snap_usd": 94,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 94,
+        "name": "Oshawott"
+      }
+    ],
+    "qa_warnings": [
+      "slide 6: Body copy contains an em-dash in 'That $79 gap is the argument — don't rip it.' which violates the no em-dash brand rule"
+    ]
+  },
+  "ctx": {
+    "theme": "ripkeep",
+    "base": "https://pokeev.com",
+    "facts": {
+      "key": "white-flare",
+      "set_id": "white-flare",
+      "set_name": "White Flare",
+      "logo": "https://assets.tcgdex.net/en/sv/sv10.5w/logo.webp",
+      "pack_ev": 7.475888928897244,
+      "packs": 9,
+      "open_ev": 67,
+      "sealed": 146,
+      "etb_name": "White Flare Elite Trainer Box",
+      "gap": 79,
+      "rel_gap": 0.5398194353322263,
+      "verdict_rip": false,
+      "chase": [
+        {
+          "name": "Victini",
+          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/172/high.webp",
+          "usd": 518,
+          "rarity": "black-white-rare",
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/a42f5262ee40f8b86fc2d633ff095d8c.png"
+        },
+        {
+          "name": "Reshiram ex",
+          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/173/high.webp",
+          "usd": 488,
+          "rarity": "black-white-rare",
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/c82868b6350b2706b8f08de58b2d6e2f.png"
+        },
+        {
+          "name": "Oshawott",
+          "image": "https://assets.tcgdex.net/en/sv/sv10.5w/105/high.webp",
+          "usd": 94,
+          "rarity": "illustration-rare",
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/b3b781bde0bc603c3c2efef512ff3703.png"
+        }
+      ]
+    },
+    "verify": [
+      {
+        "snap_usd": 518,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 518,
+        "name": "Victini"
+      },
+      {
+        "snap_usd": 488,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 488,
+        "name": "Reshiram ex"
+      },
+      {
+        "snap_usd": 94,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "no pokemontcg id (modern scan) — snapshot price kept",
+        "display_usd": 94,
+        "name": "Oshawott"
+      }
+    ],
+    "keys": [
+      "white-flare"
+    ]
+  },
+  "handled_seq": 0,
+  "handled_format_seq": 0
+}
