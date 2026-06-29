@@ -19,6 +19,7 @@ import {
   ProgressDots,
   Rise,
   SAFE_BOTTOM,
+  SetBadge,
   SetLogo,
   Stage,
   TitleReveal,
@@ -45,27 +46,25 @@ const CARD_ASPECT = 1.395;
 
 const Hook: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const n = p.chase.length;
-  const cw = 280;
+  const cw = 270;
   const ch = cw * CARD_ASPECT;
   return (
     <Stage glowY={38}>
-      <SetLogo src={p.setLogo} />
-      <AbsoluteFill style={{ padding: 88, flexDirection: "column", justifyContent: "center" }}>
-        <Rise delay={2}>
-          <Kicker>The collector's dilemma</Kicker>
-        </Rise>
-        <TitleReveal text="Rip or keep?" delay={3} size={152} holo style={{ marginTop: 20 }} />
-        <Rise delay={14} style={{ marginTop: 28 }}>
-          <div style={{ fontSize: 44, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3 }}>
-            A sealed {p.setName} ETB costs {p.sealed}. Open it, or keep it sealed?
+      <AbsoluteFill style={{ padding: 84, paddingTop: 150, flexDirection: "column", alignItems: "center" }}>
+        {/* INSTANT context: which set, in the first second */}
+        <SetBadge logo={p.setLogo} name={p.setName} delay={2} />
+        <TitleReveal text="Rip or keep?" delay={10} size={150} holo align="center" style={{ justifyContent: "center", marginTop: 38 }} />
+        <Rise delay={20} style={{ marginTop: 20 }}>
+          <div style={{ fontSize: 42, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3, textAlign: "center", maxWidth: 900 }}>
+            A sealed {p.setName} ETB costs {p.sealed} — open it, or keep it sealed?
           </div>
         </Rise>
-        <div style={{ position: "relative", height: ch + 60, marginTop: 56, display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ position: "relative", width: "100%", height: ch + 40, marginTop: 40, display: "flex", justifyContent: "center", alignItems: "center" }}>
           {p.chase.map((c, i) => {
             const t = i - (n - 1) / 2;
             const pop = usePop(16 + i * 4, 13);
             return (
-              <div key={i} style={{ position: "absolute", transform: `translateX(${t * 134}px) translateY(${Math.abs(t) * 10 + (1 - pop) * 130}px) rotate(${t * 6 * pop}deg) scale(${0.72 + pop * 0.28})`, opacity: pop }}>
+              <div key={i} style={{ position: "absolute", transform: `translateX(${t * 130}px) translateY(${Math.abs(t) * 10 + (1 - pop) * 130}px) rotate(${t * 6 * pop}deg) scale(${0.72 + pop * 0.28})`, opacity: pop }}>
                 <CardArt src={c.image} w={cw} />
               </div>
             );

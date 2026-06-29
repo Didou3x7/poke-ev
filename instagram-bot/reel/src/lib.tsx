@@ -235,6 +235,24 @@ export const SetLogo: React.FC<{ src: string | null }> = ({ src }) => {
   return <Img src={src} style={{ position: "absolute", top: 84, right: 84, height: 56, objectFit: "contain", opacity: p * 0.9 }} />;
 };
 
+/** PROMINENT set identity for the hook — so a viewer knows WHICH set/extension in the first
+ *  second. Big set logo on a soft glow (boxless), with the set name spelled out below as a
+ *  guaranteed-legible fallback (some logos are faint on dark). Drops in from the top. */
+export const SetBadge: React.FC<{ logo: string | null; name: string; delay?: number; size?: number }> = ({ logo, name, delay = 0, size = 116 }) => {
+  const p = useEnter(delay, 14);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", opacity: p, transform: `translateY(${(1 - p) * -28}px)` }}>
+      {logo ? (
+        <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ position: "absolute", inset: "-34px -24px", background: "radial-gradient(ellipse, rgba(124,92,246,0.28), transparent 72%)" }} />
+          <Img src={logo} style={{ height: size, objectFit: "contain", filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.75))" }} />
+        </div>
+      ) : null}
+      <div style={{ marginTop: logo ? 14 : 0, fontSize: logo ? 36 : 76, letterSpacing: logo ? 5 : -1, textTransform: "uppercase", fontFamily: CLASH, fontWeight: 700, ...holoText() }}>{name}</div>
+    </div>
+  );
+};
+
 /** Pull a number out of a formatted money string for count-up animations. */
 export const numFrom = (s: string): number => Number((s || "").replace(/[^0-9.]/g, "")) || 0;
 

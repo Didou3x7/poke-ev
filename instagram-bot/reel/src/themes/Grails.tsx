@@ -94,11 +94,18 @@ const Shock: React.FC<{ p: GrailsProps }> = ({ p }) => {
   return (
     <Stage glowY={34} sparkle={false}>
       <PushIn src={p.image} fx={0.5} fy={0.3} z0={1.36} z1={1.52} driftX={14} />
-      <SetLogo src={p.setLogo} />
+      {/* INSTANT context: WHICH card, WHICH set — top, over the scrim */}
+      <Rise delay={2} style={{ position: "absolute", top: 138, width: "100%", flexDirection: "column", alignItems: "center" }}>
+        {p.setLogo ? <Img src={p.setLogo} style={{ height: 62, objectFit: "contain", filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.7))" }} /> : null}
+        <Display size={66} style={{ marginTop: 12, textAlign: "center", maxWidth: 940, display: "block" }}>{p.name}</Display>
+        <div style={{ fontSize: 30, letterSpacing: 3, textTransform: "uppercase", color: MUTE, fontFamily: CLASH, marginTop: 6 }}>
+          {p.setName}{p.rarity ? ` · ${p.rarity}` : ""}
+        </div>
+      </Rise>
       <AbsoluteFill style={{ padding: 84, paddingBottom: SAFE_BOTTOM + 20, flexDirection: "column", justifyContent: "flex-end" }}>
         <div style={{ flexDirection: "column", display: "flex" }}>
           {lines.map((l, i) => (
-            <TitleReveal key={i} text={l} delay={1 + i * 4} size={92} holo={i === lines.length - 1} />
+            <TitleReveal key={i} text={l} delay={1 + i * 4} size={88} holo={i === lines.length - 1} />
           ))}
         </div>
         <Rise delay={10} style={{ alignItems: "flex-end", gap: 18, marginTop: 22 }}>

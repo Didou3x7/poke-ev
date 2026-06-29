@@ -19,6 +19,7 @@ import {
   ProgressDots,
   Rise,
   SAFE_BOTTOM,
+  SetBadge,
   SetLogo,
   Stage,
   TitleReveal,
@@ -46,22 +47,23 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const ch = cw * CARD_ASPECT;
   return (
     <Stage glowY={36}>
-      <SetLogo src={p.setLogo} />
-      <AbsoluteFill style={{ padding: 88, flexDirection: "column", justifyContent: "center" }}>
-        <Rise delay={2}>
-          <Kicker>Connecting Art</Kicker>
+      <AbsoluteFill style={{ padding: 84, paddingTop: 140, flexDirection: "column", alignItems: "center" }}>
+        {/* INSTANT context: which set, in the first second */}
+        <SetBadge logo={p.setLogo} name={p.setLabel} delay={2} />
+        <Rise delay={10} style={{ marginTop: 20 }}>
+          <Kicker style={{ fontSize: 26 }}>Connecting Art</Kicker>
         </Rise>
-        <TitleReveal text={p.headline || "They drew one scene."} delay={3} size={122} style={{ marginTop: 24, maxWidth: 920 }} />
-        <Rise delay={12} style={{ marginTop: 28 }}>
-          <div style={{ fontSize: 42, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3 }}>
-            {n} cards. One continuous illustration by {p.artist || "one illustrator"}.
+        <TitleReveal text={p.headline || "They drew one scene."} delay={14} size={112} align="center" style={{ justifyContent: "center", marginTop: 14, maxWidth: 940 }} />
+        <Rise delay={22} style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 40, color: MUTE, fontFamily: SATOSHI, lineHeight: 1.3, textAlign: "center", maxWidth: 880 }}>
+            {n} cards form one continuous illustration by {p.artist || "one illustrator"}.
           </div>
         </Rise>
         {/* a fanned hand — overlapping, big, never crams regardless of card count */}
-        <div style={{ position: "relative", height: ch + 70, marginTop: 64, display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <div style={{ position: "relative", width: "100%", height: ch + 50, marginTop: 40, display: "flex", justifyContent: "center", alignItems: "center" }}>
           {p.cards.map((c, i) => {
             const t = i - (n - 1) / 2;
-            const pop = usePop(14 + i * 4, 13);
+            const pop = usePop(18 + i * 4, 13);
             return (
               <div key={i} style={{ position: "absolute", transform: `translateX(${t * 132}px) translateY(${Math.abs(t) * 12 + (1 - pop) * 130}px) rotate(${t * 6 * pop}deg) scale(${0.72 + pop * 0.28})`, opacity: pop }}>
                 <CardArt src={c.image} w={cw} />
@@ -70,7 +72,7 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
           })}
         </div>
       </AbsoluteFill>
-      <Rise delay={30} style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", justifyContent: "center" }}>
+      <Rise delay={34} style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", justifyContent: "center" }}>
         <div style={{ fontSize: 34, letterSpacing: 2, ...holoText() }}>watch them connect ↓</div>
       </Rise>
     </Stage>
