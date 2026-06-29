@@ -253,7 +253,6 @@ export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo
   const s = spring({ frame: frame - delay, fps, config: { damping: 15, mass: 0.9, stiffness: 125 } });
   const inv = 1 - s;
   const ken = interpolate(frame - delay, [6, 150], [1.0, kenTo], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
-  const sweep = interpolate(frame - delay, [16, 56], [-1.4, 1.7], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const op = interpolate(s, [0, 0.35], [0, 1]);
   // VARY the entrance per card (no two consecutive cards animate the same): slam, slide-right,
   // rise, slide-left, flip. All converge to identity as the spring settles.
@@ -264,12 +263,15 @@ export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo
     : v === 3 ? `translateX(${inv * -420}px) rotate(${inv * -9}deg) scale(${1 + inv * 0.05})`
     : v === 4 ? `perspective(1600px) rotateY(${inv * -72}deg) scale(${1 - inv * 0.04})`
     : `scale(${1 + inv * 0.32})`;
+  // VARY the shine too — direction, angle, skew and width differ per card so no two are identical.
+  const dir = v % 2 === 0 ? 1 : -1;
+  const sweepV = interpolate(frame - delay, [16, 54], dir > 0 ? [-1.4, 1.7] : [1.7, -1.4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   return (
     <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform: `${entry} scale(${ken})`, opacity: op }}>
       <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: CARD_GLOW }} />
       {shine ? (
         <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
-          <div style={{ position: "absolute", top: "-10%", bottom: "-10%", left: `${sweep * 100}%`, width: "42%", background: "linear-gradient(105deg, transparent, rgba(255,255,255,0.42), transparent)", transform: "skewX(-18deg)" }} />
+          <div style={{ position: "absolute", top: "-12%", bottom: "-12%", left: `${sweepV * 100}%`, width: `${38 + (v % 3) * 9}%`, background: `linear-gradient(${102 + v * 15}deg, transparent, rgba(255,255,255,0.44), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
         </div>
       ) : null}
     </div>

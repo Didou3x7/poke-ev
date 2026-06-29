@@ -110,7 +110,7 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const frame = useCurrentFrame();
   // Full-height cards flush in a strip. PHASE A: a SLOW pan across the panorama (cards stay huge,
   // the illustration flows by). PHASE B: zoom OUT so all N cards lock together in one shot, held.
-  const cardH = 1340;
+  const cardH = 1180; // fits with clear top/bottom margin so card tops are never cut in the pan
   const cardW = Math.round(cardH / CARD_ASPECT);
   const stripW = n * cardW;
   const fitScale = Math.min(1, (1080 * 0.92) / stripW);
