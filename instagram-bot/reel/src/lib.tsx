@@ -86,7 +86,8 @@ export const Stage: React.FC<{ children: React.ReactNode; glowX?: number; glowY?
   const drift2 = Math.cos(frame / 48) * 5;
   const pulse = 0.85 + Math.sin(frame / 24) * 0.15;
   return (
-    <AbsoluteFill style={{ background: BG, fontFamily: SATOSHI, color: INK }}>
+    // textWrap:balance cascades to all text so a wrapped phrase never orphans a single word.
+    <AbsoluteFill style={{ background: BG, fontFamily: SATOSHI, color: INK, ["textWrap" as "whiteSpace"]: "balance" }}>
       <AbsoluteFill style={{ background: `radial-gradient(circle at ${glowX + drift}% ${glowY + drift2}%, rgba(124,92,246,${0.44 * pulse}), rgba(34,211,238,${0.12 * pulse}) 38%, rgba(11,14,20,0) 66%)` }} />
       <AbsoluteFill style={{ background: `radial-gradient(circle at ${30 - drift}% ${78 + drift2}%, rgba(233,75,208,0.16), rgba(11,14,20,0) 50%)` }} />
       {sparkle ? <Sparkles /> : null}
