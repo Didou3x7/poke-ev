@@ -2197,13 +2197,15 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
         for c, rec in zip(facts["chase"], verify):
             if rec.get("display_usd"):
                 c["usd"] = int(round(rec["display_usd"]))
-        # AI-upscale each chase card to MAX (4096px) — keep the full Real-ESRGAN detail (capping to
-        # 1500 threw it away and the cards read soft on slide 2). Only THREE cards here, so the 3-up
-        # rk-tempt row stays well under the Satori memory ceiling (the 1500 cap was for the connected
-        # cover/reveal which load up to SEVEN cards — that one stays medium).
+        # The ripkeep chase cards are modern TEXTURE full-arts (special-illustration / full-art). Real-
+        # ESRGAN is built for ordinary illustration, so on these it MANGLES the holo/texture pattern AND
+        # drops the alpha channel (cv2 IMREAD_COLOR) — the transparent rounded corners turn BLACK. The
+        # original TCGdex "high" scan keeps the correct texture + rounded corners and is already crisp at
+        # the ~300px slide display, so use it AS-IS, no upscale. (Low-res vintage cards still get the
+        # ESRGAN treatment in the connected/grails themes where it genuinely helps.)
         for c in facts["chase"]:
-            c["hd_image"] = upscale_card(c["image"], max_w=4096)
-        log(f"  ripkeep upscaled {sum(1 for c in facts['chase'] if c.get('hd_image'))}/{len(facts['chase'])} chase cards (4096px)")
+            c["hd_image"] = None
+        log("  ripkeep: using original chase scans (no ESRGAN — preserves holo texture + rounded corners)")
         return {"theme": theme, "base": base, "facts": facts, "verify": verify,
                 "keys": [facts["key"]], "api_key": api_key}
 
