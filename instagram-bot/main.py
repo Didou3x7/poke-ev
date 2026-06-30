@@ -300,7 +300,9 @@ def upscale_card(image_url, max_w=4096):
         # Decode the SOURCE first, KEEPING its alpha channel. Modern TCGdex full-arts are die-cut
         # PNGs with transparent rounded corners; the old IMREAD_COLOR dropped that alpha and filled
         # the corners BLACK. We re-attach it after upscaling so the corners stay transparent.
-        src_arr = cv2.imdecode(np.frombuffer(requests.get(src, timeout=60).content, np.uint8), cv2.IMREAD_UNCHANGED)
+        # A browser UA — some product-image CDNs (e.g. tcgplayer-cdn) 403 a bare requests UA.
+        _UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+        src_arr = cv2.imdecode(np.frombuffer(requests.get(src, timeout=60, headers=_UA).content, np.uint8), cv2.IMREAD_UNCHANGED)
         if src_arr is None:
             return None
         alpha = src_arr[:, :, 3] if (src_arr.ndim == 3 and src_arr.shape[2] == 4) else None
@@ -322,7 +324,7 @@ def upscale_card(image_url, max_w=4096):
             method = "lapsrn"
             cache_path = f"ig-cards/{hashlib.md5(f'{src}@{max_w}@{method}@a2'.encode()).hexdigest()}.png"
         if rep:
-            arr = cv2.imdecode(np.frombuffer(requests.get(rep, timeout=60).content, np.uint8), cv2.IMREAD_COLOR)
+            arr = cv2.imdecode(np.frombuffer(requests.get(rep, timeout=60, headers=_UA).content, np.uint8), cv2.IMREAD_COLOR)
             if arr is None:
                 return None
         else:
@@ -708,7 +710,7 @@ def reel_props(theme, facts, brief):
             "verdictRip": rip,
             "verdictWord": brief.get("verdictWord", "RIP IT" if rip else "KEEP IT|SEALED"),
             "reason": brief.get("reason", ""),
-            "booster": _png(facts.get("reel_booster") or facts.get("booster")),
+            "booster": _png(facts["reel_booster"]) if facts.get("reel_booster") else None,
             "chase": [
                 {"name": c["name"], "price": fmt_usd(c["usd"]),
                  "image": _png(c.get("reel_image") or c.get("hd_image") or c["image"]), "rarity": c.get("rarity")}
@@ -826,9 +828,11 @@ def _upscale_reel_cards(theme, facts):
             for c in facts.get("chase", []):
                 c["reel_image"] = None
             log("  ripkeep reel: original chase scans (no upscale — special-illustration cards render true)")
-            if facts.get("booster"):  # the booster IS a product photo (no holo texture) → MAX upscale
-                facts["reel_booster"] = upscale_card(facts["booster"], max_w=4096) or facts.get("booster")
-                log("  ripkeep reel: booster upscaled to 4096px (UHD face-off background)")
+            if facts.get("booster"):  # the booster IS a product photo (no holo texture) → MAX upscale.
+                # Blob URL or None — NEVER fall back to the raw product URL: Remotion's headless browser
+                # can't load tcgplayer-cdn (it 403s / cancels), which CRASHES the whole reel render.
+                facts["reel_booster"] = upscale_card(facts["booster"], max_w=4096)
+                log(f"  ripkeep reel: booster {'upscaled to 4096px' if facts.get('reel_booster') else 'upscale failed — face-off bg omitted'}")
             return
         elif theme == "grails":
             facts["reel_image"] = upscale_card(facts["image"], max_w=4096) or facts.get("hd_image")
