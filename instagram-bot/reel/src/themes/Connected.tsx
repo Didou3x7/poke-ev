@@ -2,7 +2,7 @@
 // Beats: HOOK (fanned hand) → one ULTRA-ZOOM hero per card → THE REVEAL (a slow cinematic pan
 // across the FULL-HEIGHT panorama — the cards stay huge, never shrunk) → CTA. Crossfades only.
 import React from "react";
-import { AbsoluteFill, Easing, Img, interpolate, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Img, interpolate, useCurrentFrame } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 
@@ -33,7 +33,7 @@ import {
 export const C_FADE = 10;
 export const C_HOOK = 96;
 export const C_CARD = 78;
-export const C_REVEAL = 296;
+export const C_REVEAL = 368;
 export const C_OUTRO = 86;
 
 export const connectedFrames = (n: number): number => C_HOOK + n * C_CARD + C_REVEAL + C_OUTRO - C_FADE * (n + 2);
@@ -119,12 +119,18 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const stripW = n * cardW;
   const fitScale = Math.min(1, (1080 * 0.94) / stripW);
   const center = (n - 1) / 2;
-  // A SLOW, near-constant glide across the panorama (NOT blurred — the whole point is to SEE the
-  // artworks join and follow the continuation). Steady velocity with only a soft ease at each end
-  // reads far easier on the eyes than a fast eased pan, which strobes on the high-detail art.
-  const GLIDE = Easing.bezier(0.42, 0, 0.58, 1);
-  const panF = interpolate(frame, [34, 234], [0, n - 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: GLIDE });
-  const zoom = interpolate(frame, [234, 266], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  // SMOOTHEST possible scroll: a TRAPEZOIDAL velocity — a short eased ramp in & out with CONSTANT
+  // velocity through the middle. Constant speed is what the eye tracks most fluidly (no accel/decel
+  // judder), and it's slow, so the per-frame step is small. No blur — the point is to read the
+  // joined art. (Authored at 30fps; constant-velocity is the best fluidity short of a 60fps comp.)
+  const RAMP = 0.18;
+  const vmax = 1 / (1 - RAMP);
+  const x = interpolate(frame, [34, 262], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const glide = x <= RAMP ? (vmax * x * x) / (2 * RAMP)
+    : x < 1 - RAMP ? (vmax * RAMP) / 2 + vmax * (x - RAMP)
+    : 1 - (vmax * (1 - x) * (1 - x)) / (2 * RAMP);
+  const panF = glide * (n - 1);
+  const zoom = interpolate(frame, [262, 296], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
   const f = panF + (center - panF) * zoom;
   const scale = 1 + (fitScale - 1) * zoom;
   const tx = (center - f) * cardW * scale;
@@ -149,9 +155,9 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
         </Rise>
       </div>
       <div style={{ position: "absolute", left: 0, width: "100%", top: CY + halfStrip + 40, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Rise delay={268} style={{ flexDirection: "column", alignItems: "center" }}>
+        <Rise delay={300} style={{ flexDirection: "column", alignItems: "center" }}>
           <div style={{ fontSize: 34, color: MUTE }}>Combined value</div>
-          <MoneyCount value={p.total} delay={270} dur={16} size={138} style={{ marginTop: 2 }} />
+          <MoneyCount value={p.total} delay={302} dur={18} size={138} style={{ marginTop: 2 }} />
         </Rise>
       </div>
       <ProgressDots total={n + 2} step={n + 1} />
