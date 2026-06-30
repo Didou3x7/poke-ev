@@ -373,6 +373,32 @@ export const ContinuityHalo: React.FC = () => {
   );
 };
 
+/** CONTINUITY — ONE set logo rendered at the theme root that TRAVELS: it enters BIG & centred in the
+ *  hook, then glides + shrinks to a small top-right badge by the hook's end and stays there (gently
+ *  floating) for the rest of the reel — a single continuous element instead of per-scene copies.
+ *  `startBig=false` keeps it as the top-right badge throughout (themes with no big hook logo). */
+export const TravelLogo: React.FC<{ src: string | null; hookEnd: number; bigH?: number; startBig?: boolean }> = ({ src, hookEnd, bigH = 168, startBig = true }) => {
+  const frame = useCurrentFrame();
+  const enter = useEnter(2, 16);
+  if (!src) return null;
+  const t = startBig ? interpolate(frame, [hookEnd - 24, hookEnd + 6], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE_IN_OUT }) : 1;
+  const bigX = 540, bigY = 184; // hook hero (centred, matches the hooks' big logo)
+  const badgeX = 912, badgeY = 116, badgeH = 60; // settles into the top-right corner (the per-scene logo spot)
+  const x = bigX + (badgeX - bigX) * t;
+  const y = bigY + (badgeY - bigY) * t;
+  const h = bigH + (badgeH - bigH) * t;
+  const float = Math.sin(frame / 44) * (3 + 2 * (1 - t));
+  const sway = Math.sin(frame / 56) * 2;
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none", zIndex: 46 }}>
+      <div style={{ position: "absolute", left: x, top: y + float, transform: `translate(-50%, -50%) perspective(1000px) rotateY(${sway}deg)`, opacity: enter, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ position: "absolute", inset: "-26px -24px", background: `radial-gradient(ellipse, rgba(124,92,246,${0.3 * (1 - t * 0.55)}), transparent 72%)` }} />
+        <Img src={src} style={{ height: h, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 /** Top-right set logo, faded in. */
 export const SetLogo: React.FC<{ src: string | null }> = ({ src }) => {
   const p = useEnter(4, 14);

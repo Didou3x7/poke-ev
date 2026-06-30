@@ -24,9 +24,9 @@ import {
   ReelProgress,
   Rise,
   SAFE_BOTTOM,
-  SetLogo,
   Stage,
   TitleReveal,
+  TravelLogo,
   usePop,
   CLASH,
   INK,
@@ -82,8 +82,7 @@ const FullCard: React.FC<{ src: string; w: number; delay?: number; shineAngle?: 
 
 const TopId: React.FC<{ p: GrailsProps; delay?: number }> = ({ p, delay = 2 }) => (
   <Rise delay={delay} style={{ position: "absolute", top: 130, width: "100%", flexDirection: "column", alignItems: "center" }}>
-    {p.setLogo ? <Img src={p.setLogo} style={{ height: 54, objectFit: "contain", opacity: 0.95 }} /> : null}
-    <Display size={56} style={{ marginTop: 10, textAlign: "center", maxWidth: 940, display: "block" }}>{p.name}</Display>
+    <Display size={56} style={{ textAlign: "center", maxWidth: 940, display: "block" }}>{p.name}</Display>
     <div style={{ fontSize: 28, letterSpacing: 3, textTransform: "uppercase", color: MUTE, fontFamily: CLASH, marginTop: 4 }}>
       {p.setName}{p.rarity ? ` · ${p.rarity}` : ""}
     </div>
@@ -119,7 +118,6 @@ const Shock: React.FC<{ p: GrailsProps }> = ({ p }) => {
 
 const TheCard: React.FC<{ p: GrailsProps }> = ({ p }) => (
   <Stage glowY={40}>
-    <SetLogo src={p.setLogo} />
     <Rise delay={1} style={{ position: "absolute", top: 142, width: "100%", justifyContent: "center" }}>
       <Kicker style={{ fontSize: 28 }}>{p.cardKicker || "The card"}</Kicker>
     </Rise>
@@ -161,7 +159,6 @@ const Art: React.FC<{ p: GrailsProps }> = ({ p }) => {
     <Stage glowY={40} sparkle={false}>
       <CardView src={p.image} w={w} fx={fx} fy={fy} />
       <AbsoluteFill style={{ opacity: scrimOp, background: "linear-gradient(to top, rgba(11,14,20,0.97) 15%, rgba(11,14,20,0) 42%)" }} />
-      <SetLogo src={p.setLogo} />
       {artist ? (
         <div style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", opacity: labelOp, display: "flex", flexDirection: "column", alignItems: "center" }}>
           <Rise delay={8} style={{ flexDirection: "column", alignItems: "center" }}>
@@ -178,7 +175,6 @@ const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
   const pop = usePop(6, 12);
   return (
     <Stage glowY={42}>
-      <SetLogo src={p.setLogo} />
       <Rise delay={2} style={{ position: "absolute", top: 140, width: "100%", justifyContent: "center" }}>
         <Kicker style={{ fontSize: 30 }}>The odds</Kicker>
       </Rise>
@@ -227,6 +223,7 @@ export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
+      <TravelLogo src={data.setLogo} hookEnd={0} startBig={false} />
       <ContinuityHalo />
       <ReelProgress total={grailsFrames()} segments={5} />
     </AbsoluteFill>

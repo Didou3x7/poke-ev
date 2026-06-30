@@ -20,9 +20,9 @@ import {
   ReelProgress,
   Rise,
   SAFE_BOTTOM,
-  SetLogo,
   Stage,
   TitleReveal,
+  TravelLogo,
   usePop,
   CLASH,
   INK,
@@ -50,18 +50,12 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const cw = Math.min(720, Math.round((530 - ((n - 1) / 2) * spread) / 0.6));
   const ch = Math.round(cw * CARD_ASPECT);
   const rot = Math.min(8, 30 / n);
-  const logoP = usePop(2, 13);
   return (
     <Stage glowY={36}>
-      {/* set LOGO (BIG) + title, near the top — nudged down a touch so it isn't glued to the edge.
-          The logo alone identifies the set (no redundant spelled-out name). */}
+      {/* title near the top — the hero logo is the root TravelLogo (lands above it, then glides away) */}
       <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", paddingTop: 96 }}>
-        {p.setLogo ? (
-          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -26}px) scale(${0.86 + logoP * 0.14})` }}>
-            <div style={{ position: "absolute", inset: "-34px -30px", background: "radial-gradient(ellipse, rgba(124,92,246,0.32), transparent 72%)" }} />
-            <Img src={p.setLogo} style={{ height: 168, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
-          </div>
-        ) : null}
+        {/* the hero logo is the root-level TravelLogo (it lands here, then glides to the corner) */}
+        <div style={{ height: 168 }} />
         <TitleReveal text={p.headline || "They drew one scene."} delay={10} size={134} align="center" maxWidth={950} style={{ marginTop: 22 }} />
       </AbsoluteFill>
       {/* a BIG 3D fanned hand whose TOPS are pinned just under the title (no gap), filling down toward
@@ -91,7 +85,6 @@ const CardScene: React.FC<{ p: ConnectedProps; i: number }> = ({ p, i }) => {
   const n = p.cards.length;
   return (
     <Stage glowY={40}>
-      <SetLogo src={p.setLogo} />
       <Rise delay={1} style={{ position: "absolute", top: 140, width: "100%", justifyContent: "center" }}>
         <Kicker style={{ fontSize: 28 }}>{`Piece ${i + 1} of ${n}`}</Kicker>
       </Rise>
@@ -188,6 +181,7 @@ export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
+      <TravelLogo src={data.setLogo} hookEnd={C_HOOK} />
       <ContinuityHalo />
       <ReelProgress total={connectedFrames(data.cards.length)} segments={data.cards.length + 3} />
     </AbsoluteFill>

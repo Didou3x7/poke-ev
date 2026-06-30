@@ -23,6 +23,7 @@ import {
   SparkBurst,
   Stage,
   TitleReveal,
+  TravelLogo,
   usePop,
   CLASH,
   INK,
@@ -52,16 +53,11 @@ const Hook: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const cw = Math.min(660, Math.round((520 - ((n - 1) / 2) * spread) / 0.6));
   const ch = Math.round(cw * CARD_ASPECT);
   const rot = Math.min(8, 30 / n);
-  const logoP = usePop(2, 13);
   return (
     <Stage glowY={36}>
       <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", paddingTop: 96 }}>
-        {p.setLogo ? (
-          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -26}px) scale(${0.86 + logoP * 0.14})` }}>
-            <div style={{ position: "absolute", inset: "-34px -30px", background: "radial-gradient(ellipse, rgba(124,92,246,0.32), transparent 72%)" }} />
-            <Img src={p.setLogo} style={{ height: 168, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
-          </div>
-        ) : null}
+        {/* hero logo is the root TravelLogo (lands here, then glides to the corner) */}
+        <div style={{ height: 168 }} />
         <TitleReveal text="Rip or keep?" delay={10} size={138} holo align="center" maxWidth={940} style={{ marginTop: 22 }} />
       </AbsoluteFill>
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 1312 - ch, height: ch, perspective: 1700 }}>
@@ -102,18 +98,11 @@ const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const rip = hasRip ? interpolate(frame, [22, 40], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE }) : 1;
   const packFade = hasRip ? interpolate(frame, [44, 64], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : 0;
   const cardStart = hasRip ? 34 : 6;
-  const logoP = usePop(hasRip ? 64 : 2, 13);
   return (
     <Stage glowY={42}>
-      {/* set LOGO + title — fade in AFTER the pack is ripped open */}
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", paddingTop: 530, pointerEvents: "none" }}>
-        {p.setLogo ? (
-          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -20}px) scale(${0.9 + logoP * 0.1})` }}>
-            <div style={{ position: "absolute", inset: "-28px -26px", background: "radial-gradient(ellipse, rgba(124,92,246,0.30), transparent 72%)" }} />
-            <Img src={p.setLogo} style={{ height: 138, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
-          </div>
-        ) : null}
-        <Rise delay={hasRip ? 68 : 4} style={{ marginTop: 16 }}>
+      {/* title — fades in AFTER the pack rips; the set logo is the root TravelLogo badge (top-right) */}
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", paddingTop: 700, pointerEvents: "none" }}>
+        <Rise delay={hasRip ? 68 : 4}>
           <Display size={74} holo style={{ textAlign: "center", maxWidth: 960, display: "block" }}>You're chasing these</Display>
         </Rise>
       </AbsoluteFill>
@@ -262,6 +251,7 @@ export const RipKeep: React.FC<{ data: RipKeepProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
+      <TravelLogo src={data.setLogo} hookEnd={R_HOOK} />
       <ContinuityHalo />
       <ReelProgress total={ripkeepFrames()} segments={5} />
     </AbsoluteFill>
