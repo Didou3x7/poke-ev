@@ -8,7 +8,7 @@
 // `x-telegram-bot-api-secret-token` header on every call — we reject anything else.
 import { NextRequest, NextResponse } from "next/server";
 
-import { publishCarousel, publishReel } from "@/lib/ig/publish";
+import { publishCarousel } from "@/lib/ig/publish";
 import {
   readPlan,
   readState,
@@ -118,16 +118,29 @@ async function publishNow(chatId: string, state: IgState): Promise<void> {
     return;
   }
   await writeState({ ...state, decision: "approve", published: true, ts: nowIso() });
-  await sendMessage(chatId, planIsReel ? "📤 Approved — publishing your Reel now…" : "📤 Approved — publishing now…");
-  try {
-    const { permalink } = planIsReel
-      ? await publishReel(plan.video_url as string, plan.caption, plan.cover_url)
-      : await publishCarousel(plan.slides, plan.caption);
+  if (planIsReel) {
+    // The bot does NOT auto-publish Reels: Instagram's API can't attach native TRENDING audio
+    // (licensing — app-only) and a silent auto-post forfeits the audio boost. DELIVER it for
+    // MANUAL in-app posting instead (the editor adds a trending sound in a couple of taps).
     await sendMessage(
       chatId,
-      (planIsReel ? "✅ Reel published!" : "✅ Published!") +
-        (permalink ? "\n" + permalink : "") +
-        "\n\n(open it to add to your story manually)",
+      "🎬 Reel ready — POST IT IN THE INSTAGRAM APP to add a TRENDING sound (the API can't add " +
+        "Instagram's native trending audio):\n" +
+        "1️⃣ Save the reel video above (the preview) to your phone.\n" +
+        "2️⃣ Instagram → new Reel → pick the video.\n" +
+        "3️⃣ Tap 🎵 Audio → choose a TRENDING sound (the ones with the ↗ arrow).\n" +
+        "4️⃣ Paste the caption ↓ → Share.\n\n" +
+        "(MP4 to re-download: " + plan.video_url + ")\n\n— CAPTION —",
+    );
+    await sendMessage(chatId, plan.caption || "(no caption)");
+    return;
+  }
+  await sendMessage(chatId, "📤 Approved — publishing now…");
+  try {
+    const { permalink } = await publishCarousel(plan.slides, plan.caption);
+    await sendMessage(
+      chatId,
+      "✅ Published!" + (permalink ? "\n" + permalink : "") + "\n\n(open it to add to your story manually)",
     );
   } catch (e) {
     await writeState({ ...state, decision: "approve", published: false, ts: nowIso() });
