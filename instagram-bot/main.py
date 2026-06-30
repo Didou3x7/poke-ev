@@ -3094,6 +3094,17 @@ def blob_state_read():
         return None
 
 
+def blob_plan_read():
+    """Today's publish-minimal plan dict (written by prepare/build), or None."""
+    try:
+        r = _blob_state_node(["get", _BLOB_PLAN_PATH])
+        txt = (r.stdout or "").strip()
+        return json.loads(txt) if txt else None
+    except Exception as exc:  # noqa: BLE001
+        log(f"  blob plan read failed ({exc})")
+        return None
+
+
 def _blob_put_json(pathname, obj):
     import tempfile
 
@@ -3511,6 +3522,25 @@ def do_scheduled():
         raise
 
 
+def do_deliver_reel():
+    """Re-deliver TODAY's already-rendered reel plan to Telegram, at full source quality
+    (📎 document + caption), without re-rendering or rotating. Used to hand the editor the
+    final reel for manual in-app posting with a trending sound."""
+    tg_token, tg_chat = env("TELEGRAM_BOT_TOKEN"), env("TELEGRAM_CHAT_ID")
+    if not (tg_token and tg_chat):
+        log("deliver-reel: Telegram not configured — nothing to deliver")
+        return
+    plan = blob_plan_read()
+    if not plan:
+        notify_error("⚠️ deliver-reel: no plan found in Blob — nothing to deliver.")
+        return
+    if plan.get("format") != "reel" or not plan.get("video_url"):
+        notify_error("⚠️ deliver-reel: today's plan is not a rendered reel (no video_url).")
+        return
+    log(f"deliver-reel: delivering {plan.get('theme')} reel ({plan.get('date')})")
+    publish_reel(plan)
+
+
 def do_reel_test():
     """One-off QA: render ALL THREE themes as Reels and send them to Telegram for review.
     No approval gate, no publish, no history — purely a visual check of the three reel comps."""
@@ -3587,6 +3617,8 @@ def main():
         do_run()
     elif cmd == "reel-test":  # one-off QA: render all 3 themes as Reels, send to Telegram, no publish
         do_reel_test()
+    elif cmd == "deliver-reel":  # re-deliver TODAY's already-rendered reel plan to Telegram (📎 + caption)
+        do_deliver_reel()
     else:  # default (cron) = the Paris-time-routed 2-phase flow
         do_scheduled()
 
