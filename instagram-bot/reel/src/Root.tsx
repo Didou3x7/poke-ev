@@ -34,6 +34,7 @@ const SAMPLE_RIPKEEP: RipKeepProps = {
   theme: "ripkeep",
   setName: "Base Set",
   setLogo: "https://images.pokemontcg.io/base1/logo.png",
+  booster: "https://images.pokemontcg.io/base1/4_hires.png",
   sealed: "$420",
   openEv: "$510",
   gap: "$90",

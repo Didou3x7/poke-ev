@@ -86,15 +86,23 @@ const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const n = p.chase.length;
   // equal cards sized so the whole row fits inside the frame with even margins (never clipped)
   const cw = Math.min(384, Math.floor((1004 - (n - 1) * 16) / n));
+  const logoP = usePop(2, 13);
   return (
     <Stage glowY={42}>
-      <SetLogo src={p.setLogo} />
-      {/* title + cards as ONE centred group (like T1) — a big title sits right above the row, so
-          there's no dead gap between a tiny top label and the cards. */}
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 56, paddingBottom: SAFE_BOTTOM - 90 }}>
-        <Rise delay={2}>
-          <Display size={78} holo style={{ textAlign: "center", maxWidth: 960, display: "block" }}>You're chasing these</Display>
-        </Rise>
+      {/* set LOGO (big) + title + card row as ONE centred group — the set identity sits right above
+          the line, then the cards, so there's no dead gap. */}
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 50, paddingBottom: SAFE_BOTTOM - 90 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}>
+          {p.setLogo ? (
+            <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -22}px) scale(${0.88 + logoP * 0.12})` }}>
+              <div style={{ position: "absolute", inset: "-30px -28px", background: "radial-gradient(ellipse, rgba(124,92,246,0.30), transparent 72%)" }} />
+              <Img src={p.setLogo} style={{ height: 152, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
+            </div>
+          ) : null}
+          <Rise delay={4}>
+            <Display size={76} holo style={{ textAlign: "center", maxWidth: 960, display: "block" }}>You're chasing these</Display>
+          </Rise>
+        </div>
         {/* each chase card flies in on its OWN 3D arc (depth + flip, alternating), then settles */}
         <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", justifyContent: "center", gap: 16, perspective: 1500 }}>
           {p.chase.map((c, i) => {
@@ -135,6 +143,18 @@ const FaceOff: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   return (
     <Stage glowY={40}>
       <SetLogo src={p.setLogo} />
+      {/* UHD booster packs of THIS set, fanned in the background (the sealed product the math is
+          about), held back by a scrim so the numbers stay the hero. */}
+      {p.booster ? (
+        <>
+          <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
+            {[-1, 0, 1].map((k) => (
+              <Img key={k} src={p.booster as string} style={{ position: "absolute", height: 1520, objectFit: "contain", opacity: k === 0 ? 0.26 : 0.18, filter: "drop-shadow(0 30px 80px rgba(0,0,0,0.85))", transform: `translateX(${k * 384}px) translateY(26px) rotate(${k * 9}deg)` }} />
+            ))}
+          </AbsoluteFill>
+          <AbsoluteFill style={{ background: "radial-gradient(72% 58% at 50% 50%, rgba(11,14,20,0.84) 0%, rgba(11,14,20,0.52) 60%, rgba(11,14,20,0.2) 100%)" }} />
+        </>
+      ) : null}
       <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 32 }}>
         <Rise delay={2}>
           <Kicker style={{ fontSize: 28 }}>The math</Kicker>

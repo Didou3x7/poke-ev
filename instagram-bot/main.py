@@ -708,6 +708,7 @@ def reel_props(theme, facts, brief):
             "verdictRip": rip,
             "verdictWord": brief.get("verdictWord", "RIP IT" if rip else "KEEP IT|SEALED"),
             "reason": brief.get("reason", ""),
+            "booster": _png(facts.get("reel_booster") or facts.get("booster")),
             "chase": [
                 {"name": c["name"], "price": fmt_usd(c["usd"]),
                  "image": _png(c.get("reel_image") or c.get("hd_image") or c["image"]), "rarity": c.get("rarity")}
@@ -825,6 +826,9 @@ def _upscale_reel_cards(theme, facts):
             for c in facts.get("chase", []):
                 c["reel_image"] = None
             log("  ripkeep reel: original chase scans (no upscale — special-illustration cards render true)")
+            if facts.get("booster"):  # the booster IS a product photo (no holo texture) → MAX upscale
+                facts["reel_booster"] = upscale_card(facts["booster"], max_w=4096) or facts.get("booster")
+                log("  ripkeep reel: booster upscaled to 4096px (UHD face-off background)")
             return
         elif theme == "grails":
             facts["reel_image"] = upscale_card(facts["image"], max_w=4096) or facts.get("hd_image")
@@ -1628,6 +1632,7 @@ def select_ripkeep(snapshot, names, data_dir: Path, exclude=None):
             "set_id": sid,
             "set_name": set_display_name(names, sid, s.get("episodeId")),
             "logo": s.get("logo"),
+            "booster": _booster_image(s),  # sealed-pack art for the FACE-OFF background (UHD upscaled)
             "pack_ev": pack_ev,
             "packs": packs,
             "open_ev": round(open_ev),

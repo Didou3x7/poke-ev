@@ -21,6 +21,7 @@ export type RipKeepProps = {
   theme: "ripkeep";
   setName: string;
   setLogo: string | null;
+  booster: string | null; // sealed-pack art for the FACE-OFF background (UHD)
   sealed: string;
   openEv: string;
   gap: string;
