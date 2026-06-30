@@ -17,7 +17,7 @@ import {
   type IgState,
   type MediaFormat,
 } from "@/lib/ig/state";
-import { answerCallback, sendMessage, sendVideo, setDecisionLabel } from "@/lib/ig/telegram";
+import { answerCallback, deliverReel, sendMessage, setDecisionLabel } from "@/lib/ig/telegram";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // Vercel Pro — a carousel publish takes ~40s
@@ -125,16 +125,17 @@ async function publishNow(chatId: string, state: IgState): Promise<void> {
     // is re-sent as a native upload (no external link to chase) + the caption to copy/paste.
     await sendMessage(
       chatId,
-      "🎬 Reel prêt — à poster DANS l'app Instagram pour ajouter un son TENDANCE (l'API ne peut " +
-        "pas ajouter l'audio tendance natif d'Instagram) :\n" +
-        "1️⃣ Appuie sur la vidéo ci-dessous → Enregistrer.\n" +
+      "🎬 Reel prêt — à poster DANS l'app Instagram pour le son TENDANCE (l'API ne peut pas " +
+        "ajouter l'audio tendance natif d'Instagram) :\n" +
+        "1️⃣ Enregistre le FICHIER 📎 ci-dessous (qualité source max, jamais recompressé).\n" +
         "2️⃣ Instagram → nouveau Reel → choisis la vidéo.\n" +
         "3️⃣ 🎵 Audio → un son TENDANCE (ceux avec la flèche ↗).\n" +
-        "4️⃣ Colle la caption ↓ → Partager.",
+        "4️⃣ Colle la caption ↓ → Partager.\n\n" +
+        "ℹ️ L'aperçu vidéo = pour regarder. Le FICHIER 📎 = qualité 100% identique à une publication directe.",
     );
     const videoUrl = plan.video_url as string; // planIsReel guarantees it's set
-    const sent = await sendVideo(chatId, videoUrl, "🎬 Reel — appuie pour enregistrer la vidéo");
-    if (!sent) await sendMessage(chatId, "⚠️ Vidéo trop lourde pour l'upload direct — lien : " + videoUrl);
+    const sent = await deliverReel(chatId, videoUrl, "🎬 Reel — fichier source, qualité max");
+    if (!sent) await sendMessage(chatId, "⚠️ Upload direct impossible — lien : " + videoUrl);
     await sendMessage(chatId, "— CAPTION (copie/colle) —");
     await sendMessage(chatId, plan.caption || "(no caption)");
     return;

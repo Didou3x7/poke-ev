@@ -889,7 +889,10 @@ def publish_reel(plan):
         data_bytes = (Path(loc).read_bytes() if loc and os.path.exists(loc)
                       else _download_bytes(plan["video_url"], timeout=120, tries=3))
         tg_send_video(tg_token, tg_chat, data_bytes,
-                      caption=f"🎬 {theme} reel — READY TO POST (add a trending sound in-app)")
+                      caption=f"🎬 {theme} reel — aperçu (regarder)")
+        # the PRISTINE original — saved & reposted, identical quality to a direct upload
+        tg_send_document(tg_token, tg_chat, data_bytes,
+                         caption=f"📎 {theme} reel — FICHIER SOURCE (qualité max, à enregistrer)")
     except Exception as exc:  # noqa: BLE001 — fall back to the hosted link
         log(f"  reel delivery: video send failed ({exc}); sending the link instead")
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
@@ -897,10 +900,11 @@ def publish_reel(plan):
     # 2) how-to (trending audio is app-only) + the caption to paste
     how = ("👆 POST IN THE INSTAGRAM APP to use a TRENDING sound (the API can't add Instagram's "
            "native trending audio):\n"
-           "1️⃣ Save the video above to your phone.\n"
+           "1️⃣ Save the FILE 📎 above (source quality, never recompressed).\n"
            "2️⃣ Instagram → new Reel → pick the video.\n"
            "3️⃣ Tap 🎵 Audio → choose a TRENDING sound (the ones with the ↗ arrow).\n"
-           "4️⃣ Paste the caption ↓ → Share.\n\n— CAPTION —")
+           "4️⃣ Paste the caption ↓ → Share.\n\n"
+           "ℹ️ The video = to watch. The FILE 📎 = 100% identical to a direct post.\n\n— CAPTION —")
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": how})
     tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": (plan.get("caption") or "(no caption)")[:4000]})
     log("✓ reel delivered to Telegram for manual posting with a trending sound")
@@ -2761,6 +2765,23 @@ def tg_send_video(token, chat_id, mp4_bytes, caption="", width=1080, height=1920
     data = r.json()
     if not data.get("ok"):
         raise RuntimeError(f"telegram sendVideo: {data}")
+
+
+def tg_send_document(token, chat_id, mp4_bytes, caption=""):
+    """Send the MP4 as a DOCUMENT — Telegram never re-encodes documents, so the editor saves the
+    EXACT source bytes (bit-for-bit identical to a direct Graph-API upload). The sendVideo above is
+    only a watchable preview (its streaming copy may be transcoded); THIS is the file to repost."""
+    import requests
+
+    r = requests.post(
+        f"https://api.telegram.org/bot{token}/sendDocument",
+        data={"chat_id": chat_id, "caption": caption[:1000], "disable_content_type_detection": "true"},
+        files={"document": ("reel.mp4", mp4_bytes, "video/mp4")},
+        timeout=180,
+    )
+    data = r.json()
+    if not data.get("ok"):
+        raise RuntimeError(f"telegram sendDocument: {data}")
 
 
 def _preview_keyboard(is_reel):
