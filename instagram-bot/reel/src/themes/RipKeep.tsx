@@ -19,7 +19,6 @@ import {
   ProgressDots,
   Rise,
   SAFE_BOTTOM,
-  SetLogo,
   SparkBurst,
   Stage,
   TitleReveal,
@@ -142,20 +141,22 @@ const FaceOff: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   );
   return (
     <Stage glowY={40}>
-      <SetLogo src={p.setLogo} />
-      {/* UHD booster packs of THIS set, fanned in the background (the sealed product the math is
-          about), held back by a scrim so the numbers stay the hero. */}
+      {/* THREE boosters of this set, fanned at the TOP in full UHD (visible — NOT a dark backdrop),
+          then the math sits below them. */}
       {p.booster ? (
-        <>
-          <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-            {[-1, 0, 1].map((k) => (
-              <Img key={k} src={p.booster as string} style={{ position: "absolute", height: 1520, objectFit: "contain", opacity: k === 0 ? 0.26 : 0.18, filter: "drop-shadow(0 30px 80px rgba(0,0,0,0.85))", transform: `translateX(${k * 384}px) translateY(26px) rotate(${k * 9}deg)` }} />
-            ))}
-          </AbsoluteFill>
-          <AbsoluteFill style={{ background: "radial-gradient(72% 58% at 50% 50%, rgba(11,14,20,0.84) 0%, rgba(11,14,20,0.52) 60%, rgba(11,14,20,0.2) 100%)" }} />
-        </>
+        <div style={{ position: "absolute", top: 92, left: 0, width: "100%", height: 470, display: "flex", justifyContent: "center", perspective: 1400 }}>
+          {[-1, 0, 1].map((k, i) => {
+            const pop = usePop(4 + i * 5, 13);
+            const inv = 1 - pop;
+            return (
+              <div key={k} style={{ position: "absolute", transformOrigin: "top center", filter: `blur(${inv * 2.4}px)`, transform: `translateX(${k * 156}px) translateY(${inv * -130}px) rotate(${k * 12}deg) scale(${0.8 + pop * 0.2})`, opacity: interpolate(pop, [0, 0.3], [0, 1]) }}>
+                <Img src={p.booster as string} style={{ height: 436, objectFit: "contain", borderRadius: 12, filter: "drop-shadow(0 26px 64px rgba(0,0,0,0.72))" }} />
+              </div>
+            );
+          })}
+        </div>
       ) : null}
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 32 }}>
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 30, paddingTop: 470 }}>
         <Rise delay={2}>
           <Kicker style={{ fontSize: 28 }}>The math</Kicker>
         </Rise>
