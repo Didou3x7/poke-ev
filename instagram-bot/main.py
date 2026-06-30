@@ -871,23 +871,40 @@ def carousel_plan_of(plan):
 
 
 def publish_reel(plan):
-    """Publish the rendered MP4 as an Instagram Reel (media_type=REELS). Video containers take
-    longer to FINISH than image ones, so the poll budget is larger."""
-    token = env("META_ACCESS_TOKEN", required=True)
-    ig = env("INSTAGRAM_BUSINESS_ID") or ig_user_id(token)
-    if not plan.get("video_url"):
-        raise RuntimeError("publish_reel: plan has no video_url")
-    params = {"media_type": "REELS", "video_url": plan["video_url"],
-              "caption": plan["caption"], "share_to_feed": "true"}
-    if plan.get("cover_url"):
-        params["cover_url"] = plan["cover_url"]
-    cid = container(ig, token, **params)
-    log(f"  reel container {cid} — waiting for video processing…")
-    wait_finished(cid, token, tries=60, delay=5)  # ~5 min budget; video encode is slow
-    media_id = publish_media(ig, token, cid)
-    log(f"✓ reel published: {media_id}")
-    notify_published(plan, media_id, token)
-    return media_id
+    """DELIVER the finished Reel to the editor on Telegram to post IN-APP with a TRENDING sound —
+    the bot deliberately does NOT auto-publish Reels via the Graph API. Reason: the API cannot
+    attach Instagram's native trending audio (licensing — that's app-only), and auto-publishing a
+    SILENT reel forfeits the audio-discovery boost that's the whole point of a Reel. So the editor
+    posts it manually (a couple of taps) with a real trending sound. The caller still records history
+    afterwards, so the set/theme is marked used and dedup/rotation is unaffected."""
+    tg_token = env("TELEGRAM_BOT_TOKEN")
+    tg_chat = env("TELEGRAM_CHAT_ID")
+    if not (tg_token and tg_chat):
+        log("  reel delivery: no Telegram creds — nothing to deliver")
+        return "manual"
+    theme = (plan.get("theme") or "reel").upper()
+    # 1) the final MP4 to save & repost
+    try:
+        loc = plan.get("mp4_local")
+        data_bytes = (Path(loc).read_bytes() if loc and os.path.exists(loc)
+                      else _download_bytes(plan["video_url"], timeout=120, tries=3))
+        tg_send_video(tg_token, tg_chat, data_bytes,
+                      caption=f"🎬 {theme} reel — READY TO POST (add a trending sound in-app)")
+    except Exception as exc:  # noqa: BLE001 — fall back to the hosted link
+        log(f"  reel delivery: video send failed ({exc}); sending the link instead")
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": f"🎬 {theme} reel MP4 (save it):\n{plan.get('video_url', '')}"})
+    # 2) how-to (trending audio is app-only) + the caption to paste
+    how = ("👆 POST IN THE INSTAGRAM APP to use a TRENDING sound (the API can't add Instagram's "
+           "native trending audio):\n"
+           "1️⃣ Save the video above to your phone.\n"
+           "2️⃣ Instagram → new Reel → pick the video.\n"
+           "3️⃣ Tap 🎵 Audio → choose a TRENDING sound (the ones with the ↗ arrow).\n"
+           "4️⃣ Paste the caption ↓ → Share.\n\n— CAPTION —")
+    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": how})
+    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": (plan.get("caption") or "(no caption)")[:4000]})
+    log("✓ reel delivered to Telegram for manual posting with a trending sound")
+    return "manual"
 
 
 # -------------------------------- summary --------------------------------- #
@@ -3346,7 +3363,9 @@ def do_publish_pending(final=True):
                 or st2.get("decision") != "approve"):
             log("state changed during the publish decision — deferring to the next tick")
             return
-        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "📤 Approved — publishing now…"})
+        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+               "text": ("📤 Approved — preparing your reel to post in-app (with a trending sound)…"
+                        if plan.get("format") == "reel" else "📤 Approved — publishing now…")})
         try:
             publish_to_instagram(plan)
         except Exception as exc:  # noqa: BLE001
