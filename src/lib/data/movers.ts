@@ -90,7 +90,10 @@ export async function readMovers(): Promise<MoversData> {
     const { blobs } = await list({ prefix: MOVERS_PATH, limit: 1 });
     const b = blobs.find((x) => x.pathname === MOVERS_PATH);
     if (!b) return EMPTY_MOVERS;
-    const r = await fetch(`${b.url}?v=${encodeURIComponent(b.uploadedAt.toString())}`, { cache: "no-store" });
+    // Version-busted URL (?v=<uploadedAt>) → content is immutable per-URL, so force-cache is safe and
+    // a new upload still lands instantly via its new URL. no-store here would bail /tendances and
+    // /en/trends (both `revalidate = 3600` ISR pages that read this) from static to dynamic.
+    const r = await fetch(`${b.url}?v=${encodeURIComponent(b.uploadedAt.toString())}`, { cache: "force-cache" });
     if (!r.ok) return EMPTY_MOVERS;
     return (await r.json()) as MoversData;
   } catch {

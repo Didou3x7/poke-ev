@@ -48,7 +48,12 @@ export async function readSeoTargets(): Promise<SeoTargets> {
     const { blobs } = await list({ prefix: TARGETS_PATH, limit: 1 });
     const b = blobs.find((x) => x.pathname === TARGETS_PATH);
     if (!b) return EMPTY_TARGETS;
-    const r = await fetch(`${b.url}?v=${encodeURIComponent(b.uploadedAt.toString())}`, { cache: "no-store" });
+    // The URL is version-busted with ?v=<uploadedAt>, so its content is immutable per-URL — a new
+    // upload yields a new URL. Use force-cache (NOT no-store): a no-store fetch here runs inside
+    // generateMetadata during STATIC rendering and bails every set/card/home/trends page from
+    // static to dynamic at runtime (the "Page changed from static to dynamic" error flood). The
+    // versioned URL makes force-cache correct — fresh data still lands the moment the blob changes.
+    const r = await fetch(`${b.url}?v=${encodeURIComponent(b.uploadedAt.toString())}`, { cache: "force-cache" });
     if (!r.ok) return EMPTY_TARGETS;
     const data = (await r.json()) as SeoTargets;
     cache = { at: Date.now(), data };
