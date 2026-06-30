@@ -68,7 +68,7 @@ const SAMPLE_GRAILS: GrailsProps = {
   sceneHeadline: "That roar",
   sceneBody: "The pose every collector|knows by heart.",
   image: "https://images.pokemontcg.io/base1/4_hires.png",
-  booster: null,
+  booster: "https://images.pokemontcg.io/base1/logo.png",
 };
 
 export const RemotionRoot: React.FC = () => {

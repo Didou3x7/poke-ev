@@ -15,32 +15,28 @@ import {
   ContinuityHalo,
   Display,
   EASE,
-  EASE_IN_OUT,
   GlowBurst,
-  HoloBar,
   Kicker,
   MoneyCount,
   Outro,
-  ReelProgress,
   Rise,
   SAFE_BOTTOM,
   Stage,
-  TitleReveal,
   TravelLogo,
   usePop,
   CLASH,
   INK,
   MUTE,
   SATOSHI,
+  holoText,
 } from "../lib";
 
 export const G_FADE = 10;
-export const G_REVEAL = 118; // open on the FULL card + price
-export const G_ART = 204; // zoom in → slow track left→right (artist + hidden detail)
+export const G_GRAIL = 300; // ONE continuous scene: full card → zoom in (no cut) → slow track L→R
 export const G_ODDS = 100;
 export const G_OUTRO = 84;
 
-export const grailsFrames = (): number => G_REVEAL + G_ART + G_ODDS + G_OUTRO - G_FADE * 3;
+export const grailsFrames = (): number => G_GRAIL + G_ODDS + G_OUTRO - G_FADE * 2;
 
 const CARD_ASPECT = 1.395;
 const GLOW = "drop-shadow(0 40px 90px rgba(0,0,0,0.85)) drop-shadow(0 0 80px rgba(124,92,246,0.55))";
@@ -61,67 +57,32 @@ const CardView: React.FC<{ src: string; w: number; fx: number; fy: number }> = (
   );
 };
 
-/** The full card, fitted to the frame, with a slam-in and a (variable) shine sweep. */
-const FullCard: React.FC<{ src: string; w: number; delay?: number; shineAngle?: number }> = ({ src, w, delay = 0, shineAngle = 115 }) => {
+/** ONE continuous take (NO crossfade): open on the WHOLE card + price → SMOOTH zoom into the art →
+ *  SLOW constant-velocity track left→right, captioning the artist, then a hidden detail. Same card
+ *  throughout, fy holds the subject in view, no blur (read the art), each caption held long to read. */
+const TheGrail: React.FC<{ p: GrailsProps }> = ({ p }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const s = spring({ frame: frame - delay, fps, config: { damping: 15, mass: 0.9, stiffness: 120 } });
-  const op = interpolate(s, [0, 0.4], [0, 1]);
-  const scale = interpolate(s, [0, 1], [0.86, 1.0]);
-  const sweep = interpolate(frame - delay, [14, 54], [-1.3, 1.7], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  return (
-    <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform: `scale(${scale})`, opacity: op }}>
-      <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: GLOW }} />
-      <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
-        <div style={{ position: "absolute", top: "-12%", bottom: "-12%", left: `${sweep * 100}%`, width: "40%", background: `linear-gradient(${shineAngle}deg, transparent, rgba(255,255,255,0.42), transparent)`, transform: "skewX(-20deg)" }} />
-      </div>
-    </div>
-  );
-};
-
-/** OPEN on the FULL card (whole, slammed in) with the grail price — the museum-piece reveal. */
-const Reveal: React.FC<{ p: GrailsProps }> = ({ p }) => {
+  const D = G_GRAIL;
+  const holdEnd = 76; // show the full card + price
+  const zoomEnd = 128; // zoomed into the art
   const lines = splitLines(p.shockHeadline);
-  return (
-    <Stage glowY={40}>
-      <Rise delay={1} style={{ position: "absolute", top: 120, width: "100%", justifyContent: "center" }}>
-        <div style={{ fontSize: 28, letterSpacing: 3, textTransform: "uppercase", color: MUTE, fontFamily: CLASH }}>
-          {p.setName}{p.rarity ? ` · ${p.rarity}` : ""}
-        </div>
-      </Rise>
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 96, paddingBottom: SAFE_BOTTOM - 64 }}>
-        <FullCard src={p.image} w={560} delay={0} shineAngle={115} />
-        <Rise delay={18} style={{ flexDirection: "column", alignItems: "center", marginTop: 24 }}>
-          {lines.map((l, i) => (
-            <TitleReveal key={i} text={l} delay={20 + i * 4} size={54} holo={i === lines.length - 1} align="center" maxWidth={920} />
-          ))}
-          <MoneyCount value={p.price} delay={30} dur={26} size={126} style={{ marginTop: 8 }} />
-        </Rise>
-      </AbsoluteFill>
-    </Stage>
-  );
-};
-
-/** ZOOM into the art (centre → left), then TRACK left→right at a SLOW constant velocity to read the
- *  detail — artist first, then a hidden detail. fy holds the subject in view; no blur (read the art). */
-const ArtTour: React.FC<{ p: GrailsProps }> = ({ p }) => {
-  const frame = useCurrentFrame();
-  const D = G_ART;
-  const zoomEnd = 52;
-  // zoom from the full card into the art, drifting toward the LEFT so the track can sweep right.
-  const w = interpolate(frame, [0, zoomEnd], [FULL_W, 1880], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
-  // constant-velocity (trapezoidal) glide → smooth, no judder on the detailed art.
+  // ONE CardView the whole time: full card (whole, centred) → zoom into the art (drift left) → track.
+  const w = frame < holdEnd ? 920 : interpolate(frame, [holdEnd, zoomEnd], [920, 1900], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const fy = frame < holdEnd ? 0.5 : interpolate(frame, [holdEnd, zoomEnd], [0.5, 0.3], { easing: EASE });
   const RAMP = 0.16;
   const vmax = 1 / (1 - RAMP);
-  const px = interpolate(frame, [zoomEnd + 6, D - 6], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const px = interpolate(frame, [zoomEnd + 4, D - 8], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const glide = px <= RAMP ? (vmax * px * px) / (2 * RAMP) : px < 1 - RAMP ? (vmax * RAMP) / 2 + vmax * (px - RAMP) : 1 - (vmax * (1 - px) * (1 - px)) / (2 * RAMP);
-  const fx = frame < zoomEnd ? interpolate(frame, [0, zoomEnd], [0.5, 0.3], { easing: EASE }) : 0.3 + 0.44 * glide;
-  const mid = zoomEnd + (D - zoomEnd) * 0.5;
-  const artistOp = interpolate(frame, [zoomEnd + 2, zoomEnd + 18, mid - 4, mid + 16], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const sceneOp = interpolate(frame, [mid + 10, mid + 26, D], [0, 1, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const fx = frame < holdEnd ? 0.5 : frame < zoomEnd ? interpolate(frame, [holdEnd, zoomEnd], [0.5, 0.3], { easing: EASE }) : 0.3 + 0.44 * glide;
+  // overlays
+  const idOp = interpolate(frame, [4, 16, holdEnd - 6, holdEnd + 8], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const priceOp = interpolate(frame, [10, 24, holdEnd - 6, holdEnd + 8], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const split = zoomEnd + (D - zoomEnd) * 0.5;
+  const artistOp = interpolate(frame, [zoomEnd + 10, zoomEnd + 26, split - 4, split + 18], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const sceneOp = interpolate(frame, [split + 14, split + 30, D - 4], [0, 1, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const artist = p.craftHeadline || p.artist || "";
   const cap = (kicker: string, head: string, body: string, op: number, headSize: number) => (
-    <div style={{ position: "absolute", bottom: SAFE_BOTTOM, width: "100%", opacity: op, display: "flex", flexDirection: "column", alignItems: "center", padding: "0 80px" }}>
+    <div style={{ position: "absolute", bottom: SAFE_BOTTOM - 60, width: "100%", opacity: op, display: "flex", flexDirection: "column", alignItems: "center", padding: "0 80px" }}>
       <Kicker style={{ fontSize: 28 }}>{kicker}</Kicker>
       <Display size={headSize} style={{ marginTop: 10, textAlign: "center", maxWidth: 940, display: "block" }}>{head}</Display>
       {splitLines(body).slice(0, 2).map((l, i) => (
@@ -131,8 +92,17 @@ const ArtTour: React.FC<{ p: GrailsProps }> = ({ p }) => {
   );
   return (
     <Stage glowY={40} sparkle={false}>
-      <CardView src={p.image} w={w} fx={fx} fy={0.3} />
+      <CardView src={p.image} w={w} fx={fx} fy={fy} />
       <AbsoluteFill style={{ background: "linear-gradient(to top, rgba(11,14,20,0.97) 16%, rgba(11,14,20,0) 44%)" }} />
+      <div style={{ position: "absolute", top: 120, width: "100%", textAlign: "center", opacity: idOp }}>
+        <div style={{ fontSize: 28, letterSpacing: 3, textTransform: "uppercase", color: MUTE, fontFamily: CLASH }}>{p.setName}{p.rarity ? ` · ${p.rarity}` : ""}</div>
+      </div>
+      <div style={{ position: "absolute", bottom: SAFE_BOTTOM - 70, width: "100%", opacity: priceOp, display: "flex", flexDirection: "column", alignItems: "center", padding: "0 80px" }}>
+        {lines.map((l, i) => (
+          <div key={i} style={{ fontFamily: CLASH, fontWeight: 700, fontSize: 52, lineHeight: 1.05, textAlign: "center", ...(i === lines.length - 1 ? holoText(116) : { color: INK }) }}>{l}</div>
+        ))}
+        <MoneyCount value={p.price} delay={14} dur={24} size={120} style={{ marginTop: 8 }} />
+      </div>
       {artist ? cap(p.craftKicker || "The artist", artist, p.craftBody, artistOp, 64) : null}
       {p.sceneHeadline ? cap(p.sceneKicker || "Hidden detail", p.sceneHeadline, p.sceneBody, sceneOp, 56) : null}
     </Stage>
@@ -140,27 +110,28 @@ const ArtTour: React.FC<{ p: GrailsProps }> = ({ p }) => {
 };
 
 const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
-  const pop = usePop(6, 12);
   return (
-    <Stage glowY={42}>
-      <Rise delay={2} style={{ position: "absolute", top: 140, width: "100%", justifyContent: "center" }}>
+    <Stage glowY={44}>
+      {/* the odds line at the TOP — nothing below the fan */}
+      <Rise delay={2} style={{ position: "absolute", top: 134, width: "100%", flexDirection: "column", alignItems: "center", padding: "0 70px" }}>
         <Kicker style={{ fontSize: 30 }}>The odds</Kicker>
+        {splitLines(p.oddsLine).map((l, i) => (
+          <Display key={i} size={56} holo style={{ marginTop: 10, textAlign: "center", maxWidth: 940, display: "block" }}>{l}</Display>
+        ))}
       </Rise>
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingBottom: SAFE_BOTTOM - 40 }}>
-        <div style={{ position: "relative", transform: `translateY(${(1 - pop) * 70}px) scale(${0.9 + pop * 0.1})`, opacity: pop, display: "flex" }}>
-          <GlowBurst delay={6} />
-          {p.booster ? (
-            <Img src={p.booster} style={{ height: 760, objectFit: "contain", filter: "drop-shadow(0 40px 90px rgba(34,211,238,0.4))" }} />
-          ) : (
-            <Img src={p.image} style={{ width: 470, height: "auto", display: "block", borderRadius: 16, filter: "drop-shadow(0 40px 90px rgba(34,211,238,0.5))" }} />
-          )}
-        </div>
-        <Rise delay={16} style={{ flexDirection: "column", alignItems: "center", marginTop: 30 }}>
-          <HoloBar w={170} delay={16} />
-          {splitLines(p.oddsLine).map((line, i) => (
-            <div key={i} style={{ fontSize: 44, color: INK, fontFamily: SATOSHI, marginTop: 16, textAlign: "center" }}>{line}</div>
-          ))}
-        </Rise>
+      {/* a FAN of boosters, BIG & centred, highlighted in the THEME (holo) colour — and that's it */}
+      <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", perspective: 1500 }}>
+        <GlowBurst delay={6} color="rgba(124,92,246,0.55)" size="-18%" />
+        {[-1, 0, 1].map((k, i) => {
+          const pop = usePop(4 + i * 6, 13);
+          const inv = 1 - pop;
+          if (!p.booster) return k === 0 ? <Img key={k} src={p.image} style={{ position: "absolute", width: 500, height: "auto", borderRadius: 16, filter: "drop-shadow(0 30px 80px rgba(124,92,246,0.6)) drop-shadow(0 0 70px rgba(34,211,238,0.5))", opacity: pop }} /> : null;
+          return (
+            <div key={k} style={{ position: "absolute", transformOrigin: "bottom center", filter: `blur(${inv * 2}px)`, transform: `translateY(${inv * 100}px) translateX(${k * 152}px) rotate(${k * 12}deg) scale(${0.82 + pop * 0.18})`, opacity: interpolate(pop, [0, 0.3], [0, 1]) }}>
+              <Img src={p.booster} style={{ height: 760, objectFit: "contain", filter: "drop-shadow(0 30px 70px rgba(124,92,246,0.7)) drop-shadow(0 0 70px rgba(34,211,238,0.55))" }} />
+            </div>
+          );
+        })}
       </AbsoluteFill>
     </Stage>
   );
@@ -171,12 +142,8 @@ export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
   return (
     <AbsoluteFill>
     <TransitionSeries>
-      <TransitionSeries.Sequence durationInFrames={G_REVEAL}>
-        <Reveal p={data} />
-      </TransitionSeries.Sequence>
-      {fadeT}
-      <TransitionSeries.Sequence durationInFrames={G_ART}>
-        <ArtTour p={data} />
+      <TransitionSeries.Sequence durationInFrames={G_GRAIL}>
+        <TheGrail p={data} />
       </TransitionSeries.Sequence>
       {fadeT}
       <TransitionSeries.Sequence durationInFrames={G_ODDS}>
@@ -189,7 +156,6 @@ export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
     </TransitionSeries>
       <TravelLogo src={data.setLogo} hookEnd={0} startBig={false} />
       <ContinuityHalo />
-      <ReelProgress total={grailsFrames()} segments={4} />
     </AbsoluteFill>
   );
 };

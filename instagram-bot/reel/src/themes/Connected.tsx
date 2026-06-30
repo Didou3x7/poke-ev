@@ -17,7 +17,6 @@ import {
   Kicker,
   MoneyCount,
   Outro,
-  ReelProgress,
   Rise,
   SAFE_BOTTOM,
   Stage,
@@ -183,7 +182,6 @@ export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
     </TransitionSeries>
       <TravelLogo src={data.setLogo} hookEnd={C_HOOK} />
       <ContinuityHalo />
-      <ReelProgress total={connectedFrames(data.cards.length)} segments={data.cards.length + 3} />
     </AbsoluteFill>
   );
 };

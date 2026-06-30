@@ -17,7 +17,6 @@ import {
   Kicker,
   MoneyCount,
   Outro,
-  ReelProgress,
   Rise,
   SAFE_BOTTOM,
   SparkBurst,
@@ -253,7 +252,6 @@ export const RipKeep: React.FC<{ data: RipKeepProps }> = ({ data }) => {
     </TransitionSeries>
       <TravelLogo src={data.setLogo} hookEnd={R_HOOK} />
       <ContinuityHalo />
-      <ReelProgress total={ripkeepFrames()} segments={5} />
     </AbsoluteFill>
   );
 };
