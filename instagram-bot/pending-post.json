@@ -80,7 +80,11 @@
         "name": "Oshawott"
       }
     ],
-    "qa_warnings": []
+    "qa_warnings": [],
+    "format": "reel",
+    "video_url": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-reels/2026-06-30-ripkeep.mp4",
+    "cover_url": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-reels/2026-06-30-ripkeep-cover.png",
+    "mp4_local": "/home/runner/work/poke-ev/poke-ev/instagram-bot/reel/out/ripkeep.mp4"
   },
   "ctx": {
     "theme": "ripkeep",
@@ -104,21 +108,24 @@
           "image": "https://assets.tcgdex.net/en/sv/sv10.5w/172/high.webp",
           "usd": 518,
           "rarity": "black-white-rare",
-          "hd_image": null
+          "hd_image": null,
+          "reel_image": null
         },
         {
           "name": "Reshiram ex",
           "image": "https://assets.tcgdex.net/en/sv/sv10.5w/173/high.webp",
           "usd": 488,
           "rarity": "black-white-rare",
-          "hd_image": null
+          "hd_image": null,
+          "reel_image": null
         },
         {
           "name": "Oshawott",
           "image": "https://assets.tcgdex.net/en/sv/sv10.5w/105/high.webp",
           "usd": 93,
           "rarity": "illustration-rare",
-          "hd_image": null
+          "hd_image": null,
+          "reel_image": null
         }
       ]
     },
@@ -156,8 +163,9 @@
     ],
     "keys": [
       "white-flare"
-    ]
+    ],
+    "api_key": "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"
   },
   "handled_seq": 0,
-  "handled_format_seq": 0
+  "handled_format_seq": 1
 }
