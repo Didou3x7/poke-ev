@@ -177,22 +177,22 @@ const FaceOff: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   );
   return (
     <Stage glowY={40}>
-      {/* THREE boosters of this set, fanned at the TOP in full UHD (visible — NOT a dark backdrop),
-          then the math sits below them. */}
-      {p.booster ? (
-        <div style={{ position: "absolute", top: 92, left: 0, width: "100%", height: 470, display: "flex", justifyContent: "center", perspective: 1400 }}>
-          {[-1, 0, 1].map((k, i) => {
-            const pop = usePop(4 + i * 5, 13);
-            const inv = 1 - pop;
-            return (
-              <div key={k} style={{ position: "absolute", transformOrigin: "top center", filter: `blur(${inv * 2.4}px)`, transform: `translateX(${k * 156}px) translateY(${inv * -130}px) rotate(${k * 12}deg) scale(${0.8 + pop * 0.2})`, opacity: interpolate(pop, [0, 0.3], [0, 1]) }}>
-                <Img src={p.booster as string} style={{ height: 436, objectFit: "contain", borderRadius: 12, filter: "drop-shadow(0 26px 64px rgba(0,0,0,0.72))" }} />
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 30, paddingTop: 470 }}>
+      {/* ONE centred group — the booster fan sits right ABOVE the math so the packs and the numbers
+          (the focus) read as a single proportional, centred composition with no dead gap. */}
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 26 }}>
+        {p.booster ? (
+          <div style={{ position: "relative", width: "100%", height: 318, display: "flex", justifyContent: "center", perspective: 1400 }}>
+            {[-1, 0, 1].map((k, i) => {
+              const pop = usePop(4 + i * 5, 13);
+              const inv = 1 - pop;
+              return (
+                <div key={k} style={{ position: "absolute", top: 0, transformOrigin: "top center", filter: `blur(${inv * 2}px)`, transform: `translateX(${k * 132}px) translateY(${inv * -110}px) rotate(${k * 11}deg) scale(${0.82 + pop * 0.18})`, opacity: interpolate(pop, [0, 0.3], [0, 1]) }}>
+                  <Img src={p.booster as string} style={{ height: 288, objectFit: "contain", borderRadius: 12, filter: "drop-shadow(0 22px 56px rgba(0,0,0,0.72))" }} />
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
         <Rise delay={2}>
           <Kicker style={{ fontSize: 28 }}>The math</Kicker>
         </Rise>
