@@ -11,8 +11,6 @@ import { PopularSearches } from "@/components/PopularSearches";
  * EUR is the canonical market (FR is the primary surface); the headline is the % move.
  */
 
-export const revalidate = 3600;
-
 const STR = {
   fr: {
     h1: "Tendances du jour",

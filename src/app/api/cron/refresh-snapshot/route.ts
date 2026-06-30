@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { revalidatePath } from "next/cache";
 import { buildTcgdexSnapshot } from "@/lib/data/build-tcgdex";
 import { mergeSealedPrices } from "@/lib/data/sealed-merge";
 import { TcgcsvProvider } from "@/lib/data/tcgcsv";
@@ -166,10 +165,16 @@ export async function GET(request: NextRequest) {
   let moversCount = 0;
   try {
     const movers = computeMovers(prior, snapshot);
-    await writeMovers(movers);
     moversCount = movers.gainers.length + movers.losers.length;
-    revalidatePath("/tendances");
-    revalidatePath("/en/trends");
+    // Never overwrite a good day's movers with an EMPTY diff — that happens on a cold-start prior
+    // or a timed-out build that refreshed no set, and would blank /tendances + /en/trends. Keep
+    // yesterday's real movers instead. (The pages are force-dynamic, so they serve the freshly
+    // written movers.json on the very next request — no revalidatePath needed.)
+    if (moversCount > 0) {
+      await writeMovers(movers);
+    } else {
+      logs.push("movers: empty diff — kept previous movers.json");
+    }
     const top = [...movers.gainers.slice(0, 3), ...movers.losers.slice(0, 3)];
     if (top.length) {
       const fmt = (i: MoverItem) =>
