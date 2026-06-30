@@ -817,8 +817,15 @@ def _upscale_reel_cards(theme, facts):
             for it in facts.get("items", []):
                 it["reel_image"] = upscale_card(it["image"], max_w=4096) or it.get("hd_image")
         elif theme == "ripkeep":
+            # The ripkeep chase are modern SPECIAL-ILLUSTRATION / texture full-arts (Victini & Reshiram
+            # in White Flare, etc.). AI upscalers render their holo texture "not normal" — ESRGAN
+            # hallucinates the foil, LapSRN smears it + can halo the re-composited rounded corners. The
+            # original TCGdex scan is already crisp at the reel's display size (≤660px), so use it AS-IS
+            # so these cards look TRUE. (Same call as the carousel.)
             for c in facts.get("chase", []):
-                c["reel_image"] = upscale_card(c["image"], max_w=4096) or c.get("hd_image")
+                c["reel_image"] = None
+            log("  ripkeep reel: original chase scans (no upscale — special-illustration cards render true)")
+            return
         elif theme == "grails":
             facts["reel_image"] = upscale_card(facts["image"], max_w=4096) or facts.get("hd_image")
             if facts.get("booster"):

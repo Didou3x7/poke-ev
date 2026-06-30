@@ -11,6 +11,7 @@ import { splitLines } from "../props";
 import {
   CardArt,
   Display,
+  EASE,
   GlowBurst,
   Kicker,
   MoneyCount,
@@ -19,6 +20,7 @@ import {
   Rise,
   SAFE_BOTTOM,
   SetLogo,
+  SparkBurst,
   Stage,
   TitleReveal,
   usePop,
@@ -112,26 +114,36 @@ const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
 };
 
 const FaceOff: React.FC<{ p: RipKeepProps }> = ({ p }) => {
+  const frame = useCurrentFrame();
   const evWins = p.verdictRip;
-  const row = (label: string, value: string, win: boolean, delay: number) => (
-    <Rise delay={delay} style={{ flexDirection: "column", alignItems: "center" }}>
+  // The two values CHARGE IN from opposite sides and clash in the middle; the winner keeps a glow +
+  // a soft pulse so the eye lands on it. Far more dynamic than two static rows of numbers.
+  const sealedIn = interpolate(frame, [8, 32], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const evIn = interpolate(frame, [36, 60], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const pulse = 1 + Math.sin(frame / 11) * 0.018 * interpolate(frame, [60, 78], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const row = (label: string, value: string, win: boolean, prog: number, fromLeft: boolean, delay: number) => (
+    <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", opacity: prog, transform: `translateX(${(1 - prog) * (fromLeft ? -680 : 680)}px) scale(${win ? pulse : 1})` }}>
+      {win ? <GlowBurst delay={delay + 4} color={evWins ? "rgba(34,211,238,0.5)" : "rgba(245,158,11,0.5)"} size="-55%" /> : null}
       <div style={{ fontSize: 34, letterSpacing: 2, color: win ? INK : MUTE, fontFamily: CLASH, textTransform: "uppercase" }}>{label}</div>
-      <MoneyCount value={value} delay={delay + 4} dur={26} size={win ? 176 : 130} holo={win} style={win ? {} : { color: MUTE }} />
-    </Rise>
+      <MoneyCount value={value} delay={delay} dur={24} size={win ? 188 : 126} holo={win} style={win ? {} : { color: MUTE }} />
+    </div>
   );
   return (
     <Stage glowY={40}>
       <SetLogo src={p.setLogo} />
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 38 }}>
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 32 }}>
         <Rise delay={2}>
           <Kicker style={{ fontSize: 28 }}>The math</Kicker>
         </Rise>
-        {row("Sealed price", p.sealed, !evWins, 8)}
-        <div style={{ fontSize: 40, color: MUTE, fontFamily: CLASH }}>vs</div>
-        {row("If you rip it", p.openEv, evWins, 22)}
-        <Rise delay={44} style={{ marginTop: 12 }}>
-          <div style={{ fontSize: 36, color: evWins ? "#34D399" : "#F59E0B", fontFamily: CLASH }}>
-            {evWins ? `+${p.gap} in your favour` : `${p.gap} lost on average`}
+        {row("Sealed price", p.sealed, !evWins, sealedIn, true, 12)}
+        <div style={{ position: "relative", fontSize: 50, color: MUTE, fontFamily: CLASH, fontWeight: 700 }}>
+          <GlowBurst delay={34} color="rgba(233,75,208,0.65)" size="-130%" />
+          vs
+        </div>
+        {row("If you rip it", p.openEv, evWins, evIn, false, 40)}
+        <Rise delay={66} style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 40, color: evWins ? "#34D399" : "#F59E0B", fontFamily: CLASH, fontWeight: 700 }}>
+            {evWins ? `▲  +${p.gap} in your favour` : `▼  ${p.gap} lost on average`}
           </div>
         </Rise>
       </AbsoluteFill>
@@ -144,11 +156,11 @@ const Verdict: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const frame = useCurrentFrame();
   const pop = usePop(6, 10, 160);
   const grad = p.verdictRip ? RIP : KEEP;
-  const flash = interpolate(frame, [4, 12, 26], [0, 0.55, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const flash = interpolate(frame, [4, 12, 30], [0, 0.62, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const words = splitLines(p.verdictWord);
   const reason = splitLines(p.reason);
   return (
-    <Stage glowY={46} sparkle={false}>
+    <Stage glowY={46}>
       <AbsoluteFill style={{ background: grad, opacity: flash }} />
       <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 80, textAlign: "center" }}>
         <Rise delay={2}>
@@ -156,6 +168,7 @@ const Verdict: React.FC<{ p: RipKeepProps }> = ({ p }) => {
         </Rise>
         <div style={{ position: "relative", transform: `scale(${0.6 + pop * 0.4})`, marginTop: 24, display: "flex", flexDirection: "column", alignItems: "center" }}>
           <GlowBurst delay={6} color={p.verdictRip ? "rgba(52,211,153,0.7)" : "rgba(245,158,11,0.7)"} size="-60%" />
+          <SparkBurst delay={10} count={20} spread={460} />
           {words.map((w, i) => (
             <div key={i} style={{ fontFamily: CLASH, fontWeight: 700, fontSize: 176, lineHeight: 0.94, letterSpacing: -3, color: "transparent", backgroundImage: grad, backgroundClip: "text", WebkitBackgroundClip: "text" }}>{w}</div>
           ))}
