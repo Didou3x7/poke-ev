@@ -31,6 +31,11 @@ on:
         description: 'Force a specific set for the GRAILS (T3) post — features that set''s top chase card (blank = auto)'
         type: string
         default: ''
+      theme:
+        description: 'reel-test only: render a SINGLE theme (blank = all three)'
+        type: choice
+        default: ''
+        options: ['', connected, ripkeep, grails]
 
 permissions:
   contents: write
@@ -79,6 +84,7 @@ jobs:
           TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
           POKEEV_RK_SET:         ${{ github.event.inputs.set }}
           POKEEV_GRAIL_SET:      ${{ github.event.inputs.grail }}
+          POKEEV_REEL_ONLY:      ${{ github.event.inputs.theme }}
           POKEEV_DATA_DIR:       ${{ github.workspace }}/data
           POKEEV_IMAGE_BASE_URL: https://pokeev.com
           TOP_N_CARDS:           '5'

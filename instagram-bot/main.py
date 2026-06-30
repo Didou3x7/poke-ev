@@ -3458,11 +3458,16 @@ def do_reel_test():
     snapshot = load_snapshot(data_dir)
     names = load_set_names(data_dir)
     today = datetime.now(timezone.utc).date().isoformat()
+    # Optional single-theme filter (POKEEV_REEL_ONLY=connected|ripkeep|grails) so a theme-by-theme
+    # review round re-renders ONLY the theme being iterated — blank = all three.
+    only = env("POKEEV_REEL_ONLY", "").strip().lower()
+    themes = [only] if only in ROTATION else ROTATION
     if tg_token and tg_chat:
+        label = themes[0].upper() if len(themes) == 1 else "T1/T2/T3"
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-               "text": "🧪 REEL TEST — rendering T1/T2/T3 as Reels for review. NOTHING will be "
+               "text": f"🧪 REEL TEST — rendering {label} as Reel(s) for review. NOTHING will be "
                        "published; just reply with your feedback on each."})
-    for theme in ROTATION:
+    for theme in themes:
         try:
             ctx = prepare_theme(theme, data_dir, base, names, snapshot, set(), api_key)
             if not ctx:
