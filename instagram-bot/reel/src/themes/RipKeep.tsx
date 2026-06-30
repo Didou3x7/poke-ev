@@ -85,28 +85,32 @@ const Hook: React.FC<{ p: RipKeepProps }> = ({ p }) => {
 const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const n = p.chase.length;
   // equal cards sized so the whole row fits inside the frame with even margins (never clipped)
-  const cw = Math.min(360, Math.floor((948 - (n - 1) * 20) / n));
+  const cw = Math.min(384, Math.floor((1004 - (n - 1) * 16) / n));
   return (
     <Stage glowY={42}>
       <SetLogo src={p.setLogo} />
-      <Rise delay={2} style={{ position: "absolute", top: 132, width: "100%", justifyContent: "center" }}>
-        <Kicker style={{ fontSize: 28 }}>You're chasing these</Kicker>
-      </Rise>
-      {/* each chase card flies in on its OWN 3D arc (depth + flip, alternating), then settles */}
-      <AbsoluteFill style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 20, perspective: 1500 }}>
-        {p.chase.map((c, i) => {
-          const s = usePop(6 + i * 7, 13);
-          const inv = 1 - s;
-          const flip = i % 2 === 0 ? 1 : -1;
-          const entry = `translateZ(${inv * -720}px) rotateY(${inv * flip * 72}deg) rotateX(${inv * 18}deg)`;
-          return (
-            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", transformOrigin: "center bottom", filter: `blur(${inv * 2.6}px)`, transform: `${entry} translateY(${inv * 70}px) scale(${0.82 + s * 0.18})`, opacity: interpolate(s, [0, 0.3], [0, 1]) }}>
-              <CardArt src={c.image} w={cw} />
-              <div style={{ marginTop: 18, fontSize: 32, color: INK, fontFamily: SATOSHI }}>{c.name}</div>
-              <div style={{ marginTop: 2, fontSize: 50, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
-            </div>
-          );
-        })}
+      {/* title + cards as ONE centred group (like T1) — a big title sits right above the row, so
+          there's no dead gap between a tiny top label and the cards. */}
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 56, paddingBottom: SAFE_BOTTOM - 90 }}>
+        <Rise delay={2}>
+          <Display size={78} holo style={{ textAlign: "center", maxWidth: 960, display: "block" }}>You're chasing these</Display>
+        </Rise>
+        {/* each chase card flies in on its OWN 3D arc (depth + flip, alternating), then settles */}
+        <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", justifyContent: "center", gap: 16, perspective: 1500 }}>
+          {p.chase.map((c, i) => {
+            const s = usePop(8 + i * 7, 13);
+            const inv = 1 - s;
+            const flip = i % 2 === 0 ? 1 : -1;
+            const entry = `translateZ(${inv * -720}px) rotateY(${inv * flip * 72}deg) rotateX(${inv * 18}deg)`;
+            return (
+              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", transformOrigin: "center bottom", filter: `blur(${inv * 2.6}px)`, transform: `${entry} translateY(${inv * 70}px) scale(${0.82 + s * 0.18})`, opacity: interpolate(s, [0, 0.3], [0, 1]) }}>
+                <CardArt src={c.image} w={cw} />
+                <div style={{ marginTop: 18, fontSize: 32, color: INK, fontFamily: SATOSHI }}>{c.name}</div>
+                <div style={{ marginTop: 2, fontSize: 52, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
+              </div>
+            );
+          })}
+        </div>
       </AbsoluteFill>
       <ProgressDots total={4} step={1} />
     </Stage>
