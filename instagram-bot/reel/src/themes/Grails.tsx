@@ -12,6 +12,7 @@ import { fade } from "@remotion/transitions/fade";
 import type { GrailsProps } from "../props";
 import { splitLines } from "../props";
 import {
+  BrandMark,
   Display,
   EASE,
   EASE_IN_OUT,
@@ -208,6 +209,7 @@ const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
 export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
   const fadeT = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: G_FADE })} />;
   return (
+    <AbsoluteFill>
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={G_SHOCK}>
         <Shock p={data} />
@@ -229,5 +231,7 @@ export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
+      <BrandMark />
+    </AbsoluteFill>
   );
 };

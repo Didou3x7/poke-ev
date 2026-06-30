@@ -8,11 +8,13 @@ import { fade } from "@remotion/transitions/fade";
 
 import type { ConnectedProps } from "../props";
 import {
+  BrandMark,
   CardArt,
   CardHero,
   Display,
   EASE,
   EASE_IN_OUT,
+  GlowBurst,
   HoloBar,
   Kicker,
   MoneyCount,
@@ -68,6 +70,7 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
           the safe zone. Each card flies in from deep space on its OWN arc (no two alike) with a touch
           of motion blur, then settles into a splayed, dimensional hand. */}
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 1312 - ch, height: ch, perspective: 1700 }}>
+        <GlowBurst delay={40} color="rgba(124,92,246,0.4)" size="-18%" />
         {p.cards.map((c, i) => {
           const t = i - (n - 1) / 2;
           const pop = usePop(15 + i * 5, 14);
@@ -159,6 +162,7 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
 export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
   const fadeT = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: C_FADE })} />;
   return (
+    <AbsoluteFill>
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={C_HOOK}>
         <Hook p={data} />
@@ -180,5 +184,7 @@ export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
+      <BrandMark />
+    </AbsoluteFill>
   );
 };

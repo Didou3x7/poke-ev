@@ -79,6 +79,48 @@ export const GlowBurst: React.FC<{ delay?: number; color?: string; size?: string
   return <div style={{ position: "absolute", inset: size, borderRadius: "50%", background: `radial-gradient(circle, ${color}, transparent 62%)`, transform: `scale(${0.35 + p * 1.2})`, opacity: op, pointerEvents: "none" }} />;
 };
 
+/** An expanding stroked RING that bursts outward on impact — punches a card landing. */
+export const ImpactRing: React.FC<{ delay?: number; color?: string; radius?: number }> = ({ delay = 0, color = "rgba(150,120,255,0.95)", radius = 30 }) => {
+  const frame = useCurrentFrame();
+  const t = frame - delay;
+  if (t < 0 || t > 30) return null;
+  const p = interpolate(t, [0, 28], [0, 1], { easing: EASE });
+  const op = interpolate(t, [0, 5, 28], [0, 0.85, 0]);
+  return <div style={{ position: "absolute", inset: "6%", borderRadius: radius, border: "4px solid", borderColor: color, transform: `scale(${0.66 + p * 1.7})`, opacity: op, pointerEvents: "none" }} />;
+};
+
+/** A burst of holo sparks flung outward from the centre on impact — energy on a card landing. */
+export const SparkBurst: React.FC<{ delay?: number; count?: number; spread?: number }> = ({ delay = 0, count = 14, spread = 260 }) => {
+  const frame = useCurrentFrame();
+  const t = frame - delay;
+  if (t < 0 || t > 32) return null;
+  const p = interpolate(t, [0, 32], [0, 1], { easing: EASE });
+  const op = interpolate(t, [0, 6, 32], [0, 1, 0]);
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+      {Array.from({ length: count }).map((_, i) => {
+        const ang = (i / count) * Math.PI * 2 + random(`sa${i}`) * 0.6;
+        const dist = (spread * 0.5 + random(`sd${i}`) * spread) * p;
+        const sz = 4 + random(`ss${i}`) * 7;
+        return <div key={i} style={{ position: "absolute", left: "50%", top: "50%", width: sz, height: sz, borderRadius: "50%", background: i % 2 ? "#a78bfa" : "#67e8f9", transform: `translate(${Math.cos(ang) * dist}px, ${Math.sin(ang) * dist}px)`, opacity: op, boxShadow: "0 0 12px rgba(124,92,246,0.95)" }} />;
+      })}
+    </div>
+  );
+};
+
+/** Persistent @pokeev wordmark — bottom-centre on EVERY scene of EVERY reel (always-on branding). */
+export const BrandMark: React.FC = () => {
+  const frame = useCurrentFrame();
+  const op = interpolate(frame, [4, 18], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  return (
+    <div style={{ position: "absolute", bottom: 100, left: 0, width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 12, pointerEvents: "none", zIndex: 60, opacity: op }}>
+      <div style={{ width: 9, height: 9, borderRadius: 999, backgroundImage: HOLO }} />
+      <div style={{ fontFamily: CLASH, fontWeight: 700, fontSize: 38, letterSpacing: 2, ...holoText(116) }}>pokéev</div>
+      <div style={{ width: 9, height: 9, borderRadius: 999, backgroundImage: HOLO }} />
+    </div>
+  );
+};
+
 /** The dark-holo stage: base, a slowly drifting holo aura, sparkles, grain, vignette. */
 export const Stage: React.FC<{ children: React.ReactNode; glowX?: number; glowY?: number; sparkle?: boolean }> = ({ children, glowX = 50, glowY = 42, sparkle = true }) => {
   const frame = useCurrentFrame();
@@ -259,41 +301,50 @@ export const HoloFoil: React.FC<{ shift: number; radius?: number; intensity?: nu
 export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo?: number; shine?: boolean; variant?: number }> = ({ src, w = 900, delay = 0, kenTo = 1.05, shine = true, variant = 0 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  // Weighty spring → the card arrives with mass and settles (premium, not a cheap bounce).
-  const s = spring({ frame: frame - delay, fps, config: { damping: 17, mass: 1.15, stiffness: 118 } });
+  // Punchy spring with a touch of OVERSHOOT → the card arrives with real impact, then settles.
+  const s = spring({ frame: frame - delay, fps, config: { damping: 13, mass: 1, stiffness: 116 } });
   const inv = 1 - s;
   const ken = interpolate(frame - delay, [6, 150], [1.0, kenTo], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
-  const op = interpolate(s, [0, 0.28], [0, 1]);
-  // FIVE genuinely-3D entrances (real perspective + depth) — no two consecutive cards animate the
-  // same. Each `t3d` converges to nothing as the spring settles, leaving only the living float.
+  const op = interpolate(s, [0, 0.22], [0, 1]);
+  // FIVE BIG, genuinely-3D entrances (deep perspective + a full spin) — no two consecutive alike.
+  // Each `t3d` converges to nothing as the spring settles, leaving only the living float.
   const v = ((variant % 5) + 5) % 5;
   let t3d = "";
   let origin = "center center";
-  if (v === 0) t3d = `rotateY(${inv * 94}deg) translateZ(${inv * -180}px)`;                                              // card TURN — flips in from the right edge
-  else if (v === 1) { t3d = `rotateX(${inv * -92}deg) translateY(${inv * -120}px)`; origin = "center top"; }              // SWING down on a top hinge
-  else if (v === 2) t3d = `translateZ(${inv * -1100}px) rotateZ(${inv * -18}deg)`;                                        // flies in from DEEP space, untwisting
-  else if (v === 3) t3d = `rotateY(${inv * 48}deg) rotateX(${inv * 32}deg) translateX(${inv * -320}px) translateY(${inv * 210}px)`; // 3D CORNER tumble from bottom-left
-  else t3d = `rotateY(${inv * -94}deg) translateZ(${inv * -180}px)`;                                                      // card TURN — flips in from the left edge
-  // A gentle, living 3D float once settled — the "hovering hologram" premium feel.
-  const sway = Math.sin((frame - delay) / 40) * 1.8 * s;
-  const lift = Math.cos((frame - delay) / 52) * 1.1 * s;
+  if (v === 0) t3d = `rotateY(${inv * 132}deg) translateZ(${inv * -280}px) translateX(${inv * 160}px)`;                   // big card TURN sweeping in from the right
+  else if (v === 1) { t3d = `rotateX(${inv * -118}deg) translateY(${inv * -170}px)`; origin = "center top"; }             // hard SWING down on a top hinge
+  else if (v === 2) t3d = `translateZ(${inv * -1500}px) rotateZ(${inv * -360}deg)`;                                       // deep-space BARREL ROLL (full 360°)
+  else if (v === 3) t3d = `rotateY(${inv * 64}deg) rotateX(${inv * 44}deg) translateX(${inv * -440}px) translateY(${inv * 300}px)`; // big 3D CORNER tumble
+  else t3d = `rotateY(${inv * -132}deg) translateZ(${inv * -280}px) translateX(${inv * -160}px)`;                         // big card TURN sweeping in from the left
+  // A living 3D float once settled — the "hovering hologram" premium feel.
+  const sway = Math.sin((frame - delay) / 40) * 1.9 * s;
+  const lift = Math.cos((frame - delay) / 52) * 1.2 * s;
   const transform = `perspective(1500px) ${t3d} rotateY(${sway}deg) rotateX(${lift}deg) scale(${ken})`;
-  const blur = inv * 3.6; // MOTION BLUR while the card flies fast, clears as it settles
-  // Specular highlight tracks the tilt: bright & wide while the card is still angled (catching the
-  // light as it turns), then sweeps clean. Direction/angle/width differ per card.
+  const blur = inv * 5; // strong MOTION BLUR while the card flies fast, clears as it settles
+  // Specular highlight tracks the tilt: bright & wide while the card is still angled, then sweeps clean.
   const dir = v % 2 === 0 ? 1 : -1;
-  const sweep = interpolate(frame - delay, [8, 52], dir > 0 ? [-1.4, 1.8] : [1.8, -1.4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const gloss = interpolate(s, [0, 0.7], [0.66, 0.4], { extrapolateRight: "clamp" });
-  const holoShift = -24 + sway * 7 + Math.sin((frame - delay) / 28) * 10; // foil shimmers with the float
+  const sweep = interpolate(frame - delay, [6, 50], dir > 0 ? [-1.4, 1.8] : [1.8, -1.4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const gloss = interpolate(s, [0, 0.7], [0.78, 0.42], { extrapolateRight: "clamp" });
+  const holoShift = -24 + sway * 7 + Math.sin((frame - delay) / 28) * 11; // foil shimmers with the float
+  const impact = delay + 16; // the card SLAMS home ~here → fire the impact FX
+  const rayOp = s * (0.4 + 0.3 * Math.sin((frame - delay) / 18)) * 0.8;
   return (
-    <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform, transformOrigin: origin, opacity: op, willChange: "transform" }}>
-      <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: `${CARD_GLOW} blur(${blur}px)` }} />
-      <HoloFoil shift={holoShift} intensity={0.2} />
-      {shine ? (
-        <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
-          <div style={{ position: "absolute", top: "-14%", bottom: "-14%", left: `${sweep * 100}%`, width: `${36 + (v % 3) * 10}%`, background: `linear-gradient(${100 + v * 16}deg, transparent, rgba(255,255,255,${gloss}), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
-        </div>
-      ) : null}
+    <div style={{ position: "relative", width: w, lineHeight: 0 }}>
+      {/* god-ray light bloom behind the card */}
+      <div style={{ position: "absolute", inset: "-26% -42%", background: "radial-gradient(ellipse at center, rgba(124,92,246,0.4), rgba(34,211,238,0.14) 42%, transparent 66%)", opacity: rayOp, pointerEvents: "none" }} />
+      <div style={{ position: "relative", display: "block", transform, transformOrigin: origin, opacity: op, willChange: "transform" }}>
+        <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: `${CARD_GLOW} blur(${blur}px)` }} />
+        <HoloFoil shift={holoShift} intensity={0.22} />
+        {shine ? (
+          <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
+            <div style={{ position: "absolute", top: "-14%", bottom: "-14%", left: `${sweep * 100}%`, width: `${36 + (v % 3) * 10}%`, background: `linear-gradient(${100 + v * 16}deg, transparent, rgba(255,255,255,${gloss}), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
+          </div>
+        ) : null}
+      </div>
+      {/* the landing: flash + shockwave ring + spark burst */}
+      <GlowBurst delay={impact} color="rgba(124,92,246,0.6)" />
+      <ImpactRing delay={impact} />
+      <SparkBurst delay={impact} />
     </div>
   );
 };

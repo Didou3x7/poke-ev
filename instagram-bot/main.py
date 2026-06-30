@@ -793,8 +793,11 @@ def render_reel(theme, props):
     mp4 = out / f"{theme}.mp4"
     if mp4.exists():
         mp4.unlink()
+    # MAX quality encode: --crf 16 is near-visually-lossless H.264 (default is 18) so the holo/3D
+    # detail survives IG's re-compression; --jpeg-quality 100 keeps the intermediate frames pristine.
     r = _run_remotion(["render", "src/index.ts", comp, str(mp4),
-                       f"--props={pf}", "--log=error", "--concurrency=2"], timeout=1800)
+                       f"--props={pf}", "--log=error", "--concurrency=2",
+                       "--crf=16", "--jpeg-quality=100"], timeout=1800)
     if r.returncode != 0 or not mp4.exists():
         raise RuntimeError(f"remotion render failed: {((r.stderr or '') + (r.stdout or ''))[:500]}")
     cover = out / f"{theme}-cover.png"
