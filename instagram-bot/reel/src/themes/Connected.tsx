@@ -45,37 +45,41 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const n = p.cards.length;
   // BIG cards that ALWAYS fit inside the 9:16 frame: the fan's outer extent is bounded to the
   // safe width so the side cards are never clipped, whatever the card count.
-  const spread = Math.min(120, 440 / Math.max(n - 1, 1));
-  const cw = Math.min(620, Math.round((520 - ((n - 1) / 2) * spread) / 0.6));
+  const spread = Math.min(110, 440 / Math.max(n - 1, 1));
+  const cw = Math.min(660, Math.round((520 - ((n - 1) / 2) * spread) / 0.6));
   const ch = Math.round(cw * CARD_ASPECT);
   const rot = Math.min(7, 26 / n);
   const logoP = usePop(2, 13);
   return (
-    <Stage glowY={40}>
-      {/* logo · BIG title · fan, stacked TIGHT and vertically centred — the cards sit right under the
-          title (no dead gap between them); the leftover space becomes balanced top/bottom margins. */}
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 56, gap: 28 }}>
-        {/* the set LOGO alone identifies the set — no redundant spelled-out name cluttering the frame */}
+    <Stage glowY={36}>
+      {/* the set LOGO (BIG) + title, anchored at the TOP — so the cards below never creep up and
+          hide them. The logo alone identifies the set (no redundant spelled-out name). */}
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", paddingTop: 58 }}>
         {p.setLogo ? (
-          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -24}px)` }}>
-            <div style={{ position: "absolute", inset: "-28px -26px", background: "radial-gradient(ellipse, rgba(124,92,246,0.30), transparent 72%)" }} />
-            <Img src={p.setLogo} style={{ height: 116, objectFit: "contain", filter: "drop-shadow(0 6px 18px rgba(0,0,0,0.75))" }} />
+          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -26}px) scale(${0.86 + logoP * 0.14})` }}>
+            <div style={{ position: "absolute", inset: "-34px -30px", background: "radial-gradient(ellipse, rgba(124,92,246,0.32), transparent 72%)" }} />
+            <Img src={p.setLogo} style={{ height: 168, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
           </div>
         ) : null}
-        <TitleReveal text={p.headline || "They drew one scene."} delay={10} size={142} align="center" maxWidth={960} />
-        {/* the fanned hand, sized exactly to the card height so it has no internal slack */}
-        <div style={{ position: "relative", width: "100%", height: ch }}>
-          {p.cards.map((c, i) => {
-            const t = i - (n - 1) / 2;
-            const pop = usePop(16 + i * 4, 13);
-            return (
-              <div key={i} style={{ position: "absolute", left: "50%", bottom: 0, transformOrigin: "bottom center", transform: `translateX(-50%) translateX(${t * spread}px) translateY(${(1 - pop) * 150}px) rotate(${t * rot * pop}deg) scale(${0.72 + pop * 0.28})`, opacity: pop }}>
-                <CardArt src={c.image} w={cw} />
-              </div>
-            );
-          })}
-        </div>
+        <TitleReveal text={p.headline || "They drew one scene."} delay={10} size={138} align="center" maxWidth={960} style={{ marginTop: 22 }} />
       </AbsoluteFill>
+      {/* a BIG 3D fanned hand filling the LOWER frame — each card flies in from depth on its OWN arc
+          (depth + flip/tumble, no two alike), then settles into a splayed, dimensional hand. */}
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: SAFE_BOTTOM - 40, height: ch, perspective: 1700 }}>
+        {p.cards.map((c, i) => {
+          const t = i - (n - 1) / 2;
+          const pop = usePop(15 + i * 5, 14);
+          const inv = 1 - pop;
+          const flip = i % 2 === 0 ? 1 : -1;
+          const entry = `translateZ(${inv * -780}px) rotateY(${inv * flip * 76}deg) rotateX(${inv * 22}deg) translateY(${inv * 120}px)`;
+          const restY = -t * 9; // cards turn slightly toward the centre → real fanned-hand depth
+          return (
+            <div key={i} style={{ position: "absolute", left: "50%", bottom: 0, transformOrigin: "bottom center", transform: `translateX(-50%) translateX(${t * spread}px) ${entry} rotateZ(${t * rot}deg) rotateY(${restY}deg) scale(${0.74 + pop * 0.26})`, opacity: interpolate(pop, [0, 0.3], [0, 1]) }}>
+              <CardArt src={c.image} w={cw} />
+            </div>
+          );
+        })}
+      </div>
     </Stage>
   );
 };

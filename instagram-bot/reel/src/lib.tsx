@@ -250,28 +250,36 @@ export const CardArt: React.FC<{ src: string; w: number; radius?: number; style?
 export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo?: number; shine?: boolean; variant?: number }> = ({ src, w = 900, delay = 0, kenTo = 1.05, shine = true, variant = 0 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const s = spring({ frame: frame - delay, fps, config: { damping: 15, mass: 0.9, stiffness: 125 } });
+  // Weighty spring → the card arrives with mass and settles (premium, not a cheap bounce).
+  const s = spring({ frame: frame - delay, fps, config: { damping: 17, mass: 1.15, stiffness: 118 } });
   const inv = 1 - s;
   const ken = interpolate(frame - delay, [6, 150], [1.0, kenTo], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
-  const op = interpolate(s, [0, 0.35], [0, 1]);
-  // VARY the entrance per card (no two consecutive cards animate the same): slam, slide-right,
-  // rise, slide-left, flip. All converge to identity as the spring settles.
+  const op = interpolate(s, [0, 0.28], [0, 1]);
+  // FIVE genuinely-3D entrances (real perspective + depth) — no two consecutive cards animate the
+  // same. Each `t3d` converges to nothing as the spring settles, leaving only the living float.
   const v = ((variant % 5) + 5) % 5;
-  const entry =
-    v === 1 ? `translateX(${inv * 420}px) rotate(${inv * 9}deg) scale(${1 + inv * 0.05})`
-    : v === 2 ? `translateY(${inv * 340}px) scale(${1 - inv * 0.12})`
-    : v === 3 ? `translateX(${inv * -420}px) rotate(${inv * -9}deg) scale(${1 + inv * 0.05})`
-    : v === 4 ? `perspective(1600px) rotateY(${inv * -72}deg) scale(${1 - inv * 0.04})`
-    : `scale(${1 + inv * 0.32})`;
-  // VARY the shine too — direction, angle, skew and width differ per card so no two are identical.
+  let t3d = "";
+  let origin = "center center";
+  if (v === 0) t3d = `rotateY(${inv * 94}deg) translateZ(${inv * -180}px)`;                                              // card TURN — flips in from the right edge
+  else if (v === 1) { t3d = `rotateX(${inv * -92}deg) translateY(${inv * -120}px)`; origin = "center top"; }              // SWING down on a top hinge
+  else if (v === 2) t3d = `translateZ(${inv * -1100}px) rotateZ(${inv * -18}deg)`;                                        // flies in from DEEP space, untwisting
+  else if (v === 3) t3d = `rotateY(${inv * 48}deg) rotateX(${inv * 32}deg) translateX(${inv * -320}px) translateY(${inv * 210}px)`; // 3D CORNER tumble from bottom-left
+  else t3d = `rotateY(${inv * -94}deg) translateZ(${inv * -180}px)`;                                                      // card TURN — flips in from the left edge
+  // A gentle, living 3D float once settled — the "hovering hologram" premium feel.
+  const sway = Math.sin((frame - delay) / 40) * 1.8 * s;
+  const lift = Math.cos((frame - delay) / 52) * 1.1 * s;
+  const transform = `perspective(1500px) ${t3d} rotateY(${sway}deg) rotateX(${lift}deg) scale(${ken})`;
+  // Specular highlight tracks the tilt: bright & wide while the card is still angled (catching the
+  // light as it turns), then sweeps clean. Direction/angle/width differ per card.
   const dir = v % 2 === 0 ? 1 : -1;
-  const sweepV = interpolate(frame - delay, [16, 54], dir > 0 ? [-1.4, 1.7] : [1.7, -1.4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const sweep = interpolate(frame - delay, [8, 52], dir > 0 ? [-1.4, 1.8] : [1.8, -1.4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const gloss = interpolate(s, [0, 0.7], [0.66, 0.4], { extrapolateRight: "clamp" });
   return (
-    <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform: `${entry} scale(${ken})`, opacity: op }}>
+    <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform, transformOrigin: origin, opacity: op, willChange: "transform" }}>
       <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: CARD_GLOW }} />
       {shine ? (
         <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
-          <div style={{ position: "absolute", top: "-12%", bottom: "-12%", left: `${sweepV * 100}%`, width: `${38 + (v % 3) * 9}%`, background: `linear-gradient(${102 + v * 15}deg, transparent, rgba(255,255,255,0.44), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
+          <div style={{ position: "absolute", top: "-14%", bottom: "-14%", left: `${sweep * 100}%`, width: `${36 + (v % 3) * 10}%`, background: `linear-gradient(${100 + v * 16}deg, transparent, rgba(255,255,255,${gloss}), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
         </div>
       ) : null}
     </div>
