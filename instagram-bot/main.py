@@ -300,8 +300,10 @@ def upscale_card(image_url, max_w=4096):
         # Decode the SOURCE first, KEEPING its alpha channel. Modern TCGdex full-arts are die-cut
         # PNGs with transparent rounded corners; the old IMREAD_COLOR dropped that alpha and filled
         # the corners BLACK. We re-attach it after upscaling so the corners stay transparent.
-        # A browser UA — some product-image CDNs (e.g. tcgplayer-cdn) 403 a bare requests UA.
-        _UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+        # A browser UA + Referer — tcgplayer-cdn (booster product images) 403s a bare requests UA and
+        # hotlink-protects without a tcgplayer.com Referer.
+        _UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+               "Referer": "https://www.tcgplayer.com/"}
         src_arr = cv2.imdecode(np.frombuffer(requests.get(src, timeout=60, headers=_UA).content, np.uint8), cv2.IMREAD_UNCHANGED)
         if src_arr is None:
             return None
@@ -1798,11 +1800,13 @@ def _odds_for_card(snapshot_set, rarity):
 
 
 def _tcg_hires(url):
-    """TCGplayer CDN serves a tiny `_200w` thumbnail by default; strip the size suffix to
-    request the FULL-resolution product image (a much better source for the booster upscale).
-    For old sets the original may itself be small, but for newer products this is far bigger."""
+    """TCGplayer CDN serves a tiny `_200w` thumbnail by default. Request a LARGE fixed size that the
+    CDN actually serves (`_in_1000x1000`) — a far better source for the booster upscale. NOTE: the
+    BARE/stripped URL 403s on newer products (e.g. White Flare), so never strip to it; normalise any
+    existing size suffix to the 1000×1000 variant instead."""
     if url and "tcgplayer-cdn.tcgplayer.com" in url:
-        return re.sub(r"_(?:\d+w|in_\d+x\d+)\.(jpg|png|webp)$", r".\1", url)
+        bare = re.sub(r"_(?:\d+w|in_\d+x\d+)\.(jpg|png|webp)$", r".\1", url)
+        return re.sub(r"\.(jpg|png|webp)$", r"_in_1000x1000.\1", bare)
     return url
 
 
