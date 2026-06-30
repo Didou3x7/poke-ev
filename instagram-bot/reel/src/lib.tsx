@@ -342,6 +342,37 @@ export const ProgressDots: React.FC<{ total: number; step: number }> = ({ total,
   </div>
 );
 
+/** CONTINUITY — rendered ONCE at the theme root (above the TransitionSeries) so it reads the GLOBAL
+ *  frame and flows smoothly across every scene (no per-scene reset / crossfade). A thin holo bar that
+ *  fills as the whole reel plays, with soft segment ticks for the beats. */
+export const ReelProgress: React.FC<{ total: number; segments?: number }> = ({ total, segments = 0 }) => {
+  const frame = useCurrentFrame();
+  const p = interpolate(frame, [4, total - 4], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const W = 372;
+  return (
+    <div style={{ position: "absolute", bottom: SAFE_BOTTOM, left: 0, width: "100%", display: "flex", justifyContent: "center", zIndex: 47, pointerEvents: "none" }}>
+      <div style={{ position: "relative", width: W, height: 10, borderRadius: 999, background: "#222a36", overflow: "hidden" }}>
+        <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${p * 100}%`, backgroundImage: HOLO, borderRadius: 999, boxShadow: "0 0 16px rgba(124,92,246,0.55)" }} />
+        {segments > 1 ? Array.from({ length: segments - 1 }).map((_, i) => (
+          <div key={i} style={{ position: "absolute", top: 1, height: 8, width: 2, left: `${((i + 1) / segments) * 100}%`, background: "rgba(11,14,20,0.65)" }} />
+        )) : null}
+      </div>
+    </div>
+  );
+};
+
+/** CONTINUITY — a soft holo glow that drifts on the GLOBAL clock at the theme root, screen-blended
+ *  and faint, so a single light gently travels across the WHOLE reel behind every scene's content. */
+export const ContinuityHalo: React.FC = () => {
+  const frame = useCurrentFrame();
+  const x = 50 + Math.sin(frame / 115) * 27;
+  const y = 42 + Math.cos(frame / 145) * 19;
+  const pulse = 0.82 + Math.sin(frame / 70) * 0.18;
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none", mixBlendMode: "screen", zIndex: 1, background: `radial-gradient(closest-side at ${x}% ${y}%, rgba(124,92,246,${0.13 * pulse}), rgba(34,211,238,${0.05 * pulse}) 42%, transparent 70%)` }} />
+  );
+};
+
 /** Top-right set logo, faded in. */
 export const SetLogo: React.FC<{ src: string | null }> = ({ src }) => {
   const p = useEnter(4, 14);

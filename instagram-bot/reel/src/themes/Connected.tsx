@@ -10,13 +10,14 @@ import type { ConnectedProps } from "../props";
 import {
   CardArt,
   CardHero,
+  ContinuityHalo,
   Display,
   EASE,
   HoloBar,
   Kicker,
   MoneyCount,
   Outro,
-  ProgressDots,
+  ReelProgress,
   Rise,
   SAFE_BOTTOM,
   SetLogo,
@@ -103,7 +104,6 @@ const CardScene: React.FC<{ p: ConnectedProps; i: number }> = ({ p, i }) => {
           <div style={{ fontSize: 90, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
         </Rise>
       </AbsoluteFill>
-      <ProgressDots total={n + 2} step={i + 1} />
     </Stage>
   );
 };
@@ -159,7 +159,6 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
           <MoneyCount value={p.total} delay={302} dur={18} size={138} style={{ marginTop: 2 }} />
         </Rise>
       </div>
-      <ProgressDots total={n + 2} step={n + 1} />
     </Stage>
   );
 };
@@ -167,6 +166,7 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
 export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
   const fadeT = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: C_FADE })} />;
   return (
+    <AbsoluteFill>
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={C_HOOK}>
         <Hook p={data} />
@@ -188,5 +188,8 @@ export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
+      <ContinuityHalo />
+      <ReelProgress total={connectedFrames(data.cards.length)} segments={data.cards.length + 3} />
+    </AbsoluteFill>
   );
 };

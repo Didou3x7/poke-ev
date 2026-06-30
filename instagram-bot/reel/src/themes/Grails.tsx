@@ -12,6 +12,7 @@ import { fade } from "@remotion/transitions/fade";
 import type { GrailsProps } from "../props";
 import { splitLines } from "../props";
 import {
+  ContinuityHalo,
   Display,
   EASE,
   EASE_IN_OUT,
@@ -20,7 +21,7 @@ import {
   Kicker,
   MoneyCount,
   Outro,
-  ProgressDots,
+  ReelProgress,
   Rise,
   SAFE_BOTTOM,
   SetLogo,
@@ -112,7 +113,6 @@ const Shock: React.FC<{ p: GrailsProps }> = ({ p }) => {
           <div style={{ fontSize: 36, color: MUTE, marginBottom: 22 }}>for a single card</div>
         </Rise>
       </div>
-      <ProgressDots total={5} step={0} />
     </Stage>
   );
 };
@@ -132,7 +132,6 @@ const TheCard: React.FC<{ p: GrailsProps }> = ({ p }) => (
         ))}
       </Rise>
     </AbsoluteFill>
-    <ProgressDots total={5} step={1} />
   </Stage>
 );
 
@@ -171,7 +170,6 @@ const Art: React.FC<{ p: GrailsProps }> = ({ p }) => {
           </Rise>
         </div>
       ) : null}
-      <ProgressDots total={5} step={2} />
     </Stage>
   );
 };
@@ -200,7 +198,6 @@ const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
           ))}
         </Rise>
       </AbsoluteFill>
-      <ProgressDots total={5} step={4} />
     </Stage>
   );
 };
@@ -208,6 +205,7 @@ const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
 export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
   const fadeT = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: G_FADE })} />;
   return (
+    <AbsoluteFill>
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={G_SHOCK}>
         <Shock p={data} />
@@ -229,5 +227,8 @@ export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
+      <ContinuityHalo />
+      <ReelProgress total={grailsFrames()} segments={5} />
+    </AbsoluteFill>
   );
 };

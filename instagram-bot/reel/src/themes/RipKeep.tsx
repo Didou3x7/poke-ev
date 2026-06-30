@@ -10,13 +10,14 @@ import type { RipKeepProps } from "../props";
 import { splitLines } from "../props";
 import {
   CardArt,
+  ContinuityHalo,
   Display,
   EASE,
   GlowBurst,
   Kicker,
   MoneyCount,
   Outro,
-  ProgressDots,
+  ReelProgress,
   Rise,
   SAFE_BOTTOM,
   SparkBurst,
@@ -34,7 +35,7 @@ export const R_FADE = 10;
 export const R_HOOK = 96;
 export const R_TEMPT = 120;
 export const R_FACE = 124;
-export const R_VERDICT = 120;
+export const R_VERDICT = 60;
 export const R_OUTRO = 84;
 
 export const ripkeepFrames = (): number => R_HOOK + R_TEMPT + R_FACE + R_VERDICT + R_OUTRO - R_FADE * 4;
@@ -155,7 +156,6 @@ const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
           );
         })}
       </div>
-      <ProgressDots total={4} step={1} />
     </Stage>
   );
 };
@@ -208,7 +208,6 @@ const FaceOff: React.FC<{ p: RipKeepProps }> = ({ p }) => {
           </div>
         </Rise>
       </AbsoluteFill>
-      <ProgressDots total={4} step={2} />
     </Stage>
   );
 };
@@ -234,7 +233,6 @@ const Verdict: React.FC<{ p: RipKeepProps }> = ({ p }) => {
           ))}
         </div>
       </AbsoluteFill>
-      <ProgressDots total={4} step={3} />
     </Stage>
   );
 };
@@ -242,6 +240,7 @@ const Verdict: React.FC<{ p: RipKeepProps }> = ({ p }) => {
 export const RipKeep: React.FC<{ data: RipKeepProps }> = ({ data }) => {
   const fadeT = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: R_FADE })} />;
   return (
+    <AbsoluteFill>
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={R_HOOK}>
         <Hook p={data} />
@@ -263,5 +262,8 @@ export const RipKeep: React.FC<{ data: RipKeepProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
+      <ContinuityHalo />
+      <ReelProgress total={ripkeepFrames()} segments={5} />
+    </AbsoluteFill>
   );
 };
