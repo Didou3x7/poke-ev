@@ -77,8 +77,8 @@ const TheGrail: React.FC<{ p: GrailsProps }> = ({ p }) => {
   // overlays
   const priceOp = interpolate(frame, [10, 24, holdEnd - 6, holdEnd + 8], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const split = zoomEnd + (D - zoomEnd) * 0.5;
-  // artist text appears RIGHT as the zoom lands (immediate), then held long enough to read
-  const artistOp = interpolate(frame, [zoomEnd - 12, zoomEnd + 4, split - 4, split + 16], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // artist text is fully in BY the end of the zoom (appears during the last of the push-in)
+  const artistOp = interpolate(frame, [zoomEnd - 28, zoomEnd - 6, split - 4, split + 16], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const sceneOp = interpolate(frame, [split + 14, split + 30, D - 4], [0, 1, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const artist = p.craftHeadline || p.artist || "";
   const cap = (kicker: string, head: string, body: string, op: number, headSize: number) => (
@@ -110,13 +110,14 @@ const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
   return (
     <Stage glowY={44}>
       {/* the odds line at the TOP — nothing below the fan */}
-      <Rise delay={2} style={{ position: "absolute", top: 134, width: "100%", flexDirection: "column", alignItems: "center", padding: "0 70px" }}>
+      <Rise delay={2} style={{ position: "absolute", top: 430, width: "100%", flexDirection: "column", alignItems: "center", padding: "0 70px" }}>
         <Kicker style={{ fontSize: 30 }}>The odds</Kicker>
         {splitLines((p.oddsLine || "").replace(/rip a sealed booster\.?/gi, "")).filter(Boolean).map((l, i) => (
-          <Display key={i} size={56} holo style={{ marginTop: 30, textAlign: "center", maxWidth: 940, display: "block" }}>{l}</Display>
+          <Display key={i} size={56} holo style={{ marginTop: 24, textAlign: "center", maxWidth: 940, display: "block" }}>{l}</Display>
         ))}
       </Rise>
-      {/* a FAN of boosters, BIG & centred, highlighted in the THEME (holo) colour — and that's it */}
+      {/* a FAN of boosters, BIG & centred (sits right under the title), highlighted in the THEME
+          (holo) colour — and that's it */}
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", perspective: 1500 }}>
         <GlowBurst delay={6} color="rgba(124,92,246,0.55)" size="-18%" />
         {[-1, 0, 1].map((k, i) => {
