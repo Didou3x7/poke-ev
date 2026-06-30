@@ -113,7 +113,7 @@ const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
       <Rise delay={2} style={{ position: "absolute", top: 134, width: "100%", flexDirection: "column", alignItems: "center", padding: "0 70px" }}>
         <Kicker style={{ fontSize: 30 }}>The odds</Kicker>
         {splitLines((p.oddsLine || "").replace(/rip a sealed booster\.?/gi, "")).filter(Boolean).map((l, i) => (
-          <Display key={i} size={56} holo style={{ marginTop: 10, textAlign: "center", maxWidth: 940, display: "block" }}>{l}</Display>
+          <Display key={i} size={56} holo style={{ marginTop: 30, textAlign: "center", maxWidth: 940, display: "block" }}>{l}</Display>
         ))}
       </Rise>
       {/* a FAN of boosters, BIG & centred, highlighted in the THEME (holo) colour — and that's it */}
