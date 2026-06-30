@@ -858,16 +858,25 @@ def build_reel(plan, ctx):
         raise RuntimeError("reel hosted upload returned no URL")
     cover_url = _blob_put(str(cover), f"ig-reels/{plan['date']}-{theme}-cover.png") if cover else None
     log(f"  reel hosted: {video_url}")
+    # Reels surface ≤5 hashtags — trim the folded tag block, but keep the full carousel caption
+    # so a switch back to 🖼 carousel restores every tag (carousels keep the full set).
     reel_plan = {**plan, "format": "reel", "video_url": video_url,
-                 "cover_url": cover_url, "mp4_local": str(mp4)}
+                 "cover_url": cover_url, "mp4_local": str(mp4),
+                 "caption_carousel": plan.get("caption"),
+                 "caption": cap_caption_hashtags(plan.get("caption"))}
     Path(env("PLAN_PATH", "plan.json")).write_text(
         json.dumps(reel_plan, indent=2, ensure_ascii=False), encoding="utf-8")
     return reel_plan
 
 
 def carousel_plan_of(plan):
-    """Strip the reel-only fields so a plan previews/publishes as its original carousel."""
-    return {k: v for k, v in plan.items() if k not in ("format", "video_url", "cover_url", "mp4_local")}
+    """Strip the reel-only fields so a plan previews/publishes as its original carousel —
+    restoring the full (untrimmed) caption, since carousels keep all hashtags."""
+    out = {k: v for k, v in plan.items()
+           if k not in ("format", "video_url", "cover_url", "mp4_local", "caption_carousel")}
+    if plan.get("caption_carousel"):
+        out["caption"] = plan["caption_carousel"]
+    return out
 
 
 def publish_reel(plan):
@@ -2292,6 +2301,23 @@ def prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key):
                 "keys": [facts["key"]], "api_key": api_key}
 
     return None
+
+
+REEL_HASHTAG_MAX = 5  # Instagram surfaces at most ~5 hashtags on Reels — more reads as spam
+
+
+def cap_caption_hashtags(caption, n=REEL_HASHTAG_MAX):
+    """Keep at most `n` hashtags in a folded caption. compose_caption puts the tags as a single
+    trailing space-separated #block after a blank line; this trims THAT block only and never
+    touches the body. No-op if the caption has no folded tag block or already has ≤ n."""
+    text = (caption or "").rstrip()
+    head, sep, tail = text.rpartition("\n\n")
+    if not sep:
+        return text
+    toks = tail.split()
+    if not toks or not all(t.startswith("#") for t in toks) or len(toks) <= n:
+        return text
+    return f"{head}\n\n{' '.join(toks[:n])}"
 
 
 def compose_caption(caption, hashtags):
