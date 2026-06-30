@@ -88,7 +88,6 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
 const CardScene: React.FC<{ p: ConnectedProps; i: number }> = ({ p, i }) => {
   const c = p.cards[i];
   const n = p.cards.length;
-  const running = p.cards.slice(0, i + 1).reduce((s, x) => s + Number(x.price.replace(/[^0-9.]/g, "")), 0);
   return (
     <Stage glowY={40}>
       <SetLogo src={p.setLogo} />
@@ -96,12 +95,12 @@ const CardScene: React.FC<{ p: ConnectedProps; i: number }> = ({ p, i }) => {
         <Kicker style={{ fontSize: 28 }}>{`Piece ${i + 1} of ${n}`}</Kicker>
       </Rise>
       {/* card + title as ONE centred column — a real gap so the card never overlaps the name */}
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 110, paddingBottom: SAFE_BOTTOM - 70 }}>
-        {/* each card enters with a DIFFERENT animation (slam / slide-R / rise / slide-L / flip) */}
-        <CardHero src={c.image} w={600} delay={0} variant={i} />
-        <Rise delay={16} style={{ flexDirection: "column", alignItems: "center", marginTop: 56 }}>
-          <Display size={68}>{c.name}</Display>
-          <div style={{ fontSize: 86, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 104, paddingBottom: SAFE_BOTTOM - 70 }}>
+        {/* each card enters with its OWN 3D animation (turn / swing / barrel roll / corner tumble) */}
+        <CardHero src={c.image} w={636} delay={0} variant={i} />
+        <Rise delay={16} style={{ flexDirection: "column", alignItems: "center", marginTop: 52 }}>
+          <Display size={70}>{c.name}</Display>
+          <div style={{ fontSize: 90, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
         </Rise>
       </AbsoluteFill>
       <ProgressDots total={n + 2} step={i + 1} />

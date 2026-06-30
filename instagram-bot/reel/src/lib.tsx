@@ -124,7 +124,7 @@ export const BrandMark: React.FC = () => {
 };
 
 /** The dark-holo stage: base, a slowly drifting holo aura, sparkles, grain, vignette. */
-export const Stage: React.FC<{ children: React.ReactNode; glowX?: number; glowY?: number; sparkle?: boolean }> = ({ children, glowX = 50, glowY = 42, sparkle = true }) => {
+export const Stage: React.FC<{ children: React.ReactNode; glowX?: number; glowY?: number; sparkle?: boolean; brand?: boolean }> = ({ children, glowX = 50, glowY = 42, sparkle = true, brand = true }) => {
   const frame = useCurrentFrame();
   const drift = Math.sin(frame / 36) * 6;
   const drift2 = Math.cos(frame / 48) * 5;
@@ -138,7 +138,7 @@ export const Stage: React.FC<{ children: React.ReactNode; glowX?: number; glowY?
       <Grain />
       <AbsoluteFill style={{ background: "radial-gradient(125% 80% at 50% 50%, rgba(11,14,20,0) 54%, rgba(11,14,20,0.6) 100%)" }} />
       {children}
-      <BrandMark />
+      {brand ? <BrandMark /> : null}
     </AbsoluteFill>
   );
 };
@@ -395,7 +395,7 @@ export const MoneyCount: React.FC<{ value: string; delay?: number; dur?: number;
 export const Outro: React.FC<{ logo?: string | null }> = ({ logo }) => {
   const pop = usePop(2, 11);
   return (
-    <Stage glowY={48}>
+    <Stage glowY={48} brand={false}>
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", padding: 90, textAlign: "center" }}>
         <Rise delay={2}>
           <Kicker style={{ fontSize: 34, letterSpacing: 5 }}>POKÉ EV</Kicker>
