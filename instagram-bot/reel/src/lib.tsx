@@ -301,7 +301,7 @@ export const HoloFoil: React.FC<{ shift: number; radius?: number; intensity?: nu
 /** THE hero card moment: a spring slam-in from a big scale, a soft holo glow (no rectangle), and
  *  a specular shine that sweeps across the CARD ITSELF (clipped to the card, not a box), then a
  *  slow Ken Burns push. The card dominates the frame. */
-export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo?: number; shine?: boolean; variant?: number }> = ({ src, w = 900, delay = 0, kenTo = 1.05, shine = true, variant = 0 }) => {
+export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo?: number; variant?: number }> = ({ src, w = 900, delay = 0, kenTo = 1.05, variant = 0 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   // Punchy spring with a touch of OVERSHOOT → the card arrives with real impact, then settles.
@@ -324,22 +324,11 @@ export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo
   const lift = Math.cos((frame - delay) / 52) * 1.2 * s;
   const transform = `perspective(1500px) ${t3d} rotateY(${sway}deg) rotateX(${lift}deg) scale(${ken})`;
   const blur = inv * 5; // strong MOTION BLUR while the card flies fast, clears as it settles
-  // Specular highlight tracks the tilt: bright & wide while the card is still angled, then sweeps clean.
-  const dir = v % 2 === 0 ? 1 : -1;
-  const sweep = interpolate(frame - delay, [6, 50], dir > 0 ? [-1.4, 1.8] : [1.8, -1.4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
-  const gloss = interpolate(s, [0, 0.7], [0.78, 0.42], { extrapolateRight: "clamp" });
-  const holoShift = -24 + sway * 7 + Math.sin((frame - delay) / 28) * 11; // foil shimmers with the float
-  // Clean & premium: JUST the 3D card (holo foil + specular gloss + entrance motion blur + float).
-  // No impact ring / sparks / god-ray frame — those read as a gimmicky "futuristic frame".
+  // TRUE-TO-SOURCE: the card shows EXACTLY as its UHD scan — no holo/gloss overlay (those read as a
+  // whitish 'filter / reflection' washing the art). Just the 3D entrance, soft drop-shadow, motion blur.
   return (
     <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform, transformOrigin: origin, opacity: op, willChange: "transform" }}>
       <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: `${CARD_GLOW} blur(${blur}px)` }} />
-      <HoloFoil shift={holoShift} intensity={0.22} />
-      {shine ? (
-        <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
-          <div style={{ position: "absolute", top: "-14%", bottom: "-14%", left: `${sweep * 100}%`, width: `${36 + (v % 3) * 10}%`, background: `linear-gradient(${100 + v * 16}deg, transparent, rgba(255,255,255,${gloss}), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
-        </div>
-      ) : null}
     </div>
   );
 };
