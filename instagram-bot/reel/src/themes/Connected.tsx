@@ -2,7 +2,7 @@
 // Beats: HOOK (fanned hand) → one ULTRA-ZOOM hero per card → THE REVEAL (a slow cinematic pan
 // across the FULL-HEIGHT panorama — the cards stay huge, never shrunk) → CTA. Crossfades only.
 import React from "react";
-import { AbsoluteFill, Img, interpolate, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Easing, Img, interpolate, useCurrentFrame } from "remotion";
 import { TransitionSeries, linearTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 
@@ -12,8 +12,6 @@ import {
   CardHero,
   Display,
   EASE,
-  EASE_IN_OUT,
-  GlowBurst,
   HoloBar,
   Kicker,
   MoneyCount,
@@ -35,7 +33,7 @@ import {
 export const C_FADE = 10;
 export const C_HOOK = 96;
 export const C_CARD = 78;
-export const C_REVEAL = 252;
+export const C_REVEAL = 296;
 export const C_OUTRO = 86;
 
 export const connectedFrames = (n: number): number => C_HOOK + n * C_CARD + C_REVEAL + C_OUTRO - C_FADE * (n + 2);
@@ -69,7 +67,6 @@ const Hook: React.FC<{ p: ConnectedProps }> = ({ p }) => {
           the safe zone. Each card flies in from deep space on its OWN arc (no two alike) with a touch
           of motion blur, then settles into a splayed, dimensional hand. */}
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 1312 - ch, height: ch, perspective: 1700 }}>
-        <GlowBurst delay={40} color="rgba(124,92,246,0.4)" size="-18%" />
         {p.cards.map((c, i) => {
           const t = i - (n - 1) / 2;
           const pop = usePop(15 + i * 5, 14);
@@ -122,20 +119,15 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const stripW = n * cardW;
   const fitScale = Math.min(1, (1080 * 0.94) / stripW);
   const center = (n - 1) / 2;
-  // SLOWER pan (less per-frame travel = less strobing on the detailed art), then a held dezoom.
-  const PAN: [number, number] = [32, 192];
-  const ZOOM: [number, number] = [192, 224];
-  const txAt = (fr: number) => {
-    const pf = interpolate(fr, PAN, [0, n - 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE_IN_OUT });
-    const z = interpolate(fr, ZOOM, [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
-    const ff = pf + (center - pf) * z;
-    const sc = 1 + (fitScale - 1) * z;
-    return { tx: (center - ff) * cardW * sc, scale: sc };
-  };
-  const { tx, scale } = txAt(frame);
-  // MOTION BLUR proportional to the pan speed → smears the high-frequency judder so the scroll reads
-  // smooth instead of stroboscopic (the "mal aux yeux" frequency mismatch).
-  const mblur = Math.min(7, Math.abs(tx - txAt(frame - 1).tx) * 0.11);
+  // A SLOW, near-constant glide across the panorama (NOT blurred — the whole point is to SEE the
+  // artworks join and follow the continuation). Steady velocity with only a soft ease at each end
+  // reads far easier on the eyes than a fast eased pan, which strobes on the high-detail art.
+  const GLIDE = Easing.bezier(0.42, 0, 0.58, 1);
+  const panF = interpolate(frame, [34, 234], [0, n - 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: GLIDE });
+  const zoom = interpolate(frame, [234, 266], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const f = panF + (center - panF) * zoom;
+  const scale = 1 + (fitScale - 1) * zoom;
+  const tx = (center - f) * cardW * scale;
   // The title HUGS the top of the strip and the total HUGS its bottom, both riding INWARD as the
   // strip shrinks on dezoom — so the final shot is one centred, harmonious group (title · cards ·
   // total), never title-pinned-top / cards-pinned-bottom with a dead gap between them.
@@ -144,7 +136,7 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   return (
     <Stage glowY={44} sparkle={false}>
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-        <div style={{ display: "flex", transform: `translateX(${tx}px) scale(${scale})`, transformOrigin: "center center", filter: `drop-shadow(0 40px 90px rgba(0,0,0,0.8)) blur(${mblur}px)` }}>
+        <div style={{ display: "flex", transform: `translateX(${tx}px) scale(${scale})`, transformOrigin: "center center", filter: "drop-shadow(0 40px 90px rgba(0,0,0,0.8))" }}>
           {p.cards.map((c, i) => (
             <Img key={i} src={c.image} style={{ width: cardW, height: cardH, objectFit: "cover", marginLeft: i ? -2 : 0 }} />
           ))}
@@ -157,9 +149,9 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
         </Rise>
       </div>
       <div style={{ position: "absolute", left: 0, width: "100%", top: CY + halfStrip + 40, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Rise delay={222} style={{ flexDirection: "column", alignItems: "center" }}>
+        <Rise delay={268} style={{ flexDirection: "column", alignItems: "center" }}>
           <div style={{ fontSize: 34, color: MUTE }}>Combined value</div>
-          <MoneyCount value={p.total} delay={224} dur={18} size={138} style={{ marginTop: 2 }} />
+          <MoneyCount value={p.total} delay={270} dur={16} size={138} style={{ marginTop: 2 }} />
         </Rise>
       </div>
       <ProgressDots total={n + 2} step={n + 1} />

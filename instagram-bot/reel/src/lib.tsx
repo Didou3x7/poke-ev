@@ -329,25 +329,17 @@ export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo
   const sweep = interpolate(frame - delay, [6, 50], dir > 0 ? [-1.4, 1.8] : [1.8, -1.4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const gloss = interpolate(s, [0, 0.7], [0.78, 0.42], { extrapolateRight: "clamp" });
   const holoShift = -24 + sway * 7 + Math.sin((frame - delay) / 28) * 11; // foil shimmers with the float
-  const impact = delay + 16; // the card SLAMS home ~here → fire the impact FX
-  const rayOp = s * (0.4 + 0.3 * Math.sin((frame - delay) / 18)) * 0.8;
+  // Clean & premium: JUST the 3D card (holo foil + specular gloss + entrance motion blur + float).
+  // No impact ring / sparks / god-ray frame — those read as a gimmicky "futuristic frame".
   return (
-    <div style={{ position: "relative", width: w, lineHeight: 0 }}>
-      {/* god-ray light bloom behind the card */}
-      <div style={{ position: "absolute", inset: "-26% -42%", background: "radial-gradient(ellipse at center, rgba(124,92,246,0.4), rgba(34,211,238,0.14) 42%, transparent 66%)", opacity: rayOp, pointerEvents: "none" }} />
-      <div style={{ position: "relative", display: "block", transform, transformOrigin: origin, opacity: op, willChange: "transform" }}>
-        <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: `${CARD_GLOW} blur(${blur}px)` }} />
-        <HoloFoil shift={holoShift} intensity={0.22} />
-        {shine ? (
-          <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
-            <div style={{ position: "absolute", top: "-14%", bottom: "-14%", left: `${sweep * 100}%`, width: `${36 + (v % 3) * 10}%`, background: `linear-gradient(${100 + v * 16}deg, transparent, rgba(255,255,255,${gloss}), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
-          </div>
-        ) : null}
-      </div>
-      {/* the landing: flash + shockwave ring + spark burst */}
-      <GlowBurst delay={impact} color="rgba(124,92,246,0.6)" />
-      <ImpactRing delay={impact} />
-      <SparkBurst delay={impact} />
+    <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform, transformOrigin: origin, opacity: op, willChange: "transform" }}>
+      <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: `${CARD_GLOW} blur(${blur}px)` }} />
+      <HoloFoil shift={holoShift} intensity={0.22} />
+      {shine ? (
+        <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
+          <div style={{ position: "absolute", top: "-14%", bottom: "-14%", left: `${sweep * 100}%`, width: `${36 + (v % 3) * 10}%`, background: `linear-gradient(${100 + v * 16}deg, transparent, rgba(255,255,255,${gloss}), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
+        </div>
+      ) : null}
     </div>
   );
 };
