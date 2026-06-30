@@ -273,10 +273,12 @@ def _replicate_upscale(src_url, scale=4):
 
 
 def upscale_card(image_url, max_w=4096):
-    """AI super-resolution → hosted on Vercel Blob. Prefers Replicate Real-ESRGAN (SOTA for
-    illustration, crisp DENOISED borders) when REPLICATE_API_TOKEN is set; otherwise falls back
-    to the free OpenCV LapSRN x8. Either way the result is capped to `max_w` wide (4096 for the
-    full-bleed grail zoom; ~1500 for carousel cards — light enough that multi-image slides don't
+    """AI super-resolution → hosted on Vercel Blob, ALPHA-PRESERVING. Vintage/solid-border cards
+    (no alpha) use Replicate Real-ESRGAN (SOTA for illustration, crisp DENOISED borders) when the
+    token is set; modern texture full-arts (transparent rounded corners = alpha) use the gentle
+    OpenCV LapSRN x8 instead — ESRGAN hallucinates their holofoil. The card's transparent corners
+    are re-attached after upscaling (no more black corners). Result capped to `max_w` wide (4096 for
+    the full-bleed grail zoom; ~1500 for carousel cards — light enough that multi-image slides don't
     500 Satori). Returns the HD url, or None (graceful) without BLOB_READ_WRITE_TOKEN / on failure."""
     if not os.environ.get("BLOB_READ_WRITE_TOKEN") or not image_url:
         return None
@@ -295,34 +297,52 @@ def upscale_card(image_url, max_w=4096):
         # it's ALREADY hosted (from any earlier build/revise — even a previous day or post), reuse
         # it and SKIP Replicate entirely. So Real-ESRGAN runs at most ONCE per unique card, not on
         # every rebuild. (Daily cost ≈ only the genuinely new cards that day.)
-        intended = "esrgan" if os.environ.get("REPLICATE_API_TOKEN") else "lapsrn"
-        cache_path = f"ig-cards/{hashlib.md5(f'{src}@{max_w}@{intended}'.encode()).hexdigest()}.png"
+        # Decode the SOURCE first, KEEPING its alpha channel. Modern TCGdex full-arts are die-cut
+        # PNGs with transparent rounded corners; the old IMREAD_COLOR dropped that alpha and filled
+        # the corners BLACK. We re-attach it after upscaling so the corners stay transparent.
+        src_arr = cv2.imdecode(np.frombuffer(requests.get(src, timeout=60).content, np.uint8), cv2.IMREAD_UNCHANGED)
+        if src_arr is None:
+            return None
+        alpha = src_arr[:, :, 3] if (src_arr.ndim == 3 and src_arr.shape[2] == 4) else None
+        # METHOD picked by card TYPE, keyed off alpha: Real-ESRGAN is sharpest on ordinary/vintage
+        # illustration, but HALLUCINATES the holofoil pattern of modern texture full-arts / special-
+        # illustration cards — the "texture ultra bizarre" the owner flagged. Those are exactly the
+        # alpha (transparent-corner) cards, so route them to the gentle, FAITHFUL LapSRN x8; vintage
+        # cards (no alpha, solid borders) keep ESRGAN, which genuinely sharpens them and never mangled.
+        use_esrgan = bool(os.environ.get("REPLICATE_API_TOKEN")) and alpha is None
+        method = "esrgan" if use_esrgan else "lapsrn"
+        # `@a2` = alpha-safe revision: bumps the key so every pre-fix BLACK-corner upscale is ignored.
+        cache_path = f"ig-cards/{hashlib.md5(f'{src}@{max_w}@{method}@a2'.encode()).hexdigest()}.png"
         cached = _blob_exists_url(cache_path)
         if cached:
             log("  upscale: Blob cache hit — reused (no Replicate spend)")
             return cached
-        rep = _replicate_upscale(src)          # SOTA path (no-op without the token)
-        method = "esrgan" if rep else "lapsrn"
-        data = requests.get(rep or src, timeout=60).content
-        arr = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
-        if arr is None:
-            return None
-        if not rep:
-            # No Replicate → free OpenCV LapSRN x8 supersample (INTER_AREA downscale keeps edges
-            # clean). The 8x pass reconstructs detail even when capping to a medium width.
+        rep = _replicate_upscale(src) if use_esrgan else None  # SOTA path; gentle cards skip it
+        if use_esrgan and not rep:  # Replicate failed → fell back to LapSRN; keep the cache key honest
+            method = "lapsrn"
+            cache_path = f"ig-cards/{hashlib.md5(f'{src}@{max_w}@{method}@a2'.encode()).hexdigest()}.png"
+        if rep:
+            arr = cv2.imdecode(np.frombuffer(requests.get(rep, timeout=60).content, np.uint8), cv2.IMREAD_COLOR)
+            if arr is None:
+                return None
+        else:
+            # Free OpenCV LapSRN x8 supersample — gentle, faithful, no holo hallucination.
+            bgr = src_arr[:, :, :3] if src_arr.ndim == 3 else cv2.cvtColor(src_arr, cv2.COLOR_GRAY2BGR)
             sr = cv2.dnn_superres.DnnSuperResImpl_create()
             sr.readModel(str(here / "models" / "LapSRN_x8.pb"))
             sr.setModel("lapsrn", 8)
-            arr = sr.upsample(arr)
+            arr = sr.upsample(bgr)
         h, w = arr.shape[:2]
         if w > max_w:
             arr = cv2.resize(arr, (max_w, int(round(h * max_w / w))), interpolation=cv2.INTER_AREA)
+            h, w = arr.shape[:2]
+        if alpha is not None:  # restore the rounded-corner transparency at the upscaled size
+            arr = cv2.cvtColor(arr, cv2.COLOR_BGR2BGRA)
+            arr[:, :, 3] = cv2.resize(alpha, (w, h), interpolation=cv2.INTER_LINEAR)
         fd, tmp = tempfile.mkstemp(suffix=".png")
         os.close(fd)
         cv2.imwrite(tmp, arr)
-        # `method` in the hash so switching LapSRN→ESRGAN yields a FRESH path (no stale cache).
-        pathname = f"ig-cards/{hashlib.md5(f'{src}@{max_w}@{method}'.encode()).hexdigest()}.png"
-        return _blob_put(tmp, pathname)
+        return _blob_put(tmp, cache_path)
     except Exception as exc:  # noqa: BLE001 — never fail a post over upscaling
         log(f"  upscale failed ({exc})")
         return None
