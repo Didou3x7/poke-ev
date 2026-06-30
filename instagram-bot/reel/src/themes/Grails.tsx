@@ -152,7 +152,7 @@ export const Grails: React.FC<{ data: GrailsProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
-      <TravelLogo src={data.setLogo} hookEnd={0} startBig={false} />
+      <TravelLogo src={data.setLogo} hookEnd={100} />
       <ContinuityHalo />
     </AbsoluteFill>
   );
