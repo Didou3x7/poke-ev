@@ -56,7 +56,7 @@ const SAMPLE_GRAILS: GrailsProps = {
   price: "$1,200",
   artist: "Mitsuhiro Arita",
   rarity: "Holo Rare",
-  oddsLine: "Pulled roughly|1 in 110 packs.",
+  oddsLine: "Rip a sealed booster.|The odds are 1 in 110.",
   shockHeadline: "Worth more than|a PS5 Pro",
   cardKicker: "The card",
   cardHeadline: "Base Set Charizard",

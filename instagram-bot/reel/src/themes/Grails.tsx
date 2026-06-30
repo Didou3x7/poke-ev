@@ -75,18 +75,18 @@ const TheGrail: React.FC<{ p: GrailsProps }> = ({ p }) => {
   const glide = px <= RAMP ? (vmax * px * px) / (2 * RAMP) : px < 1 - RAMP ? (vmax * RAMP) / 2 + vmax * (px - RAMP) : 1 - (vmax * (1 - px) * (1 - px)) / (2 * RAMP);
   const fx = frame < holdEnd ? 0.5 : frame < zoomEnd ? interpolate(frame, [holdEnd, zoomEnd], [0.5, 0.3], { easing: EASE }) : 0.3 + 0.44 * glide;
   // overlays
-  const idOp = interpolate(frame, [4, 16, holdEnd - 6, holdEnd + 8], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const priceOp = interpolate(frame, [10, 24, holdEnd - 6, holdEnd + 8], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const split = zoomEnd + (D - zoomEnd) * 0.5;
-  const artistOp = interpolate(frame, [zoomEnd + 10, zoomEnd + 26, split - 4, split + 18], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // artist text appears RIGHT as the zoom lands (immediate), then held long enough to read
+  const artistOp = interpolate(frame, [zoomEnd - 12, zoomEnd + 4, split - 4, split + 16], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const sceneOp = interpolate(frame, [split + 14, split + 30, D - 4], [0, 1, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const artist = p.craftHeadline || p.artist || "";
   const cap = (kicker: string, head: string, body: string, op: number, headSize: number) => (
     <div style={{ position: "absolute", bottom: SAFE_BOTTOM - 60, width: "100%", opacity: op, display: "flex", flexDirection: "column", alignItems: "center", padding: "0 80px" }}>
       <Kicker style={{ fontSize: 28 }}>{kicker}</Kicker>
       <Display size={headSize} style={{ marginTop: 10, textAlign: "center", maxWidth: 940, display: "block" }}>{head}</Display>
-      {splitLines(body).slice(0, 2).map((l, i) => (
-        <div key={i} style={{ fontSize: 34, color: MUTE, fontFamily: SATOSHI, marginTop: 6, textAlign: "center" }}>{l}</div>
+      {splitLines(body).slice(0, 1).map((l, i) => (
+        <div key={i} style={{ fontSize: 34, color: MUTE, fontFamily: SATOSHI, marginTop: 8, textAlign: "center" }}>{l}</div>
       ))}
     </div>
   );
@@ -94,9 +94,6 @@ const TheGrail: React.FC<{ p: GrailsProps }> = ({ p }) => {
     <Stage glowY={40} sparkle={false}>
       <CardView src={p.image} w={w} fx={fx} fy={fy} />
       <AbsoluteFill style={{ background: "linear-gradient(to top, rgba(11,14,20,0.97) 16%, rgba(11,14,20,0) 44%)" }} />
-      <div style={{ position: "absolute", top: 120, width: "100%", textAlign: "center", opacity: idOp }}>
-        <div style={{ fontSize: 28, letterSpacing: 3, textTransform: "uppercase", color: MUTE, fontFamily: CLASH }}>{p.setName}{p.rarity ? ` · ${p.rarity}` : ""}</div>
-      </div>
       <div style={{ position: "absolute", bottom: SAFE_BOTTOM - 70, width: "100%", opacity: priceOp, display: "flex", flexDirection: "column", alignItems: "center", padding: "0 80px" }}>
         {lines.map((l, i) => (
           <div key={i} style={{ fontFamily: CLASH, fontWeight: 700, fontSize: 52, lineHeight: 1.05, textAlign: "center", ...(i === lines.length - 1 ? holoText(116) : { color: INK }) }}>{l}</div>
@@ -115,7 +112,7 @@ const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
       {/* the odds line at the TOP — nothing below the fan */}
       <Rise delay={2} style={{ position: "absolute", top: 134, width: "100%", flexDirection: "column", alignItems: "center", padding: "0 70px" }}>
         <Kicker style={{ fontSize: 30 }}>The odds</Kicker>
-        {splitLines(p.oddsLine).map((l, i) => (
+        {splitLines((p.oddsLine || "").replace(/rip a sealed booster\.?/gi, "")).filter(Boolean).map((l, i) => (
           <Display key={i} size={56} holo style={{ marginTop: 10, textAlign: "center", maxWidth: 940, display: "block" }}>{l}</Display>
         ))}
       </Rise>
