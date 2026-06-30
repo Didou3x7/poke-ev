@@ -110,7 +110,7 @@ const Odds: React.FC<{ p: GrailsProps }> = ({ p }) => {
   return (
     <Stage glowY={44}>
       {/* the odds line at the TOP — nothing below the fan */}
-      <Rise delay={2} style={{ position: "absolute", top: 430, width: "100%", flexDirection: "column", alignItems: "center", padding: "0 70px" }}>
+      <Rise delay={2} style={{ position: "absolute", top: 360, width: "100%", flexDirection: "column", alignItems: "center", padding: "0 70px" }}>
         <Kicker style={{ fontSize: 30 }}>The odds</Kicker>
         {splitLines((p.oddsLine || "").replace(/rip a sealed booster\.?/gi, "")).filter(Boolean).map((l, i) => (
           <Display key={i} size={56} holo style={{ marginTop: 24, textAlign: "center", maxWidth: 940, display: "block" }}>{l}</Display>
