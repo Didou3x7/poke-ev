@@ -32,7 +32,7 @@ import {
 
 export const R_FADE = 10;
 export const R_HOOK = 96;
-export const R_TEMPT = 112;
+export const R_TEMPT = 160;
 export const R_FACE = 124;
 export const R_VERDICT = 120;
 export const R_OUTRO = 84;
@@ -81,44 +81,80 @@ const Hook: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   );
 };
 
+// Jagged tear line at ~36% height — the two clip-paths share this zigzag so the halves split cleanly.
+const TOP_CLIP = "polygon(0% 0%, 100% 0%, 100% 33%, 88% 39%, 76% 32%, 64% 39%, 52% 32%, 40% 39%, 28% 32%, 16% 39%, 0% 33%)";
+const BOT_CLIP = "polygon(0% 33%, 16% 39%, 28% 32%, 40% 39%, 52% 32%, 64% 39%, 76% 32%, 88% 39%, 100% 33%, 100% 100%, 0% 100%)";
+
 const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
+  const frame = useCurrentFrame();
   const n = p.chase.length;
-  // equal cards sized so the whole row fits inside the frame with even margins (never clipped)
   const cw = Math.min(384, Math.floor((1004 - (n - 1) * 16) / n));
-  const logoP = usePop(2, 13);
+  const CARD_GAP = 16;
+  const hasRip = !!p.booster;
+  const PACK_CY = 900; // booster centre
+  const SEAM_Y = 812; // the tear line (where cards burst from)
+  const ROW_CY = 956; // settled card-row centre
+  // RIP beats: pack drops in → anticipation shake → TEAR (top peels up + flash + sparks) → cards
+  // burst from the seam and settle into the row → title/logo fade in → torn halves fall away.
+  const drop = hasRip ? interpolate(frame, [0, 16], [-300, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE }) : 0;
+  const shake = hasRip ? Math.sin(frame / 1.5) * Math.max(0, 7 - Math.abs(frame - 33) * 0.9) : 0;
+  const rip = hasRip ? interpolate(frame, [40, 62], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE }) : 1;
+  const packFade = hasRip ? interpolate(frame, [74, 102], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : 0;
+  const cardStart = hasRip ? 52 : 6;
+  const logoP = usePop(hasRip ? 96 : 2, 13);
   return (
     <Stage glowY={42}>
-      {/* set LOGO (big) + title + card row as ONE centred group — the set identity sits right above
-          the line, then the cards, so there's no dead gap. */}
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 50, paddingBottom: SAFE_BOTTOM - 90 }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}>
-          {p.setLogo ? (
-            <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -22}px) scale(${0.88 + logoP * 0.12})` }}>
-              <div style={{ position: "absolute", inset: "-30px -28px", background: "radial-gradient(ellipse, rgba(124,92,246,0.30), transparent 72%)" }} />
-              <Img src={p.setLogo} style={{ height: 152, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
-            </div>
-          ) : null}
-          <Rise delay={4}>
-            <Display size={76} holo style={{ textAlign: "center", maxWidth: 960, display: "block" }}>You're chasing these</Display>
-          </Rise>
-        </div>
-        {/* each chase card flies in on its OWN 3D arc (depth + flip, alternating), then settles */}
-        <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", justifyContent: "center", gap: 16, perspective: 1500 }}>
-          {p.chase.map((c, i) => {
-            const s = usePop(8 + i * 7, 13);
-            const inv = 1 - s;
-            const flip = i % 2 === 0 ? 1 : -1;
-            const entry = `translateZ(${inv * -720}px) rotateY(${inv * flip * 72}deg) rotateX(${inv * 18}deg)`;
-            return (
-              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", transformOrigin: "center bottom", filter: `blur(${inv * 2.6}px)`, transform: `${entry} translateY(${inv * 70}px) scale(${0.82 + s * 0.18})`, opacity: interpolate(s, [0, 0.3], [0, 1]) }}>
-                <CardArt src={c.image} w={cw} />
-                <div style={{ marginTop: 18, fontSize: 32, color: INK, fontFamily: SATOSHI }}>{c.name}</div>
-                <div style={{ marginTop: 2, fontSize: 52, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
-              </div>
-            );
-          })}
-        </div>
+      {/* set LOGO + title — fade in AFTER the pack is ripped open */}
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", paddingTop: 116, pointerEvents: "none" }}>
+        {p.setLogo ? (
+          <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -20}px) scale(${0.9 + logoP * 0.1})` }}>
+            <div style={{ position: "absolute", inset: "-28px -26px", background: "radial-gradient(ellipse, rgba(124,92,246,0.30), transparent 72%)" }} />
+            <Img src={p.setLogo} style={{ height: 138, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
+          </div>
+        ) : null}
+        <Rise delay={hasRip ? 100 : 4} style={{ marginTop: 16 }}>
+          <Display size={74} holo style={{ textAlign: "center", maxWidth: 960, display: "block" }}>You're chasing these</Display>
+        </Rise>
       </AbsoluteFill>
+
+      {/* the booster pack that RIPS open */}
+      {hasRip ? (
+        <>
+          <div style={{ position: "absolute", left: "50%", top: PACK_CY, transform: `translate(-50%, -50%) translateY(${drop}px) translateX(${shake}px)`, opacity: frame < 74 ? 1 : packFade }}>
+            <Img src={p.booster as string} style={{ height: 560, objectFit: "contain", clipPath: BOT_CLIP, filter: "drop-shadow(0 24px 62px rgba(0,0,0,0.75))" }} />
+          </div>
+          <div style={{ position: "absolute", left: "50%", top: PACK_CY, transform: `translate(-50%, -50%) translateY(${drop}px) translateX(${shake}px) translateY(${rip * -300}px) rotate(${rip * -18}deg)`, opacity: frame < 74 ? 1 : packFade }}>
+            <Img src={p.booster as string} style={{ height: 560, objectFit: "contain", clipPath: TOP_CLIP, filter: "drop-shadow(0 24px 62px rgba(0,0,0,0.75))" }} />
+          </div>
+          <div style={{ position: "absolute", left: "50%", top: SEAM_Y, width: 1, height: 1, transform: "translate(-50%,-50%)" }}>
+            <GlowBurst delay={42} color="rgba(255,255,255,0.9)" size="-1600%" />
+            <SparkBurst delay={46} count={22} spread={460} />
+          </div>
+        </>
+      ) : null}
+
+      {/* the chase cards — burst from the seam and settle into the row */}
+      <div style={{ position: "absolute", left: 0, width: "100%", top: 0, height: "100%", perspective: 1500 }}>
+        {p.chase.map((c, i) => {
+          const t = i - (n - 1) / 2;
+          const s = usePop(cardStart + i * 6, 13);
+          const inv = 1 - s;
+          const finalX = t * (cw + CARD_GAP);
+          const x = finalX * s; // spread out from centre as it emerges
+          const y = ROW_CY + (SEAM_Y - ROW_CY) * inv; // rise from the seam to the row
+          const flip = i % 2 === 0 ? 1 : -1;
+          const entry = `translateZ(${inv * -360}px) rotateY(${inv * flip * 44}deg) rotateX(${inv * 26}deg)`;
+          return (
+            <div key={i} style={{ position: "absolute", left: "50%", top: 0, transformOrigin: "center center", filter: `blur(${inv * 2.4}px)`, transform: `translate(-50%, -50%) translateX(${x}px) translateY(${y}px) ${entry} scale(${0.5 + s * 0.5})`, opacity: interpolate(s, [0, 0.22], [0, 1]) }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <CardArt src={c.image} w={cw} />
+              <div style={{ marginTop: 18, fontSize: 32, color: INK, fontFamily: SATOSHI }}>{c.name}</div>
+              <div style={{ marginTop: 2, fontSize: 52, fontFamily: CLASH, ...holoText() }}>{c.price}</div>
+            </div>
+            </div>
+          );
+        })}
+      </div>
       <ProgressDots total={4} step={1} />
     </Stage>
   );
