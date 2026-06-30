@@ -244,6 +244,15 @@ export const CardArt: React.FC<{ src: string; w: number; radius?: number; style?
   <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: radius, filter: CARD_GLOW, ...style }} />
 );
 
+/** A holographic FOIL sheen, clipped to the card's rounded rect, screen-blended so the art reads
+ *  like a real holo catching light. `shift` (driven by the card's live tilt) slides the rainbow band
+ *  so the foil shimmers as the card moves — the signature "wow" on a Pokémon card. */
+export const HoloFoil: React.FC<{ shift: number; radius?: number; intensity?: number }> = ({ shift, radius = 16, intensity = 0.2 }) => (
+  <div style={{ position: "absolute", inset: 0, borderRadius: radius, overflow: "hidden", pointerEvents: "none", opacity: intensity, mixBlendMode: "screen" }}>
+    <div style={{ position: "absolute", inset: "-45%", background: "linear-gradient(118deg, transparent 18%, rgba(255,90,180,0.85) 34%, rgba(120,220,255,0.85) 50%, rgba(150,255,180,0.85) 62%, rgba(255,205,90,0.85) 74%, transparent 88%)", transform: `translateX(${shift}%)` }} />
+  </div>
+);
+
 /** THE hero card moment: a spring slam-in from a big scale, a soft holo glow (no rectangle), and
  *  a specular shine that sweeps across the CARD ITSELF (clipped to the card, not a box), then a
  *  slow Ken Burns push. The card dominates the frame. */
@@ -269,14 +278,17 @@ export const CardHero: React.FC<{ src: string; w?: number; delay?: number; kenTo
   const sway = Math.sin((frame - delay) / 40) * 1.8 * s;
   const lift = Math.cos((frame - delay) / 52) * 1.1 * s;
   const transform = `perspective(1500px) ${t3d} rotateY(${sway}deg) rotateX(${lift}deg) scale(${ken})`;
+  const blur = inv * 3.6; // MOTION BLUR while the card flies fast, clears as it settles
   // Specular highlight tracks the tilt: bright & wide while the card is still angled (catching the
   // light as it turns), then sweeps clean. Direction/angle/width differ per card.
   const dir = v % 2 === 0 ? 1 : -1;
   const sweep = interpolate(frame - delay, [8, 52], dir > 0 ? [-1.4, 1.8] : [1.8, -1.4], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const gloss = interpolate(s, [0, 0.7], [0.66, 0.4], { extrapolateRight: "clamp" });
+  const holoShift = -24 + sway * 7 + Math.sin((frame - delay) / 28) * 10; // foil shimmers with the float
   return (
     <div style={{ position: "relative", display: "inline-block", lineHeight: 0, transform, transformOrigin: origin, opacity: op, willChange: "transform" }}>
-      <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: CARD_GLOW }} />
+      <Img src={src} style={{ width: w, height: "auto", display: "block", borderRadius: 16, filter: `${CARD_GLOW} blur(${blur}px)` }} />
+      <HoloFoil shift={holoShift} intensity={0.2} />
       {shine ? (
         <div style={{ position: "absolute", inset: 0, borderRadius: 16, overflow: "hidden", pointerEvents: "none" }}>
           <div style={{ position: "absolute", top: "-14%", bottom: "-14%", left: `${sweep * 100}%`, width: `${36 + (v % 3) * 10}%`, background: `linear-gradient(${100 + v * 16}deg, transparent, rgba(255,255,255,${gloss}), transparent)`, transform: `skewX(${dir > 0 ? -18 : 18}deg)` }} />
