@@ -17,7 +17,7 @@ import {
   type IgState,
   type MediaFormat,
 } from "@/lib/ig/state";
-import { answerCallback, sendMessage, setDecisionLabel } from "@/lib/ig/telegram";
+import { answerCallback, sendMessage, sendVideo, setDecisionLabel } from "@/lib/ig/telegram";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // Vercel Pro — a carousel publish takes ~40s
@@ -121,17 +121,21 @@ async function publishNow(chatId: string, state: IgState): Promise<void> {
   if (planIsReel) {
     // The bot does NOT auto-publish Reels: Instagram's API can't attach native TRENDING audio
     // (licensing — app-only) and a silent auto-post forfeits the audio boost. DELIVER it for
-    // MANUAL in-app posting instead (the editor adds a trending sound in a couple of taps).
+    // MANUAL in-app posting instead — and EVERYTHING stays inside Telegram: the saveable video
+    // is re-sent as a native upload (no external link to chase) + the caption to copy/paste.
     await sendMessage(
       chatId,
-      "🎬 Reel ready — POST IT IN THE INSTAGRAM APP to add a TRENDING sound (the API can't add " +
-        "Instagram's native trending audio):\n" +
-        "1️⃣ Save the reel video above (the preview) to your phone.\n" +
-        "2️⃣ Instagram → new Reel → pick the video.\n" +
-        "3️⃣ Tap 🎵 Audio → choose a TRENDING sound (the ones with the ↗ arrow).\n" +
-        "4️⃣ Paste the caption ↓ → Share.\n\n" +
-        "(MP4 to re-download: " + plan.video_url + ")\n\n— CAPTION —",
+      "🎬 Reel prêt — à poster DANS l'app Instagram pour ajouter un son TENDANCE (l'API ne peut " +
+        "pas ajouter l'audio tendance natif d'Instagram) :\n" +
+        "1️⃣ Appuie sur la vidéo ci-dessous → Enregistrer.\n" +
+        "2️⃣ Instagram → nouveau Reel → choisis la vidéo.\n" +
+        "3️⃣ 🎵 Audio → un son TENDANCE (ceux avec la flèche ↗).\n" +
+        "4️⃣ Colle la caption ↓ → Partager.",
     );
+    const videoUrl = plan.video_url as string; // planIsReel guarantees it's set
+    const sent = await sendVideo(chatId, videoUrl, "🎬 Reel — appuie pour enregistrer la vidéo");
+    if (!sent) await sendMessage(chatId, "⚠️ Vidéo trop lourde pour l'upload direct — lien : " + videoUrl);
+    await sendMessage(chatId, "— CAPTION (copie/colle) —");
     await sendMessage(chatId, plan.caption || "(no caption)");
     return;
   }

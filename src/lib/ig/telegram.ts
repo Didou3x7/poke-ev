@@ -31,6 +31,31 @@ export async function sendMessage(chatId: string, text: string): Promise<void> {
   }
 }
 
+/** Deliver the rendered Reel as a NATIVE Telegram video — uploaded as bytes (multipart, up to
+ *  ~50MB) so it's saveable to the phone straight from the chat, exactly like the preview. We send
+ *  by upload (not by URL) because Telegram caps by-URL videos at 20MB and our crf16 MP4 is bigger.
+ *  Returns false on any hiccup so the caller can fall back to a link. */
+export async function sendVideo(chatId: string, videoUrl: string, caption = ""): Promise<boolean> {
+  try {
+    const res = await fetch(videoUrl);
+    if (!res.ok) throw new Error(`fetch video ${res.status}`);
+    const buf = await res.arrayBuffer();
+    const form = new FormData();
+    form.append("chat_id", chatId);
+    if (caption) form.append("caption", caption.slice(0, 1024));
+    form.append("width", "1080");
+    form.append("height", "1920");
+    form.append("supports_streaming", "true");
+    form.append("video", new Blob([buf], { type: "video/mp4" }), "reel.mp4");
+    const r = await fetch(API("sendVideo"), { method: "POST", body: form });
+    const data = (await r.json()) as { ok: boolean; description?: string };
+    if (!data.ok) throw new Error(`telegram sendVideo: ${data.description}`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** Replace the preview message's buttons with a single status line (✅ Approved etc.) so
  *  the editor sees the decision stuck to the message, not just a transient toast. */
 export async function setDecisionLabel(
