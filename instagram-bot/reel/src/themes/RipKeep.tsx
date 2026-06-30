@@ -32,7 +32,7 @@ import {
 
 export const R_FADE = 10;
 export const R_HOOK = 96;
-export const R_TEMPT = 160;
+export const R_TEMPT = 120;
 export const R_FACE = 124;
 export const R_VERDICT = 120;
 export const R_OUTRO = 84;
@@ -91,28 +91,28 @@ const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const cw = Math.min(384, Math.floor((1004 - (n - 1) * 16) / n));
   const CARD_GAP = 16;
   const hasRip = !!p.booster;
-  const PACK_CY = 900; // booster centre
-  const SEAM_Y = 812; // the tear line (where cards burst from)
-  const ROW_CY = 956; // settled card-row centre
-  // RIP beats: pack drops in → anticipation shake → TEAR (top peels up + flash + sparks) → cards
-  // burst from the seam and settle into the row → title/logo fade in → torn halves fall away.
-  const drop = hasRip ? interpolate(frame, [0, 16], [-300, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE }) : 0;
-  const shake = hasRip ? Math.sin(frame / 1.5) * Math.max(0, 7 - Math.abs(frame - 33) * 0.9) : 0;
-  const rip = hasRip ? interpolate(frame, [40, 62], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE }) : 1;
-  const packFade = hasRip ? interpolate(frame, [74, 102], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : 0;
-  const cardStart = hasRip ? 52 : 6;
-  const logoP = usePop(hasRip ? 96 : 2, 13);
+  const PACK_CY = 1050; // booster centre — low enough that the settled cards form a CENTRED group
+  const SEAM_Y = 965; // the tear line (where cards burst from)
+  const ROW_CY = 1094; // settled card-row centre (title sits right above → no gap)
+  // A QUICK rip: drop in → brief shake → FAST tear (top peels up + flash + sparks) → cards burst from
+  // the seam into the row → title/logo fade in → torn halves fall away.
+  const drop = hasRip ? interpolate(frame, [0, 12], [-300, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE }) : 0;
+  const shake = hasRip ? Math.sin(frame / 1.4) * Math.max(0, 6 - Math.abs(frame - 18) * 1.1) : 0;
+  const rip = hasRip ? interpolate(frame, [22, 40], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE }) : 1;
+  const packFade = hasRip ? interpolate(frame, [44, 64], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : 0;
+  const cardStart = hasRip ? 34 : 6;
+  const logoP = usePop(hasRip ? 64 : 2, 13);
   return (
     <Stage glowY={42}>
       {/* set LOGO + title — fade in AFTER the pack is ripped open */}
-      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", paddingTop: 116, pointerEvents: "none" }}>
+      <AbsoluteFill style={{ flexDirection: "column", alignItems: "center", paddingTop: 530, pointerEvents: "none" }}>
         {p.setLogo ? (
           <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", opacity: logoP, transform: `translateY(${(1 - logoP) * -20}px) scale(${0.9 + logoP * 0.1})` }}>
             <div style={{ position: "absolute", inset: "-28px -26px", background: "radial-gradient(ellipse, rgba(124,92,246,0.30), transparent 72%)" }} />
             <Img src={p.setLogo} style={{ height: 138, objectFit: "contain", filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.8))" }} />
           </div>
         ) : null}
-        <Rise delay={hasRip ? 100 : 4} style={{ marginTop: 16 }}>
+        <Rise delay={hasRip ? 68 : 4} style={{ marginTop: 16 }}>
           <Display size={74} holo style={{ textAlign: "center", maxWidth: 960, display: "block" }}>You're chasing these</Display>
         </Rise>
       </AbsoluteFill>
@@ -120,15 +120,15 @@ const Tempt: React.FC<{ p: RipKeepProps }> = ({ p }) => {
       {/* the booster pack that RIPS open */}
       {hasRip ? (
         <>
-          <div style={{ position: "absolute", left: "50%", top: PACK_CY, transform: `translate(-50%, -50%) translateY(${drop}px) translateX(${shake}px)`, opacity: frame < 74 ? 1 : packFade }}>
+          <div style={{ position: "absolute", left: "50%", top: PACK_CY, transform: `translate(-50%, -50%) translateY(${drop}px) translateX(${shake}px)`, opacity: frame < 44 ? 1 : packFade }}>
             <Img src={p.booster as string} style={{ height: 560, objectFit: "contain", clipPath: BOT_CLIP, filter: "drop-shadow(0 24px 62px rgba(0,0,0,0.75))" }} />
           </div>
-          <div style={{ position: "absolute", left: "50%", top: PACK_CY, transform: `translate(-50%, -50%) translateY(${drop}px) translateX(${shake}px) translateY(${rip * -300}px) rotate(${rip * -18}deg)`, opacity: frame < 74 ? 1 : packFade }}>
+          <div style={{ position: "absolute", left: "50%", top: PACK_CY, transform: `translate(-50%, -50%) translateY(${drop}px) translateX(${shake}px) translateY(${rip * -300}px) rotate(${rip * -18}deg)`, opacity: frame < 44 ? 1 : packFade }}>
             <Img src={p.booster as string} style={{ height: 560, objectFit: "contain", clipPath: TOP_CLIP, filter: "drop-shadow(0 24px 62px rgba(0,0,0,0.75))" }} />
           </div>
           <div style={{ position: "absolute", left: "50%", top: SEAM_Y, width: 1, height: 1, transform: "translate(-50%,-50%)" }}>
-            <GlowBurst delay={42} color="rgba(255,255,255,0.9)" size="-1600%" />
-            <SparkBurst delay={46} count={22} spread={460} />
+            <GlowBurst delay={24} color="rgba(255,255,255,0.9)" size="-1600%" />
+            <SparkBurst delay={26} count={22} spread={460} />
           </div>
         </>
       ) : null}
@@ -219,7 +219,6 @@ const Verdict: React.FC<{ p: RipKeepProps }> = ({ p }) => {
   const grad = p.verdictRip ? RIP : KEEP;
   const flash = interpolate(frame, [4, 12, 30], [0, 0.62, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const words = splitLines(p.verdictWord);
-  const reason = splitLines(p.reason);
   return (
     <Stage glowY={46}>
       <AbsoluteFill style={{ background: grad, opacity: flash }} />
@@ -234,11 +233,6 @@ const Verdict: React.FC<{ p: RipKeepProps }> = ({ p }) => {
             <div key={i} style={{ fontFamily: CLASH, fontWeight: 700, fontSize: 176, lineHeight: 0.94, letterSpacing: -3, color: "transparent", backgroundImage: grad, backgroundClip: "text", WebkitBackgroundClip: "text" }}>{w}</div>
           ))}
         </div>
-        <Rise delay={22} style={{ flexDirection: "column", alignItems: "center", marginTop: 44 }}>
-          {reason.map((line, i) => (
-            <div key={i} style={{ fontSize: 44, color: INK, fontFamily: SATOSHI, lineHeight: 1.3 }}>{line}</div>
-          ))}
-        </Rise>
       </AbsoluteFill>
       <ProgressDots total={4} step={3} />
     </Stage>
