@@ -108,15 +108,17 @@ export const SparkBurst: React.FC<{ delay?: number; count?: number; spread?: num
   );
 };
 
-/** Persistent @pokeev wordmark — bottom-centre on EVERY scene of EVERY reel (always-on branding). */
+/** Persistent pokeev.com wordmark — bottom-centre on EVERY scene of every reel (rendered by Stage).
+ *  Fades in with its scene and crossfades out at the scene change, like the other text. */
 export const BrandMark: React.FC = () => {
   const frame = useCurrentFrame();
-  const op = interpolate(frame, [4, 18], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const op = interpolate(frame, [5, 18], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const rise = (1 - op) * 14;
   return (
-    <div style={{ position: "absolute", bottom: 100, left: 0, width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 12, pointerEvents: "none", zIndex: 60, opacity: op }}>
-      <div style={{ width: 9, height: 9, borderRadius: 999, backgroundImage: HOLO }} />
-      <div style={{ fontFamily: CLASH, fontWeight: 700, fontSize: 38, letterSpacing: 2, ...holoText(116) }}>pokéev</div>
-      <div style={{ width: 9, height: 9, borderRadius: 999, backgroundImage: HOLO }} />
+    <div style={{ position: "absolute", bottom: 96, left: 0, width: "100%", display: "flex", justifyContent: "center", alignItems: "center", gap: 12, pointerEvents: "none", zIndex: 60, opacity: op, transform: `translateY(${rise}px)` }}>
+      <div style={{ width: 8, height: 8, borderRadius: 999, backgroundImage: HOLO }} />
+      <div style={{ fontFamily: CLASH, fontWeight: 700, fontSize: 38, letterSpacing: 2, ...holoText(116) }}>pokeev.com</div>
+      <div style={{ width: 8, height: 8, borderRadius: 999, backgroundImage: HOLO }} />
     </div>
   );
 };
@@ -136,6 +138,7 @@ export const Stage: React.FC<{ children: React.ReactNode; glowX?: number; glowY?
       <Grain />
       <AbsoluteFill style={{ background: "radial-gradient(125% 80% at 50% 50%, rgba(11,14,20,0) 54%, rgba(11,14,20,0.6) 100%)" }} />
       {children}
+      <BrandMark />
     </AbsoluteFill>
   );
 };

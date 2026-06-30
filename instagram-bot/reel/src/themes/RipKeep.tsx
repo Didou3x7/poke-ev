@@ -9,7 +9,6 @@ import { fade } from "@remotion/transitions/fade";
 import type { RipKeepProps } from "../props";
 import { splitLines } from "../props";
 import {
-  BrandMark,
   CardArt,
   Display,
   GlowBurst,
@@ -168,7 +167,6 @@ const Verdict: React.FC<{ p: RipKeepProps }> = ({ p }) => {
 export const RipKeep: React.FC<{ data: RipKeepProps }> = ({ data }) => {
   const fadeT = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: R_FADE })} />;
   return (
-    <AbsoluteFill>
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={R_HOOK}>
         <Hook p={data} />
@@ -190,7 +188,5 @@ export const RipKeep: React.FC<{ data: RipKeepProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
-      <BrandMark />
-    </AbsoluteFill>
   );
 };

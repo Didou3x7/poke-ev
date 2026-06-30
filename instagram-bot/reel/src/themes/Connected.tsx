@@ -8,7 +8,6 @@ import { fade } from "@remotion/transitions/fade";
 
 import type { ConnectedProps } from "../props";
 import {
-  BrandMark,
   CardArt,
   CardHero,
   Display,
@@ -36,7 +35,7 @@ import {
 export const C_FADE = 10;
 export const C_HOOK = 96;
 export const C_CARD = 78;
-export const C_REVEAL = 220;
+export const C_REVEAL = 252;
 export const C_OUTRO = 86;
 
 export const connectedFrames = (n: number): number => C_HOOK + n * C_CARD + C_REVEAL + C_OUTRO - C_FADE * (n + 2);
@@ -123,11 +122,20 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   const stripW = n * cardW;
   const fitScale = Math.min(1, (1080 * 0.94) / stripW);
   const center = (n - 1) / 2;
-  const panF = interpolate(frame, [26, 150], [0, n - 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE_IN_OUT });
-  const zoom = interpolate(frame, [150, 190], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
-  const f = panF + (center - panF) * zoom;
-  const scale = 1 + (fitScale - 1) * zoom;
-  const tx = (center - f) * cardW * scale;
+  // SLOWER pan (less per-frame travel = less strobing on the detailed art), then a held dezoom.
+  const PAN: [number, number] = [32, 192];
+  const ZOOM: [number, number] = [192, 224];
+  const txAt = (fr: number) => {
+    const pf = interpolate(fr, PAN, [0, n - 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE_IN_OUT });
+    const z = interpolate(fr, ZOOM, [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+    const ff = pf + (center - pf) * z;
+    const sc = 1 + (fitScale - 1) * z;
+    return { tx: (center - ff) * cardW * sc, scale: sc };
+  };
+  const { tx, scale } = txAt(frame);
+  // MOTION BLUR proportional to the pan speed → smears the high-frequency judder so the scroll reads
+  // smooth instead of stroboscopic (the "mal aux yeux" frequency mismatch).
+  const mblur = Math.min(7, Math.abs(tx - txAt(frame - 1).tx) * 0.11);
   // The title HUGS the top of the strip and the total HUGS its bottom, both riding INWARD as the
   // strip shrinks on dezoom — so the final shot is one centred, harmonious group (title · cards ·
   // total), never title-pinned-top / cards-pinned-bottom with a dead gap between them.
@@ -136,7 +144,7 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   return (
     <Stage glowY={44} sparkle={false}>
       <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", overflow: "hidden" }}>
-        <div style={{ display: "flex", transform: `translateX(${tx}px) scale(${scale})`, transformOrigin: "center center", filter: "drop-shadow(0 40px 90px rgba(0,0,0,0.8))" }}>
+        <div style={{ display: "flex", transform: `translateX(${tx}px) scale(${scale})`, transformOrigin: "center center", filter: `drop-shadow(0 40px 90px rgba(0,0,0,0.8)) blur(${mblur}px)` }}>
           {p.cards.map((c, i) => (
             <Img key={i} src={c.image} style={{ width: cardW, height: cardH, objectFit: "cover", marginLeft: i ? -2 : 0 }} />
           ))}
@@ -149,9 +157,9 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
         </Rise>
       </div>
       <div style={{ position: "absolute", left: 0, width: "100%", top: CY + halfStrip + 40, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Rise delay={168} style={{ flexDirection: "column", alignItems: "center" }}>
+        <Rise delay={222} style={{ flexDirection: "column", alignItems: "center" }}>
           <div style={{ fontSize: 34, color: MUTE }}>Combined value</div>
-          <MoneyCount value={p.total} delay={170} dur={22} size={138} style={{ marginTop: 2 }} />
+          <MoneyCount value={p.total} delay={224} dur={18} size={138} style={{ marginTop: 2 }} />
         </Rise>
       </div>
       <ProgressDots total={n + 2} step={n + 1} />
@@ -162,7 +170,6 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
 export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
   const fadeT = <TransitionSeries.Transition presentation={fade()} timing={linearTiming({ durationInFrames: C_FADE })} />;
   return (
-    <AbsoluteFill>
     <TransitionSeries>
       <TransitionSeries.Sequence durationInFrames={C_HOOK}>
         <Hook p={data} />
@@ -184,7 +191,5 @@ export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
         <Outro logo={data.setLogo} />
       </TransitionSeries.Sequence>
     </TransitionSeries>
-      <BrandMark />
-    </AbsoluteFill>
   );
 };
