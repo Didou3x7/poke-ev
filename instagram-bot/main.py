@@ -3497,7 +3497,7 @@ def _maybe_switch_format(pending, st, tg_token, tg_chat):
         return False
     if desired == "reel":
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-               "text": "🎬 Rendering your Reel… this takes ~2-3 min, a fresh preview lands here."})
+               "text": "🎬 Rendering your Reel… ~2-3 min, then I send it ready to post (file + caption)."})
         ctx = pending.get("ctx") or {}
         ctx["api_key"] = env("ANTHROPIC_API_KEY")
         try:
@@ -3519,6 +3519,28 @@ def _maybe_switch_format(pending, st, tg_token, tg_chat):
                               "awaiting_revise": False, "published": False,
                               "ts": datetime.now(timezone.utc).isoformat()})
             return True
+        # Reel rendered OK → DELIVER it straight away (playable video + 📎 source file + copyable
+        # caption) — the ready-to-post package. Reels are manual-post, so tapping 🎬 IS the final
+        # step; no 2nd ✅ Approve needed (owner: "🎬 doit me donner le réel prêt + la caption").
+        # Mark delivered + record history so theme rotation / dedup stays correct.
+        blob_plan_write(plan)
+        try:
+            publish_reel(plan)
+        except Exception as exc:  # noqa: BLE001 — a delivery hiccup must not drop the post
+            log(f"reel deliver on toggle failed ({exc})")
+            tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+                   "text": "⚠️ Reel rendered but delivery hiccuped — reply 'reel' to resend it."})
+        if not already_posted_today(pending.get("theme", "")):
+            record_history(plan)
+        pending["plan"] = plan
+        pending["handled_format_seq"] = seq
+        pending.pop("acked", None)
+        _save_pending(pending)
+        blob_state_write({**st, "format": "reel", "decision": "approve", "published": True,
+                          "note": None, "awaiting_revise": False,
+                          "ts": datetime.now(timezone.utc).isoformat()})
+        log("switched to reel + DELIVERED (file + caption)")
+        return True
     else:  # back to the carousel — no rebuild, just drop the reel-only fields
         tg_api(tg_token, "sendMessage", {"chat_id": tg_chat, "text": "🖼 Back to the carousel."})
         plan = carousel_plan_of(plan)
