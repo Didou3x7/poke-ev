@@ -1,0 +1,135 @@
+{
+  "date": "2026-07-01",
+  "theme": "grails",
+  "tg_offset": 0,
+  "plan": {
+    "date": "2026-07-01",
+    "theme": "grails",
+    "slides": [
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/5386a454ad344f8f233963f32644bc47.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/c490ad77a7fba28b36b5ca7db5792fc3.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/c79474419ab1c8eb73afe5250bc34c0a.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/994628e59a25ce5d5a3a4c2249451272.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/bf20f713a9cd5581ebe3ccc1dacb43a3.png",
+      "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
+    ],
+    "caption": "Mudkip Star is a $4,000 card. One card.\n\nIt sits in the rarest tier of EX Team Rocket Returns, and the art is why collectors chase it.\nThe pull odds, open value and live price for the whole set are on pokeev.com.\n\nSave this before you chase Mudkip Star.\n\nKeep it sealed or rip for it? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #mudkipstar #exteamrocketreturns #goldstar #masakazufukuda #sealedpokemon #pokemoncollector",
+    "hashtags": [
+      "#pokemongrails",
+      "#grailcard",
+      "#pokemonart",
+      "#pokemoninvesting",
+      "#mudkipstar",
+      "#exteamrocketreturns",
+      "#goldstar",
+      "#masakazufukuda",
+      "#sealedpokemon",
+      "#pokemoncollector"
+    ],
+    "brief": {
+      "shockHeadline": "Worth more than|most people guess",
+      "priceNote": "for a single card",
+      "compare": null,
+      "cardKicker": "THE CARD",
+      "cardHeadline": "Mudkip Star",
+      "cardBody": "EX Team Rocket Returns's crown jewel.|The card the whole set chases.",
+      "craftKicker": "THE ARTIST",
+      "craftHeadline": "Masakazu Fukuda",
+      "craftBody": "Look at the linework up close.|Every detail painted by hand.",
+      "craftZoom": {
+        "zw": 2700,
+        "zx": -540,
+        "zy": -381
+      },
+      "sceneKicker": "THE SCENE",
+      "sceneHeadline": "The subject, up close",
+      "sceneBody": "The character the whole card|is built around.",
+      "sceneZoom": {
+        "zw": 2700,
+        "zx": -1620,
+        "zy": -381
+      },
+      "oddsBody": "Rip a sealed booster.|The odds are 214 to 1.",
+      "caption": "Mudkip Star is a $4,000 card. One card.\n\nIt sits in the rarest tier of EX Team Rocket Returns, and the art is why collectors chase it.\nThe pull odds, open value and live price for the whole set are on pokeev.com.\n\nSave this before you chase Mudkip Star.\n\nKeep it sealed or rip for it? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com",
+      "hashtags": [
+        "#pokemongrails",
+        "#grailcard",
+        "#pokemonart",
+        "#pokemoninvesting",
+        "#mudkipstar",
+        "#exteamrocketreturns",
+        "#goldstar",
+        "#masakazufukuda",
+        "#sealedpokemon",
+        "#pokemoncollector"
+      ]
+    },
+    "keys": [
+      "ex7-107"
+    ],
+    "verify": [
+      {
+        "snap_usd": 4000,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "live fetch failed (HTTPSConnectionPool(host='api.pokemontcg.io', port=443): Read timed out. (read timeout=20)) — snapshot price kept",
+        "display_usd": 4000,
+        "name": "Mudkip Star"
+      }
+    ],
+    "qa_warnings": []
+  },
+  "ctx": {
+    "theme": "grails",
+    "base": "https://pokeev.com",
+    "facts": {
+      "_usd": 3999.99,
+      "key": "ex7-107",
+      "card_id": "ex7-107",
+      "set_id": "ex-team-rocket-returns",
+      "set_name": "EX Team Rocket Returns",
+      "logo": "https://assets.tcgdex.net/en/ex/ex7/logo.webp",
+      "name": "Mudkip Star",
+      "rarity": "gold-star",
+      "image": "https://images.pokemontcg.io/ex7/107_hires.png",
+      "usd": 4000,
+      "odds_n": 214,
+      "booster": "https://tcgplayer-cdn.tcgplayer.com/product/98578_in_1000x1000.jpg",
+      "artist": "Masakazu Fukuda",
+      "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/7b3b1d38ce906910ed675395ee61f1d5.png",
+      "booster_hd": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/1ad97b89e717118970a30e4ec320752d.png",
+      "vision": null,
+      "crops": {
+        "craft": {
+          "zw": 2700,
+          "zx": -540,
+          "zy": -381
+        },
+        "scene": {
+          "zw": 2700,
+          "zx": -1620,
+          "zy": -381
+        }
+      }
+    },
+    "verify": [
+      {
+        "snap_usd": 4000,
+        "snap_eur": null,
+        "live_usd": null,
+        "live_eur": null,
+        "agree": null,
+        "note": "live fetch failed (HTTPSConnectionPool(host='api.pokemontcg.io', port=443): Read timed out. (read timeout=20)) — snapshot price kept",
+        "display_usd": 4000,
+        "name": "Mudkip Star"
+      }
+    ],
+    "keys": [
+      "ex7-107"
+    ]
+  },
+  "handled_seq": 0,
+  "handled_format_seq": 0
+}
