@@ -85,6 +85,7 @@ jobs:
           POKEEV_RK_SET:         ${{ github.event.inputs.set }}
           POKEEV_GRAIL_SET:      ${{ github.event.inputs.grail }}
           POKEEV_REEL_ONLY:      ${{ github.event.inputs.theme }}
+          POKEEV_THEME:          ${{ github.event.inputs.theme }}
           POKEEV_DATA_DIR:       ${{ github.workspace }}/data
           POKEEV_IMAGE_BASE_URL: https://pokeev.com
           TOP_N_CARDS:           '5'
