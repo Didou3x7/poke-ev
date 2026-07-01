@@ -13,7 +13,7 @@
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/bf20f713a9cd5581ebe3ccc1dacb43a3.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
-    "caption": "Mudkip Star is a $4,000 card. One card.\n\nIt sits in the rarest tier of EX Team Rocket Returns, and the art is why collectors chase it.\nThe pull odds, open value and live price for the whole set are on pokeev.com.\n\nSave this before you chase Mudkip Star.\n\nKeep it sealed or rip for it? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #mudkipstar #exteamrocketreturns #goldstar #masakazufukuda #sealedpokemon #pokemoncollector",
+    "caption": "Mudkip Star is a $4,000 card. One card.\n\nIt sits in the rarest tier of EX Team Rocket Returns, and the art is why collectors chase it.\nThe pull odds, open value and live price for the whole set are on pokeev.com.\n\nSave this before you chase Mudkip Star.\n\nKeep it sealed or rip for it? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #mudkipstar",
     "hashtags": [
       "#pokemongrails",
       "#grailcard",
@@ -79,7 +79,12 @@
         "name": "Mudkip Star"
       }
     ],
-    "qa_warnings": []
+    "qa_warnings": [],
+    "format": "reel",
+    "video_url": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-reels/2026-07-01-grails.mp4",
+    "cover_url": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-reels/2026-07-01-grails-cover.png",
+    "mp4_local": "/home/runner/work/poke-ev/poke-ev/instagram-bot/reel/out/grails.mp4",
+    "caption_carousel": "Mudkip Star is a $4,000 card. One card.\n\nIt sits in the rarest tier of EX Team Rocket Returns, and the art is why collectors chase it.\nThe pull odds, open value and live price for the whole set are on pokeev.com.\n\nSave this before you chase Mudkip Star.\n\nKeep it sealed or rip for it? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #mudkipstar #exteamrocketreturns #goldstar #masakazufukuda #sealedpokemon #pokemoncollector"
   },
   "ctx": {
     "theme": "grails",
@@ -112,7 +117,9 @@
           "zx": -1620,
           "zy": -381
         }
-      }
+      },
+      "reel_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/7b3b1d38ce906910ed675395ee61f1d5.png",
+      "reel_booster": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/65c16b3da19287af979e6f61acae8a04.png"
     },
     "verify": [
       {
@@ -128,8 +135,9 @@
     ],
     "keys": [
       "ex7-107"
-    ]
+    ],
+    "api_key": "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"
   },
   "handled_seq": 0,
-  "handled_format_seq": 0
+  "handled_format_seq": 1
 }
