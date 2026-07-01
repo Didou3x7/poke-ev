@@ -136,10 +136,32 @@ def _ptcg_get(url, params=None):
     raise last or RuntimeError("pokemontcg unreachable")
 
 
+def _eur_usd():
+    """EUR→USD, to reconcile a thin-market card against its Cardmarket (EUR) SOLD price. Live ECB
+    rate via frankfurter.app (no key); a sane constant fallback so an FX hiccup never blocks a post."""
+    import requests
+
+    try:
+        r = requests.get("https://api.frankfurter.app/latest", params={"from": "EUR", "to": "USD"}, timeout=10)
+        if r.ok:
+            v = (r.json().get("rates") or {}).get("USD")
+            if v and 0.7 < float(v) < 1.6:
+                return float(v)
+    except Exception:  # noqa: BLE001 — FX is a sanity input, never a hard dependency
+        pass
+    return 1.08
+
+
 def verify_price(item):
     """Cross-check the displayed USD price against live pokemontcg.io
     (TCGplayer market + Cardmarket trend). Returns a record incl. the verified
-    USD figure to display and an agreement flag."""
+    USD figure to display and an agreement flag.
+
+    THIN-MARKET GUARD (owner: cross-source every price): a TCGplayer quote with NO `market` and
+    low==mid==high is a SINGLE asking listing, not a real market — on illiquid vintage grails it
+    wildly over/under-states value (e.g. Gold Star Mudkip listed at $4,000 while Cardmarket SOLD
+    ~$3,400). When there's no TCGplayer market we DON'T trust that lone ask; we anchor to the
+    Cardmarket SOLD consensus (trend + 7-day avg, robust to the wild avg1/avg30 swings) in USD."""
     snap_usd = item.get("chase_usd")
     snap_eur = item.get("chase_eur")
     rec = {"snap_usd": snap_usd, "snap_eur": snap_eur, "live_usd": None, "live_eur": None,
@@ -163,14 +185,33 @@ def verify_price(item):
     live_eur = cm.get("trendPrice") or cm.get("averageSellPrice")
     rec["live_usd"] = round(live_usd, 2) if live_usd else None
     rec["live_eur"] = round(live_eur, 2) if live_eur else None
-    if snap_usd and live_usd:
-        gap = abs(live_usd - snap_usd) / snap_usd
-        rec["agree"] = gap <= VERIFY_TOLERANCE
-        # Trust the fresher live figure for what we publish.
+    if live_usd:
+        # a REAL, liquid TCGplayer market price — trust the fresher live figure.
         rec["display_usd"] = round(live_usd, 2)
-        rec["note"] = "agree" if rec["agree"] else f"diverged {gap*100:.0f}% — using fresh live price"
+        if snap_usd:
+            gap = abs(live_usd - snap_usd) / snap_usd
+            rec["agree"] = gap <= VERIFY_TOLERANCE
+            rec["note"] = "agree" if rec["agree"] else f"diverged {gap*100:.0f}% — using fresh live price"
+        else:
+            rec["note"] = "live TCGplayer market"
     else:
-        rec["note"] = "no live USD — snapshot price kept"
+        # NO TCGplayer market → the only USD is a single asking listing, unreliable on a thin
+        # vintage grail. Anchor to the Cardmarket SOLD consensus (trend + 7-day avg) in USD.
+        sold = [x for x in (cm.get("trendPrice"), cm.get("avg7")) if x and x > 0]
+        if sold:
+            anchor_eur = sum(sold) / len(sold)
+            usd = int(round(anchor_eur * _eur_usd()))
+            rec["display_usd"] = usd
+            rec["live_usd"] = usd
+            if snap_usd:
+                gap = abs(usd - snap_usd) / max(snap_usd, 1)
+                rec["agree"] = gap <= VERIFY_TOLERANCE
+                rec["note"] = (f"no TCGplayer market (lone ask ${snap_usd:,.0f}) — "
+                               f"Cardmarket sold €{anchor_eur:,.0f} → ${usd:,} ({gap*100:.0f}% off)")
+            else:
+                rec["note"] = f"no TCGplayer market — Cardmarket sold €{anchor_eur:,.0f} → ${usd:,}"
+        else:
+            rec["note"] = "no TCGplayer market, no Cardmarket sold — snapshot price kept (unverified)"
     return rec
 
 
