@@ -355,6 +355,48 @@ def upscale_card(image_url, max_w=4096):
             os.unlink(tmp)
 
 
+def _host_booster_for_reel(url, max_w=4096):
+    """Guarantee a Remotion-loadable booster image for the RIP-OR-KEEP tear. First try the MAX
+    upscale; if that fails (Replicate hiccup, a new set's CDN 403, an opencv decode error…), fall
+    back to RE-HOSTING the raw source bytes on Blob. Remotion's headless browser can't load
+    tcgplayer-cdn directly (it 403s), so the pack MUST come from our Blob — otherwise `hasRip`
+    goes false and the signature booster-tear silently disappears (the White Flare regression).
+    Returns a Blob URL or None (only when there's genuinely no source image at all)."""
+    up = upscale_card(url, max_w=max_w)
+    if up:
+        return up
+    if not (url and os.environ.get("BLOB_READ_WRITE_TOKEN")):
+        return None
+    tmp = None
+    try:
+        import hashlib
+        import tempfile
+
+        import requests
+
+        _UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                             "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+               "Referer": "https://www.tcgplayer.com/"}
+        src = _hires(url)
+        r = requests.get(src, timeout=60, headers=_UA)
+        if r.status_code != 200 or not r.content:
+            log(f"  booster raw re-host: source fetch {r.status_code}")
+            return None
+        ext = ".png" if src.lower().rsplit("?", 1)[0].endswith(".png") else ".jpg"
+        fd, tmp = tempfile.mkstemp(suffix=ext)
+        os.close(fd)
+        Path(tmp).write_bytes(r.content)
+        out = _blob_put(tmp, f"ig-reels/booster-{hashlib.md5(src.encode()).hexdigest()}{ext}")
+        log(f"  ripkeep reel: booster raw re-host {'✓ (tear preserved)' if out else 'failed'} — upscale unavailable")
+        return out
+    except Exception as exc:  # noqa: BLE001 — never fail a reel over the booster
+        log(f"  booster raw re-host failed ({exc})")
+        return None
+    finally:
+        if tmp:
+            Path(tmp).unlink(missing_ok=True)
+
+
 # ------------------------------ art direction ----------------------------- #
 def art_direct(api_key, theme_key, tag, items, feedback=None):
     from anthropic import Anthropic
@@ -830,16 +872,17 @@ def _upscale_reel_cards(theme, facts):
             for c in facts.get("chase", []):
                 c["reel_image"] = None
             log("  ripkeep reel: original chase scans (no upscale — special-illustration cards render true)")
-            if facts.get("booster"):  # the booster IS a product photo (no holo texture) → MAX upscale.
-                # Blob URL or None — NEVER fall back to the raw product URL: Remotion's headless browser
-                # can't load tcgplayer-cdn (it 403s / cancels), which CRASHES the whole reel render.
-                facts["reel_booster"] = upscale_card(facts["booster"], max_w=4096)
-                log(f"  ripkeep reel: booster {'upscaled to 4096px' if facts.get('reel_booster') else 'upscale failed — face-off bg omitted'}")
+            if facts.get("booster"):  # the booster IS a product photo (no holo texture) → MAX upscale,
+                # with a raw Blob re-host fallback so the booster-TEAR always plays even if the upscale
+                # fails. (A Blob URL or None — NEVER the raw tcgplayer URL: Remotion's headless browser
+                # can't load tcgplayer-cdn (403s/cancels), which would drop the tear or crash the render.)
+                facts["reel_booster"] = _host_booster_for_reel(facts["booster"], max_w=4096)
+                log(f"  ripkeep reel: booster {'ready (tear on)' if facts.get('reel_booster') else 'UNAVAILABLE — tear will be skipped'}")
             return
         elif theme == "grails":
             facts["reel_image"] = upscale_card(facts["image"], max_w=4096) or facts.get("hd_image")
             if facts.get("booster"):
-                facts["reel_booster"] = upscale_card(facts["booster"], max_w=4096) or facts.get("booster_hd")
+                facts["reel_booster"] = _host_booster_for_reel(facts["booster"], max_w=4096) or facts.get("booster_hd")
         log(f"  reel cards upscaled to 4096px for {theme}")
     except Exception as exc:  # noqa: BLE001 — never fail a reel over an upscale hiccup
         log(f"  reel upscale warning ({exc})")
