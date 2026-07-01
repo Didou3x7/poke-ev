@@ -13,7 +13,7 @@
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/2a1b727b06957d1e8cf0d048837d81c1.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/99a5385210420dab4f40bb3c3cd72f35.png"
     ],
-    "caption": "A single Mudkip Star from EX Team Rocket Returns is sitting at $2,793 on the market right now.\n\nGold star. 214 to 1 pull odds from a sealed booster. Masakazu Fukuda's art shows Mudkip gliding through a starfield, and the market has decided that image is worth nearly three thousand dollars.\n\nTo pull one copy at those odds you are cracking enough packs to make the sealed math genuinely painful. The card itself outpaces nearly every box EV calculation on pokeev.com by a significant margin.\n\nSave this before you decide whether to open any vintage EX-era product.\n\nRip or hold at $2,793, where do you land?\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nLink in bio. pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #mudkipstar #exteamrocketreturns #goldstar #masakazufukuda #sealedpokemon #pokemoncollector",
+    "caption": "A single Mudkip Star from EX Team Rocket Returns is sitting at $2,793 on the market right now.\n\nGold star. 214 to 1 pull odds from a sealed booster. Masakazu Fukuda's art shows Mudkip gliding through a starfield, and the market has decided that image is worth nearly three thousand dollars.\n\nTo pull one copy at those odds you are cracking enough packs to make the sealed math genuinely painful. The card itself outpaces nearly every box EV calculation on pokeev.com by a significant margin.\n\nSave this before you decide whether to open any vintage EX-era product.\n\nRip or hold at $2,793, where do you land?\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nLink in bio. pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #mudkipstar",
     "hashtags": [
       "#pokemongrails",
       "#grailcard",
@@ -80,7 +80,12 @@
         "name": "Mudkip Star"
       }
     ],
-    "qa_warnings": []
+    "qa_warnings": [],
+    "format": "reel",
+    "video_url": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-reels/2026-07-01-grails.mp4",
+    "cover_url": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-reels/2026-07-01-grails-cover.png",
+    "mp4_local": "/home/runner/work/poke-ev/poke-ev/instagram-bot/reel/out/grails.mp4",
+    "caption_carousel": "A single Mudkip Star from EX Team Rocket Returns is sitting at $2,793 on the market right now.\n\nGold star. 214 to 1 pull odds from a sealed booster. Masakazu Fukuda's art shows Mudkip gliding through a starfield, and the market has decided that image is worth nearly three thousand dollars.\n\nTo pull one copy at those odds you are cracking enough packs to make the sealed math genuinely painful. The card itself outpaces nearly every box EV calculation on pokeev.com by a significant margin.\n\nSave this before you decide whether to open any vintage EX-era product.\n\nRip or hold at $2,793, where do you land?\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nLink in bio. pokeev.com\n\n#pokemongrails #grailcard #pokemonart #pokemoninvesting #mudkipstar #exteamrocketreturns #goldstar #masakazufukuda #sealedpokemon #pokemoncollector"
   },
   "ctx": {
     "theme": "grails",
@@ -138,7 +143,9 @@
           "zx": -1620,
           "zy": -381
         }
-      }
+      },
+      "reel_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/7b3b1d38ce906910ed675395ee61f1d5.png",
+      "reel_booster": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/65c16b3da19287af979e6f61acae8a04.png"
     },
     "verify": [
       {
@@ -155,8 +162,9 @@
     ],
     "keys": [
       "ex7-107"
-    ]
+    ],
+    "api_key": "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"
   },
   "handled_seq": 0,
-  "handled_format_seq": 0
+  "handled_format_seq": 2
 }
