@@ -894,6 +894,20 @@ def build_reel(plan, ctx):
     theme = plan["theme"]
     _upscale_reel_cards(theme, ctx["facts"])  # full-res card art for the reel (cards dominate)
     props = reel_props(theme, ctx["facts"], plan.get("brief"))
+    # GUARD — a reel must NEVER ship missing its signature animation in silence. The RIP-OR-KEEP
+    # booster-TEAR only plays when props.booster is present; if the booster image couldn't be
+    # loaded/hosted (even after the raw re-host fallback), flag it LOUDLY so the editor is warned
+    # in Telegram BEFORE posting instead of discovering a tear-less reel after it's live (the
+    # White Flare regression). Same for the T3 GRAILS odds booster-fan.
+    reel_warn = []
+    if theme in ("ripkeep", "grails") and not props.get("booster"):
+        what = "the RIP booster-tear is SKIPPED" if theme == "ripkeep" else "the odds booster-fan falls back to the card"
+        reel_warn.append(f"⚠️ booster image unavailable → {what} in this render. Regenerate before posting.")
+        try:
+            notify_error(f"⚠️ Reel QA ({theme}): booster missing → signature animation degraded. "
+                         "Don't post as-is — reply 'revise' to re-render.")
+        except Exception:  # noqa: BLE001 — a warning must never break the build
+            pass
     log(f"rendering {theme} reel…")
     mp4, cover = render_reel(theme, props)
     video_url = _blob_put(str(mp4), f"ig-reels/{plan['date']}-{theme}.mp4")
@@ -906,7 +920,8 @@ def build_reel(plan, ctx):
     reel_plan = {**plan, "format": "reel", "video_url": video_url,
                  "cover_url": cover_url, "mp4_local": str(mp4),
                  "caption_carousel": plan.get("caption"),
-                 "caption": cap_caption_hashtags(plan.get("caption"))}
+                 "caption": cap_caption_hashtags(plan.get("caption")),
+                 "qa_warnings": (plan.get("qa_warnings") or []) + reel_warn}
     Path(env("PLAN_PATH", "plan.json")).write_text(
         json.dumps(reel_plan, indent=2, ensure_ascii=False), encoding="utf-8")
     return reel_plan
