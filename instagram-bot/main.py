@@ -136,6 +136,51 @@ def _ptcg_get(url, params=None):
     raise last or RuntimeError("pokemontcg unreachable")
 
 
+_PC_CACHE = {}
+
+
+def _pricecharting_usd(name, desc, set_name, number):
+    """Real completed-auction 'Ungraded' (loose) price from PriceCharting — the TRUEST sold figure
+    for illiquid vintage grails, where TCGplayer/Cardmarket only surface inflated ASKING listings
+    (Gold Star Mudkip: $4,000 ask vs $2,794 actually sold). Resolve the product via search, then
+    parse the ungraded cell. SAFETY: only trust a product whose slug ends with THIS card's collector
+    number, so a bare 'Mudkip' query can never match the common $2 Mudkip. Best-effort, never raises;
+    cached per card. `desc` is a variant hint (e.g. 'Gold Star') that disambiguates the search."""
+    if not (name and number):
+        return None
+    key = f"{name}|{desc}|{set_name}|{number}"
+    if key in _PC_CACHE:
+        return _PC_CACHE[key]
+    val = None
+    try:
+        import requests
+
+        UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                            "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+        q = " ".join(x for x in (name, desc, set_name) if x).strip()
+        s = requests.get("https://www.pricecharting.com/search-products",
+                         params={"q": q, "type": "prices"}, headers=UA, timeout=20)
+        url = None
+        if s.ok:
+            m = (re.search(r'rel="canonical" href="(https://www\.pricecharting\.com/game/[^"]+)"', s.text)
+                 or re.search(r'href="(/game/pokemon-[a-z0-9-]+/[a-z0-9-]+)"', s.text))
+            if m:
+                url = m.group(1)
+                if url.startswith("/"):
+                    url = "https://www.pricecharting.com" + url
+        if url and re.search(rf"-0*{re.escape(str(number))}$", url):
+            p = requests.get(url, headers=UA, timeout=20)
+            mm = re.search(r'id="used_price"[^>]*>\s*<span[^>]*>\s*\$?([0-9,]+)', p.text)
+            if mm:
+                v = int(mm.group(1).replace(",", ""))
+                if v > 0:
+                    val = v
+    except Exception:  # noqa: BLE001 — a cross-source must never break a post
+        val = None
+    _PC_CACHE[key] = val
+    return val
+
+
 def _eur_usd():
     """EUR→USD, to reconcile a thin-market card against its Cardmarket (EUR) SOLD price. Live ECB
     rate via frankfurter.app (no key); a sane constant fallback so an FX hiccup never blocks a post."""
@@ -185,18 +230,38 @@ def verify_price(item):
     live_eur = cm.get("trendPrice") or cm.get("averageSellPrice")
     rec["live_usd"] = round(live_usd, 2) if live_usd else None
     rec["live_eur"] = round(live_eur, 2) if live_eur else None
+    # PriceCharting 'Ungraded' = REAL completed-auction price — the sold truth. Fetch it as the
+    # cross-source (query built from the live card: name + variant hint + set; number-validated).
+    rar = (data.get("rarity") or "")
+    desc = "Gold Star" if "star" in rar.lower() else ("Secret" if "secret" in rar.lower() else "")
+    pc = _pricecharting_usd(data.get("name"), desc, (data.get("set") or {}).get("name") or "",
+                            card_id.split("-")[-1])
+    rec["pc_usd"] = pc
     if live_usd:
-        # a REAL, liquid TCGplayer market price — trust the fresher live figure.
         rec["display_usd"] = round(live_usd, 2)
-        if snap_usd:
+        if pc and live_usd > 1.4 * pc:
+            # the TCGplayer 'market' itself is an inflated thin-market figure — trust real sold.
+            rec["display_usd"] = pc
+            rec["agree"] = False
+            rec["note"] = f"TCGplayer ${live_usd:,.0f} >> PriceCharting sold ${pc:,} — using sold price"
+        elif snap_usd:
             gap = abs(live_usd - snap_usd) / snap_usd
             rec["agree"] = gap <= VERIFY_TOLERANCE
             rec["note"] = "agree" if rec["agree"] else f"diverged {gap*100:.0f}% — using fresh live price"
         else:
             rec["note"] = "live TCGplayer market"
+    elif pc:
+        # NO TCGplayer market (single asking listing) → use PriceCharting's real sold price.
+        rec["display_usd"] = pc
+        rec["live_usd"] = pc
+        note = f"no TCGplayer market — PriceCharting sold ${pc:,}"
+        if snap_usd:
+            gap = abs(pc - snap_usd) / max(snap_usd, 1)
+            rec["agree"] = gap <= VERIFY_TOLERANCE
+            note += f" (lone ask ${snap_usd:,.0f}, {gap*100:.0f}% off)"
+        rec["note"] = note
     else:
-        # NO TCGplayer market → the only USD is a single asking listing, unreliable on a thin
-        # vintage grail. Anchor to the Cardmarket SOLD consensus (trend + 7-day avg) in USD.
+        # last resort: Cardmarket SOLD consensus (trend + 7-day avg), converted to USD.
         sold = [x for x in (cm.get("trendPrice"), cm.get("avg7")) if x and x > 0]
         if sold:
             anchor_eur = sum(sold) / len(sold)
@@ -211,7 +276,7 @@ def verify_price(item):
             else:
                 rec["note"] = f"no TCGplayer market — Cardmarket sold €{anchor_eur:,.0f} → ${usd:,}"
         else:
-            rec["note"] = "no TCGplayer market, no Cardmarket sold — snapshot price kept (unverified)"
+            rec["note"] = "no TCGplayer market, no sold source — snapshot price kept (unverified)"
     return rec
 
 
