@@ -84,6 +84,7 @@ jobs:
           TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
           POKEEV_RK_SET:         ${{ github.event.inputs.set }}
           POKEEV_GRAIL_SET:      ${{ github.event.inputs.grail }}
+          POKEEV_CONNECTED_GROUP: ${{ github.event.inputs.grail }}
           POKEEV_REEL_ONLY:      ${{ github.event.inputs.theme }}
           POKEEV_THEME:          ${{ github.event.inputs.theme }}
           POKEEV_DATA_DIR:       ${{ github.workspace }}/data

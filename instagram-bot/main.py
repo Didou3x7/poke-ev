@@ -1558,13 +1558,18 @@ def select_connected(snapshot, names, groups_path: Path, exclude=None, min_cards
     """Pick a resolved combined-illustration group with 2..7 cards (cover + N +
     reveal + cta <= 10 slides), not recently used, ranked by total USD desc."""
     exclude = exclude or set()
+    # Owner override (POKEEV_CONNECTED_GROUP / workflow_dispatch `grail`): feature a SPECIFIC
+    # connected group even if recently used — e.g. to re-deliver one on request.
+    force = (os.environ.get("POKEEV_CONNECTED_GROUP") or "").strip() or None
     doc = json.loads(groups_path.read_text(encoding="utf-8"))
     candidates = []
     for g in doc.get("groups", []):
         if not g.get("resolved"):
             continue
         gid = g.get("id")
-        if not gid or gid in exclude:
+        if force and gid != force:
+            continue
+        if not gid or (not force and gid in exclude):
             continue
         cards = [c for c in g.get("cards", []) if c.get("image")]
         if not (min_cards <= len(cards) <= max_cards):
