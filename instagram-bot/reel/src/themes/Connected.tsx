@@ -33,10 +33,21 @@ import {
 export const C_FADE = 10;
 export const C_HOOK = 96;
 export const C_CARD = 78;
-export const C_REVEAL = 324; // pan (L→R scroll) trimmed ~0.67s; zoom-out + two-cards hold unchanged
 export const C_OUTRO = 86;
 
-export const connectedFrames = (n: number): number => C_HOOK + n * C_CARD + C_REVEAL + C_OUTRO - C_FADE * (n + 2);
+// THE REVEAL is built from parts so the L→R pan runs at a CONSTANT speed for ANY card count. A
+// FIXED pan window made a 2-card post crawl (owner: "beaucoup trop lente") while a 7-card post
+// raced. Now the pan is a fixed number of frames PER card-width, and the two-cards-with-combined-
+// price beat is a generous fixed hold (owner: longer).
+const REVEAL_LEADIN = 34; // strip holds at the start while the title rises, before the pan begins
+const PAN_PER_CARD = 66;  // frames to traverse ONE card-width — constant velocity, brisk but readable
+const C_ZOOM = 34;        // dezoom that locks all N cards + the combined price together
+const C_HOLD = 96;        // hold on the full panorama + combined price (owner: make it longer)
+const revealPanFrames = (n: number): number => PAN_PER_CARD * Math.max(1, n - 1);
+export const cReveal = (n: number): number => REVEAL_LEADIN + revealPanFrames(n) + C_ZOOM + C_HOLD;
+
+export const connectedFrames = (n: number): number =>
+  C_HOOK + n * C_CARD + cReveal(n) + C_OUTRO - C_FADE * (n + 2);
 
 const CARD_ASPECT = 1.395;
 
@@ -116,12 +127,13 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   // joined art. (Authored at 30fps; constant-velocity is the best fluidity short of a 60fps comp.)
   const RAMP = 0.18;
   const vmax = 1 / (1 - RAMP);
-  const x = interpolate(frame, [34, 242], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const panEnd = REVEAL_LEADIN + revealPanFrames(n); // constant-velocity: scales with card count
+  const x = interpolate(frame, [REVEAL_LEADIN, panEnd], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const glide = x <= RAMP ? (vmax * x * x) / (2 * RAMP)
     : x < 1 - RAMP ? (vmax * RAMP) / 2 + vmax * (x - RAMP)
     : 1 - (vmax * (1 - x) * (1 - x)) / (2 * RAMP);
   const panF = glide * (n - 1);
-  const zoom = interpolate(frame, [242, 276], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const zoom = interpolate(frame, [panEnd, panEnd + C_ZOOM], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
   const f = panF + (center - panF) * zoom;
   const scale = 1 + (fitScale - 1) * zoom;
   const tx = (center - f) * cardW * scale;
@@ -172,7 +184,7 @@ export const Connected: React.FC<{ data: ConnectedProps }> = ({ data }) => {
         </React.Fragment>
       ))}
       {fadeT}
-      <TransitionSeries.Sequence durationInFrames={C_REVEAL}>
+      <TransitionSeries.Sequence durationInFrames={cReveal(data.cards.length)}>
         <Reveal p={data} />
       </TransitionSeries.Sequence>
       {fadeT}
