@@ -3799,15 +3799,28 @@ def do_reel_test():
                     "slides": [], "hashtags": brief.get("hashtags", []), "verify": ctx["verify"]}
             reel_plan = build_reel(plan, ctx)
             if tg_token and tg_chat:
-                loc = reel_plan.get("mp4_local")
-                data_bytes = (Path(loc).read_bytes() if loc and os.path.exists(loc)
-                              else _download_bytes(reel_plan["video_url"], timeout=120, tries=3))
-                tg_send_video(tg_token, tg_chat, data_bytes, caption=f"🧪 TEST REEL — {theme.upper()}")
-                table = "\n".join(
-                    f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
-                    for v in ctx.get("verify", []))
-                tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
-                       "text": f"⬆️ {theme.upper()} — price check:\n{table}\n\nCaption:\n{caption[:1200]}"})
+                if len(themes) == 1:
+                    # Single-theme render = a REAL delivery for the editor to post: hand them the
+                    # ready package (playable video + 📎 source file + copyable caption) via the same
+                    # path as an approved reel, plus the price cross-check for transparency.
+                    blob_plan_write(reel_plan)
+                    publish_reel(reel_plan)
+                    table = "\n".join(
+                        f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
+                        for v in ctx.get("verify", []))
+                    if table:
+                        tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+                               "text": f"💲 {theme.upper()} price cross-check:\n{table}"})
+                else:
+                    loc = reel_plan.get("mp4_local")
+                    data_bytes = (Path(loc).read_bytes() if loc and os.path.exists(loc)
+                                  else _download_bytes(reel_plan["video_url"], timeout=120, tries=3))
+                    tg_send_video(tg_token, tg_chat, data_bytes, caption=f"🧪 TEST REEL — {theme.upper()}")
+                    table = "\n".join(
+                        f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
+                        for v in ctx.get("verify", []))
+                    tg_api(tg_token, "sendMessage", {"chat_id": tg_chat,
+                           "text": f"⬆️ {theme.upper()} — price check:\n{table}\n\nCaption:\n{caption[:1200]}"})
         except Exception as exc:  # noqa: BLE001 — one theme failing must not abort the others
             log(f"reel-test {theme} failed: {exc}")
             if tg_token and tg_chat:
