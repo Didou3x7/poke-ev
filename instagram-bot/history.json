@@ -108,5 +108,15 @@
     "sets": [
       "white-flare"
     ]
+  },
+  {
+    "date": "2026-07-01",
+    "theme": "grails",
+    "keys": [
+      "ex7-107"
+    ],
+    "sets": [
+      "ex7-107"
+    ]
   }
 ]

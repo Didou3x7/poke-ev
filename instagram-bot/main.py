@@ -3325,6 +3325,12 @@ def blob_plan_write(plan):
     also carries the video_url + cover_url so the webhook can publish the Reel without Remotion."""
     payload = {"date": plan["date"], "theme": plan["theme"],
                "slides": plan_slides(plan), "caption": plan["caption"]}
+    # Carry the dedup/rotation keys so a manual re-delivery (deliver-reel) can record history
+    # correctly — without them the theme rotation stalls and re-proposes the same post.
+    if plan.get("keys"):
+        payload["keys"] = plan["keys"]
+    if plan.get("sets"):
+        payload["sets"] = plan["sets"]
     if plan.get("format") == "reel":
         payload["format"] = "reel"
         payload["video_url"] = plan.get("video_url")
@@ -3751,6 +3757,11 @@ def do_deliver_reel():
         return
     log(f"deliver-reel: delivering {plan.get('theme')} reel ({plan.get('date')})")
     publish_reel(plan)
+    # Delivering IS the final post → record history so theme rotation advances and dedup excludes
+    # this card. (Skipped otherwise → the wheel stalls and re-proposes the same T3, as it did on
+    # 2026-07-01.) Uses the keys now carried on the Blob plan.
+    if plan.get("theme") and not already_posted_today(plan.get("theme")):
+        record_history(plan)
 
 
 def do_reel_test():
