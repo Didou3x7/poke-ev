@@ -33,7 +33,7 @@ import {
 export const C_FADE = 10;
 export const C_HOOK = 96;
 export const C_CARD = 78;
-export const C_REVEAL = 344; // trimmed ~0.8s off the final full-panorama hold (owner: a touch too long)
+export const C_REVEAL = 324; // pan (L→R scroll) trimmed ~0.67s; zoom-out + two-cards hold unchanged
 export const C_OUTRO = 86;
 
 export const connectedFrames = (n: number): number => C_HOOK + n * C_CARD + C_REVEAL + C_OUTRO - C_FADE * (n + 2);
@@ -116,12 +116,12 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
   // joined art. (Authored at 30fps; constant-velocity is the best fluidity short of a 60fps comp.)
   const RAMP = 0.18;
   const vmax = 1 / (1 - RAMP);
-  const x = interpolate(frame, [34, 262], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const x = interpolate(frame, [34, 242], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const glide = x <= RAMP ? (vmax * x * x) / (2 * RAMP)
     : x < 1 - RAMP ? (vmax * RAMP) / 2 + vmax * (x - RAMP)
     : 1 - (vmax * (1 - x) * (1 - x)) / (2 * RAMP);
   const panF = glide * (n - 1);
-  const zoom = interpolate(frame, [262, 296], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
+  const zoom = interpolate(frame, [242, 276], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: EASE });
   const f = panF + (center - panF) * zoom;
   const scale = 1 + (fitScale - 1) * zoom;
   const tx = (center - f) * cardW * scale;
