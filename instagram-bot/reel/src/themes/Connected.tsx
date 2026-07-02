@@ -42,7 +42,7 @@ export const C_OUTRO = 86;
 const REVEAL_LEADIN = 34; // strip holds at the start while the title rises, before the pan begins
 const PAN_PER_CARD = 66;  // frames to traverse ONE card-width — constant velocity, brisk but readable
 const C_ZOOM = 34;        // dezoom that locks all N cards + the combined price together
-const C_HOLD = 96;        // hold on the full panorama + combined price (owner: make it longer)
+const C_HOLD = 48;        // hold on the full panorama + combined price (kept tight, owner: 2x shorter)
 const revealPanFrames = (n: number): number => PAN_PER_CARD * Math.max(1, n - 1);
 export const cReveal = (n: number): number => REVEAL_LEADIN + revealPanFrames(n) + C_ZOOM + C_HOLD;
 
@@ -158,9 +158,11 @@ const Reveal: React.FC<{ p: ConnectedProps }> = ({ p }) => {
         </Rise>
       </div>
       <div style={{ position: "absolute", left: 0, width: "100%", top: CY + halfStrip + 40, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Rise delay={300} style={{ flexDirection: "column", alignItems: "center" }}>
+        {/* the combined price appears the instant the panorama locks (tied to the dezoom, NOT a
+            hard-coded frame — else a shorter/longer pan drops it off the end of the scene). */}
+        <Rise delay={panEnd} style={{ flexDirection: "column", alignItems: "center" }}>
           <div style={{ fontSize: 34, color: MUTE }}>Combined value</div>
-          <MoneyCount value={p.total} delay={302} dur={18} size={138} style={{ marginTop: 2 }} />
+          <MoneyCount value={p.total} delay={panEnd + 2} dur={18} size={138} style={{ marginTop: 2 }} />
         </Rise>
       </div>
     </Stage>
