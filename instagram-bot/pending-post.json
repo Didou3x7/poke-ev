@@ -12,7 +12,7 @@
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/1be82c45f5f52f2bf37c784789b5c070.png",
       "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-slides/7e0e5b6b6d04d20fb93c63963ee752bd.png"
     ],
-    "caption": "2 separate cards. One continuous illustration.\n\nLine them up and OKACHEKE's artwork becomes a single panorama, scattered across Surging Sparks.\nThe live value of every piece, and the whole set, is on pokeev.com.\n\nSave this before you hunt the full Surging Sparks panorama.\n\nWhich piece is your favorite? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com\n\n#pokemonart #connectingart #pokemonillustration #cardart #okacheke #surgingsparks #pokemoninvesting #sealedpokemon #pokemoncollector #pokemonpulls",
+    "caption": "2 separate cards. One continuous illustration.\n\nLine them up and OKACHEKE's artwork becomes a single panorama, scattered across Surging Sparks.\nThe live value of every piece, and the whole set, is on pokeev.com.\n\nSave this before you hunt the full Surging Sparks panorama.\n\nWhich piece is your favorite? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com\n\n#pokemonart #connectingart #pokemonillustration #cardart #okacheke",
     "hashtags": [
       "#pokemonart",
       "#connectingart",
@@ -70,7 +70,12 @@
         "name": "Latias ex"
       }
     ],
-    "qa_warnings": []
+    "qa_warnings": [],
+    "format": "reel",
+    "video_url": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-reels/2026-07-02-connected.mp4",
+    "cover_url": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-reels/2026-07-02-connected-cover.png",
+    "mp4_local": "/home/runner/work/poke-ev/poke-ev/instagram-bot/reel/out/connected.mp4",
+    "caption_carousel": "2 separate cards. One continuous illustration.\n\nLine them up and OKACHEKE's artwork becomes a single panorama, scattered across Surging Sparks.\nThe live value of every piece, and the whole set, is on pokeev.com.\n\nSave this before you hunt the full Surging Sparks panorama.\n\nWhich piece is your favorite? Tell us below.\n\nFollow @pokeev.tcg for the live Expected Value on every sealed set.\nlink in bio -> pokeev.com\n\n#pokemonart #connectingart #pokemonillustration #cardart #okacheke #surgingsparks #pokemoninvesting #sealedpokemon #pokemoncollector #pokemonpulls"
   },
   "ctx": {
     "theme": "connected",
@@ -92,7 +97,8 @@
           "setLogo": "https://images.pokemontcg.io/sv8/logo.png",
           "ptcgId": "sv8-203",
           "number": "203",
-          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/37f030ee3d58c14d5fba823b5a654803.png"
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/37f030ee3d58c14d5fba823b5a654803.png",
+          "reel_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/1048edae59f2a73279d553e79affdd9b.png"
         },
         {
           "name": "Latias ex",
@@ -102,7 +108,8 @@
           "setLogo": "https://images.pokemontcg.io/sv8/logo.png",
           "ptcgId": "sv8-239",
           "number": "239",
-          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/d0894eabaeacd3bbdf3509527f54bf16.png"
+          "hd_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/d0894eabaeacd3bbdf3509527f54bf16.png",
+          "reel_image": "https://mauzhr1mqvtu52ju.public.blob.vercel-storage.com/ig-cards/ee788d7f4e04ce3e3658a537bedaac49.png"
         }
       ],
       "total": 232
@@ -133,8 +140,9 @@
     ],
     "keys": [
       "surging-sparks-latios-latias"
-    ]
+    ],
+    "api_key": "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"
   },
   "handled_seq": 0,
-  "handled_format_seq": 0
+  "handled_format_seq": 1
 }
