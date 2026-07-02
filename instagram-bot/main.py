@@ -3785,7 +3785,11 @@ def do_reel_test():
                        "published; just reply with your feedback on each."})
     for theme in themes:
         try:
-            ctx = prepare_theme(theme, data_dir, base, names, snapshot, set(), api_key)
+            # Single-theme render = a real DELIVERY → honour dedup so it never re-sends a group/set
+            # already posted (owner got the Latios/Latias connected twice). Multi-theme = pure QA of
+            # the 3 skeletons → no dedup so any theme can be re-rendered for design review.
+            exclude = recent_keys(Path(env("HISTORY_PATH", "history.json")), theme) if len(themes) == 1 else set()
+            ctx = prepare_theme(theme, data_dir, base, names, snapshot, exclude, api_key)
             if not ctx:
                 log(f"reel-test: no content for {theme}")
                 if tg_token and tg_chat:
