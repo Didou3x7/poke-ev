@@ -33,7 +33,7 @@ import {
 export const C_FADE = 10;
 export const C_HOOK = 96;
 export const C_CARD = 78;
-export const C_REVEAL = 368;
+export const C_REVEAL = 344; // trimmed ~0.8s off the final full-panorama hold (owner: a touch too long)
 export const C_OUTRO = 86;
 
 export const connectedFrames = (n: number): number => C_HOOK + n * C_CARD + C_REVEAL + C_OUTRO - C_FADE * (n + 2);
