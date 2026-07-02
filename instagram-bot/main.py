@@ -3800,15 +3800,19 @@ def do_reel_test():
             brief = _fresh_brief(theme, api_key, facts)
             caption = compose_caption(brief["caption"], brief.get("hashtags"))
             plan = {"date": today, "theme": theme, "brief": brief, "caption": caption,
-                    "slides": [], "hashtags": brief.get("hashtags", []), "verify": ctx["verify"]}
+                    "slides": [], "hashtags": brief.get("hashtags", []), "verify": ctx["verify"],
+                    "keys": ctx.get("keys"), "sets": ctx.get("keys")}
             reel_plan = build_reel(plan, ctx)
             if tg_token and tg_chat:
                 if len(themes) == 1:
                     # Single-theme render = a REAL delivery for the editor to post: hand them the
                     # ready package (playable video + 📎 source file + copyable caption) via the same
-                    # path as an approved reel, plus the price cross-check for transparency.
+                    # path as an approved reel, plus the price cross-check for transparency. Record
+                    # history so the group/set is marked used (dedup) and rotation advances.
                     blob_plan_write(reel_plan)
                     publish_reel(reel_plan)
+                    if not already_posted_today(theme):
+                        record_history(reel_plan)
                     table = "\n".join(
                         f"• {v['name']}: snap {fmt_usd(v['snap_usd'])} / live {fmt_usd(v['live_usd'])} — {v['note']}"
                         for v in ctx.get("verify", []))
