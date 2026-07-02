@@ -746,8 +746,8 @@ def plan_slides(plan):
     """Ordered carousel URLs. Prefers the new flat `slides` list (slides[0] = cover/
     story image); falls back to the legacy cover/cards/recap/cta keys so the old
     Vault-Countdown plans still publish unchanged."""
-    if plan.get("slides"):
-        return list(plan["slides"])
+    if "slides" in plan:  # present (even empty, e.g. a reel plan) → authoritative, no cover fallback
+        return list(plan["slides"] or [])
     return ([plan["cover"], *plan.get("cards", [])]
             + ([plan["recap"]] if plan.get("recap") else [])
             + [plan["cta"]])
